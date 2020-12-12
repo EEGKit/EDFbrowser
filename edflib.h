@@ -435,6 +435,7 @@ int edf_set_startdatetime(int handle, int startdate_year, int startdate_month, i
 /* Returns 0 on success, otherwise -1 */
 /* This function is optional and can be called only after opening a file in writemode */
 /* and before the first sample write action */
+/* Note: for anonymization purposes, the consensus is to use 1985-01-01 00:00:00 for the startdate and starttime. */
 
 
 int edf_set_patientname(int handle, const char *patientname);
