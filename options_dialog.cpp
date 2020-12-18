@@ -90,7 +90,7 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   TxtColorButton = new SpecialButton;
   TxtColorButton->setColor(mainwindow->maincurve->text_color);
   hlayout_tmp = new QHBoxLayout;
-  hlayout_tmp->addWidget(MrColorButton);
+  hlayout_tmp->addWidget(TxtColorButton);
   hlayout_tmp->addStretch(1000);
   flayout1_1->addRow("Text color", hlayout_tmp);
 
