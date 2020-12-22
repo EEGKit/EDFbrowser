@@ -277,6 +277,7 @@ void UI_ECGExport::Export_RR_intervals()
     memset(&annotation, 0, sizeof(struct annotationblock));
     strncpy(annotation.description, mainwindow->ecg_qrs_rpeak_descr, MAX_ANNOTATION_LEN);
     annotation.description[MAX_ANNOTATION_LEN] = 0;
+    annotation.edfhdr = mainwindow->edfheaderlist[filenum];
 
     for(i=0; i<beat_cnt; i++)
     {

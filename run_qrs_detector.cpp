@@ -167,6 +167,7 @@ UI_QRS_detector::UI_QRS_detector(QWidget *w_parent, struct signalcompblock *sign
     l_time += ((smpls_left * signalcomp->edfhdr->long_data_record_duration) / signalcomp->edfhdr->edfparam[signalcomp->edfsignal[0]].smp_per_record);
 
     annotation.onset = l_time;
+    annotation.edfhdr = mainwindow->edfheaderlist[filenum];
     edfplus_annotation_add_item(&mainwindow->edfheaderlist[filenum]->annot_list, annotation);
   }
 

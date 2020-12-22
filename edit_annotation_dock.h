@@ -57,6 +57,7 @@
 #include <QHBoxLayout>
 #include <QGridLayout>
 #include <QFormLayout>
+#include <QMessageBox>
 
 #include <stdio.h>
 #include <stdlib.h>

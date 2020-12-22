@@ -400,6 +400,12 @@ void UI_AnnotationEditwindow::set_selected_annotation(int annot_nr)
 
   struct annotationblock *annot = edfplus_annotation_get_item(annot_list, annot_num);
 
+  if(annot->edfhdr == NULL)
+  {
+    QMessageBox::critical(dockedit, "Error", "An internal error occurred.\nPlease report this as a bug.\n Error code: 15883");
+    return;
+  }
+
   annot_descript_lineEdit->setText(QString::fromUtf8(annot->description));
 
   l_tmp = annot->onset - ((struct edfhdrblock *)(annot->edfhdr))->starttime_offset;

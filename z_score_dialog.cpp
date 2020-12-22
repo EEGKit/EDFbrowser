@@ -1003,6 +1003,7 @@ void UI_ZScoreWindow::get_annotationsButtonClicked()
         {
           strlcpy(annotation.description, "Sleep", MAX_ANNOTATION_LEN_II + 1);
         }
+        annotation.edfhdr = mainwindow->edfheaderlist[filenum];
         edfplus_annotation_add_item(&mainwindow->edfheaderlist[filenum]->annot_list, annotation);
       }
     }

@@ -244,6 +244,7 @@ int BDF_triggers::get_triggers(struct edfhdrblock *hdr)
         {
           if(!status[j])  // rising edge detected
           {
+            annotation.edfhdr = hdr;
             annotation.onset = (records_read * TIME_DIMENSION) + ((long long)(i / 3) * status_sample_duration);
             annotation.onset += hdr->starttime_offset;
             snprintf(annotation.description, MAX_ANNOTATION_LEN_II + 1, "Trigger Input %i", j + 1);
