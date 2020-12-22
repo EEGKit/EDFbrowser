@@ -111,22 +111,14 @@ ViewCurve::ViewCurve(QWidget *w_parent) : QWidget(w_parent)
 
   blackwhite_printing = 1;
 
-  crosshair_1.color = 7;
-
-  crosshair_2.color = 10;
+  memset(&crosshair_1, 0, sizeof(struct crossHairStruct));
+  memset(&crosshair_2, 0, sizeof(struct crossHairStruct));
 
 /////////////////////////////////////////////////////////
 
   signal_nr = 0;
-  crosshair_1.active = 0;
-  crosshair_2.active = 0;
   ruler_active = 0;
-  crosshair_1.moving = 0;
-  crosshair_2.moving = 0;
   ruler_moving = 0;
-
-  crosshair_1.value = 0.0;
-  crosshair_2.value = 0.0;
 
   printsize_x_factor=1.0,
   printsize_y_factor=1.0;
