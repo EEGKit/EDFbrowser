@@ -181,6 +181,12 @@ void UI_AnnotationEditwindow::modifyButtonClicked()
 
   struct annotationblock *annot = edfplus_annotation_get_item(annot_list, annot_num);
 
+  if(annot->edfhdr == NULL)
+  {
+    QMessageBox::critical(dockedit, "Error", "An internal error occurred.\nPlease report this as a bug.\n Error code: 15884");
+    return;
+  }
+
   annot->onset = annotEditGetOnset();
 
   if(posNegTimebox->currentIndex() == 1)
@@ -233,6 +239,12 @@ void UI_AnnotationEditwindow::deleteButtonClicked()
   struct annotation_list *annot_list = &(edf_hdr->annot_list);
 
   struct annotationblock *annot = edfplus_annotation_get_item(annot_list, annot_num);
+
+  if(annot->edfhdr == NULL)
+  {
+    QMessageBox::critical(dockedit, "Error", "An internal error occurred.\nPlease report this as a bug.\n Error code: 15885");
+    return;
+  }
 
   edfplus_annotation_remove_item(annot_list, annot_num);
 
