@@ -1,4 +1,21 @@
 
+ version 1.80      to be defined
+ --------------
+
+ - Solved a bug that caused a crash when importing annotations and using the annotation editor
+   immediately without saving the imported annotions first.
+
+ - EDF+ and BDF+: do not accept startdates set to a date before 1985.
+   Effectively, the startdate as defined for EDF must be equal to the startdate as defined for EDF+,
+   in order not to break backwards compatibility.
+
+ - Clear the struct used for the crosshairs to avoid potentially using uninitialized values.
+
+ - Settings/Options: fixed a minor regression bug that prevented the setting of the mouse rectangle color.
+
+ - Fix warnings related to "-Wdeprecated-declarations" (introduced by newer Qt versions).
+
+
 
  version 1.79      October 25, 2020
  --------------
