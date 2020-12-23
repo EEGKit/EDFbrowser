@@ -42,7 +42,7 @@
 #include "edflib.h"
 
 
-#define EDFLIB_VERSION  (118)
+#define EDFLIB_VERSION  (119)
 #define EDFLIB_MAXFILES  (64)
 
 
