@@ -3680,16 +3680,16 @@ void ViewCurve::exec_sidemenu(int signal_nr_intern)
 
   QFormLayout *flayout = new QFormLayout;
 
-  QLabel *SidemenuLabel = new QLabel(sidemenu);
+  QLabel *SidemenuLabel = new QLabel;
   SidemenuLabel->setText(mainwindow->signalcomp[signal_nr]->signallabel);
   flayout->addRow("Label", SidemenuLabel);
 
-  AliasLineEdit = new QLineEdit(sidemenu);
+  AliasLineEdit = new QLineEdit;
   AliasLineEdit->setText(mainwindow->signalcomp[signal_nr]->alias);
   AliasLineEdit->setMaxLength(16);
   flayout->addRow("Alias", AliasLineEdit);
 
-  ScaleBox = new QDoubleSpinBox(sidemenu);
+  ScaleBox = new QDoubleSpinBox;
   ScaleBox->setDecimals(8);
   ScaleBox->setMaximum(1000000.0);
   ScaleBox->setMinimum(0.0000001);
@@ -3708,7 +3708,7 @@ void ViewCurve::exec_sidemenu(int signal_nr_intern)
   ScaleBox->setSuffix(str);
   flayout->addRow("Amplitude", ScaleBox);
 
-  ScaleBox2 = new QDoubleSpinBox(sidemenu);
+  ScaleBox2 = new QDoubleSpinBox;
   ScaleBox2->setDecimals(8);
   ScaleBox2->setMaximum(1000000.0);
   ScaleBox2->setMinimum(-1000000.0);
@@ -3720,57 +3720,57 @@ void ViewCurve::exec_sidemenu(int signal_nr_intern)
   ScaleBox2->setSuffix(str);
   flayout->addRow("Offset", ScaleBox2);
 
-  sidemenuButton1 = new QPushButton(sidemenu);
+  sidemenuButton1 = new QPushButton;
   sidemenuButton1->setText("Ruler");
 
-  sidemenuButton2 = new QPushButton(sidemenu);
+  sidemenuButton2 = new QPushButton;
   sidemenuButton2->setText("Crosshair");
 
-  sidemenuButton3 = new QPushButton(sidemenu);
+  sidemenuButton3 = new QPushButton;
   sidemenuButton3->setText("Fit to pane");
 
-  sidemenuButton4 = new QPushButton(sidemenu);
+  sidemenuButton4 = new QPushButton;
   sidemenuButton4->setText("Color");
 
-  sidemenuButton5 = new QPushButton(sidemenu);
+  sidemenuButton5 = new QPushButton;
   sidemenuButton5->setText("Invert");
 
-  sidemenuButton6 = new QPushButton(sidemenu);
+  sidemenuButton6 = new QPushButton;
   sidemenuButton6->setText("Spectrum");
 
-  sidemenuButton7 = new QPushButton(sidemenu);
+  sidemenuButton7 = new QPushButton;
   sidemenuButton7->setText("Z-EEG");
 
-  sidemenuButton8 = new QPushButton(sidemenu);
+  sidemenuButton8 = new QPushButton;
   sidemenuButton8->setText("Remove filter");
 
-  sidemenuButton9 = new QPushButton(sidemenu);
+  sidemenuButton9 = new QPushButton;
   sidemenuButton9->setText("Remove signal");
 
-  sidemenuButton10 = new QPushButton(sidemenu);
+  sidemenuButton10 = new QPushButton;
   sidemenuButton10->setText("Adjust filter");
 
-  sidemenuButton11 = new QPushButton(sidemenu);
+  sidemenuButton11 = new QPushButton;
   sidemenuButton11->setText("Statistics");
 
-  sidemenuButton12 = new QPushButton(sidemenu);
+  sidemenuButton12 = new QPushButton;
   sidemenuButton12->setText("QRS detector");
   if(mainwindow->live_stream_active)
   {
     sidemenuButton12->setEnabled(false);
   }
 
-  sidemenuButton13 = new QPushButton(sidemenu);
+  sidemenuButton13 = new QPushButton;
   sidemenuButton13->setText("Heart Rate");
 
-  sidemenuButton14 = new QPushButton(sidemenu);
+  sidemenuButton14 = new QPushButton;
   sidemenuButton14->setText("CDSA");
   if(mainwindow->live_stream_active)
   {
     sidemenuButton14->setEnabled(false);
   }
 
-  sidemenuButton15 = new QPushButton(sidemenu);
+  sidemenuButton15 = new QPushButton;
   sidemenuButton15->setText("Close");
 
   QGridLayout *gr = new QGridLayout;

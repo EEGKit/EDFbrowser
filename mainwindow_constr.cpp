@@ -704,6 +704,12 @@ UI_Mainwindow::UI_Mainwindow()
 
   amplitudemenu->addSeparator();
 
+  amplitude_user_defined = new QAction("user defined", this);
+  connect(amplitude_user_defined, SIGNAL(triggered()), this, SLOT(set_user_defined_amplitude()));
+  amplitudemenu->addAction(amplitude_user_defined);
+
+  amplitudemenu->addSeparator();
+
   amp_plus = new QAction("Amplitude x 2", this);
   amp_plus->setShortcut(Qt::Key_Minus);
   connect(amp_plus, SIGNAL(triggered()), this, SLOT(set_amplitude_mult2()));

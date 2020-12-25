@@ -3092,7 +3092,19 @@ void UI_Mainwindow::set_display_time(QAction *action)
 
 void UI_Mainwindow::set_user_defined_display_time()
 {
+  if(!files_open)  return;
+
   UI_Userdefined_timepage_Dialog set_displaytime_dialog(this);
+}
+
+
+void UI_Mainwindow::set_user_defined_amplitude()
+{
+  if(!files_open)  return;
+
+  if(!signalcomps)  return;
+
+  UI_Userdefined_amplitude_Dialog set_amplitude_dialog(this);
 }
 
 

@@ -13,6 +13,8 @@
 
  - Settings/Options: fixed a minor regression bug that prevented the setting of the mouse rectangle color.
 
+ - Added the possibility set a user defined (custom) value for the amplitude (gain/scale) for all signals.
+
  - Fix warnings related to "-Wdeprecated-declarations" (introduced by newer Qt versions).
 
 

@@ -122,6 +122,7 @@
 #include "show_actual_montage_dialog.h"
 #include "print_to_edf.h"
 #include "pagetime_dialog.h"
+#include "amplitude_dialog.h"
 #include "print_to_bdf.h"
 #include "ascii2edf.h"
 #include "fino2edf.h"
@@ -495,6 +496,7 @@ private:
            *amp_minus,
            *zoomback_Act,
            *zoomforward_Act,
+           *amplitude_user_defined,
            *slower_Act,
            *faster_Act,
            *recent_file[MAX_RECENTFILES],
@@ -611,6 +613,7 @@ private slots:
   void show_kb_shortcuts();
   void print_to_edf();
   void set_user_defined_display_time();
+  void set_user_defined_amplitude();
   void print_to_bdf();
   void print_to_img_640x480();
   void print_to_img_800x600();
