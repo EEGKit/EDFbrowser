@@ -35,6 +35,7 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QDateTimeEdit>
+#include <QDateTime>
 #include <QPushButton>
 #include <QObject>
 #include <QFileDialog>

@@ -440,7 +440,7 @@ void UI_MortaraEDFwindow::SelectFileButton()
     if((start_date_time[17] < '0') || (start_date_time[17] > '9'))  err = 1;
     if((start_date_time[18] < '0') || (start_date_time[18] > '9'))  err = 1;
 
-    if((atoi(start_date_time) < 1985) || (atoi(start_date_time) > 2099)) err = 1;
+    if((atoi(start_date_time) < 1985) || (atoi(start_date_time) > 2084)) err = 1;
     if((atoi(start_date_time + 5) < 1) || (atoi(start_date_time + 5) > 12)) err = 1;
     if((atoi(start_date_time + 8) < 1) || (atoi(start_date_time + 8) > 31)) err = 1;
     if(atoi(start_date_time + 11) > 23) err = 1;

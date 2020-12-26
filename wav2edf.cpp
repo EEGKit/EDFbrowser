@@ -53,6 +53,8 @@ UI_WAV2EDFwindow::UI_WAV2EDFwindow(QWidget *w_parent, char *recent_dir, char *sa
   StartDatetimeedit = new QDateTimeEdit;
   StartDatetimeedit->setDisplayFormat("dd/MM/yyyy hh:mm:ss");
   StartDatetimeedit->setDateTime(QDateTime::currentDateTime());
+  StartDatetimeedit->setMaximumDateTime(QDateTime::fromString("20841231235959", "yyyyMMddhhmmss"));
+  StartDatetimeedit->setMinimumDateTime(QDateTime::fromString("19850101000000", "yyyyMMddhhmmss"));
 
   PhysDimLineEdit = new QLineEdit;
   PhysDimLineEdit->setMaxLength(8);

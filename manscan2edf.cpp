@@ -508,6 +508,16 @@ void UI_MANSCAN2EDFwindow::SelectFileButton()
 
     utc_to_date_time(ll_tmp, &dtm_struct);
 
+    if((dtm_struct.year < 1985) || (dtm_struct.year > 2084))
+    {
+      dtm_struct.year = 1985;
+      dtm_struct.month = 1;
+      dtm_struct.day = 1;
+      dtm_struct.hour = 0;
+      dtm_struct.minute = 0;
+      dtm_struct.second = 0;
+    }
+
     if(edf_set_startdatetime(hdl, dtm_struct.year, dtm_struct.month, dtm_struct.day, dtm_struct.hour, dtm_struct.minute, dtm_struct.second))
     {
       textEdit1->append("Error: edf_set_startdatetime()\n");

@@ -1063,6 +1063,16 @@ void UI_SCPECG2EDFwindow::SelectFileButton()
     goto EXIT_5;
   }
 
+  if((pat_dat.startdate_year < 1985) || (pat_dat.startdate_year > 2084))
+  {
+    pat_dat.startdate_year = 1985;
+    pat_dat.startdate_month = 1;
+    pat_dat.startdate_day = 1;
+    pat_dat.starttime_hour = 0;
+    pat_dat.starttime_minute = 0;
+    pat_dat.starttime_second = 0;
+  }
+
   edf_set_startdatetime(hdl,
                         pat_dat.startdate_year,
                         pat_dat.startdate_month,

@@ -387,6 +387,16 @@ void UI_BI98002EDFwindow::SelectFileButton()
 
   edf_set_patientname(hdl, "BI9800");
 
+  if((startdate_year < 1985) || (startdate_year > 2084))
+  {
+    startdate_year = 1985;
+    startdate_month = 1;
+    startdate_day = 1;
+    starttime_hour = 0;
+    starttime_minute = 0;
+    starttime_second = 0;
+  }
+
   edf_set_startdatetime(hdl, startdate_year, startdate_month, startdate_day, starttime_hour, starttime_minute, starttime_second);
 
   fseeko(dcmfile, 0LL, SEEK_END);

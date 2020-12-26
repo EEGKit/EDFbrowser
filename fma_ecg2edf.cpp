@@ -68,6 +68,8 @@ UI_FMaudio2EDFwindow::UI_FMaudio2EDFwindow(QWidget *w_parent, char *recent_dir, 
   StartDatetimeedit = new QDateTimeEdit;
   StartDatetimeedit->setDisplayFormat("dd/MM/yyyy hh:mm:ss");
   StartDatetimeedit->setDateTime(QDateTime::currentDateTime());
+  StartDatetimeedit->setMaximumDateTime(QDateTime::fromString("20841231235959", "yyyyMMddhhmmss"));
+  StartDatetimeedit->setMinimumDateTime(QDateTime::fromString("19850101000000", "yyyyMMddhhmmss"));
 
   pushButton1 = new QPushButton;
   pushButton1->setText("Select File");

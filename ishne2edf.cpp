@@ -418,6 +418,16 @@ struct
     }
   }
 
+  if((start_dt.year < 1985) || (start_dt.year > 2084))
+  {
+    start_dt.year = 1985;
+    start_dt.month = 1;
+    start_dt.day = 1;
+    start_dt.hour = 0;
+    start_dt.minute = 0;
+    start_dt.second = 0;
+  }
+
   if(edf_set_startdatetime(edf_hdl, start_dt.year, start_dt.month, start_dt.day, start_dt.hour, start_dt.minute, start_dt.second))
   {
     textEdit1->append("Error, edf_set_startdatetime()\n");

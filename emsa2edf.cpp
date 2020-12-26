@@ -257,6 +257,10 @@ void UI_EMSA2EDFwindow::SelectFileButton()
   if((date[7]<'0')||(date[7]>'9'))  error = 1;
   scratchpad[4] = 0;
   year = atoi(scratchpad);
+  if((year < 1985) || (year > 2084))
+  {
+    year = 1985;
+  }
 
   if(get_string(scratchpad, inputfile, 214, 32)!=8)
   {
