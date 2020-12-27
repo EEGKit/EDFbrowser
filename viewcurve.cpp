@@ -25,7 +25,6 @@
 */
 
 
-
 #include "viewcurve.h"
 
 
@@ -151,7 +150,6 @@ ViewCurve::ViewCurve(QWidget *w_parent) : QWidget(w_parent)
 
   arrowkeys_shortcuts_global_set_enabled(true);
 }
-
 
 
 ViewCurve::~ViewCurve()
@@ -4252,7 +4250,6 @@ void ViewCurve::FittopaneButton()
 }
 
 
-
 void ViewCurve::ColorButton()
 {
   int color;
@@ -4281,7 +4278,6 @@ void ViewCurve::ColorButton()
 }
 
 
-
 void ViewCurve::ScaleBox2Changed(double value)
 {
   if(signal_nr >= mainwindow->signalcomps)
@@ -4293,7 +4289,6 @@ void ViewCurve::ScaleBox2Changed(double value)
 
   drawCurve_stage_1();
 }
-
 
 
 void ViewCurve::ScaleBoxChanged(double value)
@@ -4325,7 +4320,6 @@ void ViewCurve::ScaleBoxChanged(double value)
 
   drawCurve_stage_1();
 }
-
 
 
 void ViewCurve::RemovefilterButton()
@@ -4396,7 +4390,6 @@ void ViewCurve::RemovefilterButton()
 
   sidemenu->close();
 }
-
 
 
 void ViewCurve::RemovesignalButton()
@@ -5079,12 +5072,10 @@ void ViewCurve::restore_colors_after_printing()
 }
 
 
-
 void ViewCurve::setCrosshair_1_center(void)
 {
   crosshair_1.x_position = width() / 2;
 }
-
 
 
 void ViewCurve::strip_types_from_label(char *label)
