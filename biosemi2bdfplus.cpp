@@ -577,6 +577,7 @@ void UI_BIOSEMI2BDFPLUSwindow::SelectFileButton()
               annotation.onset = (datarecords * EDFLIB_TIME_DIMENSION) + ((long long)i * status_sample_duration);
               annotation.onset += hdr.starttime_subsecond;
               strlcpy(annotation.description, triggerlabel[j], MAX_ANNOTATION_LEN_II + 1);
+              annotation.edfhdr = &hdr;
               if(edfplus_annotation_add_item(&annot_list, annotation))
               {
                 progress.reset();
@@ -624,6 +625,7 @@ void UI_BIOSEMI2BDFPLUSwindow::SelectFileButton()
               annotation.onset = (datarecords * EDFLIB_TIME_DIMENSION) + ((long long)i * status_sample_duration);
               annotation.onset += hdr.starttime_subsecond;
               strlcpy(annotation.description, triggerlabel[j], MAX_ANNOTATION_LEN_II + 1);
+              annotation.edfhdr = &hdr;
               if(edfplus_annotation_add_item(&annot_list, annotation))
               {
                 progress.reset();

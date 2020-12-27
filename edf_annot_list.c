@@ -43,6 +43,8 @@ int edfplus_annotation_add_item(struct annotation_list *list, struct annotationb
 
   if(list == NULL)  return -1;
 
+  if(annotation.edfhdr == NULL)  return -4;
+
   if(list->used_sz >= list->mem_sz)
   {
     tmp_block_list = (struct annotationblock *)realloc(list->items, (list->mem_sz + EDF_ANNOT_MEMBLOCKSZ_II) * sizeof(struct annotationblock));
