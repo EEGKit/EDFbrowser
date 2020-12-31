@@ -911,9 +911,10 @@ void UI_Annotationswindow::updateList(void)
   char str[MAX_ANNOTATION_LEN + 32];
 
   int j,
-      sz,
+      sz=0,
       jump=0,
-      modified=0;
+      modified=0,
+      scroll_val=0;
 
   QListWidgetItem *listitem;
 
@@ -926,6 +927,8 @@ void UI_Annotationswindow::updateList(void)
   selected = -1;
 
   QApplication::setOverrideCursor(Qt::WaitCursor);
+
+  scroll_val = list->verticalScrollBar()->value();
 
   list->clear();
 
@@ -1086,6 +1089,8 @@ void UI_Annotationswindow::updateList(void)
 
       mainwindow->save_act->setEnabled(true);
     }
+
+    list->verticalScrollBar()->setValue(scroll_val);
   }
 
   messagewindow.hide();

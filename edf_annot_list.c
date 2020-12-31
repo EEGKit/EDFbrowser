@@ -29,7 +29,7 @@
 #include "edf_annot_list.h"
 
 
-#define EDF_ANNOT_MEMBLOCKSZ_II   1000
+#define EDF_ANNOT_MEMBLOCKSZ_II   (1000)
 
 #define TIME_DIMENSION_II (10000000LL)
 
