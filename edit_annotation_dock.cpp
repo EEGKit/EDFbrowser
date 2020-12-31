@@ -187,6 +187,12 @@ void UI_AnnotationEditwindow::modifyButtonClicked()
     return;
   }
 
+  if(annot->edfhdr != edf_hdr)
+  {
+    QMessageBox::critical(dockedit, "Error", "An internal error occurred.\nPlease report this as a bug.\n Error code: 15894");
+    return;
+  }
+
   annot->onset = annotEditGetOnset();
 
   if(posNegTimebox->currentIndex() == 1)
@@ -243,6 +249,12 @@ void UI_AnnotationEditwindow::deleteButtonClicked()
   if(annot->edfhdr == NULL)
   {
     QMessageBox::critical(dockedit, "Error", "An internal error occurred.\nPlease report this as a bug.\n Error code: 15885");
+    return;
+  }
+
+  if(annot->edfhdr != edf_hdr)
+  {
+    QMessageBox::critical(dockedit, "Error", "An internal error occurred.\nPlease report this as a bug.\n Error code: 15895");
     return;
   }
 
@@ -414,7 +426,13 @@ void UI_AnnotationEditwindow::set_selected_annotation(int annot_nr)
 
   if(annot->edfhdr == NULL)
   {
-    QMessageBox::critical(dockedit, "Error", "An internal error occurred.\nPlease report this as a bug.\n Error code: 15883");
+    QMessageBox::critical(dockedit, "Error", "An internal error occurred.\nPlease report this as a bug.\n Error code: 15886");
+    return;
+  }
+
+  if(annot->edfhdr != edf_hdr)
+  {
+    QMessageBox::critical(dockedit, "Error", "An internal error occurred.\nPlease report this as a bug.\n Error code: 15896");
     return;
   }
 
@@ -470,6 +488,18 @@ void UI_AnnotationEditwindow::set_selected_annotation(struct annotationblock *an
   QTime ta;
 
   struct annotation_list *annot_list = &(edf_hdr->annot_list);
+
+  if(annot->edfhdr == NULL)
+  {
+    QMessageBox::critical(dockedit, "Error", "An internal error occurred.\nPlease report this as a bug.\n Error code: 15887");
+    return;
+  }
+
+  if(annot->edfhdr != edf_hdr)
+  {
+    QMessageBox::critical(dockedit, "Error", "An internal error occurred.\nPlease report this as a bug.\n Error code: 15897");
+    return;
+  }
 
   n = edfplus_annotation_get_index(annot_list, annot);
 
