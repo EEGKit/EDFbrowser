@@ -1,5 +1,5 @@
 
- version 1.80      to be defined
+ version 1.80      January 1, 2021
  --------------
 
  - Solved a bug that caused a crash when importing annotations and using the annotation editor

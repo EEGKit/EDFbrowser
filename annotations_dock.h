@@ -38,6 +38,7 @@
 #include <QDockWidget>
 #include <QListWidget>
 #include <QListWidgetItem>
+#include <QScrollBar>
 #include <QByteArray>
 #include <QPalette>
 #include <QTime>
