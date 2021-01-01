@@ -3,7 +3,7 @@
 *
 * Author: Teunis van Beelen
 *
-* Copyright (C) 2007 - 2020 Teunis van Beelen
+* Copyright (C) 2007 - 2021 Teunis van Beelen
 *
 * Email: teuniz@protonmail.com
 *
@@ -62,7 +62,7 @@ UI_Aboutwindow::UI_Aboutwindow(UI_Mainwindow *mainwindow)
   textedit1->setPlainText(
         "\n " PROGRAM_NAME " version " PROGRAM_VERSION " " PROGRAM_BETA_SUFFIX "    " THIS_APP_BITS_W "\n"
         "\n This program is made by Teunis van Beelen.\n"
-        " Copyright (C) 2007 - 2020 Teunis van Beelen.\n"
+        " Copyright (C) 2007 - 2021 Teunis van Beelen.\n"
         "\n website: https://www.teuniz.net/edfbrowser/\n"
         " git repo: https://gitlab.com/Teuniz/EDFbrowser\n"
         " email: teuniz@protonmail.com\n"
