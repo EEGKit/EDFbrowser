@@ -3,19 +3,25 @@
  --------------
 
  - Solved a bug that caused a crash when importing annotations and using the annotation editor
-   immediately without saving the imported annotions first.
+   immediately without saving the imported annotations first.
 
  - EDF+ and BDF+: do not accept startdates set to a date before 1985.
    Effectively, the startdate as defined for EDF must be equal to the startdate as defined for EDF+,
    in order not to break backwards compatibility.
+   So, only startdates in the range 1985 - 2084 inclusive are valid.
+   Use 1985-01-01 00:00:00 as the startdate and starttime for anonymization purposes.
 
  - Clear the struct used for the crosshairs to avoid potentially using uninitialized values.
 
  - Settings/Options: fixed a minor regression bug that prevented the setting of the mouse rectangle color.
 
- - Added the possibility set a user defined (custom) value for the amplitude (gain/scale) for all signals.
+ - Added the possibility to set a user defined (custom) value for the amplitude (gain/scale) for
+   all signals at once.
 
- - Fix warnings related to "-Wdeprecated-declarations" (introduced by newer Qt versions).
+ - annotationlist: after editing/deleting/creating an annotation, set back the original position of
+   the vertical scrollbar.
+
+ - Fix compiler warnings related to "-Wdeprecated-declarations" introduced by newer Qt versions.
 
 
 
