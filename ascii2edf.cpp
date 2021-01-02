@@ -96,7 +96,8 @@ UI_ASCII2EDFapp::UI_ASCII2EDFapp(QWidget *w_parent, char *recent_dir, char *save
 
   autoPhysicalMaximumCheckbox = new QCheckBox;
   autoPhysicalMaximumCheckbox->setTristate(false);
-  autoPhysicalMaximumCheckbox->setCheckState(Qt::Checked);
+  autoPhysicalMaximumCheckbox->setCheckState(Qt::Unchecked);
+  autoPhysicalMaximumCheckbox->setToolTip("For EEG and ECG, leave this setting unchecked and use 3000uV as physical maximum for EEG and 6000uV as physicalmaximum for ECG");
 
   SignalsTablewidget = new QTableWidget;
   SignalsTablewidget->setSelectionMode(QAbstractItemView::NoSelection);
@@ -108,7 +109,6 @@ UI_ASCII2EDFapp::UI_ASCII2EDFapp(QWidget *w_parent, char *recent_dir, char *save
   ((QLineEdit *)SignalsTablewidget->cellWidget(0, 1))->setMaxLength(16);
   SignalsTablewidget->setCellWidget(0, 2, new QLineEdit);
   ((QLineEdit *)SignalsTablewidget->cellWidget(0, 2))->setMaxLength(7);
-  ((QLineEdit *)SignalsTablewidget->cellWidget(0, 2))->setEnabled(false);
   SignalsTablewidget->setCellWidget(0, 3, new QLineEdit);
   ((QLineEdit *)SignalsTablewidget->cellWidget(0, 3))->setMaxLength(8);
   SignalsTablewidget->setCellWidget(0, 4, new QDoubleSpinBox);
@@ -155,6 +155,7 @@ UI_ASCII2EDFapp::UI_ASCII2EDFapp(QWidget *w_parent, char *recent_dir, char *save
   flayout2->addRow("Recording", RecordingLineEdit);
   flayout2->addRow("Startdate and time", StartDatetimeedit);
   flayout2->addRow("Auto detect physical maximum", autoPhysicalMaximumCheckbox);
+  flayout2->labelForField(autoPhysicalMaximumCheckbox)->setToolTip("For EEG and ECG, leave this setting unchecked and use 3000uV as physical maximum for EEG and 6000uV as physicalmaximum for ECG");
 
   QHBoxLayout *hlayout1 = new QHBoxLayout;
   hlayout1->addLayout(flayout1);
