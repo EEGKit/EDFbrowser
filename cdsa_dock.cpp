@@ -86,7 +86,6 @@ UI_cdsa_dock::UI_cdsa_dock(QWidget *w_parent, struct cdsa_dock_param_struct par)
 
   color_indic = new simple_color_index;
   color_indic->set_scaling(w_scaling, h_scaling);
-  color_indic->setMinimumWidth(40 * w_scaling);
   color_indic->set_max_volt(param.max_voltage);
   color_indic->set_max_pwr(param.max_pwr);
   color_indic->set_min_pwr(param.min_pwr);
