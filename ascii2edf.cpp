@@ -37,7 +37,7 @@ UI_ASCII2EDFapp::UI_ASCII2EDFapp(QWidget *w_parent, char *recent_dir, char *save
 
   mainwindow = (UI_Mainwindow *)w_parent;
 
-  autoPhysicalMaximum = 1;
+  autoPhysicalMaximum = 0;
 
   edf_format = 1;
 
