@@ -207,21 +207,19 @@ UI_SpectrumDockWindow::UI_SpectrumDockWindow(QWidget *w_parent)
   }
 
   windowBox = new QComboBox;
-  windowBox->addItem("Rectangular");
-  windowBox->addItem("Hamming");
-  windowBox->addItem("4-term Blackman-Harris");
-  windowBox->addItem("7-term Blackman-Harris");
-  windowBox->addItem("Nuttall3b");
-  windowBox->addItem("Nuttall4c");
-  windowBox->addItem("Hann");
-  windowBox->addItem("HFT223D");
-  windowBox->addItem("HFT95");
-  windowBox->addItem("Kaiser2");
-  windowBox->addItem("Kaiser3");
-  windowBox->addItem("Kaiser4");
-  windowBox->addItem("Kaiser5");
-  windowBox->setCurrentIndex(window_type);
-  windowBox->setToolTip("Window");
+  windowBox->addItem("Window: Rectangular");
+  windowBox->addItem("Window: Hamming");
+  windowBox->addItem("Window: 4-term Blackman-Harris");
+  windowBox->addItem("Window: 7-term Blackman-Harris");
+  windowBox->addItem("Window: Nuttall3b");
+  windowBox->addItem("Window: Nuttall4c");
+  windowBox->addItem("Window: Hann");
+  windowBox->addItem("Window: HFT223D");
+  windowBox->addItem("Window: HFT95");
+  windowBox->addItem("Window: Kaiser2");
+  windowBox->addItem("Window: Kaiser3");
+  windowBox->addItem("Window: Kaiser4");
+  windowBox->addItem("Window: Kaiser5");
   windowBox->setCurrentIndex(mainwindow->spectrumdock_window);
 
   window_type = mainwindow->spectrumdock_window;
@@ -236,13 +234,12 @@ UI_SpectrumDockWindow::UI_SpectrumDockWindow(QWidget *w_parent)
 
   overlap = mainwindow->spectrumdock_overlap + 1;
 
-  dftsz_label = new QLabel;
-  dftsz_label->setText("Blocksize:");
-
   dftsz_spinbox = new QSpinBox;
   dftsz_spinbox->setMinimum(10);
   dftsz_spinbox->setMaximum(1000);
   dftsz_spinbox->setSingleStep(2);
+  dftsz_spinbox->setPrefix("Blocksize: ");
+  dftsz_spinbox->setSuffix(" smpls");
   dftsz_spinbox->setValue(dftblocksize);
 
   vlayout3 = new QVBoxLayout;
@@ -266,7 +263,6 @@ UI_SpectrumDockWindow::UI_SpectrumDockWindow(QWidget *w_parent)
   vlayout2->addWidget(vlogButton);
   vlayout2->addWidget(colorBarButton);
   vlayout2->addWidget(windowBox);
-  vlayout2->addWidget(dftsz_label);
   vlayout2->addWidget(dftsz_spinbox);
   vlayout2->addWidget(overlap_box);
 

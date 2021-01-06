@@ -143,8 +143,7 @@ private:
 
   QLabel *spanLabel,
          *centerLabel,
-         *amplitudeLabel,
-         *dftsz_label;
+         *amplitudeLabel;
 
   QCheckBox *sqrtButton,
             *vlogButton,
