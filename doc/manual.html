@@ -591,8 +591,8 @@
 <p>
   The quickest way to run the QRS detector and to import the beats as annotations, is to use the QRS detector in the Tools menu.<br>
   You will be able to select one of the signals on your screen as the source for the QRS detector.<br>
-  The selected signal must have a samplerate of at least 200 Hz and must have a physical dimension (unit) uV, mV or V.<br>
-  The detector will over the whole file and at the end it will import the R-peaks as annotations.<br>
+  The selected signal must have a samplerate of at least 200 Hz and must have a physical dimension (unit)specified in uV, mV or V.<br>
+  The detector will process the whole file and it will import the R-peaks as annotations.<br>
   The label "R-wave" is used by default for the annotations but this can be changed in the settings (Settings -> Options).<br>
   The annotations can be exported to different formats using the <a href="#Export_annotations">Export annotations tool</a>.<br>
 <br>
@@ -609,8 +609,6 @@
   There is also the possibility to import the RR-intervals as annotations.<br>
 <br>
   Some statistics about the Heart Rate (variability) are available <a href="#HR_statistics">here</a>.<br>
-<br>
-  Note: The QRS detection requires a samplerate of 200Hz or higher. The physical dimension (unit) must be expressed in uV, mV or V.
 </p>
 
 <p><br></p>
@@ -1757,11 +1755,11 @@
   Drag and drop the crosshair and the onset time will be automatically adjusted.<br>
   You can use a second <a href="#Crosshairs">crosshair</a> to adjust the duration of the event.<br><br>
 
-  To modify an existent annotation, click on the annotation in the annotation window.<br>
-  Adjust the text and/or time, manually or drag and drop the annotation marker with the mouse.<br><br>
+  To modify an existent annotation, click on the annotation in the annotationlist.<br>
+  Adjust the text and/or time manually or drag and drop the annotation marker with the mouse.<br><br>
 
   To delete an annotation, click on the annotation in the annotation window and click<br>
-  on the delete button (or hit Del on your keyboard.<br>
+  on the delete button (or hit Del on your keyboard).<br>
   Pay attention, there's no undo.<br><br>
 
   When you have finished editing annotations, save the file in menu -&gt; File -&gt; Save.<br>
