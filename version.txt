@@ -1,4 +1,11 @@
 
+ version 1.81      to be defined
+ --------------
+
+ - Fixed a regression bug that caused the background of the signallabels not being cleared before drawing.
+
+
+
  version 1.80      January 1, 2021
  --------------
 
