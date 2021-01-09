@@ -2507,9 +2507,9 @@ void ViewCurve::drawCurve_stage_2(QPainter *painter, int w_width, int w_height, 
       snprintf(string, 128, "offset: %f %s",
         -signalcomp[i]->screen_offset * mainwindow->y_pixelsizefactor * signalcomp[i]->voltpercm,
         signalcomp[i]->physdimension);
-//      painter->fillRect(92, baseline, 190, 12, backgroundcolor);
+      painter->fillRect(92 * w_scaling, baseline - (2 * h_scaling), 190 * w_scaling, -15 * h_scaling, backgroundcolor);
       painter->setPen((Qt::GlobalColor)signalcomp[i]->color);
-      painter->drawText(95, baseline + 10, string);
+      painter->drawText(95 * w_scaling, baseline - (5 * h_scaling), string);
     }
 
     if(signalcomp[i]->hasgaintracking)
@@ -2517,9 +2517,9 @@ void ViewCurve::drawCurve_stage_2(QPainter *painter, int w_width, int w_height, 
       snprintf(string, 128, "gain: %f %s/cm",
         signalcomp[i]->voltpercm,
         signalcomp[i]->physdimension);
-//      painter->fillRect(92, baseline, 190, 12, backgroundcolor);
+      painter->fillRect(92 * w_scaling, baseline - (2 * h_scaling), 190 * w_scaling, -15 * h_scaling, backgroundcolor);
       painter->setPen((Qt::GlobalColor)signalcomp[i]->color);
-      painter->drawText(95, baseline + 10, string);
+      painter->drawText(95 * w_scaling, baseline - (5 * h_scaling), string);
     }
   }
 
@@ -2529,24 +2529,24 @@ void ViewCurve::drawCurve_stage_2(QPainter *painter, int w_width, int w_height, 
   {
     baseline = vertical_distance * (i + 1);
 
-//     if(signalcomp[i]->alias[0] != 0)
-//     {
-//       painter->fillRect(2, baseline - 20, strlen(signalcomp[i]->alias) * 7 + 6, 12, backgroundcolor);
-//     }
-//     else
-//     {
-//       painter->fillRect(2, baseline - 20, strlen(signalcomp[i]->signallabel) * 7 + 6, 12, backgroundcolor);
-//     }
+    if(signalcomp[i]->alias[0] != 0)
+    {
+      painter->fillRect(2 * w_scaling, baseline - (2 * h_scaling), strlen(signalcomp[i]->alias) * 7 * w_scaling, -15 * h_scaling, backgroundcolor);
+    }
+    else
+    {
+      painter->fillRect(2 * w_scaling, baseline - (2 * h_scaling), strlen(signalcomp[i]->signallabel) * 7 * w_scaling, -15 * h_scaling, backgroundcolor);
+    }
 
     painter->setPen((Qt::GlobalColor)signalcomp[i]->color);
 
     if(signalcomp[i]->alias[0] != 0)
     {
-      painter->drawText(5, baseline - 10, signalcomp[i]->alias);
+      painter->drawText(5 * w_scaling, baseline - (5 * h_scaling), signalcomp[i]->alias);
     }
     else
     {
-      painter->drawText(5, baseline - 10, signalcomp[i]->signallabel);
+      painter->drawText(5 * w_scaling, baseline - (5 * h_scaling), signalcomp[i]->signallabel);
     }
 
     if(signalcomp[i]->hasruler)
