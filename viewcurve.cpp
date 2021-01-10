@@ -471,7 +471,8 @@ void ViewCurve::mousePressEvent(QMouseEvent *press_event)
       signalcomps,
       m_x,
       m_y,
-      h_size;
+      h_size,
+      signallabel_strlen=1;
 
   struct signalcompblock **signalcomp;
 
@@ -586,7 +587,16 @@ void ViewCurve::mousePressEvent(QMouseEvent *press_event)
         baseline = h / (signalcomps + 1);
         baseline *= (i + 1);
 
-        if((m_y<(baseline-(2*h_scaling)))&&(m_y>(baseline-(17*h_scaling)))&&(m_x>(2*w_scaling))&&(m_x<(((strlen(signalcomp[i]->signallabel) * 7) + 2) * w_scaling)))
+        if(signalcomp[i]->alias[0] != 0)
+        {
+          signallabel_strlen = strlen(signalcomp[i]->alias);
+        }
+        else
+        {
+          signallabel_strlen = strlen(signalcomp[i]->signallabel);
+        }
+
+        if((m_y<(baseline-(2*h_scaling)))&&(m_y>(baseline-(17*h_scaling)))&&(m_x>(2*w_scaling))&&(m_x<(((signallabel_strlen * 8) + 2) * w_scaling)))
         {
           original_screen_offset = signalcomp[i]->screen_offset;
           signalcomp[i]->hasoffsettracking = 1;
@@ -628,8 +638,16 @@ void ViewCurve::mousePressEvent(QMouseEvent *press_event)
       baseline = h / (signalcomps + 1);
       baseline *= (i + 1);
 
-//      if((m_y<(baseline-5))&&(m_y>(baseline-24))&&(m_x>3)&&(m_x<110))
-      if((m_y<(baseline-(2*h_scaling)))&&(m_y>(baseline-(17*h_scaling)))&&(m_x>(2*w_scaling))&&(m_x<(((strlen(signalcomp[i]->signallabel) * 7) + 2) * w_scaling)))
+      if(signalcomp[i]->alias[0] != 0)
+      {
+        signallabel_strlen = strlen(signalcomp[i]->alias);
+      }
+      else
+      {
+        signallabel_strlen = strlen(signalcomp[i]->signallabel);
+      }
+
+      if((m_y<(baseline-(2*h_scaling)))&&(m_y>(baseline-(17*h_scaling)))&&(m_x>(2*w_scaling))&&(m_x<(((signallabel_strlen * 8) + 2) * w_scaling)))
       {
         for(j=0; j<signalcomp[i]->num_of_signals; j++)
         {
@@ -685,7 +703,8 @@ void ViewCurve::mouseReleaseEvent(QMouseEvent *release_event)
       baseline,
       signalcomps,
       m_x,
-      m_y;
+      m_y,
+      signallabel_strlen=1;
 
   double zoomfactor;
 
@@ -832,7 +851,16 @@ void ViewCurve::mouseReleaseEvent(QMouseEvent *release_event)
       baseline = h / (signalcomps + 1);
       baseline *= (i + 1);
 
-      if((m_y<(baseline-(2*h_scaling)))&&(m_y>(baseline-(17*h_scaling)))&&(m_x>(2*w_scaling))&&(m_x<(((strlen(signalcomp[i]->signallabel) * 7) + 2) * w_scaling)))
+      if(signalcomp[i]->alias[0] != 0)
+      {
+        signallabel_strlen = strlen(signalcomp[i]->alias);
+      }
+      else
+      {
+        signallabel_strlen = strlen(signalcomp[i]->signallabel);
+      }
+
+      if((m_y<(baseline-(2*h_scaling)))&&(m_y>(baseline-(17*h_scaling)))&&(m_x>(2*w_scaling))&&(m_x<(((signallabel_strlen * 8) + 2) * w_scaling)))
       {
         if(pressed_on_label == (i + 1))
         {
@@ -2508,9 +2536,9 @@ void ViewCurve::drawCurve_stage_2(QPainter *painter, int w_width, int w_height, 
       snprintf(string, 128, "offset: %f %s",
         -signalcomp[i]->screen_offset * mainwindow->y_pixelsizefactor * signalcomp[i]->voltpercm,
         signalcomp[i]->physdimension);
-      painter->fillRect(92 * w_scaling, baseline - (2 * h_scaling), 190 * w_scaling, -15 * h_scaling, backgroundcolor);
+      painter->fillRect(132 * w_scaling, baseline - (2 * h_scaling), 190 * w_scaling, -15 * h_scaling, backgroundcolor);
       painter->setPen((Qt::GlobalColor)signalcomp[i]->color);
-      painter->drawText(95 * w_scaling, baseline - (5 * h_scaling), string);
+      painter->drawText(135 * w_scaling, baseline - (5 * h_scaling), string);
     }
 
     if(signalcomp[i]->hasgaintracking)
@@ -2518,9 +2546,9 @@ void ViewCurve::drawCurve_stage_2(QPainter *painter, int w_width, int w_height, 
       snprintf(string, 128, "gain: %f %s/cm",
         signalcomp[i]->voltpercm,
         signalcomp[i]->physdimension);
-      painter->fillRect(92 * w_scaling, baseline - (2 * h_scaling), 190 * w_scaling, -15 * h_scaling, backgroundcolor);
+      painter->fillRect(132 * w_scaling, baseline - (2 * h_scaling), 190 * w_scaling, -15 * h_scaling, backgroundcolor);
       painter->setPen((Qt::GlobalColor)signalcomp[i]->color);
-      painter->drawText(95 * w_scaling, baseline - (5 * h_scaling), string);
+      painter->drawText(135 * w_scaling, baseline - (5 * h_scaling), string);
     }
   }
 
@@ -2532,11 +2560,11 @@ void ViewCurve::drawCurve_stage_2(QPainter *painter, int w_width, int w_height, 
 
     if(signalcomp[i]->alias[0] != 0)
     {
-      painter->fillRect(2 * w_scaling, baseline - (2 * h_scaling), strlen(signalcomp[i]->alias) * 7 * w_scaling, -15 * h_scaling, backgroundcolor);
+      painter->fillRect(2 * w_scaling, baseline - (2 * h_scaling), strlen(signalcomp[i]->alias) * 8 * w_scaling, -15 * h_scaling, backgroundcolor);
     }
     else
     {
-      painter->fillRect(2 * w_scaling, baseline - (2 * h_scaling), strlen(signalcomp[i]->signallabel) * 7 * w_scaling, -15 * h_scaling, backgroundcolor);
+      painter->fillRect(2 * w_scaling, baseline - (2 * h_scaling), strlen(signalcomp[i]->signallabel) * 8 * w_scaling, -15 * h_scaling, backgroundcolor);
     }
 
     painter->setPen((Qt::GlobalColor)signalcomp[i]->color);
