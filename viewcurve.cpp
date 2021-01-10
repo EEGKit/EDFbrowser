@@ -586,7 +586,7 @@ void ViewCurve::mousePressEvent(QMouseEvent *press_event)
         baseline = h / (signalcomps + 1);
         baseline *= (i + 1);
 
-        if((m_y<(baseline-5))&&(m_y>(baseline-(18*h_scaling)))&&(m_x>3)&&(m_x<(90*w_scaling)))
+        if((m_y<(baseline-(2*h_scaling)))&&(m_y>(baseline-(17*h_scaling)))&&(m_x>(2*w_scaling))&&(m_x<(((strlen(signalcomp[i]->signallabel) * 7) + 2) * w_scaling)))
         {
           original_screen_offset = signalcomp[i]->screen_offset;
           signalcomp[i]->hasoffsettracking = 1;
@@ -628,7 +628,8 @@ void ViewCurve::mousePressEvent(QMouseEvent *press_event)
       baseline = h / (signalcomps + 1);
       baseline *= (i + 1);
 
-      if((m_y<(baseline-5))&&(m_y>(baseline-24))&&(m_x>3)&&(m_x<110))
+//      if((m_y<(baseline-5))&&(m_y>(baseline-24))&&(m_x>3)&&(m_x<110))
+      if((m_y<(baseline-(2*h_scaling)))&&(m_y>(baseline-(17*h_scaling)))&&(m_x>(2*w_scaling))&&(m_x<(((strlen(signalcomp[i]->signallabel) * 7) + 2) * w_scaling)))
       {
         for(j=0; j<signalcomp[i]->num_of_signals; j++)
         {
@@ -831,7 +832,7 @@ void ViewCurve::mouseReleaseEvent(QMouseEvent *release_event)
       baseline = h / (signalcomps + 1);
       baseline *= (i + 1);
 
-      if((m_y<(baseline-5))&&(m_y>(baseline-(18*h_scaling)))&&(m_x>3)&&(m_x<(90*w_scaling)))
+      if((m_y<(baseline-(2*h_scaling)))&&(m_y>(baseline-(17*h_scaling)))&&(m_x>(2*w_scaling))&&(m_x<(((strlen(signalcomp[i]->signallabel) * 7) + 2) * w_scaling)))
       {
         if(pressed_on_label == (i + 1))
         {
