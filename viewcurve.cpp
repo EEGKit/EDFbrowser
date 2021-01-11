@@ -3707,9 +3707,10 @@ void ViewCurve::exec_sidemenu(int signal_nr_intern)
 
   QFormLayout *flayout = new QFormLayout;
 
-  QLabel *SidemenuLabel = new QLabel;
-  SidemenuLabel->setText(mainwindow->signalcomp[signal_nr]->signallabel);
-  flayout->addRow("Label", SidemenuLabel);
+  QLineEdit *SidemenuLabelLineEdit = new QLineEdit;
+  SidemenuLabelLineEdit->setText(mainwindow->signalcomp[signal_nr]->signallabel);
+  SidemenuLabelLineEdit->setReadOnly(true);
+  flayout->addRow("Label", SidemenuLabelLineEdit);
 
   AliasLineEdit = new QLineEdit;
   AliasLineEdit->setText(mainwindow->signalcomp[signal_nr]->alias);
