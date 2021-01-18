@@ -39,6 +39,8 @@ UI_BDF2EDFwindow::UI_BDF2EDFwindow(QWidget *w_parent)
 
   myobjectDialog = new QDialog;
 
+  use_hpf = 1;
+
   myobjectDialog->setMinimumSize(550 * mainwindow->w_scaling, 450 * mainwindow->h_scaling);
   myobjectDialog->setWindowTitle("BDF+ to EDF+ converter");
   myobjectDialog->setModal(true);
@@ -86,7 +88,13 @@ UI_BDF2EDFwindow::UI_BDF2EDFwindow(QWidget *w_parent)
   pushButton5->setText("Deselect all signals");
   pushButton5->setEnabled(false);
 
+  HPFcheckBox = new QCheckBox;
+  HPFcheckBox->setTristate(false);
+  HPFcheckBox->setChecked(true);
+
   QFormLayout *flayout = new QFormLayout;
+  flayout->addRow("Enable HPF:", HPFcheckBox);
+  flayout->addRow(" ", (QWidget *)NULL);
   flayout->addRow("Highpass filter:", spinBox1);
   flayout->addRow(" ", (QWidget *)NULL);
   flayout->addRow("Divider:", spinBox2);
@@ -134,6 +142,7 @@ UI_BDF2EDFwindow::UI_BDF2EDFwindow(QWidget *w_parent)
   QObject::connect(pushButton5,    SIGNAL(clicked()),            this,           SLOT(Deselect_all_signals()));
   QObject::connect(spinBox1,       SIGNAL(valueChanged(double)), this,           SLOT(spinbox1_changed(double)));
   QObject::connect(spinBox2,       SIGNAL(valueChanged(double)), this,           SLOT(spinbox2_changed(double)));
+  QObject::connect(HPFcheckBox,    SIGNAL(stateChanged(int)),    this,           SLOT(hpf_checkbox_changed(int)));
   QObject::connect(myobjectDialog, SIGNAL(destroyed()),          this,           SLOT(free_edfheader()));
 
   edfhdr = NULL;
@@ -153,6 +162,47 @@ void UI_BDF2EDFwindow::free_edfheader()
     free(edfhdr->edfparam);
     free(edfhdr);
     edfhdr = NULL;
+  }
+}
+
+
+void UI_BDF2EDFwindow::hpf_checkbox_changed(int checked)
+{
+  int i;
+
+  if(checked)
+  {
+    use_hpf = 1;
+
+    spinBox1->setEnabled(true);
+
+    if(edfhdr!=NULL)
+    {
+      for(i=0; i<edfhdr->edfsignals; i++)
+      {
+        if(!edfhdr->edfparam[i].annotation)
+        {
+          ((QDoubleSpinBox *)(SignalsTablewidget->cellWidget(i, 1)))->setEnabled(true);
+        }
+      }
+    }
+  }
+  else
+  {
+    use_hpf = 0;
+
+    spinBox1->setEnabled(false);
+
+    if(edfhdr!=NULL)
+    {
+      for(i=0; i<edfhdr->edfsignals; i++)
+      {
+        if(!edfhdr->edfparam[i].annotation)
+        {
+          ((QDoubleSpinBox *)(SignalsTablewidget->cellWidget(i, 1)))->setEnabled(false);
+        }
+      }
+    }
   }
 }
 
@@ -295,7 +345,7 @@ void UI_BDF2EDFwindow::SelectFileButton()
   if(!edfhdr->bdf)
   {
     fclose(inputfile);
-    QMessageBox messagewindow(QMessageBox::Critical, "Error", "File is not a BDF file.");
+    QMessageBox messagewindow(QMessageBox::Critical, "Error", "File is not a valid BDF file.");
     messagewindow.exec();
     free_edfheader();
     return;
@@ -322,6 +372,10 @@ void UI_BDF2EDFwindow::SelectFileButton()
       ((QDoubleSpinBox *)(SignalsTablewidget->cellWidget(i, 1)))->setSuffix(" Hz");
       ((QDoubleSpinBox *)(SignalsTablewidget->cellWidget(i, 1)))->setRange(0.001, 100.0);
       ((QDoubleSpinBox *)(SignalsTablewidget->cellWidget(i, 1)))->setValue(spinBox1->value());
+      if(!use_hpf)
+      {
+        ((QDoubleSpinBox *)(SignalsTablewidget->cellWidget(i, 1)))->setEnabled(false);
+      }
 
       SignalsTablewidget->setCellWidget(i, 2, new QDoubleSpinBox);
       ((QDoubleSpinBox *)(SignalsTablewidget->cellWidget(i, 2)))->setDecimals(3);
@@ -747,7 +801,10 @@ void UI_BDF2EDFwindow::StartConversion()
 
           var.one_signed += edfhdr->edfparam[signalslist[i]].offset;
 
-          var.one_signed = first_order_filter(var.one_signed, filterlist[i]);
+          if(use_hpf)
+          {
+            var.one_signed = first_order_filter(var.one_signed, filterlist[i]);
+          }
 
           var.one_signed /= dividerlist[i];
 

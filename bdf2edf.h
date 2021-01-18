@@ -89,13 +89,15 @@ QPushButton  *pushButton1,
 QDoubleSpinBox *spinBox1,
                *spinBox2;
 
+QCheckBox    *HPFcheckBox;
+
 QTableWidget *SignalsTablewidget;
 
 QDialog      *myobjectDialog;
 
 int  signalslist[MAXSIGNALS],
-     annotlist[MAXSIGNALS];
-
+     annotlist[MAXSIGNALS],
+     use_hpf;
 
 char  inputpath[MAX_PATH_LENGTH],
       outputpath[MAX_PATH_LENGTH],
@@ -122,6 +124,7 @@ void spinbox2_changed(double);
 void Select_all_signals();
 void Deselect_all_signals();
 void free_edfheader();
+void hpf_checkbox_changed(int);
 
 };
 
