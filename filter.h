@@ -58,8 +58,8 @@ struct filter_settings{
 
 
 struct filter_settings * create_filter(int, double, double);
-void reset_filter(int, struct filter_settings *);
-int first_order_filter(int, struct filter_settings *);
+void reset_filter(double, struct filter_settings *);
+double first_order_filter(double, struct filter_settings *);
 double get_filter_factor(double, double);
 struct filter_settings * create_filter_copy(struct filter_settings *);
 

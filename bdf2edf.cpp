@@ -803,10 +803,12 @@ void UI_BDF2EDFwindow::StartConversion()
 
           if(use_hpf)
           {
-            var.one_signed = first_order_filter(var.one_signed, filterlist[i]);
+            var.one_signed = (first_order_filter(var.one_signed, filterlist[i]) / dividerlist[i]) + 0.5;
           }
-
-          var.one_signed /= dividerlist[i];
+          else
+          {
+            var.one_signed /= dividerlist[i];
+          }
 
           if(var.one_signed>32767)  var.one_signed = 32767;
 

@@ -65,7 +65,7 @@ struct filter_settings * create_filter_copy(struct filter_settings *src)
 }
 
 
-void reset_filter(int offset, struct filter_settings *settings)
+void reset_filter(double offset, struct filter_settings *settings)
 {
   settings->first_sample = 0;
   settings->old_input = offset;
@@ -80,7 +80,7 @@ void reset_filter(int offset, struct filter_settings *settings)
 }
 
 
-int first_order_filter(int new_input, struct filter_settings *settings)
+double first_order_filter(double new_input, struct filter_settings *settings)
 {
   double new_output;
 
@@ -118,7 +118,7 @@ int first_order_filter(int new_input, struct filter_settings *settings)
   settings->old_input = new_input;
   settings->old_output = new_output;
 
-  return (int)new_output;
+  return new_output;
 }
 
 
