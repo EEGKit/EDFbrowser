@@ -198,6 +198,7 @@ public:
          baseline_color,
          text_color,
          annot_marker_color,
+         annot_marker_selected_color,
          annot_duration_color,
          annot_duration_color_selected,
          backup_color_1,

@@ -29,6 +29,7 @@
   <li><a href="#Navigation">Navigation</a></li>
   <li><a href="#Annotations">Annotations</a></li>
   <li><a href="#Annotations_Filter">Annotations Filter</a></li>
+  <li><a href="#Annotation_editor">Annotation editor</a></li>
   <li><a href="#Filters">Filters</a></li>
   <li><a href="#Adjust_filters">Adjust filters</a></li>
   <li><a href="#Powerspectrum">Powerspectrum</a></li>
@@ -78,7 +79,6 @@
   <li><a href="#Print_to_IMG">Print to image</a></li>
   <li><a href="#Print_to_EDF">Print to EDF(+)</a></li>
   <li><a href="#Print_to_BDF">Print to BDF(+)</a></li>
-  <li><a href="#Annotation_editor">Annotation editor</a></li>
   <li><a href="#Commandline_options">Commandline options</a></li>
   <li><a href="#FAQ">FAQ</a></li>
 </ul>
@@ -345,11 +345,13 @@
 <h3><a name="Annotations">Annotations</a></h3>
 
 <p>
-  When a file contains annotations, the annotationwindow will appear.<br>
+  When a file contains annotations, the annotation window will appear.<br>
   Just click on one of the annotations to jump to that position in the file.<br>
   This window is dockable. You can change the size of the window, but also the position.<br>
   You can make the window floating as well by dragging it with the mouse. After closing<br>
   the annotationwindow, you can make it appear again via Window -&gt; Annotations.<br>
+<br>
+  Annotations can be created, modified or deleted using the <a href="#Annotation_editor">Annotation editor</a><br>
 <br>
   By right-clicking on an annotation in the annotationlist, you can perform several operations<br>
   based on the annotations.<br>
@@ -368,6 +370,43 @@
   between two consegutive annotations with the same name/label.<br>
   Right-click on the annotations list and select "Filter Interval Time".<br>
   A dialog will appear where you can set the filter parameters.<br>
+</p>
+
+<p><br></p>
+
+<p><a href="#Table_of_Contents">Table of Contents</a></p>
+
+<p><br><br></p>
+
+<h3><a name="Annotation_editor">Annotation editor</a></h3>
+
+<p>
+  The annotation editor can be used to create, edit or delete annotations.<br>
+  Start the editor via menu -&gt; Window -&gt; Annotation editor.<br>
+  To create a new annotation, write the text of the annotation in the description window and set<br>
+  the onset time. You can set the duration time as well. If the duration time is unknown or not<br>
+  applicable, set it to -1. Now click on the create button.<br><br>
+
+  Instead of manually entering the onset time, you can use a <a href="#Crosshairs">crosshair</a>.<br>
+  Drag and drop the crosshair and the onset time will be automatically adjusted.<br>
+  You can use a second <a href="#Crosshairs">crosshair</a> to adjust the duration of the event.<br><br>
+
+  To modify an existent annotation, click on the annotation in the annotationlist.<br>
+  Adjust the text and/or time manually or drag and drop the annotation marker with the mouse.<br><br>
+
+  To delete an annotation, click on the annotation in the annotation window and click<br>
+  on the delete button (or hit Del on your keyboard).<br>
+  Pay attention, there's no undo.<br><br>
+
+  When you have finished editing annotations, save the file in menu -&gt; File -&gt; Save.<br>
+  Your file will not be altered, instead a copy of your file with the edited annotations<br>
+  will be made.<br><br>
+
+  The onsettime field will or will not be updated when navigating through the file, depending on<br>
+  the setting in the options menu ("Auto update annotation-editor onsettime").<br><br>
+
+  Note: The annotation editor will limit the precision of the onset-time of the annotations<br>
+  to 1 milliSecond.
 </p>
 
 <p><br></p>
@@ -1734,43 +1773,6 @@
   (and annotations) as they are on your screen, in the same way like the <a href="#Print_to_EDF">Print to EDF</a> function,<br>
   except that it is also possible to print EDF(+) files to BDF. You can even mix<br>
   EDF and BDF files onto your screen and print them to a new BDF file.
-</p>
-
-<p><br></p>
-
-<p><a href="#Table_of_Contents">Table of Contents</a></p>
-
-<p><br><br></p>
-
-<h3><a name="Annotation_editor">Annotation editor</a></h3>
-
-<p>
-  The annotation editor can be used to create, edit or delete annotations.<br>
-  Start the editor via menu -&gt; Window -&gt; Annotation editor.<br>
-  To create a new annotation, write the text of the annotation in the description window and set<br>
-  the onset time. You can set the duration time as well. If the duration time is unknown or not<br>
-  applicable, set it to -1. Now click on the create button.<br><br>
-
-  Instead of manually entering the onset time, you can use a <a href="#Crosshairs">crosshair</a>.<br>
-  Drag and drop the crosshair and the onset time will be automatically adjusted.<br>
-  You can use a second <a href="#Crosshairs">crosshair</a> to adjust the duration of the event.<br><br>
-
-  To modify an existent annotation, click on the annotation in the annotationlist.<br>
-  Adjust the text and/or time manually or drag and drop the annotation marker with the mouse.<br><br>
-
-  To delete an annotation, click on the annotation in the annotation window and click<br>
-  on the delete button (or hit Del on your keyboard).<br>
-  Pay attention, there's no undo.<br><br>
-
-  When you have finished editing annotations, save the file in menu -&gt; File -&gt; Save.<br>
-  Your file will not be altered, instead a copy of your file with the edited annotations<br>
-  will be made.<br><br>
-
-  The onsettime field will or will not be updated when navigating through the file, depending on<br>
-  the setting in the options menu ("Auto update annotation-editor onsettime").<br><br>
-
-  Note: The annotation editor will limit the precision of the onset-time of the annotations<br>
-  to 1 milliSecond.
 </p>
 
 <p><br></p>

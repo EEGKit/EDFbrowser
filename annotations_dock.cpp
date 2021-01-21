@@ -102,6 +102,7 @@ UI_Annotationswindow::UI_Annotationswindow(struct edfhdrblock *e_hdr, QWidget *w
   filt_ival_time_act = new QAction("Filter Interval Time", list);
   show_stats_act = new QAction("Heart Rate Variability", list);
   show_heart_rate_act = new QAction("Heart Rate", list);
+  edit_annotations_act = new QAction("Edit annotations", list);
 
   list->setContextMenuPolicy(Qt::ActionsContextMenu);
   list->insertAction(NULL, show_between_act);
@@ -118,6 +119,7 @@ UI_Annotationswindow::UI_Annotationswindow(struct edfhdrblock *e_hdr, QWidget *w
   list->insertAction(NULL, filt_ival_time_act);
   list->insertAction(NULL, show_stats_act);
   list->insertAction(NULL, show_heart_rate_act);
+  list->insertAction(NULL, edit_annotations_act);
 
   QHBoxLayout *h_layout = new QHBoxLayout;
   h_layout->addWidget(checkbox1);
@@ -157,6 +159,9 @@ UI_Annotationswindow::UI_Annotationswindow(struct edfhdrblock *e_hdr, QWidget *w
   QObject::connect(show_stats_act,             SIGNAL(triggered(bool)),                this, SLOT(show_stats(bool)));
   QObject::connect(show_heart_rate_act,        SIGNAL(triggered(bool)),                this, SLOT(show_heart_rate(bool)));
   QObject::connect(search_line_edit,           SIGNAL(textEdited(const QString)),      this, SLOT(filter_edited(const QString)));
+
+  QObject::connect(edit_annotations_act,       SIGNAL(triggered(bool)),                mainwindow, SLOT(annotation_editor()));
+
   QObject::connect(delayed_list_filter_update_timer, SIGNAL(timeout()),                this, SLOT(delayed_list_filter_update()));
 }
 

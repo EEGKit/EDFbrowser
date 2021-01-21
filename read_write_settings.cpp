@@ -160,6 +160,8 @@ void UI_Mainwindow::read_color_settings()
 
   get_rgbcolor_settings(xml_hdl, "annot_marker_color", 0, &maincurve->annot_marker_color);
 
+  get_rgbcolor_settings(xml_hdl, "annot_marker_selected_color", 0, &maincurve->annot_marker_selected_color);
+
   get_rgbcolor_settings(xml_hdl, "annot_duration_color", 0, &maincurve->annot_duration_color);
 
   get_rgbcolor_settings(xml_hdl, "annot_duration_color_selected", 0, &maincurve->annot_duration_color_selected);
@@ -2192,6 +2194,15 @@ void UI_Mainwindow::write_settings()
                     maincurve->annot_marker_color.red(),
                     maincurve->annot_marker_color.green(),
                     maincurve->annot_marker_color.blue());
+
+    fprintf(cfgfile, "      <annot_marker_selected_color>\n"
+                    "        <red>%i</red>\n"
+                    "        <green>%i</green>\n"
+                    "        <blue>%i</blue>\n"
+                    "      </annot_marker_color>\n",
+                    maincurve->annot_marker_selected_color.red(),
+                    maincurve->annot_marker_selected_color.green(),
+                    maincurve->annot_marker_selected_color.blue());
 
     fprintf(cfgfile, "      <annot_duration_color>\n"
                     "        <red>%i</red>\n"

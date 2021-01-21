@@ -126,7 +126,8 @@ private:
           *unhide_all_BS_triggers_act,
           *filt_ival_time_act,
           *show_stats_act,
-          *show_heart_rate_act;
+          *show_heart_rate_act,
+          *edit_annotations_act;
 
   QTimer *delayed_list_filter_update_timer;
 

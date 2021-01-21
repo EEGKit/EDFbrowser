@@ -6,6 +6,8 @@
 
  - BDF to EDF converter: Offer the possibility to disable the highpass-filter.
 
+ - Annotation markers: Use a different color when the annotation is selected.
+
 
 
  version 1.80      January 1, 2021

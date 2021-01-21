@@ -171,9 +171,14 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   }
   AnnotMkrButton = new SpecialButton;
   AnnotMkrButton->setColor(mainwindow->maincurve->annot_marker_color);
+  AnnotMkrButton->setToolTip("The second color is used to indicate if it's selected");
+  AnnotMkrSelButton = new SpecialButton;
+  AnnotMkrSelButton->setColor(mainwindow->maincurve->annot_marker_selected_color);
+  AnnotMkrSelButton->setToolTip("The second color is used to indicate if it's selected");
   hlayout_tmp = new QHBoxLayout;
   hlayout_tmp->addWidget(checkbox2);
   hlayout_tmp->addWidget(AnnotMkrButton);
+  hlayout_tmp->addWidget(AnnotMkrSelButton);
   hlayout_tmp->addStretch(1000);
   flayout1_2->addRow("Annotation marker", hlayout_tmp);
 
@@ -332,6 +337,7 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   QObject::connect(Crh2ColorButton,         SIGNAL(clicked(SpecialButton *)), this, SLOT(Crh2ColorButtonClicked(SpecialButton *)));
   QObject::connect(FrColorButton,           SIGNAL(clicked(SpecialButton *)), this, SLOT(FrColorButtonClicked(SpecialButton *)));
   QObject::connect(AnnotMkrButton,          SIGNAL(clicked(SpecialButton *)), this, SLOT(AnnotMkrButtonClicked(SpecialButton *)));
+  QObject::connect(AnnotMkrSelButton,       SIGNAL(clicked(SpecialButton *)), this, SLOT(AnnotMkrSelButtonClicked(SpecialButton *)));
   QObject::connect(AnnotDurationButton,     SIGNAL(clicked(SpecialButton *)), this, SLOT(AnnotDurationButtonClicked(SpecialButton *)));
   QObject::connect(AnnotDurationSelectedButton,     SIGNAL(clicked(SpecialButton *)), this, SLOT(AnnotDurationSelectedButtonClicked(SpecialButton *)));
   QObject::connect(checkbox1,               SIGNAL(stateChanged(int)),        this, SLOT(checkbox1Clicked(int)));
@@ -1741,6 +1747,23 @@ void UI_OptionsDialog::AnnotMkrButtonClicked(SpecialButton *)
     mainwindow->maincurve->annot_marker_color = temp;
 
     AnnotMkrButton->setColor(mainwindow->maincurve->annot_marker_color);
+
+    mainwindow->maincurve->update();
+  }
+}
+
+
+void UI_OptionsDialog::AnnotMkrSelButtonClicked(SpecialButton *)
+{
+  QColor temp;
+
+  temp = QColorDialog::getColor(mainwindow->maincurve->annot_marker_selected_color, tab1);
+
+  if(temp.isValid())
+  {
+    mainwindow->maincurve->annot_marker_selected_color = temp;
+
+    AnnotMkrSelButton->setColor(mainwindow->maincurve->annot_marker_selected_color);
 
     mainwindow->maincurve->update();
   }

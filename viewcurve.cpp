@@ -94,6 +94,10 @@ ViewCurve::ViewCurve(QWidget *w_parent) : QWidget(w_parent)
   annot_marker_color.setGreen(255);
   annot_marker_color.setBlue(255);
 
+  annot_marker_selected_color.setRed(255);
+  annot_marker_selected_color.setGreen(228);
+  annot_marker_selected_color.setBlue(0);
+
   annot_duration_color.setRed(0);
   annot_duration_color.setGreen(127);
   annot_duration_color.setBlue(127);
@@ -2151,6 +2155,13 @@ void ViewCurve::drawCurve_stage_2(QPainter *painter, int w_width, int w_height, 
         {
           if(mainwindow->show_annot_markers)
           {
+            if(annot->selected_in_dock)
+            {
+              annot_marker_pen->setColor(annot_marker_selected_color);
+
+              painter->setPen(*annot_marker_pen);
+            }
+
             l_tmp -= mainwindow->edfheaderlist[i]->viewtime;
 
             marker_x = (int)((((double)w) / mainwindow->pagetime) * l_tmp);
@@ -2243,6 +2254,13 @@ void ViewCurve::drawCurve_stage_2(QPainter *painter, int w_width, int w_height, 
 
                 active_markers->count++;
               }
+            }
+
+            if(annot->selected_in_dock)
+            {
+              annot_marker_pen->setColor(annot_marker_color);
+
+              painter->setPen(*annot_marker_pen);
             }
           }
 

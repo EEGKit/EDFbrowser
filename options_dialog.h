@@ -116,6 +116,7 @@ SpecialButton  *BgColorButton,
                *Crh2ColorButton,
                *FrColorButton,
                *AnnotMkrButton,
+               *AnnotMkrSelButton,
                *AnnotDurationButton,
                *AnnotDurationSelectedButton,
                *slabel2_1,
@@ -191,6 +192,7 @@ void Crh1ColorButtonClicked(SpecialButton *);
 void Crh2ColorButtonClicked(SpecialButton *);
 void FrColorButtonClicked(SpecialButton *);
 void AnnotMkrButtonClicked(SpecialButton *);
+void AnnotMkrSelButtonClicked(SpecialButton *);
 void AnnotDurationButtonClicked(SpecialButton *);
 void AnnotDurationSelectedButtonClicked(SpecialButton *);
 void checkbox1Clicked(int);
