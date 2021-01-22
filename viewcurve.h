@@ -207,7 +207,8 @@ public:
          backup_color_4,
          backup_color_5,
          backup_color_13,
-         backup_color_15;
+         backup_color_15,
+         backup_color_16;
 
   QFont *printfont;
 

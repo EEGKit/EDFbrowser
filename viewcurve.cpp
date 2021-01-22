@@ -5095,6 +5095,8 @@ void ViewCurve::backup_colors_for_printing()
   baseline_color = Qt::black;
   backup_color_15 = annot_marker_color;
   annot_marker_color = Qt::black;
+  backup_color_16 = annot_marker_selected_color;
+  annot_marker_selected_color = Qt::black;
 }
 
 
@@ -5117,6 +5119,7 @@ void ViewCurve::restore_colors_after_printing()
   crosshair_2.color = backup_color_12;
   baseline_color = backup_color_13;
   annot_marker_color = backup_color_15;
+  annot_marker_selected_color = backup_color_16;
 }
 
 
