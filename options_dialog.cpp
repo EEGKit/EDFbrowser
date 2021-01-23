@@ -29,6 +29,7 @@
 #include "options_dialog.h"
 
 
+#define DEFAULT_COLOR_LIST_SZ  (6)
 
 
 UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
@@ -1910,6 +1911,15 @@ void UI_OptionsDialog::saveColorSchemaButtonClicked()
                   mainwindow->maincurve->annot_marker_color.green(),
                   mainwindow->maincurve->annot_marker_color.blue());
 
+  fprintf(colorfile, " <annot_marker_selected_color>\n"
+                  "  <red>%i</red>\n"
+                  "  <green>%i</green>\n"
+                  "  <blue>%i</blue>\n"
+                  " </annot_marker_selected_color>\n",
+                  mainwindow->maincurve->annot_marker_selected_color.red(),
+                  mainwindow->maincurve->annot_marker_selected_color.green(),
+                  mainwindow->maincurve->annot_marker_selected_color.blue());
+
   fprintf(colorfile, " <annot_duration_color>\n"
                   "  <red>%i</red>\n"
                   "  <green>%i</green>\n"
@@ -1955,9 +1965,6 @@ void UI_OptionsDialog::saveColorSchemaButtonClicked()
 
   fprintf(colorfile, " <clip_to_pane>%i</clip_to_pane>\n",
                   mainwindow->clip_to_pane);
-
-
-
 
   fprintf(colorfile, "</" PROGRAM_NAME "_colorschema>\n");
 
@@ -2013,6 +2020,8 @@ void UI_OptionsDialog::loadColorSchemaButtonClicked()
   mainwindow->get_rgbcolor_settings(xml_hdl, "baseline_color", 0, &mainwindow->maincurve->baseline_color);
 
   mainwindow->get_rgbcolor_settings(xml_hdl, "annot_marker_color", 0, &mainwindow->maincurve->annot_marker_color);
+
+  mainwindow->get_rgbcolor_settings(xml_hdl, "annot_marker_selected_color", 0, &mainwindow->maincurve->annot_marker_selected_color);
 
   mainwindow->get_rgbcolor_settings(xml_hdl, "annot_duration_color", 0, &mainwindow->maincurve->annot_duration_color);
 
@@ -2136,10 +2145,18 @@ void UI_OptionsDialog::loadColorSchemaButtonClicked()
 
 void UI_OptionsDialog::update_interface(void)
 {
-  int i;
+  int i,
+      default_color_idx=0,
+      default_color_list[DEFAULT_COLOR_LIST_SZ];
 
   QPalette palette;
 
+  default_color_list[0] = Qt::yellow;
+  default_color_list[1] = Qt::green;
+  default_color_list[2] = Qt::red;
+  default_color_list[3] = Qt::cyan;
+  default_color_list[4] = Qt::magenta;
+  default_color_list[5] = Qt::blue;
 
   BgColorButton->setColor(mainwindow->maincurve->backgroundcolor);
 
@@ -2181,6 +2198,8 @@ void UI_OptionsDialog::update_interface(void)
 
   AnnotMkrButton->setColor(mainwindow->maincurve->annot_marker_color);
 
+  AnnotMkrSelButton->setColor(mainwindow->maincurve->annot_marker_selected_color);
+
   AnnotDurationButton->setColor(mainwindow->maincurve->annot_duration_color);
 
   AnnotDurationSelectedButton->setColor(mainwindow->maincurve->annot_duration_color_selected);
@@ -2203,6 +2222,15 @@ void UI_OptionsDialog::update_interface(void)
     checkbox4->setCheckState(Qt::Unchecked);
   }
 
+  if(mainwindow->use_diverse_signal_colors)
+  {
+    checkbox16->setCheckState(Qt::Checked);
+  }
+  else
+  {
+    checkbox16->setCheckState(Qt::Unchecked);
+  }
+
   palette.setColor(QPalette::Text, mainwindow->maincurve->text_color);
   palette.setColor(QPalette::Base, mainwindow->maincurve->backgroundcolor);
 
@@ -2211,12 +2239,24 @@ void UI_OptionsDialog::update_interface(void)
     if(mainwindow->annotations_dock[i])
     {
       mainwindow->annotations_dock[i]->list->setPalette(palette);
+      mainwindow->annotations_dock[i]->list->update();
     }
   }
 
-  for(i=0; i<mainwindow->signalcomps; i++)
+  if(mainwindow->use_diverse_signal_colors)
   {
-    mainwindow->signalcomp[i]->color = mainwindow->maincurve->signal_color;
+    for(i=0; i<mainwindow->signalcomps; i++)
+    {
+      mainwindow->signalcomp[i]->color = default_color_list[default_color_idx++];
+      default_color_idx %= DEFAULT_COLOR_LIST_SZ;
+    }
+  }
+  else
+  {
+    for(i=0; i<mainwindow->signalcomps; i++)
+    {
+      mainwindow->signalcomp[i]->color = mainwindow->maincurve->signal_color;
+    }
   }
 
   mainwindow->maincurve->update();
@@ -2253,6 +2293,10 @@ void UI_OptionsDialog::loadColorSchema_NK()
   mainwindow->maincurve->annot_marker_color.setGreen(0);
   mainwindow->maincurve->annot_marker_color.setBlue(0);
 
+  mainwindow->maincurve->annot_marker_selected_color.setRed(128);
+  mainwindow->maincurve->annot_marker_selected_color.setGreen(0);
+  mainwindow->maincurve->annot_marker_selected_color.setBlue(128);
+
   mainwindow->maincurve->annot_duration_color.setRed(0);
   mainwindow->maincurve->annot_duration_color.setGreen(127);
   mainwindow->maincurve->annot_duration_color.setBlue(127);
@@ -2263,9 +2307,9 @@ void UI_OptionsDialog::loadColorSchema_NK()
   mainwindow->maincurve->annot_duration_color_selected.setBlue(127);
   mainwindow->maincurve->annot_duration_color_selected.setAlpha(32);
 
-  mainwindow->maincurve->signal_color = 2;
+  mainwindow->maincurve->signal_color = Qt::black;
 
-  mainwindow->maincurve->floating_ruler_color = 7;
+  mainwindow->maincurve->floating_ruler_color = Qt::red;
 
   mainwindow->maincurve->blackwhite_printing = 1;
 
@@ -2273,11 +2317,13 @@ void UI_OptionsDialog::loadColorSchema_NK()
 
   mainwindow->show_baselines = 1;
 
-  mainwindow->maincurve->crosshair_1.color = 7;
+  mainwindow->maincurve->crosshair_1.color = Qt::red;
 
-  mainwindow->maincurve->crosshair_2.color = 9;
+  mainwindow->maincurve->crosshair_2.color = Qt::blue;
 
   mainwindow->clip_to_pane = 0;
+
+  mainwindow->use_diverse_signal_colors = 0;
 
   update_interface();
 }
@@ -2308,10 +2354,14 @@ void UI_OptionsDialog::loadColorSchema_Dark()
   mainwindow->maincurve->baseline_color.setRed(128);
   mainwindow->maincurve->baseline_color.setGreen(128);
   mainwindow->maincurve->baseline_color.setBlue(128);
+  mainwindow->show_baselines = 1;
 
-  mainwindow->maincurve->annot_marker_color.setRed(255);
-  mainwindow->maincurve->annot_marker_color.setGreen(255);
-  mainwindow->maincurve->annot_marker_color.setBlue(255);
+  mainwindow->maincurve->annot_marker_color = Qt::white;
+  mainwindow->show_annot_markers = 1;
+
+  mainwindow->maincurve->annot_marker_selected_color.setRed(255);
+  mainwindow->maincurve->annot_marker_selected_color.setGreen(228);
+  mainwindow->maincurve->annot_marker_selected_color.setBlue(0);
 
   mainwindow->maincurve->annot_duration_color.setRed(0);
   mainwindow->maincurve->annot_duration_color.setGreen(127);
@@ -2323,21 +2373,19 @@ void UI_OptionsDialog::loadColorSchema_Dark()
   mainwindow->maincurve->annot_duration_color_selected.setBlue(127);
   mainwindow->maincurve->annot_duration_color_selected.setAlpha(32);
 
-  mainwindow->maincurve->signal_color = 12;
+  mainwindow->maincurve->signal_color = Qt::yellow;
 
-  mainwindow->maincurve->floating_ruler_color = 10;
+  mainwindow->maincurve->crosshair_1.color = Qt::red;
+
+  mainwindow->maincurve->crosshair_2.color = Qt::cyan;
+
+  mainwindow->maincurve->floating_ruler_color = Qt::cyan;
 
   mainwindow->maincurve->blackwhite_printing = 1;
 
-  mainwindow->show_annot_markers = 1;
-
-  mainwindow->show_baselines = 1;
-
-  mainwindow->maincurve->crosshair_1.color = 7;
-
-  mainwindow->maincurve->crosshair_2.color = 10;
-
   mainwindow->clip_to_pane = 0;
+
+  mainwindow->use_diverse_signal_colors = 1;
 
   update_interface();
 }
@@ -2345,81 +2393,49 @@ void UI_OptionsDialog::loadColorSchema_Dark()
 
 void UI_OptionsDialog::loadColorSchema_blue_gray()
 {
-  int i;
-
-  QPalette palette;
-
   mainwindow->maincurve->backgroundcolor = Qt::gray;
-  BgColorButton->setColor(mainwindow->maincurve->backgroundcolor);
 
   mainwindow->maincurve->small_ruler_color = Qt::black;
-  SrColorButton->setColor(mainwindow->maincurve->small_ruler_color);
 
   mainwindow->maincurve->big_ruler_color = Qt::darkGray;
-  BrColorButton->setColor(mainwindow->maincurve->big_ruler_color);
 
   mainwindow->maincurve->mouse_rect_color = Qt::black;
-  MrColorButton->setColor(mainwindow->maincurve->mouse_rect_color);
 
   mainwindow->maincurve->text_color = Qt::black;
-  TxtColorButton->setColor(mainwindow->maincurve->text_color);
 
   mainwindow->maincurve->signal_color = Qt::blue;
-  SigColorButton->setColor(Qt::blue);
 
   mainwindow->maincurve->baseline_color = Qt::darkGray;
-  BaseColorButton->setColor(Qt::darkGray);
   mainwindow->show_baselines = 1;
-  checkbox3->setCheckState(Qt::Checked);
 
   mainwindow->maincurve->crosshair_1.color = Qt::red;
-  Crh1ColorButton->setColor(Qt::red);
 
   mainwindow->maincurve->crosshair_2.color = Qt::cyan;
-  Crh2ColorButton->setColor(Qt::cyan);
 
   mainwindow->maincurve->floating_ruler_color = Qt::red;
-  FrColorButton->setColor(Qt::red);
 
   mainwindow->maincurve->annot_marker_color = Qt::white;
-  AnnotMkrButton->setColor(Qt::white);
   mainwindow->show_annot_markers = 1;
-  checkbox2->setCheckState(Qt::Checked);
+
+  mainwindow->maincurve->annot_marker_selected_color = Qt::yellow;
 
   mainwindow->maincurve->annot_duration_color.setRed(0);
   mainwindow->maincurve->annot_duration_color.setGreen(127);
   mainwindow->maincurve->annot_duration_color.setBlue(127);
   mainwindow->maincurve->annot_duration_color.setAlpha(32);
-  AnnotDurationButton->setColor(mainwindow->maincurve->annot_duration_color);
 
   mainwindow->maincurve->annot_duration_color_selected.setRed(127);
   mainwindow->maincurve->annot_duration_color_selected.setGreen(0);
   mainwindow->maincurve->annot_duration_color_selected.setBlue(127);
   mainwindow->maincurve->annot_duration_color_selected.setAlpha(32);
 
-  palette.setColor(QPalette::Text, mainwindow->maincurve->text_color);
-  palette.setColor(QPalette::Base, mainwindow->maincurve->backgroundcolor);
-
-  for(i=0; i<mainwindow->files_open; i++)
-  {
-    if(mainwindow->annotations_dock[i])
-    {
-      mainwindow->annotations_dock[i]->list->setPalette(palette);
-    }
-  }
-
-  for(i=0; i<mainwindow->signalcomps; i++)
-  {
-    mainwindow->signalcomp[i]->color = mainwindow->maincurve->signal_color;
-  }
-
   mainwindow->maincurve->blackwhite_printing = 1;
 
-  checkbox1->setCheckState(Qt::Checked);
+  mainwindow->clip_to_pane = 0;
 
-  checkbox4->setCheckState(Qt::Unchecked);
+  mainwindow->use_diverse_signal_colors = 1;
 
-  mainwindow->maincurve->update();
+  update_interface();
 }
 
 

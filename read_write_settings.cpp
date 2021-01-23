@@ -2199,7 +2199,7 @@ void UI_Mainwindow::write_settings()
                     "        <red>%i</red>\n"
                     "        <green>%i</green>\n"
                     "        <blue>%i</blue>\n"
-                    "      </annot_marker_color>\n",
+                    "      </annot_marker_selected_color>\n",
                     maincurve->annot_marker_selected_color.red(),
                     maincurve->annot_marker_selected_color.green(),
                     maincurve->annot_marker_selected_color.blue());
