@@ -94,7 +94,7 @@ UI_ExportAnnotationswindow::UI_ExportAnnotationswindow(QWidget *w_parent)
 
   asciiISOtimedateFractionRadioButton = new QRadioButton("ISO datetimestamp yyyy-mm-ddThh:mm:ss.xxx");
 
-  durationCheckBox = new QCheckBox("include duration", ExportAnnotsDialog);
+  durationCheckBox = new QCheckBox("include event duration", ExportAnnotsDialog);
   durationCheckBox->setTristate(false);
   durationCheckBox->setCheckState(Qt::Unchecked);
 
