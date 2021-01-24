@@ -33,6 +33,8 @@ UI_unify_resolution::UI_unify_resolution(QWidget *w_parent)
 {
   mainwindow = (UI_Mainwindow *)w_parent;
 
+  recent_savedir = mainwindow->recent_savedir;
+
   myobjectDialog = new QDialog;
   myobjectDialog->setMinimumSize(800 * mainwindow->w_scaling, 600 * mainwindow->h_scaling);
   myobjectDialog->setWindowTitle("Unify resolution");
@@ -144,7 +146,9 @@ UI_unify_resolution::UI_unify_resolution(QWidget *w_parent)
 
   inputpath[0] = 0;
 
-  edfhdr_in = NULL;
+  outputpath[0] = 0;
+
+  edfhdr = NULL;
 
   if(mainwindow->files_open == 1)
   {
@@ -157,6 +161,159 @@ UI_unify_resolution::UI_unify_resolution(QWidget *w_parent)
 
 void UI_unify_resolution::SaveButtonClicked()
 {
+  int i, len=0,
+      num_checked=0,
+      is_checked[MAXSIGNALS];
+
+  char str[128]={""},
+       phys_dim[16]={""},
+       str_phys_max[32]={""},
+       str_phys_min[32]={""},
+       *buf_in=NULL,
+       *buf_out=NULL;
+
+  FILE *outputfile=NULL;
+
+  for(i=0; i<edfhdr->edfsignals; i++)
+  {
+    if(((QCheckBox *)(signals_list->cellWidget(i, 0)))->checkState() == Qt::Checked)
+    {
+      if(!num_checked)
+      {
+        strlcpy(phys_dim, edfhdr->edfparam[i].physdimension, 16);
+        trim_spaces(phys_dim);
+      }
+      else
+      {
+        strlcpy(str, edfhdr->edfparam[i].physdimension, 16);
+        trim_spaces(str);
+        if(strcmp(phys_dim, str))
+        {
+          QMessageBox::critical(myobjectDialog, "Error", "Selected signals must have equal physical dimension (unit).");
+          return;
+        }
+      }
+
+      num_checked++;
+
+      is_checked[i] = 1;
+    }
+    else
+    {
+      is_checked[i] = 0;
+    }
+  }
+
+  if(num_checked < 2)
+  {
+    QMessageBox::critical(myobjectDialog, "Error", "At least two signals must be selected.");
+    return;
+  }
+
+  snprintf(str_phys_max, 32, "%.8f", phys_max_spinbox->value());
+  str_phys_max[8] = 0;
+  if(str_phys_max[7] == '.')
+  {
+    str_phys_max[7] = ' ';
+  }
+
+  snprintf(str_phys_min, 32, "%.8f", -phys_max_spinbox->value());
+  str_phys_min[8] = 0;
+  if(str_phys_min[7] == '.')
+  {
+    str_phys_min[7] = ' ';
+  }
+
+  outputpath[0] = 0;
+  if(recent_savedir[0]!=0)
+  {
+    strlcpy(outputpath, recent_savedir, MAX_PATH_LENGTH);
+    strlcat(outputpath, "/", MAX_PATH_LENGTH);
+  }
+  len = strlen(outputpath);
+  get_filename_from_path(outputpath + len, inputpath, MAX_PATH_LENGTH - len);
+  remove_extension_from_filename(outputpath);
+  if(edfhdr->edf)
+  {
+    strlcat(outputpath, "_unified.edf", MAX_PATH_LENGTH);
+
+    strlcpy(outputpath, QFileDialog::getSaveFileName(0, "Save file", QString::fromLocal8Bit(outputpath), "EDF files (*.edf *.EDF)").toLocal8Bit().data(), MAX_PATH_LENGTH);
+  }
+  else
+  {
+    strlcat(outputpath, "_unified.bdf", MAX_PATH_LENGTH);
+
+    strlcpy(outputpath, QFileDialog::getSaveFileName(0, "Save file", QString::fromLocal8Bit(outputpath), "BDF files (*.bdf *.BDF)").toLocal8Bit().data(), MAX_PATH_LENGTH);
+  }
+
+  if(!strcmp(outputpath, ""))
+  {
+    return;
+  }
+
+  get_directory_from_path(recent_savedir, outputpath, MAX_PATH_LENGTH);
+
+  if(mainwindow->file_is_opened(outputpath))
+  {
+    QMessageBox::critical(myobjectDialog, "Error", "Selected file is in use.");
+    return;
+  }
+
+  outputfile = fopeno(outputpath, "wb");
+  if(outputfile==NULL)
+  {
+    QMessageBox::critical(myobjectDialog, "Error", "Cannot open outputfile for writing.");
+    return;
+  }
+
+  buf_in = (char *)malloc(edfhdr->hdrsize);
+  if(buf_in == NULL)
+  {
+    QMessageBox::critical(myobjectDialog, "Error", "Malloc error.");
+    goto OUT_ERROR;
+  }
+
+  fseek(edfhdr->file_hdl, 0, SEEK_SET);
+
+  if(fread(buf_in, edfhdr->hdrsize, 1, edfhdr->file_hdl) != 1)
+  {
+    QMessageBox::critical(myobjectDialog, "Error", "Cannot read from inputfile.");
+    goto OUT_ERROR;
+  }
+
+  for(i=0; i<edfhdr->edfsignals; i++)
+  {
+    if(is_checked[i])
+    {
+      memcpy(buf_in + 256 + (104 * edfhdr->edfsignals) + (8 * i), str_phys_min, 8);
+      memcpy(buf_in + 256 + (112 * edfhdr->edfsignals) + (8 * i), str_phys_max, 8);
+      memcpy(buf_in + 256 + (120 * edfhdr->edfsignals) + (8 * i), "-32768  ", 8);
+      memcpy(buf_in + 256 + (128 * edfhdr->edfsignals) + (8 * i), "32767   ", 8);
+    }
+  }
+
+  if(fwrite(buf_in, edfhdr->hdrsize, 1, outputfile) != 1)
+  {
+    QMessageBox::critical(myobjectDialog, "Error", "Cannot write to outputfile.");
+    goto OUT_ERROR;
+  }
+
+  free(buf_in);
+  buf_in = NULL;
+
+
+
+
+
+OUT_ERROR:
+
+  if(outputfile != NULL)
+  {
+    fclose(outputfile);
+  }
+
+  free(buf_in);
+  free(buf_out);
 }
 
 
@@ -168,7 +325,10 @@ void UI_unify_resolution::select_button_clicked()
 
   for(i=0; i<num_rows; i++)
   {
-    ((QCheckBox *)(signals_list->cellWidget(i, 0)))->setCheckState(Qt::Checked);
+    if(!edfhdr->edfparam[i].annotation)
+    {
+      ((QCheckBox *)(signals_list->cellWidget(i, 0)))->setCheckState(Qt::Checked);
+    }
   }
 }
 
@@ -181,7 +341,10 @@ void UI_unify_resolution::deselect_button_clicked()
 
   for(i=0; i<num_rows; i++)
   {
-    ((QCheckBox *)(signals_list->cellWidget(i, 0)))->setCheckState(Qt::Unchecked);
+    if(!edfhdr->edfparam[i].annotation)
+    {
+      ((QCheckBox *)(signals_list->cellWidget(i, 0)))->setCheckState(Qt::Unchecked);
+    }
   }
 }
 
@@ -189,8 +352,6 @@ void UI_unify_resolution::deselect_button_clicked()
 void UI_unify_resolution::select_file_button_clicked()
 {
   int i;
-
-  char str[1024]={""};
 
   file_num = -1;
 
@@ -200,7 +361,7 @@ void UI_unify_resolution::select_file_button_clicked()
 
   signals_list->setRowCount(0);
 
-  edfhdr_in = NULL;
+  edfhdr = NULL;
 
   select_button->setEnabled(false);
 
@@ -222,49 +383,57 @@ void UI_unify_resolution::select_file_button_clicked()
     file_num = 0;
   }
 
-  edfhdr_in = mainwindow->edfheaderlist[file_num];
+  edfhdr = mainwindow->edfheaderlist[file_num];
 
-  strlcpy(inputpath, edfhdr_in->filename, MAX_PATH_LENGTH);
+  strlcpy(inputpath, edfhdr->filename, MAX_PATH_LENGTH);
 
   file_path_label->setText(inputpath);
 
-  signals_list->setRowCount(edfhdr_in->edfsignals);
+  signals_list->setRowCount(edfhdr->edfsignals);
 
-  for(i=0; i<edfhdr_in->edfsignals; i++)
+  for(i=0; i<edfhdr->edfsignals; i++)
   {
     signals_list->setRowHeight(i, 25);
 
-    signals_list->setCellWidget(i, 0, new QCheckBox(edfhdr_in->edfparam[i].label));
+    signals_list->setCellWidget(i, 0, new QCheckBox(edfhdr->edfparam[i].label));
     ((QCheckBox *)(signals_list->cellWidget(i, 0)))->setTristate(false);
-    ((QCheckBox *)(signals_list->cellWidget(i, 0)))->setCheckState(Qt::Checked);
+    if(edfhdr->edfparam[i].annotation)
+    {
+      ((QCheckBox *)(signals_list->cellWidget(i, 0)))->setCheckState(Qt::Unchecked);
+      ((QCheckBox *)(signals_list->cellWidget(i, 0)))->setEnabled(false);
+    }
+    else
+    {
+      ((QCheckBox *)(signals_list->cellWidget(i, 0)))->setCheckState(Qt::Checked);
+    }
 
     signals_list->setCellWidget(i, 1, new QDoubleSpinBox);
     ((QDoubleSpinBox *)(signals_list->cellWidget(i, 1)))->setRange(-1e9, 1e9);
-    ((QDoubleSpinBox *)(signals_list->cellWidget(i, 1)))->setValue(edfhdr_in->edfparam[i].bitvalue);
-    ((QDoubleSpinBox *)(signals_list->cellWidget(i, 1)))->setSuffix(edfhdr_in->edfparam[i].physdimension);
+    ((QDoubleSpinBox *)(signals_list->cellWidget(i, 1)))->setValue(edfhdr->edfparam[i].bitvalue);
+    ((QDoubleSpinBox *)(signals_list->cellWidget(i, 1)))->setSuffix(edfhdr->edfparam[i].physdimension);
     ((QDoubleSpinBox *)(signals_list->cellWidget(i, 1)))->setDecimals(8);
     ((QDoubleSpinBox *)(signals_list->cellWidget(i, 1)))->setEnabled(false);
 
     signals_list->setCellWidget(i, 2, new QDoubleSpinBox);
     ((QDoubleSpinBox *)(signals_list->cellWidget(i, 2)))->setRange(-1e9, 1e9);
-    ((QDoubleSpinBox *)(signals_list->cellWidget(i, 2)))->setValue(edfhdr_in->edfparam[i].phys_max);
+    ((QDoubleSpinBox *)(signals_list->cellWidget(i, 2)))->setValue(edfhdr->edfparam[i].phys_max);
     ((QDoubleSpinBox *)(signals_list->cellWidget(i, 2)))->setDecimals(6);
     ((QDoubleSpinBox *)(signals_list->cellWidget(i, 2)))->setEnabled(false);
 
     signals_list->setCellWidget(i, 3, new QDoubleSpinBox);
     ((QDoubleSpinBox *)(signals_list->cellWidget(i, 3)))->setRange(-1e9, 1e9);
-    ((QDoubleSpinBox *)(signals_list->cellWidget(i, 3)))->setValue(edfhdr_in->edfparam[i].phys_min);
+    ((QDoubleSpinBox *)(signals_list->cellWidget(i, 3)))->setValue(edfhdr->edfparam[i].phys_min);
     ((QDoubleSpinBox *)(signals_list->cellWidget(i, 3)))->setDecimals(6);
     ((QDoubleSpinBox *)(signals_list->cellWidget(i, 3)))->setEnabled(false);
 
     signals_list->setCellWidget(i, 4, new QSpinBox);
     ((QSpinBox *)(signals_list->cellWidget(i, 4)))->setRange(-9999999, 99999999);
-    ((QSpinBox *)(signals_list->cellWidget(i, 4)))->setValue(edfhdr_in->edfparam[i].dig_max);
+    ((QSpinBox *)(signals_list->cellWidget(i, 4)))->setValue(edfhdr->edfparam[i].dig_max);
     ((QSpinBox *)(signals_list->cellWidget(i, 4)))->setEnabled(false);
 
     signals_list->setCellWidget(i, 5, new QSpinBox);
     ((QSpinBox *)(signals_list->cellWidget(i, 5)))->setRange(-9999999, 99999999);
-    ((QSpinBox *)(signals_list->cellWidget(i, 5)))->setValue(edfhdr_in->edfparam[i].dig_min);
+    ((QSpinBox *)(signals_list->cellWidget(i, 5)))->setValue(edfhdr->edfparam[i].dig_min);
     ((QSpinBox *)(signals_list->cellWidget(i, 5)))->setEnabled(false);
   }
 
