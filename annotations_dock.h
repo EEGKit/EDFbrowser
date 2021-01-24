@@ -127,7 +127,8 @@ private:
           *filt_ival_time_act,
           *show_stats_act,
           *show_heart_rate_act,
-          *edit_annotations_act;
+          *edit_annotations_act,
+          *remove_duplicates_act;
 
   QTimer *delayed_list_filter_update_timer;
 

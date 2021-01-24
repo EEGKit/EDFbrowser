@@ -103,6 +103,7 @@ UI_Annotationswindow::UI_Annotationswindow(struct edfhdrblock *e_hdr, QWidget *w
   show_stats_act = new QAction("Heart Rate Variability", list);
   show_heart_rate_act = new QAction("Heart Rate", list);
   edit_annotations_act = new QAction("Edit annotations", list);
+  remove_duplicates_act = new QAction("Remove duplicates", list);
 
   list->setContextMenuPolicy(Qt::ActionsContextMenu);
   list->insertAction(NULL, show_between_act);
@@ -120,6 +121,7 @@ UI_Annotationswindow::UI_Annotationswindow(struct edfhdrblock *e_hdr, QWidget *w
   list->insertAction(NULL, show_stats_act);
   list->insertAction(NULL, show_heart_rate_act);
   list->insertAction(NULL, edit_annotations_act);
+  list->insertAction(NULL, remove_duplicates_act);
 
   QHBoxLayout *h_layout = new QHBoxLayout;
   h_layout->addWidget(checkbox1);
@@ -161,6 +163,8 @@ UI_Annotationswindow::UI_Annotationswindow(struct edfhdrblock *e_hdr, QWidget *w
   QObject::connect(search_line_edit,           SIGNAL(textEdited(const QString)),      this, SLOT(filter_edited(const QString)));
 
   QObject::connect(edit_annotations_act,       SIGNAL(triggered(bool)),                mainwindow, SLOT(annotation_editor()));
+
+  QObject::connect(remove_duplicates_act,      SIGNAL(triggered(bool)),                mainwindow, SLOT(edfplus_remove_duplicate_annotations()));
 
   QObject::connect(delayed_list_filter_update_timer, SIGNAL(timeout()),                this, SLOT(delayed_list_filter_update()));
 }
