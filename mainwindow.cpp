@@ -3666,6 +3666,19 @@ void UI_Mainwindow::check_edf_compatibility()
 }
 
 
+void UI_Mainwindow::unify_resolution()
+{
+  if(!files_open)
+  {
+    QMessageBox messagewindow(QMessageBox::Critical, "Error", "You have to open a file first.");
+    messagewindow.exec();
+    return;
+  }
+
+  UI_unify_resolution unify_resolution_dialog(this);
+}
+
+
 void UI_Mainwindow::print_to_img_640x480()
 {
   maincurve->print_to_image(640, 480);

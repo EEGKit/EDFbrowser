@@ -140,6 +140,7 @@ HEADERS += hypnogram_dialog.h
 HEADERS += hypnogram_dock.h
 HEADERS += run_qrs_detector.h
 HEADERS += hrv_dock.h
+HEADERS += unify_resolution.h
 
 HEADERS += third_party/fidlib/fidlib.h
 HEADERS += third_party/fidlib/fidmkf.h
@@ -247,6 +248,7 @@ SOURCES += hypnogram_dialog.cpp
 SOURCES += hypnogram_dock.cpp
 SOURCES += run_qrs_detector.cpp
 SOURCES += hrv_dock.cpp
+SOURCES += unify_resolution.cpp
 
 SOURCES += third_party/fidlib/fidlib.c
 

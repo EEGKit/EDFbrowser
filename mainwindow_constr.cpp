@@ -860,6 +860,8 @@ UI_Mainwindow::UI_Mainwindow()
   toolsmenu->addAction("Convert ISHNE ECG to EDF", this, SLOT(convert_ishne_to_edf()));
   toolsmenu->addAction("Convert Binary/raw data to EDF", this, SLOT(convert_binary_to_edf()));
   toolsmenu->addSeparator();
+  toolsmenu->addAction("Unify resolution", this, SLOT(unify_resolution()));
+  toolsmenu->addSeparator();
   toolsmenu->addAction("Options", this, SLOT(show_options_dialog()));
   menubar->addMenu(toolsmenu);
 

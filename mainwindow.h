@@ -174,6 +174,7 @@
 #include "hypnogram_dock.h"
 #include "run_qrs_detector.h"
 #include "hrv_dock.h"
+#include "unify_resolution.h"
 
 #include "third_party/fidlib/fidlib.h"
 
@@ -637,6 +638,7 @@ private slots:
   void unisens2edf_converter();
   void BI98002edf_converter();
   void export_annotations();
+  void unify_resolution();
   void load_predefined_mtg(QAction *);
   void edit_predefined_montages();
   void show_spectrum_dock();
