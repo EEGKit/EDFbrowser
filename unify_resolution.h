@@ -65,7 +65,6 @@
 
 #include "global.h"
 #include "mainwindow.h"
-#include "edflib.h"
 #include "utils.h"
 #include "active_file_chooser.h"
 
@@ -82,18 +81,13 @@ public:
 
 private:
 
-int file_num,
-    hdl_in,
-    hdl_out;
-
-double volt_per_bit[EDFLIB_MAXSIGNALS];
+int file_num;
 
 char  inputpath[MAX_PATH_LENGTH],
       outputpath[MAX_PATH_LENGTH],
-      *recent_savedir,
-      phys_dim[EDFLIB_MAXSIGNALS][16];
+      *recent_savedir;
 
-struct edf_hdr_struct edfhdr_in;
+struct edfhdrblock *edfhdr_in;
 
   QDialog      *myobjectDialog;
 

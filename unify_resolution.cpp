@@ -144,9 +144,7 @@ UI_unify_resolution::UI_unify_resolution(QWidget *w_parent)
 
   inputpath[0] = 0;
 
-  hdl_in = -1;
-
-  hdl_out = -1;
+  edfhdr_in = NULL;
 
   if(mainwindow->files_open == 1)
   {
@@ -190,8 +188,7 @@ void UI_unify_resolution::deselect_button_clicked()
 
 void UI_unify_resolution::select_file_button_clicked()
 {
-  int i,
-      num_signals=0;
+  int i;
 
   char str[1024]={""};
 
@@ -199,23 +196,15 @@ void UI_unify_resolution::select_file_button_clicked()
 
   inputpath[0] = 0;
 
-  hdl_in = -1;
-
-  hdl_out = -1;
-
   file_path_label->clear();
 
   signals_list->setRowCount(0);
 
+  edfhdr_in = NULL;
+
   select_button->setEnabled(false);
 
   deselect_button->setEnabled(false);
-
-  for(i=0; i<EDFLIB_MAXSIGNALS; i++)
-  {
-    volt_per_bit[i] = 1;
-    phys_dim[i][0] = 0;
-  }
 
   if(mainwindow->files_open < 1)  return;
 
@@ -233,78 +222,51 @@ void UI_unify_resolution::select_file_button_clicked()
     file_num = 0;
   }
 
-  strlcpy(inputpath, mainwindow->edfheaderlist[file_num]->filename, MAX_PATH_LENGTH);
+  edfhdr_in = mainwindow->edfheaderlist[file_num];
+
+  strlcpy(inputpath, edfhdr_in->filename, MAX_PATH_LENGTH);
 
   file_path_label->setText(inputpath);
 
-  hdl_in = edfopen_file_readonly(inputpath, &edfhdr_in, EDFLIB_DO_NOT_READ_ANNOTATIONS);
-  if(hdl_in < 0)
+  signals_list->setRowCount(edfhdr_in->edfsignals);
+
+  for(i=0; i<edfhdr_in->edfsignals; i++)
   {
-    snprintf(str, 1024, "An error occurred while trying to open the selected file.\n"
-                        "error code: %i", edfhdr_in.filetype);
-
-    QMessageBox::critical(myobjectDialog, "Error", str);
-
-    return;
-  }
-
-//   if((edfhdr_in.filetype == EDFLIB_FILETYPE_EDF) || (edfhdr_in.filetype == EDFLIB_FILETYPE_EDFPLUS))
-//   {
-//     phys_max_spinbox->setValue(3000);
-//   }
-//   else // BDF
-//   {
-//     phys_max_spinbox->setValue(300000);
-//   }
-
-  num_signals = edfhdr_in.edfsignals;
-
-  signals_list->setRowCount(num_signals);
-
-  for(i=0; i<num_signals; i++)
-  {
-    strlcpy(phys_dim[i], edfhdr_in.signalparam[i].physdimension, 16);
-    trim_spaces(phys_dim[i]);
-
-    volt_per_bit[i] = (edfhdr_in.signalparam[i].phys_max - edfhdr_in.signalparam[i].phys_min) / (edfhdr_in.signalparam[i].dig_max - edfhdr_in.signalparam[i].dig_min);
-
     signals_list->setRowHeight(i, 25);
 
-    signals_list->setCellWidget(i, 0, new QCheckBox(edfhdr_in.signalparam[i].label));
+    signals_list->setCellWidget(i, 0, new QCheckBox(edfhdr_in->edfparam[i].label));
     ((QCheckBox *)(signals_list->cellWidget(i, 0)))->setTristate(false);
     ((QCheckBox *)(signals_list->cellWidget(i, 0)))->setCheckState(Qt::Checked);
 
     signals_list->setCellWidget(i, 1, new QDoubleSpinBox);
     ((QDoubleSpinBox *)(signals_list->cellWidget(i, 1)))->setRange(-1e9, 1e9);
-    ((QDoubleSpinBox *)(signals_list->cellWidget(i, 1)))->setValue(volt_per_bit[i]);
-    ((QDoubleSpinBox *)(signals_list->cellWidget(i, 1)))->setSuffix(phys_dim[i]);
+    ((QDoubleSpinBox *)(signals_list->cellWidget(i, 1)))->setValue(edfhdr_in->edfparam[i].bitvalue);
+    ((QDoubleSpinBox *)(signals_list->cellWidget(i, 1)))->setSuffix(edfhdr_in->edfparam[i].physdimension);
     ((QDoubleSpinBox *)(signals_list->cellWidget(i, 1)))->setDecimals(8);
     ((QDoubleSpinBox *)(signals_list->cellWidget(i, 1)))->setEnabled(false);
 
     signals_list->setCellWidget(i, 2, new QDoubleSpinBox);
     ((QDoubleSpinBox *)(signals_list->cellWidget(i, 2)))->setRange(-1e9, 1e9);
-    ((QDoubleSpinBox *)(signals_list->cellWidget(i, 2)))->setValue(edfhdr_in.signalparam[i].phys_max);
+    ((QDoubleSpinBox *)(signals_list->cellWidget(i, 2)))->setValue(edfhdr_in->edfparam[i].phys_max);
     ((QDoubleSpinBox *)(signals_list->cellWidget(i, 2)))->setDecimals(6);
     ((QDoubleSpinBox *)(signals_list->cellWidget(i, 2)))->setEnabled(false);
 
     signals_list->setCellWidget(i, 3, new QDoubleSpinBox);
     ((QDoubleSpinBox *)(signals_list->cellWidget(i, 3)))->setRange(-1e9, 1e9);
-    ((QDoubleSpinBox *)(signals_list->cellWidget(i, 3)))->setValue(edfhdr_in.signalparam[i].phys_min);
+    ((QDoubleSpinBox *)(signals_list->cellWidget(i, 3)))->setValue(edfhdr_in->edfparam[i].phys_min);
     ((QDoubleSpinBox *)(signals_list->cellWidget(i, 3)))->setDecimals(6);
     ((QDoubleSpinBox *)(signals_list->cellWidget(i, 3)))->setEnabled(false);
 
     signals_list->setCellWidget(i, 4, new QSpinBox);
     ((QSpinBox *)(signals_list->cellWidget(i, 4)))->setRange(-9999999, 99999999);
-    ((QSpinBox *)(signals_list->cellWidget(i, 4)))->setValue(edfhdr_in.signalparam[i].dig_max);
+    ((QSpinBox *)(signals_list->cellWidget(i, 4)))->setValue(edfhdr_in->edfparam[i].dig_max);
     ((QSpinBox *)(signals_list->cellWidget(i, 4)))->setEnabled(false);
 
     signals_list->setCellWidget(i, 5, new QSpinBox);
     ((QSpinBox *)(signals_list->cellWidget(i, 5)))->setRange(-9999999, 99999999);
-    ((QSpinBox *)(signals_list->cellWidget(i, 5)))->setValue(edfhdr_in.signalparam[i].dig_min);
+    ((QSpinBox *)(signals_list->cellWidget(i, 5)))->setValue(edfhdr_in->edfparam[i].dig_min);
     ((QSpinBox *)(signals_list->cellWidget(i, 5)))->setEnabled(false);
   }
-
-  edfclose_file(hdl_in);
 
   select_button->setEnabled(true);
 
