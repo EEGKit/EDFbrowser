@@ -43,7 +43,7 @@ UI_AsciiExportwindow::UI_AsciiExportwindow(QWidget *w_parent)
   AsciiExportDialog->setModal(true);
   AsciiExportDialog->setAttribute(Qt::WA_DeleteOnClose, true);
 
-  filelist = new QListWidget(AsciiExportDialog);
+  filelist = new QListWidget;
   filelist->setSelectionBehavior(QAbstractItemView::SelectRows);
   filelist->setSelectionMode(QAbstractItemView::SingleSelection);
   for(i=0; i<mainwindow->files_open; i++)
@@ -55,10 +55,10 @@ UI_AsciiExportwindow::UI_AsciiExportwindow(QWidget *w_parent)
   }
   filelist->setMaximumHeight(75);
 
-  ExportButton = new QPushButton(AsciiExportDialog);
+  ExportButton = new QPushButton;
   ExportButton->setText("Export");
 
-  CloseButton = new QPushButton(AsciiExportDialog);
+  CloseButton = new QPushButton;
   CloseButton->setText("Close");
 
   QHBoxLayout *hlayout1 = new QHBoxLayout;

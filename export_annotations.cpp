@@ -42,7 +42,7 @@ UI_ExportAnnotationswindow::UI_ExportAnnotationswindow(QWidget *w_parent)
   ExportAnnotsDialog->setModal(true);
   ExportAnnotsDialog->setAttribute(Qt::WA_DeleteOnClose, true);
 
-  filelist = new QListWidget(ExportAnnotsDialog);
+  filelist = new QListWidget;
   filelist->setSelectionBehavior(QAbstractItemView::SelectRows);
   filelist->setSelectionMode(QAbstractItemView::SingleSelection);
   for(i=0; i<mainwindow->files_open; i++)
@@ -50,7 +50,7 @@ UI_ExportAnnotationswindow::UI_ExportAnnotationswindow(QWidget *w_parent)
     new QListWidgetItem(QString::fromLocal8Bit(mainwindow->edfheaderlist[i]->filename), filelist);
   }
 
-  formatGroupBox = new QGroupBox("output format", ExportAnnotsDialog);
+  formatGroupBox = new QGroupBox("output format");
 
   CSVRadioButton = new QRadioButton("ASCII/CSV");
 
@@ -64,7 +64,7 @@ UI_ExportAnnotationswindow::UI_ExportAnnotationswindow(QWidget *w_parent)
   formatVBoxLayout->addWidget(XMLRadioButton);
   formatGroupBox->setLayout(formatVBoxLayout);
 
-  fileGroupBox = new QGroupBox("export annotations", ExportAnnotsDialog);
+  fileGroupBox = new QGroupBox("export annotations");
 
   selectRadioButton = new QRadioButton("from selected file");
   selectRadioButton->setChecked(true);
@@ -76,9 +76,9 @@ UI_ExportAnnotationswindow::UI_ExportAnnotationswindow(QWidget *w_parent)
   fileVBoxLayout->addWidget(mergeRadioButton);
   fileGroupBox->setLayout(fileVBoxLayout);
 
-  asciiSettingsGroupBox = new QGroupBox("ASCII settings", ExportAnnotsDialog);
+  asciiSettingsGroupBox = new QGroupBox("ASCII settings");
 
-  separatorBox = new QComboBox(ExportAnnotsDialog);
+  separatorBox = new QComboBox;
   separatorBox->addItem("comma");
   separatorBox->addItem("tab");
   separatorBox->addItem("semicolon");
@@ -94,7 +94,7 @@ UI_ExportAnnotationswindow::UI_ExportAnnotationswindow(QWidget *w_parent)
 
   asciiISOtimedateFractionRadioButton = new QRadioButton("ISO datetimestamp yyyy-mm-ddThh:mm:ss.xxx");
 
-  durationCheckBox = new QCheckBox("include event duration", ExportAnnotsDialog);
+  durationCheckBox = new QCheckBox("include event duration");
   durationCheckBox->setTristate(false);
   durationCheckBox->setCheckState(Qt::Unchecked);
 
@@ -111,10 +111,10 @@ UI_ExportAnnotationswindow::UI_ExportAnnotationswindow(QWidget *w_parent)
   asciiSettingsVBoxLayout->addWidget(durationCheckBox);
   asciiSettingsGroupBox->setLayout(asciiSettingsVBoxLayout);
 
-  ExportButton = new QPushButton(ExportAnnotsDialog);
+  ExportButton = new QPushButton;
   ExportButton->setText("Export");
 
-  CloseButton = new QPushButton(ExportAnnotsDialog);
+  CloseButton = new QPushButton;
   CloseButton->setText("Close");
 
   separatorBox->setCurrentIndex(mainwindow->export_annotations_var->separator);

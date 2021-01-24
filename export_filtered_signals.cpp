@@ -69,11 +69,11 @@ UI_ExportFilteredSignalsWindow::UI_ExportFilteredSignalsWindow(QWidget *w_parent
   label5 = new QLabel;
   label5->setEnabled(false);
 
-  radioButton1 = new QRadioButton("whole duration", myobjectDialog);
+  radioButton1 = new QRadioButton("whole duration");
   radioButton1->setChecked(true);
   radioButton1->setEnabled(false);
 
-  radioButton2 = new QRadioButton("selection", myobjectDialog);
+  radioButton2 = new QRadioButton("selection");
   radioButton2->setEnabled(false);
 
   spinBox1 = new QSpinBox;
