@@ -287,8 +287,16 @@ void UI_unify_resolution::SaveButtonClicked()
     {
       memcpy(buf_in + 256 + (104 * edfhdr->edfsignals) + (8 * i), str_phys_min, 8);
       memcpy(buf_in + 256 + (112 * edfhdr->edfsignals) + (8 * i), str_phys_max, 8);
-      memcpy(buf_in + 256 + (120 * edfhdr->edfsignals) + (8 * i), "-32768  ", 8);
-      memcpy(buf_in + 256 + (128 * edfhdr->edfsignals) + (8 * i), "32767   ", 8);
+      if(edfhdr->edf)
+      {
+        memcpy(buf_in + 256 + (120 * edfhdr->edfsignals) + (8 * i), "-32768  ", 8);
+        memcpy(buf_in + 256 + (128 * edfhdr->edfsignals) + (8 * i), "32767   ", 8);
+      }
+      else
+      {
+        memcpy(buf_in + 256 + (120 * edfhdr->edfsignals) + (8 * i), "-8388608", 8);
+        memcpy(buf_in + 256 + (128 * edfhdr->edfsignals) + (8 * i), "8388607 ", 8);
+      }
     }
   }
 
