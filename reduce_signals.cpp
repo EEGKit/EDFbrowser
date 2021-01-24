@@ -61,11 +61,11 @@ UI_ReduceSignalsWindow::UI_ReduceSignalsWindow(QWidget *w_parent)
   label6 = new QLabel;
   label6->setText("Anti-aliasing filter order");
 
-  radioButton1 = new QRadioButton("whole duration", myobjectDialog);
+  radioButton1 = new QRadioButton("whole duration");
   radioButton1->setChecked(true);
   radioButton1->setEnabled(false);
 
-  radioButton2 = new QRadioButton("selection", myobjectDialog);
+  radioButton2 = new QRadioButton("selection");
   radioButton2->setEnabled(false);
 
   spinBox1 = new QSpinBox;
