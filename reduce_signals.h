@@ -40,6 +40,7 @@
 #include <QFileDialog>
 #include <QCursor>
 #include <QString>
+#include <QStringList>
 #include <QSpinBox>
 #include <QRadioButton>
 #include <QMessageBox>

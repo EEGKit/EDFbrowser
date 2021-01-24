@@ -91,8 +91,8 @@ UI_ReduceSignalsWindow::UI_ReduceSignalsWindow(QWidget *w_parent)
   SignalsTablewidget = new QTableWidget;
   SignalsTablewidget->setSelectionMode(QAbstractItemView::NoSelection);
   SignalsTablewidget->setColumnCount(2);
-  SignalsTablewidget->setColumnWidth(0, 180);
-  SignalsTablewidget->setColumnWidth(1, 180);
+  SignalsTablewidget->setColumnWidth(0, 150 * mainwindow->w_scaling);
+  SignalsTablewidget->setColumnWidth(1, 150 * mainwindow->w_scaling);
 
   QStringList horizontallabels;
   horizontallabels += "Label";
