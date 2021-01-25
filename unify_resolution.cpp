@@ -161,18 +161,48 @@ UI_unify_resolution::UI_unify_resolution(QWidget *w_parent)
 
 void UI_unify_resolution::SaveButtonClicked()
 {
-  int i, len=0,
+  int i, j, len=0,
+      tmp,
       num_checked=0,
       is_checked[MAXSIGNALS];
+
+  short *ptr16=NULL;
+
+  long long datrec;
 
   char str[128]={""},
        phys_dim[16]={""},
        str_phys_max[32]={""},
        str_phys_min[32]={""},
        *buf_in=NULL,
-       *buf_out=NULL;
+       *ptr8=NULL;
+
+  double cnv_factor[MAXSIGNALS],
+         new_bitval=1;
+
+  union {
+          unsigned int one;
+          signed int one_signed;
+          unsigned short two[2];
+          signed short two_signed[2];
+          unsigned char four[4];
+        } var;
 
   FILE *outputfile=NULL;
+
+  QProgressDialog progress("Processing file...", "Abort", 0, 1);
+  progress.setWindowModality(Qt::WindowModal);
+  progress.setMinimumDuration(200);
+  progress.reset();
+
+  if(edfhdr->edf)
+  {
+    new_bitval = (phys_max_spinbox->value() * 2) / 0x10000;
+  }
+  else
+  {
+    new_bitval = (phys_max_spinbox->value() * 2) / 0x1000000;
+  }
 
   for(i=0; i<edfhdr->edfsignals; i++)
   {
@@ -193,6 +223,8 @@ void UI_unify_resolution::SaveButtonClicked()
           return;
         }
       }
+
+      cnv_factor[i] = edfhdr->edfparam[i].bitvalue / new_bitval;
 
       num_checked++;
 
@@ -307,11 +339,117 @@ void UI_unify_resolution::SaveButtonClicked()
   }
 
   free(buf_in);
-  buf_in = NULL;
+  buf_in = (char *)malloc(edfhdr->recordsize);
+  if(buf_in == NULL)
+  {
+    QMessageBox::critical(myobjectDialog, "Error", "Malloc error.");
+    goto OUT_ERROR;
+  }
 
+  progress.setRange(0, edfhdr->datarecords / 100);
+  progress.setValue(0);
 
+  for(datrec=0; datrec<edfhdr->datarecords; datrec++)
+  {
+    if(!(datrec % 100))
+    {
+      progress.setValue(datrec / 100);
 
+      qApp->processEvents();
 
+      if(progress.wasCanceled() == true)
+      {
+        goto OUT_ERROR;
+      }
+    }
+
+    if(fread(buf_in, edfhdr->recordsize, 1, edfhdr->file_hdl) != 1)
+    {
+      QMessageBox::critical(myobjectDialog, "Error", "Cannot read from inputfile.");
+      goto OUT_ERROR;
+    }
+
+    if(edfhdr->edf)
+    {
+      for(i=0; i<edfhdr->edfsignals; i++)
+      {
+        if(!is_checked[i])  continue;
+
+        ptr16 = (short *)(buf_in + edfhdr->edfparam[i].buf_offset);
+
+        for(j=0; j<edfhdr->edfparam[i].smp_per_record; j++)
+        {
+          tmp = (*ptr16 * cnv_factor[i]) + 0.5;
+
+          if(tmp > 32767)
+          {
+            tmp = 32767;
+          }
+
+          if(tmp < -32768)
+          {
+            tmp = -32768;
+          }
+
+          *ptr16 = tmp;
+
+          ptr16++;
+        }
+      }
+    }
+    else
+    {
+      for(i=0; i<edfhdr->edfsignals; i++)
+      {
+        if(!is_checked[i])  continue;
+
+        ptr8 = buf_in + edfhdr->edfparam[i].buf_offset;
+
+        for(j=0; j<edfhdr->edfparam[i].smp_per_record; j++)
+        {
+          var.two[0] = *((unsigned short *)ptr8);
+
+          var.four[2] = *((unsigned char *)(ptr8 + 2));
+
+          if(var.four[2]&0x80)
+          {
+            var.four[3] = 0xff;
+          }
+          else
+          {
+            var.four[3] = 0x00;
+          }
+
+          var.one_signed = (var.one_signed * cnv_factor[i]) + 0.5;
+
+          if(var.one_signed > 8388607)
+          {
+            var.one_signed = 8388607;
+          }
+
+          if(var.one_signed < -8388608)
+          {
+            var.one_signed = -8388608;
+          }
+
+          *((unsigned short *)ptr8) = var.two[0];
+
+          *((unsigned char *)(ptr8 + 2)) = var.four[2];
+
+          ptr8 += 3;
+        }
+      }
+    }
+
+    if(fwrite(buf_in, edfhdr->recordsize, 1, outputfile) != 1)
+    {
+      QMessageBox::critical(myobjectDialog, "Error", "Cannot write to outputfile.");
+      goto OUT_ERROR;
+    }
+  }
+
+  progress.reset();
+  QMessageBox::information(myobjectDialog, "Ready", "Done.");
 
 OUT_ERROR:
 
@@ -321,7 +459,6 @@ OUT_ERROR:
   }
 
   free(buf_in);
-  free(buf_out);
 }
 
 
