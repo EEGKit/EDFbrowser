@@ -58,6 +58,9 @@
 #include <QHBoxLayout>
 #include <QGridLayout>
 #include <QFormLayout>
+#include <QToolTip>
+#include <QDesktopServices>
+#include <QUrl>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -99,7 +102,8 @@ struct edfhdrblock *edfhdr;
                *deselect_button,
                *select_file_button,
                *CloseButton,
-               *SaveButton;
+               *SaveButton,
+               *helpButton;
 
   QDoubleSpinBox *phys_max_spinbox;
 
@@ -109,6 +113,7 @@ private slots:
   void select_button_clicked();
   void deselect_button_clicked();
   void select_file_button_clicked();
+  void helpbuttonpressed();
 
 };
 

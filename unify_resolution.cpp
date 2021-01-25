@@ -92,6 +92,14 @@ UI_unify_resolution::UI_unify_resolution(QWidget *w_parent)
   CloseButton = new QPushButton;
   CloseButton->setText("Close");
 
+  helpButton = new QPushButton;
+  helpButton->setText("Help");
+
+  QHBoxLayout *hlayout6 = new QHBoxLayout;
+  hlayout6->addStretch(1000);
+  hlayout6->addWidget(helpButton);
+  hlayout6->addStretch(1000);
+
   QHBoxLayout *hlayout5 = new QHBoxLayout;
   hlayout5->addWidget(phys_max_label);
   hlayout5->addStretch(1000);
@@ -106,6 +114,8 @@ UI_unify_resolution::UI_unify_resolution(QWidget *w_parent)
   hlayout3->addStretch(1000);
 
   QVBoxLayout *vlayout2 = new QVBoxLayout;
+  vlayout2->addStretch(1000);
+  vlayout2->addLayout(hlayout6);
   vlayout2->addStretch(1000);
   vlayout2->addLayout(hlayout5);
   vlayout2->addSpacing(20);
@@ -141,6 +151,7 @@ UI_unify_resolution::UI_unify_resolution(QWidget *w_parent)
   QObject::connect(select_file_button, SIGNAL(clicked()),     this,           SLOT(select_file_button_clicked()));
   QObject::connect(CloseButton,        SIGNAL(clicked()),     myobjectDialog, SLOT(close()));
   QObject::connect(SaveButton,         SIGNAL(clicked()),     this,           SLOT(SaveButtonClicked()));
+  QObject::connect(helpButton,         SIGNAL(clicked()),     this,           SLOT(helpbuttonpressed()));
 
   file_num = -1;
 
@@ -178,7 +189,8 @@ void UI_unify_resolution::SaveButtonClicked()
        *ptr8=NULL;
 
   double cnv_factor[MAXSIGNALS],
-         new_bitval=1;
+         new_bitval=1,
+         d_offset;
 
   union {
           unsigned int one;
@@ -375,11 +387,13 @@ void UI_unify_resolution::SaveButtonClicked()
       {
         if(!is_checked[i])  continue;
 
+        d_offset = edfhdr->edfparam[i].offset;
+
         ptr16 = (short *)(buf_in + edfhdr->edfparam[i].buf_offset);
 
         for(j=0; j<edfhdr->edfparam[i].smp_per_record; j++)
         {
-          tmp = (*ptr16 * cnv_factor[i]) + 0.5;
+          tmp = ((*ptr16 + d_offset) * cnv_factor[i]) + 0.5;
 
           if(tmp > 32767)
           {
@@ -403,6 +417,8 @@ void UI_unify_resolution::SaveButtonClicked()
       {
         if(!is_checked[i])  continue;
 
+        d_offset = edfhdr->edfparam[i].offset;
+
         ptr8 = buf_in + edfhdr->edfparam[i].buf_offset;
 
         for(j=0; j<edfhdr->edfparam[i].smp_per_record; j++)
@@ -420,7 +436,7 @@ void UI_unify_resolution::SaveButtonClicked()
             var.four[3] = 0x00;
           }
 
-          var.one_signed = (var.one_signed * cnv_factor[i]) + 0.5;
+          var.one_signed = ((var.one_signed + d_offset) * cnv_factor[i]) + 0.5;
 
           if(var.one_signed > 8388607)
           {
@@ -585,6 +601,23 @@ void UI_unify_resolution::select_file_button_clicked()
   select_button->setEnabled(true);
 
   deselect_button->setEnabled(true);
+}
+
+
+void UI_unify_resolution::helpbuttonpressed()
+{
+#ifdef Q_OS_LINUX
+  QDesktopServices::openUrl(QUrl("file:///usr/share/doc/edfbrowser/manual.html#Unify_resolution"));
+#endif
+
+#ifdef Q_OS_WIN32
+  char p_path[MAX_PATH_LENGTH];
+
+  strlcpy(p_path, "file:///", MAX_PATH_LENGTH);
+  strlcat(p_path, mainwindow->specialFolder(CSIDL_PROGRAM_FILES).toLocal8Bit().data(), MAX_PATH_LENGTH);
+  strlcat(p_path, "\\EDFbrowser\\manual.html#Unify_resolution", MAX_PATH_LENGTH);
+  QDesktopServices::openUrl(QUrl(p_path));
+#endif
 }
 
 

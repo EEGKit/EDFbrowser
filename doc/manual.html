@@ -79,6 +79,7 @@
   <li><a href="#Print_to_IMG">Print to image</a></li>
   <li><a href="#Print_to_EDF">Print to EDF(+)</a></li>
   <li><a href="#Print_to_BDF">Print to BDF(+)</a></li>
+  <li><a href="#Unify_resolution">Unify resolution</a></li>
   <li><a href="#Commandline_options">Commandline options</a></li>
   <li><a href="#FAQ">FAQ</a></li>
 </ul>
@@ -1773,6 +1774,26 @@
   (and annotations) as they are on your screen, in the same way like the <a href="#Print_to_EDF">Print to EDF</a> function,<br>
   except that it is also possible to print EDF(+) files to BDF. You can even mix<br>
   EDF and BDF files onto your screen and print them to a new BDF file.
+</p>
+
+<p><br></p>
+
+<p><a href="#Table_of_Contents">Table of Contents</a></p>
+
+<p><br><br></p>
+
+<h3><a name="Unify_resolution">Unify resolution</a></h3>
+
+<p>
+  This tool can be used to give a selected group of signals the same resolution.<br>
+  Here, resolution means units per least significant bit e.g. uV/bit.<br>
+  The selected signals must have equal physical dimension (unit) e.g. uV, mV, etc.<br>
+  The tool creates a copy of the file and corrects the resolution for the selected signals.<br>
+  It's advised to set the value for the new physical maximum equal to or just above the highest<br>
+  physical maximum/minimum found in the group of selected signals.<br>
+  <br>
+  Typically, physical maximum is set to 3000uV (3mV) for EEG, 6000uV (6mV) for ECG, in case of EDF (16 bit).<br>
+  For BDF (24 bit) on the other hand, 300000uV (300mV) is a typical value for EEG.<br>
 </p>
 
 <p><br></p>
