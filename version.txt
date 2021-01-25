@@ -8,6 +8,8 @@
 
  - Annotation markers: Use a different color when the annotation is selected.
 
+ - Added a new tool that allows to unify the resolution of a selected group of signals.
+
 
 
  version 1.80      January 1, 2021
