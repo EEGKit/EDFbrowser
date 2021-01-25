@@ -207,6 +207,12 @@ void UI_unify_resolution::SaveButtonClicked()
   progress.setMinimumDuration(200);
   progress.reset();
 
+  if((phys_max_spinbox->value() < 1.0) && (phys_max_spinbox->value() > -1.0))
+  {
+    QMessageBox::critical(myobjectDialog, "Error", "Please set the new physical maximum value higher than 1.0 or lower than -1.0.");
+    return;
+  }
+
   if(edfhdr->edf)
   {
     new_bitval = (phys_max_spinbox->value() * 2) / 0x10000;
@@ -237,6 +243,11 @@ void UI_unify_resolution::SaveButtonClicked()
       }
 
       cnv_factor[i] = edfhdr->edfparam[i].bitvalue / new_bitval;
+
+      if(cnv_factor[i] < 0)
+      {
+        cnv_factor[i] *= -1;
+      }
 
       num_checked++;
 
