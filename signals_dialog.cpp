@@ -532,7 +532,7 @@ void UI_Signalswindow::AddSubtractButtonsClicked(int subtract)
                                      " - are from the same file\n"
                                      " - have the same samplerate\n"
                                      " - have the same physical dimension (e.g. uV)\n"
-                                     " - have the same sensitivity (e.g. uV/bit)");
+                                     " - have the same resolution (e.g. uV/bit)");
         messagewindow.exec();
 
         continue;
@@ -552,7 +552,7 @@ void UI_Signalswindow::AddSubtractButtonsClicked(int subtract)
                                      " - are from the same file\n"
                                      " - have the same samplerate\n"
                                      " - have the same physical dimension (e.g. uV)\n"
-                                     " - have the same sensitivity (e.g. uV/bit)");
+                                     " - have the same resolution (e.g. uV/bit)");
         messagewindow.exec();
 
         continue;
