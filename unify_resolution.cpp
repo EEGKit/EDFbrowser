@@ -388,6 +388,7 @@ void UI_unify_resolution::SaveButtonClicked()
 
     if(fread(buf_in, edfhdr->recordsize, 1, edfhdr->file_hdl) != 1)
     {
+      progress.reset();
       QMessageBox::critical(myobjectDialog, "Error", "Cannot read from inputfile.");
       goto OUT_ERROR;
     }
@@ -470,6 +471,7 @@ void UI_unify_resolution::SaveButtonClicked()
 
     if(fwrite(buf_in, edfhdr->recordsize, 1, outputfile) != 1)
     {
+      progress.reset();
       QMessageBox::critical(myobjectDialog, "Error", "Cannot write to outputfile.");
       goto OUT_ERROR;
     }
