@@ -2433,7 +2433,7 @@ void UI_OptionsDialog::loadColorSchema_blue_gray()
 
   mainwindow->clip_to_pane = 0;
 
-  mainwindow->use_diverse_signal_colors = 1;
+  mainwindow->use_diverse_signal_colors = 0;
 
   update_interface();
 }
