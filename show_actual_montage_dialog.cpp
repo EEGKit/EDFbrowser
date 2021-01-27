@@ -58,6 +58,7 @@ UI_ShowActualMontagewindow::UI_ShowActualMontagewindow(QWidget *w_parent)
   ShowMontageDialog->setWindowTitle("Show montage");
   ShowMontageDialog->setModal(true);
   ShowMontageDialog->setAttribute(Qt::WA_DeleteOnClose, true);
+  ShowMontageDialog->setSizeGripEnabled(true);
 
   tree = new QTreeView;
   tree->setHeaderHidden(true);

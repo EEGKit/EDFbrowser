@@ -55,6 +55,7 @@ UI_Aboutwindow::UI_Aboutwindow(UI_Mainwindow *mainwindow)
   AboutDialog->setWindowTitle("About");
   AboutDialog->setModal(true);
   AboutDialog->setAttribute(Qt::WA_DeleteOnClose, true);
+  AboutDialog->setSizeGripEnabled(true);
 
   textedit1 = new QTextEdit;
   textedit1->setReadOnly(true);

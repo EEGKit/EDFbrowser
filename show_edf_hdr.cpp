@@ -41,6 +41,7 @@ UI_EDFhdrwindow::UI_EDFhdrwindow(QWidget *w_parent)
   EDFhdrDialog->setWindowTitle("EDF header info");
   EDFhdrDialog->setModal(true);
   EDFhdrDialog->setAttribute(Qt::WA_DeleteOnClose, true);
+  EDFhdrDialog->setSizeGripEnabled(true);
 
   filelist = new QListWidget;
   filelist->setMinimumSize(600, 75);

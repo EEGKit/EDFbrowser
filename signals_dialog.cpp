@@ -71,6 +71,7 @@ UI_Signalswindow::UI_Signalswindow(QWidget *w_parent)
   SignalsDialog->setWindowTitle("Add signals");
   SignalsDialog->setModal(true);
   SignalsDialog->setAttribute(Qt::WA_DeleteOnClose, true);
+  SignalsDialog->setSizeGripEnabled(true);
 
   filelist = new QListWidget;
   filelist->setMaximumHeight(75);

@@ -46,6 +46,7 @@ UI_ASCII2EDFapp::UI_ASCII2EDFapp(QWidget *w_parent, char *recent_dir, char *save
   ascii2edfDialog->setWindowTitle("ASCII to EDF/BDF converter");
   ascii2edfDialog->setModal(true);
   ascii2edfDialog->setAttribute(Qt::WA_DeleteOnClose, true);
+  ascii2edfDialog->setSizeGripEnabled(true);
 
   groupbox1 = new QGroupBox;
   groupbox1->setTitle("Output format");

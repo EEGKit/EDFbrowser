@@ -40,7 +40,6 @@ UI_SignalChooser::UI_SignalChooser(QWidget *w_parent, int job, int *sgnl_nr)
   mainwindow = (UI_Mainwindow *)w_parent;
 
   signalchooser_dialog = new QDialog(w_parent);
-
   if(task == 3)
   {
     signalchooser_dialog->setMinimumSize(435 * mainwindow->w_scaling, 420 * mainwindow->h_scaling);
@@ -53,6 +52,7 @@ UI_SignalChooser::UI_SignalChooser(QWidget *w_parent, int job, int *sgnl_nr)
   }
   signalchooser_dialog->setModal(true);
   signalchooser_dialog->setAttribute(Qt::WA_DeleteOnClose, true);
+  signalchooser_dialog->setSizeGripEnabled(true);
 
   list = new QListWidget;
   if(task == 3)

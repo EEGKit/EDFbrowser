@@ -53,6 +53,7 @@ UI_AnnotFilterWindow::UI_AnnotFilterWindow(QWidget *w_parent, struct annotationb
   annot_filter_dialog->setWindowTitle("Filter annotations");
   annot_filter_dialog->setModal(true);
   annot_filter_dialog->setAttribute(Qt::WA_DeleteOnClose, true);
+  annot_filter_dialog->setSizeGripEnabled(true);
 
   annot_lineedit = new QLineEdit;
   annot_lineedit->setReadOnly(true);

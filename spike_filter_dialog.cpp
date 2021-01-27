@@ -47,6 +47,7 @@ UI_SpikeFilterDialog::UI_SpikeFilterDialog(QWidget *w_parent)
   spikefilterdialog->setWindowTitle("Add a spike filter");
   spikefilterdialog->setModal(true);
   spikefilterdialog->setAttribute(Qt::WA_DeleteOnClose, true);
+  spikefilterdialog->setSizeGripEnabled(true);
 
   velocitySpinBox = new QDoubleSpinBox;
   velocitySpinBox->setDecimals(6);

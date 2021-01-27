@@ -48,6 +48,7 @@ UI_PLIF_ECG_filter_dialog::UI_PLIF_ECG_filter_dialog(QWidget *w_parent)
   plifecgfilterdialog->setWindowTitle("Add a powerline interference filter");
   plifecgfilterdialog->setModal(true);
   plifecgfilterdialog->setAttribute(Qt::WA_DeleteOnClose, true);
+  plifecgfilterdialog->setSizeGripEnabled(true);
 
   plfBox = new QComboBox;
   plfBox->addItem(" 50 Hz");

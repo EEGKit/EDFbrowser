@@ -45,6 +45,7 @@ UI_BDF2EDFwindow::UI_BDF2EDFwindow(QWidget *w_parent)
   myobjectDialog->setWindowTitle("BDF+ to EDF+ converter");
   myobjectDialog->setModal(true);
   myobjectDialog->setAttribute(Qt::WA_DeleteOnClose, true);
+  myobjectDialog->setSizeGripEnabled(true);
 
   label1 = new QLabel;
 

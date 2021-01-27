@@ -49,6 +49,7 @@ UI_AveragerWindow::UI_AveragerWindow(QWidget *w_parent, int annot_nr, struct edf
   averager_dialog->setWindowTitle("Average waveforms");
   averager_dialog->setModal(true);
   averager_dialog->setAttribute(Qt::WA_DeleteOnClose, true);
+  averager_dialog->setSizeGripEnabled(true);
 
   annot_name_line_edit = new QLineEdit;
   annot_name_line_edit->setReadOnly(true);

@@ -56,6 +56,7 @@ UI_cdsa_window::UI_cdsa_window(QWidget *w_parent, struct signalcompblock *signal
   myobjectDialog->setWindowTitle(str);
   myobjectDialog->setModal(true);
   myobjectDialog->setAttribute(Qt::WA_DeleteOnClose, true);
+  myobjectDialog->setSizeGripEnabled(true);
 
   segmentlen_spinbox = new QSpinBox;
   segmentlen_spinbox->setSuffix(" sec");

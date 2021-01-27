@@ -46,6 +46,7 @@ UI_hypnogram_window::UI_hypnogram_window(QWidget *w_parent, struct edfhdrblock *
   myobjectDialog->setWindowTitle("Hypnogram");
   myobjectDialog->setModal(true);
   myobjectDialog->setAttribute(Qt::WA_DeleteOnClose, true);
+  myobjectDialog->setSizeGripEnabled(true);
 
   stage_label = new QLabel;
   stage_label->setText("Stage");

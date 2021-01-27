@@ -43,6 +43,7 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   optionsdialog->setWindowTitle("Settings");
   optionsdialog->setModal(true);
   optionsdialog->setAttribute(Qt::WA_DeleteOnClose, true);
+  optionsdialog->setSizeGripEnabled(true);
 
   tabholder = new QTabWidget;
 

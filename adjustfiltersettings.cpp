@@ -77,6 +77,7 @@ AdjustFilterSettings::AdjustFilterSettings(struct signalcompblock *signal_comp, 
   filtersettings_dialog->setWindowTitle(txtbuf);
   filtersettings_dialog->setModal(true);
   filtersettings_dialog->setAttribute(Qt::WA_DeleteOnClose, true);
+  filtersettings_dialog->setSizeGripEnabled(true);
 
   filterbox = new QComboBox;
 

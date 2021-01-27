@@ -46,6 +46,7 @@ UI_ViewMontagewindow::UI_ViewMontagewindow(QWidget *w_parent)
   ViewMontageDialog->setWindowTitle("View montage");
   ViewMontageDialog->setModal(true);
   ViewMontageDialog->setAttribute(Qt::WA_DeleteOnClose, true);
+  ViewMontageDialog->setSizeGripEnabled(true);
 
   t_model = new QStandardItemModel(this);
 

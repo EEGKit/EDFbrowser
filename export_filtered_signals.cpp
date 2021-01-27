@@ -42,6 +42,7 @@ UI_ExportFilteredSignalsWindow::UI_ExportFilteredSignalsWindow(QWidget *w_parent
   myobjectDialog->setWindowTitle("Export Filtered Signals");
   myobjectDialog->setModal(true);
   myobjectDialog->setAttribute(Qt::WA_DeleteOnClose, true);
+  myobjectDialog->setSizeGripEnabled(true);
 
   tree = new QTreeView;
   tree->setHeaderHidden(true);

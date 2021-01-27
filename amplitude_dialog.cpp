@@ -42,6 +42,7 @@ UI_Userdefined_amplitude_Dialog::UI_Userdefined_amplitude_Dialog(QWidget *w_pare
   set_amplitude_dialog->setWindowTitle("Set amplitude");
   set_amplitude_dialog->setModal(true);
   set_amplitude_dialog->setAttribute(Qt::WA_DeleteOnClose, true);
+  set_amplitude_dialog->setSizeGripEnabled(true);
 
   QLabel *label1 = new QLabel;
   label1->setText("Amplitude");

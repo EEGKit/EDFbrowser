@@ -52,6 +52,7 @@ UI_FIRFilterDialog::UI_FIRFilterDialog(char *recent_dir, char *save_dir, QWidget
   firfilterdialog->setWindowTitle("Add a Custom FIR filter");
   firfilterdialog->setModal(true);
   firfilterdialog->setAttribute(Qt::WA_DeleteOnClose, true);
+  firfilterdialog->setSizeGripEnabled(true);
 
   varsLabel = new QLabel;
   varsLabel->setText("Filter taps: 0");

@@ -42,6 +42,7 @@ UI_AsciiExportwindow::UI_AsciiExportwindow(QWidget *w_parent)
   AsciiExportDialog->setWindowTitle("Export to ASCII");
   AsciiExportDialog->setModal(true);
   AsciiExportDialog->setAttribute(Qt::WA_DeleteOnClose, true);
+  AsciiExportDialog->setSizeGripEnabled(true);
 
   filelist = new QListWidget;
   filelist->setSelectionBehavior(QAbstractItemView::SelectRows);

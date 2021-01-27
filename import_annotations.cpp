@@ -141,6 +141,7 @@ UI_ImportAnnotationswindow::UI_ImportAnnotationswindow(QWidget *w_parent)
   ImportAnnotsDialog->setWindowTitle("Import annotations/events");
   ImportAnnotsDialog->setModal(true);
   ImportAnnotsDialog->setAttribute(Qt::WA_DeleteOnClose, true);
+  ImportAnnotsDialog->setSizeGripEnabled(true);
 
   tabholder = new QTabWidget;
 

@@ -44,6 +44,7 @@ UI_RAW2EDFapp::UI_RAW2EDFapp(QWidget *w_parent, struct raw2edf_var_struct *raw2e
   raw2edfDialog->setWindowTitle("Binary/raw data to EDF converter");
   raw2edfDialog->setModal(true);
   raw2edfDialog->setAttribute(Qt::WA_DeleteOnClose, true);
+  raw2edfDialog->setSizeGripEnabled(true);
 
   SamplefreqSpinbox = new QSpinBox;
   SamplefreqSpinbox->setRange(1,1000000);

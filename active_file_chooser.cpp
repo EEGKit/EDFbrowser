@@ -47,6 +47,7 @@ UI_activeFileChooserWindow::UI_activeFileChooserWindow(int *file_nr, QWidget *ma
   chooserDialog->setWindowTitle("Choose file");
   chooserDialog->setModal(true);
   chooserDialog->setAttribute(Qt::WA_DeleteOnClose, true);
+  chooserDialog->setSizeGripEnabled(true);
 
   filelist = new QListWidget;
   filelist->setSelectionBehavior(QAbstractItemView::SelectRows);

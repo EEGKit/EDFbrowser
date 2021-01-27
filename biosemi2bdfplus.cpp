@@ -48,6 +48,7 @@ UI_BIOSEMI2BDFPLUSwindow::UI_BIOSEMI2BDFPLUSwindow(QWidget *w_parent)
   myobjectDialog->setWindowTitle("Biosemi to BDF+ converter");
   myobjectDialog->setModal(true);
   myobjectDialog->setAttribute(Qt::WA_DeleteOnClose, true);
+  myobjectDialog->setSizeGripEnabled(true);
 
   QLabel *label2 = new QLabel;
   label2->setText("Trigger Input descriptions:");

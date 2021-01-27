@@ -41,6 +41,7 @@ UI_ExportAnnotationswindow::UI_ExportAnnotationswindow(QWidget *w_parent)
   ExportAnnotsDialog->setWindowTitle("Export annotations");
   ExportAnnotsDialog->setModal(true);
   ExportAnnotsDialog->setAttribute(Qt::WA_DeleteOnClose, true);
+  ExportAnnotsDialog->setSizeGripEnabled(true);
 
   filelist = new QListWidget;
   filelist->setSelectionBehavior(QAbstractItemView::SelectRows);
