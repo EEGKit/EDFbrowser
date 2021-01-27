@@ -259,9 +259,9 @@ void UI_unify_resolution::SaveButtonClicked()
     }
   }
 
-  if(num_checked < 2)
+  if(num_checked < 1)
   {
-    QMessageBox::critical(myobjectDialog, "Error", "At least two signals must be selected.");
+    QMessageBox::critical(myobjectDialog, "Error", "At least one signal needs to be selected.");
     return;
   }
 
