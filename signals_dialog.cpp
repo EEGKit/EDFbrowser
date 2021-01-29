@@ -92,7 +92,7 @@ UI_Signalswindow::UI_Signalswindow(QWidget *w_parent)
   label5->setText("Signals in file");
 
   label6 = new QLabel;
-  label6->setText("Signal Composition");
+  label6->setText("Signal Composition (derivation)");
 
   colorlabel = new QLabel;
   colorlabel->setText("  Trace color");
@@ -529,7 +529,7 @@ void UI_Signalswindow::AddSubtractButtonsClicked(int subtract)
       if(smp_per_record!=mainwindow->edfheaderlist[row]->edfparam[s].smp_per_record)
       {
         QMessageBox messagewindow(QMessageBox::Warning, "Warning",
-                                     "It is only possible to make combinations/derivations with signals which:\n"
+                                     "It is only possible to make derivations from signals which:\n"
                                      " - are from the same file\n"
                                      " - have the same samplerate\n"
                                      " - have the same physical dimension (e.g. uV)\n"
@@ -549,7 +549,7 @@ void UI_Signalswindow::AddSubtractButtonsClicked(int subtract)
       if(strcmp(physdimension, mainwindow->edfheaderlist[row]->edfparam[s].physdimension))
       {
         QMessageBox messagewindow(QMessageBox::Warning, "Warning",
-                                     "It is only possible to make combinations/derivations with signals which:\n"
+                                     "It is only possible to make derivations from signals which:\n"
                                      " - are from the same file\n"
                                      " - have the same samplerate\n"
                                      " - have the same physical dimension (e.g. uV)\n"
@@ -569,11 +569,11 @@ void UI_Signalswindow::AddSubtractButtonsClicked(int subtract)
       if(dblcmp(bitvalue, mainwindow->edfheaderlist[row]->edfparam[s].bitvalue))
       {
         QMessageBox messagewindow(QMessageBox::Warning, "Warning",
-                                     "It is only possible to make combinations/derivations with signals which:\n"
+                                     "It is only possible to make derivations from signals which:\n"
                                      " - are from the same file\n"
                                      " - have the same samplerate\n"
                                      " - have the same physical dimension (e.g. uV)\n"
-                                     " - have the same sensitivity (e.g. uV/bit)");
+                                     " - have the same resolution (e.g. uV/bit)");
         messagewindow.exec();
 
         continue;

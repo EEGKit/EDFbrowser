@@ -263,6 +263,9 @@
   - have the same physical dimension (e.g. uV)<br>
   - have the same resolution (e.g. uV/bit)<br>
 <br>
+  In case the signals in your file don't have the same resolution, you may use the tool<br>
+  <a href="#Unify_resolution">Unify resolution</a> to correct this.<br>
+<br>
   note 2: If you want to invert the signals (which is common in EEG) do as follows:<br>
   instead of P3 - C3, use -P3 + C3 (or C3 - P3).<br>
   You can also invert a signal afterwards, go to <a href="#Organize_signals">Signals -&gt; Organize</a>.
@@ -1308,8 +1311,6 @@
   and the signal will look coarse.<br>
   The ideal value for the "physical maximum" is just above (or equal to) the maximum value that can occur,<br>
   i.e. the maximum possible output of the sensor or ADC, either positive or negative.<br>
-  Therefore, it's better to set the checkbox "Auto detect physical maximum". That way you don't need to<br>
-  enter the values in the column "Physical maximum".<br>
 <br>
   Note 2: The maximum physical value that the converter can handle, is limited to 9999999. Values above<br>
   will be  clipped to 9999999 and values below -9999999 will be clipped at -9999999.<br>
