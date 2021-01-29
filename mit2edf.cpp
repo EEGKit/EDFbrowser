@@ -170,7 +170,7 @@ void UI_MIT2EDFwindow::SelectFileButton()
        *data_inputfile=NULL,
        *annot_inputfile=NULL;
 
-  int i, j, k, p, len, hdl, *buf=NULL;
+  int i, j, k, p, len, hdl, has_dot, has_ext, *buf=NULL;
 
   short *buf16=NULL;
 
@@ -305,6 +305,8 @@ void UI_MIT2EDFwindow::SelectFileButton()
 
   p = ++i;
 
+  has_dot = 0;
+
   for(; i<len; i++)
   {
     if(charpntr[i] == ' ')
@@ -313,11 +315,24 @@ void UI_MIT2EDFwindow::SelectFileButton()
 
       break;
     }
+
+    if(charpntr[i] == '.')
+    {
+      has_dot = 1;
+    }
   }
 
   if(i == p)
   {
     textEdit1->append("Can not read header file. (error 8)\n");
+    fclose(header_inputfile);
+    pushButton1->setEnabled(true);
+    return;
+  }
+
+  if(has_dot)
+  {
+    textEdit1->append("The recording uses a non-integer samplerate which is not (yet) supported by this converter. (error 201)\n");
     fclose(header_inputfile);
     pushButton1->setEnabled(true);
     return;
@@ -415,6 +430,8 @@ void UI_MIT2EDFwindow::SelectFileButton()
 
     p = ++i;
 
+    has_ext = 0;
+
     for(; i<len; i++)
     {
       if(charpntr[i] == ' ')
@@ -423,11 +440,24 @@ void UI_MIT2EDFwindow::SelectFileButton()
 
         break;
       }
+
+      if((charpntr[i] == 'x') || (charpntr[i] == ':') || (charpntr[i] == '+'))
+      {
+        has_ext = 1;
+      }
     }
 
     if(i == len)
     {
       textEdit1->append("Can not read header file. (error 15)\n");
+      fclose(header_inputfile);
+      pushButton1->setEnabled(true);
+      return;
+    }
+
+    if(has_ext)
+    {
+      textEdit1->append("The recording uses a format extension which is not (yet) supported by this converter. (error 202)\n");
       fclose(header_inputfile);
       pushButton1->setEnabled(true);
       return;
