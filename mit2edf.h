@@ -82,25 +82,28 @@ char  *recent_opendir,
       *recent_savedir;
 
 struct {
-        int chns;
-        int sf_base;
-        int sf_frame[MAXSIGNALS];
-        int sf_div;
-        int sf_block;
-        int sf_multiple;
-        long long smp_period;
-        long long smp_period_frame[MAXSIGNALS];
-        int format[MAXSIGNALS];
-        double adc_gain[MAXSIGNALS];
-        int baseline[MAXSIGNALS];
-        int baseline_present[MAXSIGNALS];
-        int adc_resolution[MAXSIGNALS];
-        int adc_zero[MAXSIGNALS];
-        int init_val[MAXSIGNALS];
-        char label[MAXSIGNALS][17];
-        int unit_multiplier[MAXSIGNALS];
-        char unit[MAXSIGNALS][9];
-      } mit_hdr;
+  int chns;
+  int sf_base;
+  int sf_base_fraction;
+  double sf_base_fl;
+  int frame_smpl_pack[MAXSIGNALS];
+  int frame_smpl_pack_multiplier;
+  int sf_div;
+  int sf_block;
+  int sf_multiple;
+  long long smp_period;
+  long long smp_period_frame[MAXSIGNALS];
+  int format[MAXSIGNALS];
+  double adc_gain[MAXSIGNALS];
+  int baseline[MAXSIGNALS];
+  int baseline_present[MAXSIGNALS];
+  int adc_resolution[MAXSIGNALS];
+  int adc_zero[MAXSIGNALS];
+  int init_val[MAXSIGNALS];
+  char label[MAXSIGNALS][17];
+  int unit_multiplier[MAXSIGNALS];
+  char unit[MAXSIGNALS][9];
+} mit_hdr;
 
 
 private slots:

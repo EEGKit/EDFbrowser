@@ -170,21 +170,28 @@ void UI_MIT2EDFwindow::SelectFileButton()
        *data_inputfile=NULL,
        *annot_inputfile=NULL;
 
-  int i, j, k, p, len, hdl, has_dot, has_ext, *buf=NULL;
+  int i, j, k, r,
+      len,
+      hdl,
+      has_ext,
+      *buf=NULL,
+      edf_datrec_duration=0,
+      edf_datrec_offset[MAXSIGNALS];
 
-  short *buf16=NULL;
+  short *mit_buf16=NULL,
+        *edf_buf16=NULL;
 
   char header_filename[MAX_PATH_LENGTH],
-       txt_string[2048],
+       txt_string[2048]={""},
        edf_filename[MAX_PATH_LENGTH],
        data_filename[MAX_PATH_LENGTH],
        annot_filename[MAX_PATH_LENGTH],
        filename_x[MAX_PATH_LENGTH],
-       scratchpad[4096],
-       *charpntr=NULL;
+       scratchpad[4096]={""},
+       *charpntr=NULL,
+       *saveptr=NULL;
 
-  unsigned char a_buf[128],
-                ch_tmp;
+  unsigned char a_buf[128];
 
   long long filesize;
 
@@ -239,17 +246,8 @@ void UI_MIT2EDFwindow::SelectFileButton()
     return;
   }
 
-  for(i=0; i<len; i++)
-  {
-    if(charpntr[i] == ' ')
-    {
-      charpntr[i] = 0;
-
-      break;
-    }
-  }
-
-  if(i == len)
+  charpntr = strtok_r(charpntr, " ", &saveptr);
+  if(charpntr == NULL)
   {
     textEdit1->append("Can not read header file. (error 3)\n");
     fclose(header_inputfile);
@@ -265,19 +263,8 @@ void UI_MIT2EDFwindow::SelectFileButton()
     return;
   }
 
-  p = ++i;
-
-  for(; i<len; i++)
-  {
-    if(charpntr[i] == ' ')
-    {
-      charpntr[i] = 0;
-
-      break;
-    }
-  }
-
-  if(i == p)
+  charpntr = strtok_r(NULL, " ", &saveptr);
+  if(charpntr == NULL)
   {
     textEdit1->append("Can not read header file. (error 5)\n");
     fclose(header_inputfile);
@@ -285,7 +272,7 @@ void UI_MIT2EDFwindow::SelectFileButton()
     return;
   }
 
-  mit_hdr.chns = atoi(charpntr + p);
+  mit_hdr.chns = atoi(charpntr);
 
   if(mit_hdr.chns < 1)
   {
@@ -303,26 +290,8 @@ void UI_MIT2EDFwindow::SelectFileButton()
     return;
   }
 
-  p = ++i;
-
-  has_dot = 0;
-
-  for(; i<len; i++)
-  {
-    if(charpntr[i] == ' ')
-    {
-      charpntr[i] = 0;
-
-      break;
-    }
-
-    if(charpntr[i] == '.')
-    {
-      has_dot = 1;
-    }
-  }
-
-  if(i == p)
+  charpntr = strtok_r(NULL, " ", &saveptr);
+  if(charpntr == NULL)
   {
     textEdit1->append("Can not read header file. (error 8)\n");
     fclose(header_inputfile);
@@ -330,15 +299,38 @@ void UI_MIT2EDFwindow::SelectFileButton()
     return;
   }
 
-  if(has_dot)
+  len = strlen(charpntr);
+
+  mit_hdr.sf_base_fl = atof(charpntr);
+
+  mit_hdr.sf_base = atoi(charpntr);
+
+  mit_hdr.sf_base_fraction = (mit_hdr.sf_base_fl * 1000) - (((int)mit_hdr.sf_base_fl) * 1000);
+
+  if(1000 % mit_hdr.sf_base_fraction)
   {
-    textEdit1->append("The recording uses a non-integer samplerate which is not (yet) supported by this converter. (error 201)\n");
+    textEdit1->append("The recording uses an irrational samplerate which is not supported by this converter. (error 201)\n");
     fclose(header_inputfile);
     pushButton1->setEnabled(true);
     return;
   }
 
-  mit_hdr.sf_base = atoi(charpntr + p);
+  if(mit_hdr.sf_base_fraction)
+  {
+    mit_hdr.frame_smpl_pack_multiplier = (mit_hdr.sf_base * (1000 / mit_hdr.sf_base_fraction)) + 1;
+
+    edf_datrec_duration = 100000 * (1000 / mit_hdr.sf_base_fraction);
+  }
+  else
+  {
+    mit_hdr.frame_smpl_pack_multiplier = mit_hdr.sf_base;
+
+    edf_datrec_duration = 100000;
+  }
+
+//   printf("mit_hdr.sf_base_fraction: %i\n", mit_hdr.sf_base_fraction);
+//
+//   printf("mit_hdr.frame_smpl_pack_multiplier: %i\n", mit_hdr.frame_smpl_pack_multiplier);
 
   if(mit_hdr.sf_base < 1)
   {
@@ -358,13 +350,15 @@ void UI_MIT2EDFwindow::SelectFileButton()
 
   mit_hdr.smp_period = 1000000000LL / mit_hdr.sf_base;
 
+  mit_hdr.sf_multiple = 0;
+
   strlcat(filename_x, ".dat", MAX_PATH_LENGTH);
 
   for(j=0; j<mit_hdr.chns; j++)
   {
-    mit_hdr.sf_frame[j] = mit_hdr.sf_base;
-
     mit_hdr.smp_period_frame[j] = mit_hdr.smp_period;
+
+    mit_hdr.frame_smpl_pack[j] = 1;
 
     mit_hdr.adc_gain[j] = 200.0;
 
@@ -402,17 +396,8 @@ void UI_MIT2EDFwindow::SelectFileButton()
       return;
     }
 
-    for(i=0; i<len; i++)
-    {
-      if(charpntr[i] == ' ')
-      {
-        charpntr[i] = 0;
-
-        break;
-      }
-    }
-
-    if(i == len)
+    charpntr = strtok_r(charpntr, " ", &saveptr);
+    if(charpntr == NULL)
     {
       textEdit1->append("Can not read header file. (error 13)\n");
       fclose(header_inputfile);
@@ -428,31 +413,30 @@ void UI_MIT2EDFwindow::SelectFileButton()
       return;
     }
 
-    p = ++i;
-
-    has_ext = 0;
-
-    for(; i<len; i++)
-    {
-      if(charpntr[i] == ' ')
-      {
-        charpntr[i] = 0;
-
-        break;
-      }
-
-      if((charpntr[i] == 'x') || (charpntr[i] == ':') || (charpntr[i] == '+'))
-      {
-        has_ext = 1;
-      }
-    }
-
-    if(i == len)
+    charpntr = strtok_r(NULL, " ", &saveptr);
+    if(charpntr == NULL)
     {
       textEdit1->append("Can not read header file. (error 15)\n");
       fclose(header_inputfile);
       pushButton1->setEnabled(true);
       return;
+    }
+
+    len = strlen(charpntr);
+
+    has_ext = 0;
+
+    for(i=0; ; i++)
+    {
+      if(charpntr[i] == 0)
+      {
+        break;
+      }
+
+      if((charpntr[i] == ':') || (charpntr[i] == '+'))
+      {
+        has_ext = 1;
+      }
     }
 
     if(has_ext)
@@ -463,7 +447,7 @@ void UI_MIT2EDFwindow::SelectFileButton()
       return;
     }
 
-    mit_hdr.format[j] = atoi(charpntr + p);
+    mit_hdr.format[j] = atoi(charpntr);
 
     if((mit_hdr.format[j] != 212) &&
       (mit_hdr.format[j] != 16) &&
@@ -488,15 +472,13 @@ void UI_MIT2EDFwindow::SelectFileButton()
       }
     }
 
-    for(k=p; k<len; k++)
+    for(k=0; k<len; k++)
     {
       if((charpntr[k] < '0') || (charpntr[k] > '9'))
       {
         break;
       }
     }
-
-    mit_hdr.sf_multiple = 0;
 
     if(charpntr[k] == 'x')
     {
@@ -514,110 +496,61 @@ void UI_MIT2EDFwindow::SelectFileButton()
 
       if((charpntr[k] >= '0') && (charpntr[k] <= '9'))
       {
-        mit_hdr.sf_frame[j] = mit_hdr.sf_base * atoi(charpntr + k);
+        mit_hdr.frame_smpl_pack[j] = atoi(charpntr + k);
 
-        if(mit_hdr.sf_frame[j] < 1)
+        if(mit_hdr.frame_smpl_pack[j] < 1)
         {
           textEdit1->append("Error, wrong samplerate multiplier in header. (error 177)\n");
           fclose(header_inputfile);
           pushButton1->setEnabled(true);
           return;
         }
-
-        mit_hdr.smp_period_frame[j] = 1000000000LL / mit_hdr.sf_frame[j];
       }
     }
 
-    p = ++i;
-
-    for(ch_tmp=0; i<len; i++)
-    {
-      if((charpntr[i] == ' ') || (charpntr[i] == '(') || (charpntr[i] == '/'))
-      {
-        ch_tmp = charpntr[i];
-
-        charpntr[i] = 0;
-
-        break;
-      }
-    }
-
-    if(i == p)
+    charpntr = strtok_r(NULL, " ", &saveptr);
+    if(charpntr == NULL)
     {
       continue;
     }
 
-    if(atoi(charpntr + p) != 0)
-    {
-      mit_hdr.adc_gain[j] = atof(charpntr + p);
-    }
-    else if(charpntr[p + 1] == '.')
-      {
-        mit_hdr.adc_gain[j] = atof(charpntr + p);
-      }
+    len = strlen(charpntr);
+
+    mit_hdr.adc_gain[j] = atof(charpntr);
 
     if(abs(mit_hdr.adc_gain[j]) < 1e-9)  mit_hdr.adc_gain[j] = 200.0;
 
-    p = ++i;
-
-    if(ch_tmp == '(')
+    for(; ; charpntr++)
     {
-      for(; i<len; i++)
+      if((charpntr[0] == 0) || (charpntr[0] == '(') || (charpntr[0] == '/'))
       {
-        if(charpntr[i] == ')')
-        {
-          charpntr[i] = 0;
-
-          break;
-        }
+        break;
       }
+    }
 
-      if(i == len)
-      {
-        textEdit1->append("Can not read header file. (error 18)\n");
-        fclose(header_inputfile);
-        pushButton1->setEnabled(true);
-        return;
-      }
+    if(charpntr[0] == '(')
+    {
+      charpntr++;
 
-      p++;
-
-      mit_hdr.baseline[j] = atoi(charpntr + p);
+      mit_hdr.baseline[j] = atoi(charpntr);
 
       mit_hdr.baseline_present[j] = 1;
 
-      p = ++i;
-    }
-
-    if((ch_tmp == '/') || (charpntr[i] == '/'))
-    {
-      if(charpntr[i] == '/')
+      for(; ; charpntr++)
       {
-        p++;
-      }
-
-      for(; i<len; i++)
-      {
-        if(charpntr[i] == ' ')
+        if((charpntr[0] == 0) || (charpntr[0] == '/'))
         {
-          charpntr[i] = 0;
-
           break;
         }
       }
+    }
 
-      if(i == len)
-      {
-        textEdit1->append("Can not read header file. (error 19)\n");
-        fclose(header_inputfile);
-        pushButton1->setEnabled(true);
-        return;
-      }
+    if(charpntr[0] == '/')
+    {
+      charpntr++;
 
-      strncpy(mit_hdr.unit[j], charpntr + p, 8);
+      strncpy(mit_hdr.unit[j], charpntr, 8);
       mit_hdr.unit[j][8] = 0;
-
-      p = ++i;
     }
 //     else
 //     {
@@ -626,122 +559,66 @@ void UI_MIT2EDFwindow::SelectFileButton()
 //       mit_hdr.unit_multiplier[j] = 1000;
 //     }
 
-    for(; i<len; i++)
-    {
-      if(charpntr[i] == ' ')
-      {
-        charpntr[i] = 0;
-
-        break;
-      }
-    }
-
-    if(i == p)
+    charpntr = strtok_r(NULL, " ", &saveptr);
+    if(charpntr == NULL)
     {
       continue;
     }
 
-    mit_hdr.adc_resolution[j] = atoi(charpntr + p);
+    len = strlen(charpntr);
 
-    p = ++i;
+    mit_hdr.adc_resolution[j] = atoi(charpntr);
 
-    for(; i<len; i++)
-    {
-      if(charpntr[i] == ' ')
-      {
-        charpntr[i] = 0;
-
-        break;
-      }
-    }
-
-    if(i == p)
+    charpntr = strtok_r(NULL, " ", &saveptr);
+    if(charpntr == NULL)
     {
       continue;
     }
 
-    mit_hdr.adc_zero[j] = atoi(charpntr + p);
+    len = strlen(charpntr);
+
+    mit_hdr.adc_zero[j] = atoi(charpntr);
 
     if(!mit_hdr.baseline_present[j])
     {
       mit_hdr.baseline[j] = mit_hdr.adc_zero[j];
     }
 
-    p = ++i;
-
-    for(; i<len; i++)
-    {
-      if(charpntr[i] == ' ')
-      {
-        charpntr[i] = 0;
-
-        break;
-      }
-    }
-
-    if(i == p)
+    charpntr = strtok_r(NULL, " ", &saveptr);
+    if(charpntr == NULL)
     {
       continue;
     }
 
-    mit_hdr.init_val[j] = atoi(charpntr + p);
+    len = strlen(charpntr);
 
-    p = ++i;
+    mit_hdr.init_val[j] = atoi(charpntr);
 
-    for(; i<len; i++)
-    {
-      if(charpntr[i] == ' ')
-      {
-        charpntr[i] = 0;
-
-        break;
-      }
-    }
-
-    if(i == p)
+    charpntr = strtok_r(NULL, " ", &saveptr);
+    if(charpntr == NULL)
     {
       continue;
     }
 
     // skip
 
-    p = ++i;
-
-    for(; i<len; i++)
-    {
-      if(charpntr[i] == ' ')
-      {
-        charpntr[i] = 0;
-
-        break;
-      }
-    }
-
-    if(i == p)
+    charpntr = strtok_r(NULL, " ", &saveptr);
+    if(charpntr == NULL)
     {
       continue;
     }
 
     // skip
 
-    p = ++i;
-
-    for(; i<len; i++)
-    {
-      if((charpntr[i] == '\n') || (charpntr[i] == '\r'))
-      {
-        charpntr[i] = 0;
-
-        break;
-      }
-    }
-
-    if(i == p)
+    charpntr = strtok_r(NULL, " ", &saveptr);
+    if(charpntr == NULL)
     {
       continue;
     }
 
-    strncpy(mit_hdr.label[j], charpntr + p, 16);
+    len = strlen(charpntr);
+
+    strncpy(mit_hdr.label[j], charpntr, 16);
 
     mit_hdr.label[j][16] = 0;
   }
@@ -809,8 +686,12 @@ void UI_MIT2EDFwindow::SelectFileButton()
 
   mit_hdr.sf_block = mit_hdr.sf_base / mit_hdr.sf_div;
 
-  hdl = edfopen_file_writeonly(edf_filename, EDFLIB_FILETYPE_EDFPLUS, mit_hdr.chns);
+  if(!mit_hdr.sf_multiple)
+  {
+    edf_datrec_duration = 100000 / mit_hdr.sf_div;
+  }
 
+  hdl = edfopen_file_writeonly(edf_filename, EDFLIB_FILETYPE_EDFPLUS, mit_hdr.chns);
   if(hdl<0)
   {
     snprintf(txt_string, 2048, "Can not open file %s for writing.\n", edf_filename);
@@ -836,7 +717,7 @@ void UI_MIT2EDFwindow::SelectFileButton()
   {
     if(mit_hdr.sf_multiple)
     {
-      if(edf_set_samplefrequency(hdl, i, mit_hdr.sf_frame[i]))
+      if(edf_set_samplefrequency(hdl, i, mit_hdr.frame_smpl_pack[i] * mit_hdr.frame_smpl_pack_multiplier))
       {
         textEdit1->append("Error: edf_set_samplefrequency()\n");
         fclose(data_inputfile);
@@ -942,7 +823,7 @@ void UI_MIT2EDFwindow::SelectFileButton()
     }
   }
 
-  if(edf_set_datarecord_duration(hdl, 100000 / mit_hdr.sf_div))
+  if(edf_set_datarecord_duration(hdl, edf_datrec_duration))
   {
     textEdit1->append("Error: edf_set_datarecord_duration()\n");
     fclose(data_inputfile);
@@ -953,26 +834,48 @@ void UI_MIT2EDFwindow::SelectFileButton()
 
 /////////////////// Start conversion //////////////////////////////////////////
 
-  int blocks, tmp1, tmp2, l_end=0, odd_even=0, datrec_sz=0, datrecs;
+  int blocks, tmp1, tmp2, l_end=0, odd_even=0, mit_datrec_sz=0, edf_datrec_sz=0,
+      mit_buf_offset;
 
   for(i=0; i<mit_hdr.chns; i++)
   {
-    datrec_sz += (mit_hdr.sf_frame[i] * 2);
-  }
+    mit_datrec_sz += (mit_hdr.frame_smpl_pack[i] * 2);
 
-  datrecs = filesize / datrec_sz;
+    edf_datrec_sz += (mit_hdr.frame_smpl_pack[i] * mit_hdr.frame_smpl_pack_multiplier * 2);
+
+    if(i == 0)
+    {
+      edf_datrec_offset[0] = 0;
+    }
+    else
+    {
+      edf_datrec_offset[i] = (mit_hdr.frame_smpl_pack[i-1] * mit_hdr.frame_smpl_pack_multiplier) + edf_datrec_offset[i-1];
+    }
+  }
 
   if((mit_hdr.format[0] == 16) && mit_hdr.sf_multiple)
   {
-    buf16 = (short *)malloc((datrec_sz / 2) * sizeof(short));
-    if(buf16 == NULL)
+    mit_buf16 = (short *)malloc((mit_datrec_sz / 2) * mit_hdr.frame_smpl_pack_multiplier * sizeof(short));
+    if(mit_buf16 == NULL)
     {
-      textEdit1->append("Malloc() error (buf16)\n");
+      textEdit1->append("Malloc() error (mit_buf16)\n");
       fclose(data_inputfile);
       edfclose_file(hdl);
       pushButton1->setEnabled(true);
       return;
     }
+
+    edf_buf16 = (short *)malloc((edf_datrec_sz / 2) * sizeof(short));
+    if(edf_buf16 == NULL)
+    {
+      textEdit1->append("Malloc() error (edf_buf16)\n");
+      fclose(data_inputfile);
+      edfclose_file(hdl);
+      pushButton1->setEnabled(true);
+      return;
+    }
+
+    blocks = filesize / (mit_datrec_sz * mit_hdr.frame_smpl_pack_multiplier);
   }
   else
   {
@@ -985,11 +888,11 @@ void UI_MIT2EDFwindow::SelectFileButton()
       pushButton1->setEnabled(true);
       return;
     }
+
+    blocks = filesize / (mit_hdr.sf_block * mit_hdr.chns);
   }
 
   fseeko(data_inputfile, 0LL, SEEK_SET);
-
-  blocks = filesize / (mit_hdr.sf_block * mit_hdr.chns);
 
   QProgressDialog progress("Converting digitized signals ...", "Abort", 0, blocks);
   progress.setWindowModality(Qt::WindowModal);
@@ -1075,11 +978,11 @@ void UI_MIT2EDFwindow::SelectFileButton()
 
   if((mit_hdr.format[0] == 16) && mit_hdr.sf_multiple)
   {
-    progress.setMaximum(datrecs);
+    progress.setMaximum(blocks);
 
-    for(k=0; k<datrecs; k++)
+    for(k=0; k<blocks; k++)
     {
-      if(!(k % 100))
+      if(!(k % 10))
       {
         progress.setValue(k);
 
@@ -1096,7 +999,7 @@ void UI_MIT2EDFwindow::SelectFileButton()
         }
       }
 
-      if(fread(buf16, datrec_sz, 1, data_inputfile) != 1)
+      if(fread(mit_buf16, mit_datrec_sz * mit_hdr.frame_smpl_pack_multiplier, 1, data_inputfile) != 1)
       {
         progress.reset();
         textEdit1->append("A read error occurred during conversion.\n");
@@ -1107,7 +1010,22 @@ void UI_MIT2EDFwindow::SelectFileButton()
         return;
       }
 
-      if(edf_blockwrite_digital_short_samples(hdl, buf16))
+      for(i=0; i<mit_hdr.frame_smpl_pack_multiplier; i++)
+      {
+        mit_buf_offset = (mit_datrec_sz / 2) * i;
+
+        for(j=0; j<mit_hdr.chns; j++)
+        {
+          for(r=0; r<mit_hdr.frame_smpl_pack[j]; r++)
+          {
+            edf_buf16[edf_datrec_offset[j] + (i * mit_hdr.frame_smpl_pack[j]) + r] = mit_buf16[mit_buf_offset + r];
+          }
+
+          mit_buf_offset += mit_hdr.frame_smpl_pack[j];
+        }
+      }
+
+      if(edf_blockwrite_digital_short_samples(hdl, edf_buf16))
       {
         progress.reset();
         textEdit1->append("A write error occurred during conversion.\n");
@@ -1259,7 +1177,9 @@ OUT1:
 
   free(buf);
 
-  free(buf16);
+  free(mit_buf16);
+
+  free(edf_buf16);
 
   int annot_code, tc, skip, total_annots=0, annot_signal=0;
 
