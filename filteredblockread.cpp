@@ -76,7 +76,7 @@ double * FilteredBlockReadClass::init_signalcomp(struct signalcompblock *i_signa
 
   samples_per_datrec = hdr->edfparam[signalcomp->edfsignal[0]].smp_per_record;
 
-  samples_in_file = (long long)hdr->datarecords * (long long)samples_per_datrec;
+  samples_in_file = hdr->edfparam[signalcomp->edfsignal[0]].smpls;
 
   if(smpl_mode)
   {
@@ -108,7 +108,13 @@ double * FilteredBlockReadClass::init_signalcomp(struct signalcompblock *i_signa
 
     total_samples = (long long)samples_per_datrec * (long long)datarecord_cnt;
   }
+#ifdef FBR_DEBUG
+  printf("init_signalcomp(): samples_per_datrec: %i\n", samples_per_datrec);
 
+  printf("init_signalcomp(): total_samples: %lli\n", total_samples);
+
+  printf("init_signalcomp(): datarecord_cnt: %i\n", datarecord_cnt);
+#endif
   if(processed_samples_buf != NULL)
   {
     free(processed_samples_buf);
@@ -219,8 +225,9 @@ int FilteredBlockReadClass::process_signalcomp(int datarecord_or_sample_start)
           signed short two_signed[2];
           unsigned char four[4];
         } var;
-
-
+#ifdef FBR_DEBUG
+  printf("process_signalcomp(): datarecord_or_sample_start: %i\n", datarecord_or_sample_start);
+#endif
   if((total_samples < 1) || (datarecord_cnt < 1))
   {
     return -1;
@@ -243,10 +250,12 @@ int FilteredBlockReadClass::process_signalcomp(int datarecord_or_sample_start)
     datarecord_start = sample_start / (long long)samples_per_datrec;
 
     s_off = sample_start % (long long)samples_per_datrec;
-
-    if(((long long)samples_per_datrec - s_off) < total_samples)
+    if(s_off)
     {
-      extra_datrec = 1;
+      if(((long long)samples_per_datrec - s_off) < total_samples)
+      {
+        extra_datrec = 1;
+      }
     }
   }
   else
@@ -265,12 +274,26 @@ int FilteredBlockReadClass::process_signalcomp(int datarecord_or_sample_start)
 
     sample_start = (long long)datarecord_cnt * (long long)samples_per_datrec;
   }
+#ifdef FBR_DEBUG
+  printf("process_signalcomp(): s_off: %lli\n", s_off);
 
+  printf("process_signalcomp(): hdr->hdrsize: %i\n", hdr->hdrsize);
+
+  printf("process_signalcomp(): datarecord_start: %i\n", datarecord_start);
+
+  printf("process_signalcomp(): hdr->recordsize: %i\n", hdr->recordsize);
+
+  printf("process_signalcomp(): fseek: %lli\n", ((long long)hdr->hdrsize) + (((long long)datarecord_start) * ((long long) hdr->recordsize)));
+#endif
   if(fseeko(inputfile, ((long long)hdr->hdrsize) + (((long long)datarecord_start) * ((long long) hdr->recordsize)), SEEK_SET) == -1LL)
   {
     return -4;
   }
+#ifdef FBR_DEBUG
+  printf("process_signalcomp(): datarecord_cnt: %i\n", datarecord_cnt);
 
+  printf("process_signalcomp(): extra_datrec: %i\n\n", extra_datrec);
+#endif
   if(fread(readbuf, hdr->recordsize * (datarecord_cnt + extra_datrec), 1, inputfile) != 1)
   {
     return -5;

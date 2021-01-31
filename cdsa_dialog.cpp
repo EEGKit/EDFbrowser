@@ -473,6 +473,8 @@ void UI_cdsa_window::start_button_clicked()
 
   samples_in_file = (long long)signalcomp->edfhdr->datarecords * (long long)signalcomp->edfhdr->edfparam[signalcomp->edfsignal[0]].smp_per_record;
 
+//  printf("start_button_clicked(): samples_in_file: %lli\n", samples_in_file);
+
   segmentlen = segmentlen_spinbox->value();
   mainwindow->cdsa_segmentlen = segmentlen;
 
@@ -527,6 +529,18 @@ void UI_cdsa_window::start_button_clicked()
   smpl_in_block = sf * blocklen;
 
   segments_in_recording = samples_in_file / (long long)smpls_in_segment;
+
+//   printf("start_button_clicked(): sf: %i\n", sf);
+//
+//   printf("start_button_clicked(): segmentlen: %i\n", segmentlen);
+//
+//   printf("start_button_clicked(): samples_in_file: %lli\n", samples_in_file);
+//
+//   printf("start_button_clicked(): smpls_in_segment: %i\n", smpls_in_segment);
+//
+//   printf("start_button_clicked(): smpl_in_block: %i\n", smpl_in_block);
+//
+//   printf("start_button_clicked(): segments_in_recording: %i\n", segments_in_recording);
 
   w = segments_in_recording;
 
