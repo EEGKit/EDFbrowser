@@ -303,20 +303,28 @@ void UI_MIT2EDFwindow::SelectFileButton()
 
   mit_hdr.sf_base_fl = atof(charpntr);
 
-  mit_hdr.sf_base = atoi(charpntr);
-
-  mit_hdr.sf_base_fraction = (mit_hdr.sf_base_fl * 1000) - (((int)mit_hdr.sf_base_fl) * 1000);
-
-  if(1000 % mit_hdr.sf_base_fraction)
+  if(mit_hdr.sf_base_fl < 0.009999999)
   {
-    textEdit1->append("The recording uses an irrational samplerate which is not supported by this converter. (error 201)\n");
+    textEdit1->append("Samplerate too low. (error 204)\n");
     fclose(header_inputfile);
     pushButton1->setEnabled(true);
     return;
   }
 
+  mit_hdr.sf_base = atoi(charpntr);
+
+  mit_hdr.sf_base_fraction = (mit_hdr.sf_base_fl * 1000) - (((int)mit_hdr.sf_base_fl) * 1000);
+
   if(mit_hdr.sf_base_fraction)
   {
+    if(1000 % mit_hdr.sf_base_fraction)
+    {
+      textEdit1->append("The recording uses an irrational samplerate which is not supported by this converter. (error 201)\n");
+      fclose(header_inputfile);
+      pushButton1->setEnabled(true);
+      return;
+    }
+
     mit_hdr.frame_smpl_pack_multiplier = (mit_hdr.sf_base * (1000 / mit_hdr.sf_base_fraction)) + 1;
 
     edf_datrec_duration = 100000 * (1000 / mit_hdr.sf_base_fraction);
@@ -348,16 +356,12 @@ void UI_MIT2EDFwindow::SelectFileButton()
     return;
   }
 
-  mit_hdr.smp_period = 1000000000LL / mit_hdr.sf_base;
-
   mit_hdr.sf_multiple = 0;
 
   strlcat(filename_x, ".dat", MAX_PATH_LENGTH);
 
   for(j=0; j<mit_hdr.chns; j++)
   {
-    mit_hdr.smp_period_frame[j] = mit_hdr.smp_period;
-
     mit_hdr.frame_smpl_pack[j] = 1;
 
     mit_hdr.adc_gain[j] = 200.0;
@@ -1181,15 +1185,15 @@ OUT1:
 
   free(edf_buf16);
 
-  int annot_code, tc, skip, total_annots=0, annot_signal=0;
+  int annot_code, skip, total_annots=0, annot_signal=0;
 
-  long long bytes_read;
+  long long bytes_read, tc;
 
   get_filename_from_path(filename_x, annot_filename, MAX_PATH_LENGTH);
 
   for(k=0; k<ANNOT_EXT_CNT; k++)
   {
-    tc = 0;
+    tc = 0LL;
 
     remove_extension_from_filename(annot_filename);
 
@@ -1289,11 +1293,11 @@ OUT1:
 
                 if(annot_code < 42)
                 {
-                  edfwrite_annotation_latin1(hdl, ((long long)tc * mit_hdr.smp_period_frame[annot_signal]) / 100000LL, -1, annotdescrlist[annot_code]);
+                  edfwrite_annotation_latin1(hdl, (tc * 10000LL) / mit_hdr.sf_base_fl, -1, annotdescrlist[annot_code]);
                 }
                 else
                 {
-                  edfwrite_annotation_latin1(hdl, ((long long)tc * mit_hdr.smp_period_frame[annot_signal]) / 100000LL, -1, "user-defined");
+                  edfwrite_annotation_latin1(hdl, (tc * 10000LL) / mit_hdr.sf_base_fl, -1, "user-defined");
                 }
 
                 total_annots++;

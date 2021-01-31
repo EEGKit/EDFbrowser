@@ -91,8 +91,6 @@ struct {
   int sf_div;
   int sf_block;
   int sf_multiple;
-  long long smp_period;
-  long long smp_period_frame[MAXSIGNALS];
   int format[MAXSIGNALS];
   double adc_gain[MAXSIGNALS];
   int baseline[MAXSIGNALS];
