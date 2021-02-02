@@ -188,8 +188,7 @@ void UI_MIT2EDFwindow::SelectFileButton()
        annot_filename[MAX_PATH_LENGTH],
        filename_x[MAX_PATH_LENGTH],
        scratchpad[4096]={""},
-       *charpntr=NULL,
-       *saveptr=NULL;
+       *charpntr=NULL;
 
   unsigned char a_buf[128];
 
@@ -246,7 +245,7 @@ void UI_MIT2EDFwindow::SelectFileButton()
     return;
   }
 
-  charpntr = strtok_r(charpntr, " ", &saveptr);
+  charpntr = strtok(charpntr, " ");
   if(charpntr == NULL)
   {
     textEdit1->append("Can not read header file. (error 3)\n");
@@ -263,7 +262,7 @@ void UI_MIT2EDFwindow::SelectFileButton()
     return;
   }
 
-  charpntr = strtok_r(NULL, " ", &saveptr);
+  charpntr = strtok(NULL, " ");
   if(charpntr == NULL)
   {
     textEdit1->append("Can not read header file. (error 5)\n");
@@ -290,7 +289,7 @@ void UI_MIT2EDFwindow::SelectFileButton()
     return;
   }
 
-  charpntr = strtok_r(NULL, " ", &saveptr);
+  charpntr = strtok(NULL, " ");
   if(charpntr == NULL)
   {
     textEdit1->append("Can not read header file. (error 8)\n");
@@ -400,7 +399,7 @@ void UI_MIT2EDFwindow::SelectFileButton()
       return;
     }
 
-    charpntr = strtok_r(charpntr, " ", &saveptr);
+    charpntr = strtok(charpntr, " ");
     if(charpntr == NULL)
     {
       textEdit1->append("Can not read header file. (error 13)\n");
@@ -417,7 +416,7 @@ void UI_MIT2EDFwindow::SelectFileButton()
       return;
     }
 
-    charpntr = strtok_r(NULL, " ", &saveptr);
+    charpntr = strtok(NULL, " ");
     if(charpntr == NULL)
     {
       textEdit1->append("Can not read header file. (error 15)\n");
@@ -512,7 +511,7 @@ void UI_MIT2EDFwindow::SelectFileButton()
       }
     }
 
-    charpntr = strtok_r(NULL, " ", &saveptr);
+    charpntr = strtok(NULL, " ");
     if(charpntr == NULL)
     {
       continue;
@@ -563,7 +562,7 @@ void UI_MIT2EDFwindow::SelectFileButton()
 //       mit_hdr.unit_multiplier[j] = 1000;
 //     }
 
-    charpntr = strtok_r(NULL, " ", &saveptr);
+    charpntr = strtok(NULL, " ");
     if(charpntr == NULL)
     {
       continue;
@@ -573,7 +572,7 @@ void UI_MIT2EDFwindow::SelectFileButton()
 
     mit_hdr.adc_resolution[j] = atoi(charpntr);
 
-    charpntr = strtok_r(NULL, " ", &saveptr);
+    charpntr = strtok(NULL, " ");
     if(charpntr == NULL)
     {
       continue;
@@ -588,7 +587,7 @@ void UI_MIT2EDFwindow::SelectFileButton()
       mit_hdr.baseline[j] = mit_hdr.adc_zero[j];
     }
 
-    charpntr = strtok_r(NULL, " ", &saveptr);
+    charpntr = strtok(NULL, " ");
     if(charpntr == NULL)
     {
       continue;
@@ -598,7 +597,7 @@ void UI_MIT2EDFwindow::SelectFileButton()
 
     mit_hdr.init_val[j] = atoi(charpntr);
 
-    charpntr = strtok_r(NULL, " ", &saveptr);
+    charpntr = strtok(NULL, " ");
     if(charpntr == NULL)
     {
       continue;
@@ -606,7 +605,7 @@ void UI_MIT2EDFwindow::SelectFileButton()
 
     // skip
 
-    charpntr = strtok_r(NULL, " ", &saveptr);
+    charpntr = strtok(NULL, " ");
     if(charpntr == NULL)
     {
       continue;
@@ -614,7 +613,7 @@ void UI_MIT2EDFwindow::SelectFileButton()
 
     // skip
 
-    charpntr = strtok_r(NULL, " ", &saveptr);
+    charpntr = strtok(NULL, " ");
     if(charpntr == NULL)
     {
       continue;
