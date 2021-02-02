@@ -59,7 +59,7 @@
 #define QT_NO_DEPRECATED_WARNINGS
 
 #define PROGRAM_NAME                "EDFbrowser"
-#define PROGRAM_VERSION                   "1.80"
+#define PROGRAM_VERSION                   "1.81"
 #define PROGRAM_BETA_SUFFIX                   ""
 #define MINIMUM_QT4_VERSION             0x040701
 #define MINIMUM_QT5_VERSION             0x050901
