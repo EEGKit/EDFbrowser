@@ -30,12 +30,11 @@ Inside every element "signalcomposition", there must be one element with the nam
 
 <num_of_signals>2</num_of_signals>
 
-The value of this element must be an integer within the range 1 to 512. (The example has a value of 2.)
+The value of this element must be an integer within the range 1 to MAXSIGNALS inclusive. (The example has a value of 2.)
 
 The value represents from how many signals it is derived i.e. if it's monopolar, bipolar or tripolar, etc.
 
-Note: all signals in the same signalcomposition must share the same samplerate and sensitivity.
-
+Note: all signals in the same signalcomposition must share the same samplerate and resolution (e.g. uV/lsb).
 
 
 
@@ -107,8 +106,8 @@ Inside every element "signalcomposition", there can be one element with the name
 
 <alias>average</alias>
 
-An alias, if used, replaces the signalcomposition label on the screen. It does not influence the montages.
-Only 7-bit ASCII characters are allowed. Max 16 characters.
+An alias, if present, replaces the signalcomposition label on the screen. It does not influence the montages.
+Only 7-bit ASCII characters are allowed. No control-characters. Max 16 characters.
 
 
 
@@ -140,7 +139,7 @@ Inside every element "signalcomposition", there must be at least one element wit
 
 The number of elements "signal" must be equal to the value of the element "num_of_signals".
 
-Note: all signals in the same signalcomposition must have the same samplerate and sensitivity.
+Note: all signals in the same signalcomposition must have the same samplerate and resolution.
 
 
 
@@ -163,7 +162,7 @@ Instead of an element "label", an element "edfindex" can be used:
 
 The value of this element must be an integer within the range 0 to 511. (The example has a value of 4.)
 
-The value represents the number of the signal in the file which must be used for this signalcomposition.
+The value represents a zero-based number of the signal in the file which must be used for this signalcomposition.
 The first signal in an EDF-file has number 0, the second signal has number 1, the third signal has number 2, etc.
 
 
@@ -171,12 +170,11 @@ The first signal in an EDF-file has number 0, the second signal has number 1, th
 
 Inside the element "signal", there must be one element with the name "factor", like:
 
-<factor>1</factor>
+<factor>1.0</factor>
 
-The value of this element must be an integer in the range -128 to 128. 0 is not allowed. (The example has a value of 1.)
-
-The value of this element represents a multiplying factor. During the drawing of the samples of the respective signal
-on the screen, the values of the samples will be multiplied with this factor.
+Multiplying factor.
+The value can be an integer or float in the range -128 to 128. 0 is not allowed. (The example has a value of 1.)
+The value must be greater than +0.001 or lower than -0.001.
 
 
 
