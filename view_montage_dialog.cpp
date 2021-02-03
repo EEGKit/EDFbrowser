@@ -109,7 +109,8 @@ void UI_ViewMontagewindow::SelectButtonClicked()
       holdoff=100,
       plif_powerlinefrequency,
       plif_linear_threshold,
-      n_taps;
+      n_taps,
+      idx_used=0;
 
   char result[XML_STRBUFLEN]="",
        composition_txt[2048]="",
@@ -347,6 +348,8 @@ void UI_ViewMontagewindow::SelectButtonClicked()
 
     for(signals_read=0; signals_read<signal_cnt; signals_read++)
     {
+      idx_used = 0;
+
       if(xml_goto_nth_element_inside(xml_hdl, "signal", signals_read))
       {
         QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file.");
@@ -374,10 +377,15 @@ void UI_ViewMontagewindow::SelectButtonClicked()
       xml_go_up(xml_hdl);
       if(xml_goto_nth_element_inside(xml_hdl, "label", 0))
       {
-        QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file.");
-        messagewindow.exec();
-        xml_close(xml_hdl);
-        return;
+        if(xml_goto_nth_element_inside(xml_hdl, "edfindex", 0))
+        {
+          QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file.");
+          messagewindow.exec();
+          xml_close(xml_hdl);
+          return;
+        }
+
+        idx_used = 1;
       }
       if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
       {
@@ -386,7 +394,15 @@ void UI_ViewMontagewindow::SelectButtonClicked()
         xml_close(xml_hdl);
         return;
       }
-      strlcpy(label, result, 256);
+      if(idx_used)
+      {
+        strlcpy(label, "index: ", 256);
+      }
+      else
+      {
+        strlcpy(label, "label: ", 256);
+      }
+      strlcat(label, result, 256);
 
       snprintf(str3, 64, "%+f", factor[signals_read]);
 
