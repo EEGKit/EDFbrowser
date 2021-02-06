@@ -2561,7 +2561,7 @@ void ViewCurve::drawCurve_stage_2(QPainter *painter, int w_width, int w_height, 
 
     if(signalcomp[i]->hasgaintracking)
     {
-      snprintf(string, 128, "gain: %f %s/cm",
+      snprintf(string, 128, "amplitude: %f %s/cm",
         signalcomp[i]->voltpercm,
         signalcomp[i]->physdimension);
       painter->fillRect(132 * w_scaling, baseline - (2 * h_scaling), 190 * w_scaling, -15 * h_scaling, backgroundcolor);
