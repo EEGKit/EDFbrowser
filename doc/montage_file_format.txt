@@ -3,7 +3,7 @@ This document describes the format used by EDFbrowser to write montage files.
 -----------------------------------------------------------------------------
 
 
-The montage file uses only basic XML elements. XML attributes are not allowed.
+The montage file uses basic XML elements. XML attributes are not allowed.
 
 The first line of the file must contain:
 
@@ -18,7 +18,7 @@ The root element must be "EDFbrowser_montage", like:
 
 
 Inside the root element "EDFbrowser_montage", there will be a child element for every signal composition.
-A signal composition represents one trace or curve on the screen.
+A signal composition represents one trace on the screen.
 The name of this element must be "signalcomposition", like:
 
 <signalcomposition>
@@ -30,7 +30,7 @@ Inside every element "signalcomposition", there must be one element with the nam
 
 <num_of_signals>2</num_of_signals>
 
-The value of this element must be an integer within the range 1 to MAXSIGNALS inclusive. (The example has a value of 2.)
+The value of this element must be an integer within the range 1 to MAXSIGNALS inclusive.
 
 The value represents from how many signals it is derived i.e. if it's monopolar, bipolar or tripolar, etc.
 
@@ -40,11 +40,11 @@ Note: all signals in the same signalcomposition must share the same samplerate a
 
 Inside every element "signalcomposition", there must be one element with the name "voltpercm", like:
 
-<voltpercm>100.000000</voltpercm>
+<voltpercm>100.0</voltpercm>
 
 The value of this element must be a floating point number. (The example has a value of 100.0.)
 
-The value represents the amplitude of the signal expressed in it's physical dimension per cm (vertical).
+The value represents the amplitude of the signal expressed in it's physical dimension (unit) per cm (vertical).
 
 
 
@@ -76,7 +76,7 @@ Inside every element "signalcomposition", there must be one element with the nam
 
 <color>2</color>
 
-The value of this element must be an integer within the range 2 to 18. (The example has a value of 2.)
+The value of this element must be an integer within the range 2 to 18 inclusive. (The example has a value of 2.)
 
 The value represents the color of the signalcomposition on the screen i.e. the trace or curve.
 
@@ -160,9 +160,9 @@ Instead of an element "label", an element "edfindex" can be used:
 
 <edfindex>4</edfindex>
 
-The value of this element must be an integer within the range 0 to 511. (The example has a value of 4.)
+The value of this element must be an integer within the range 0 to MAXSIGNALS - 1. (The example has a value of 4.)
 
-The value represents a zero-based number of the signal in the file which must be used for this signalcomposition.
+The value represents a zero-based number of the signal in the file, which must be used for this signalcomposition.
 The first signal in an EDF-file has number 0, the second signal has number 1, the third signal has number 2, etc.
 
 
@@ -179,7 +179,7 @@ The value must be greater than +0.001 or lower than -0.001.
 
 
 
-If the value of element "fidfilter_cnt" is higher than zero, there must be at least one element with name "fidfilter", like:
+If the value of element "fidfilter_cnt" is non-zero, there must be at least one element with name "fidfilter", like:
 
 <fidfilter>
 
