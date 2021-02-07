@@ -35,15 +35,15 @@ UI_SaveMontagewindow::UI_SaveMontagewindow(QWidget *w_parent)
 
   mainwindow = (UI_Mainwindow *)w_parent;
 
-  if(mainwindow->files_open==1)
-  {
-    SaveMontageDialog = NULL;
-    SaveButtonClicked();
-    return;
-  }
+//   if(mainwindow->files_open==1)
+//   {
+//     SaveMontageDialog = NULL;
+//     SaveButtonClicked();
+//     return;
+//   }
 
   SaveMontageDialog = new QDialog;
-  SaveMontageDialog->setMinimumSize(600 * mainwindow->w_scaling, 180 * mainwindow->h_scaling);
+  SaveMontageDialog->setMinimumSize(600 * mainwindow->w_scaling, 300 * mainwindow->h_scaling);
   SaveMontageDialog->setWindowTitle("Save montage");
   SaveMontageDialog->setModal(true);
   SaveMontageDialog->setAttribute(Qt::WA_DeleteOnClose, true);
@@ -58,6 +58,17 @@ UI_SaveMontagewindow::UI_SaveMontagewindow(QWidget *w_parent)
   {
     new QListWidgetItem(QString::fromLocal8Bit(mainwindow->edfheaderlist[i]->filename), filelist);
   }
+
+  radio_group_box = new QGroupBox("Select signal identification method");
+  label_radio_button = new QRadioButton("use signal label   (requires that the signal label must have the exact same name)");
+  index_radio_button = new QRadioButton("use signal index   (requires that the signal must have the exact same position/order in the file)");
+  label_radio_button->setChecked(true);
+
+  QVBoxLayout *vlayout2 = new QVBoxLayout;
+  vlayout2->addWidget(label_radio_button);
+  vlayout2->addWidget(index_radio_button);
+  vlayout2->addStretch(1);
+  radio_group_box->setLayout(vlayout2);
 
   SaveButton = new QPushButton;
   SaveButton->setText("Save");
@@ -79,6 +90,8 @@ UI_SaveMontagewindow::UI_SaveMontagewindow(QWidget *w_parent)
   vlayout1->addWidget(label1);
   vlayout1->addWidget(filelist, 1000);
   vlayout1->addSpacing(20);
+  vlayout1->addWidget(radio_group_box);
+  vlayout1->addSpacing(20);
   vlayout1->addLayout(hlayout1);
 
   SaveMontageDialog->setLayout(vlayout1);
@@ -90,14 +103,21 @@ UI_SaveMontagewindow::UI_SaveMontagewindow(QWidget *w_parent)
 
 void UI_SaveMontagewindow::SaveButtonClicked()
 {
-  int i, j, k, n;
+  int i, j, k, n,
+      use_index=0;
 
   char mtg_path[MAX_PATH_LENGTH];
 
   FILE *mtgfile;
 
-  if(mainwindow->files_open==1)  n = 0;
-  else  n = filelist->currentRow();
+  if(index_radio_button->isChecked() == true)
+  {
+    use_index = 1;
+  }
+
+//   if(mainwindow->files_open==1)  n = 0;
+//   else  n = filelist->currentRow();
+  n = filelist->currentRow();
 
   strlcpy(mtg_path, mainwindow->recent_montagedir, MAX_PATH_LENGTH);
   strlcat(mtg_path, "/my_montage.mtg", MAX_PATH_LENGTH);
@@ -171,11 +191,18 @@ void UI_SaveMontagewindow::SaveButtonClicked()
       {
         fprintf(mtgfile, "    <signal>\n");
 
-        fprintf(mtgfile, "      <label>");
+        if(use_index)
+        {
+          fprintf(mtgfile, "      <edfindex>%i</edfindex>\n", mainwindow->signalcomp[i]->edfsignal[j]);
+        }
+        else
+        {
+          fprintf(mtgfile, "      <label>");
 
-        xml_fwrite_encode_entity(mtgfile, mainwindow->signalcomp[i]->edfhdr->edfparam[mainwindow->signalcomp[i]->edfsignal[j]].label);
+          xml_fwrite_encode_entity(mtgfile, mainwindow->signalcomp[i]->edfhdr->edfparam[mainwindow->signalcomp[i]->edfsignal[j]].label);
 
-        fprintf(mtgfile, "</label>\n");
+          fprintf(mtgfile, "</label>\n");
+        }
 
         fprintf(mtgfile, "      <factor>%e</factor>\n", mainwindow->signalcomp[i]->factor[j]);
 

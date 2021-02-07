@@ -47,6 +47,8 @@
 #include <QHBoxLayout>
 #include <QGridLayout>
 #include <QFormLayout>
+#include <QRadioButton>
+#include <QGroupBox>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -80,6 +82,11 @@ private:
   QDialog      *SaveMontageDialog;
 
   QListWidget  *filelist;
+
+  QRadioButton *label_radio_button,
+               *index_radio_button;
+
+  QGroupBox    *radio_group_box;
 
   QPushButton  *CloseButton,
                *SaveButton;
