@@ -383,10 +383,7 @@ void UI_Mainwindow::read_recent_file_settings()
       xml_close(xml_hdl);
       return;
     }
-
-    strncpy(recent_colordir, result, MAX_PATH_LENGTH);
-    recent_opendir[MAX_PATH_LENGTH - 1] = 0;
-
+    strlcpy(recent_colordir, result, MAX_PATH_LENGTH);
     xml_go_up(xml_hdl);
   }
 
@@ -420,8 +417,7 @@ void UI_Mainwindow::read_recent_file_settings()
         {
           break;
         }
-        strncpy(&recent_file_path[i][0], result, MAX_PATH_LENGTH);
-        recent_file_path[i][MAX_PATH_LENGTH - 1] = 0;
+        strlcpy(&recent_file_path[i][0], result, MAX_PATH_LENGTH);
         act = new QAction(QString::fromLocal8Bit(&recent_file_path[i][0]), recent_filesmenu);
         act->setData(QVariant(i));
         recent_filesmenu->addAction(act);
@@ -451,8 +447,7 @@ void UI_Mainwindow::read_recent_file_settings()
         xml_close(xml_hdl);
         return;
       }
-      strncpy(&recent_file_mtg_path[i][0], result, MAX_PATH_LENGTH);
-      recent_file_mtg_path[i][MAX_PATH_LENGTH - 1] = 0;
+      strlcpy(&recent_file_mtg_path[i][0], result, MAX_PATH_LENGTH);
     }
 
     xml_go_up(xml_hdl);
@@ -478,8 +473,7 @@ void UI_Mainwindow::read_recent_file_settings()
       {
         break;
       }
-      strncpy(&predefined_mtg_path[i][0], result, MAX_PATH_LENGTH);
-      predefined_mtg_path[i][MAX_PATH_LENGTH - 1] = 0;
+      strlcpy(&predefined_mtg_path[i][0], result, MAX_PATH_LENGTH);
     }
 
     xml_go_up(xml_hdl);
@@ -912,8 +906,7 @@ void UI_Mainwindow::read_general_settings()
         return;
       }
 
-      strncpy(spectrum_colorbar->label[0], result, 16);
-      spectrum_colorbar->label[0][16] = 0;
+      strlcpy(spectrum_colorbar->label[0], result, 17);
 
       for(i=1; i < spectrum_colorbar->items; i++)
       {
@@ -929,8 +922,7 @@ void UI_Mainwindow::read_general_settings()
           return;
         }
 
-        strncpy(spectrum_colorbar->label[i], result, 16);
-        spectrum_colorbar->label[i][16] = 0;
+        strlcpy(spectrum_colorbar->label[i], result, 17);
       }
 
       xml_go_up(xml_hdl);
@@ -1077,11 +1069,7 @@ void UI_Mainwindow::read_general_settings()
         xml_close(xml_hdl);
         return;
       }
-
-      strncpy(import_annotations_var->separator, result, 3);
-
-      import_annotations_var->separator[3] = 0;
-
+      strlcpy(import_annotations_var->separator, result, 4);
       xml_go_up(xml_hdl);
     }
 
@@ -1137,10 +1125,7 @@ void UI_Mainwindow::read_general_settings()
         return;
       }
 
-      strncpy(import_annotations_var->description, result, 20);
-
-      import_annotations_var->description[20] = 0;
-
+      strlcpy(import_annotations_var->description, result, 21);
       xml_go_up(xml_hdl);
     }
 
@@ -1894,7 +1879,7 @@ void UI_Mainwindow::read_general_settings()
         return;
       }
 
-      strncpy(raw2edf_var.phys_dim, result, 16);
+      strlcpy(raw2edf_var.phys_dim, result, 16);
       latin1_to_ascii(raw2edf_var.phys_dim, 16);
       raw2edf_var.phys_dim[15] = 0;
       trim_spaces(raw2edf_var.phys_dim);

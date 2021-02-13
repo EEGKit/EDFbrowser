@@ -1203,8 +1203,7 @@ UI_Mainwindow::UI_Mainwindow()
 
   char v_str[32];
 
-  strncpy(v_str, qVersion(), 32);
-  v_str[31] = 0;
+  strlcpy(v_str, qVersion(), 32);
 
   v_nr = 0x10000 * atoi(v_str);
   v_nr += 0x100 * atoi(v_str + 2);

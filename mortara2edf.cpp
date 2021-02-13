@@ -80,10 +80,11 @@ void UI_MortaraEDFwindow::SelectFileButton()
 {
   int i, j, err, len, buf_len, char_encoding, edf_hdl=-99, datrecs;
 
-  char path[MAX_PATH_LENGTH],
-       scratchpad[4096];
+  char path[MAX_PATH_LENGTH]={""},
+       scratchpad[4096]={""},
+       scratchpad_2[4096]={""};
 
-  struct xml_handle *xml_hdl;
+  struct xml_handle *xml_hdl=NULL;
 
   for(i=0; i<MORTARA_MAX_CHNS; i++)
   {
@@ -315,8 +316,8 @@ void UI_MortaraEDFwindow::SelectFileButton()
     scratchpad[32] = 0;
     if(strcmp(scratchpad, "BASE64"))
     {
-      snprintf(scratchpad, 4096, "Error, value of attribute \"ENCODING\" in channel number %i is %.4000s\n", i + 1, scratchpad);
-      textEdit1->append(scratchpad);
+      snprintf(scratchpad_2, 4096, "Error, value of attribute \"ENCODING\" in channel number %i is %.4000s\n", i + 1, scratchpad);
+      textEdit1->append(scratchpad_2);
       goto OUT_EXIT;
     }
 

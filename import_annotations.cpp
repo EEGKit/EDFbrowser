@@ -1064,7 +1064,7 @@ int UI_ImportAnnotationswindow::import_from_xml(void)
     {
       memset(&annotation, 0, sizeof(struct annotationblock));
       annotation.onset = onset;
-      strncpy(annotation.description, result, MAX_ANNOTATION_LEN);
+      strlcpy(annotation.description, result, MAX_ANNOTATION_LEN);
       if(xml_hdl->encoding == 1)
       {
         latin1_to_utf8(annotation.description, MAX_ANNOTATION_LEN);

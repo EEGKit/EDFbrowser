@@ -1064,7 +1064,7 @@ void UI_RAW2EDFapp::loadbuttonpressed()
       return;
     }
 
-    strncpy(raw2edf_var->phys_dim, result, 16);
+    strlcpy(raw2edf_var->phys_dim, result, 16);
     latin1_to_ascii(raw2edf_var->phys_dim, 16);
     raw2edf_var->phys_dim[15] = 0;
     trim_spaces(raw2edf_var->phys_dim);

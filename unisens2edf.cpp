@@ -236,16 +236,16 @@ void UI_UNISENS2EDFwindow::SelectFileButton()
 
   if(char_encoding == 1)  // Latin-1
   {
-    strncpy(str_measurementId, QString::fromLatin1(str).toLocal8Bit().data(), 128);
+    strlcpy(str_measurementId, QString::fromLatin1(str).toLocal8Bit().data(), 128);
   }
   else if(char_encoding == 2)
     {
-      strncpy(str_measurementId, QString::fromUtf8(str).toLocal8Bit().data(), 128);
+      strlcpy(str_measurementId, QString::fromUtf8(str).toLocal8Bit().data(), 128);
     }
     else
     {
-//      strncpy(str_measurementId, str, 128);
-      strncpy(str_measurementId, QString::fromUtf8(str).toLocal8Bit().data(), 128);  // default for XML is UTF-8
+//      strlcpy(str_measurementId, str, 128);
+      strlcpy(str_measurementId, QString::fromUtf8(str).toLocal8Bit().data(), 128);  // default for XML is UTF-8
     }
 
   str_measurementId[127] = 0;
@@ -435,16 +435,16 @@ void UI_UNISENS2EDFwindow::SelectFileButton()
 
       if(char_encoding == 1)  // Latin-1
       {
-        strncpy(signallabel[total_edf_signals], str, 16);
+        strlcpy(signallabel[total_edf_signals], str, 17);
       }
       else if(char_encoding == 2)
         {
-          strncpy(signallabel[total_edf_signals], QString::fromUtf8(str).toLatin1().data(), 16);
+          strlcpy(signallabel[total_edf_signals], QString::fromUtf8(str).toLatin1().data(), 17);
         }
         else
         {
-//          strncpy(signallabel[total_edf_signals], str, 16);
-          strncpy(signallabel[total_edf_signals], QString::fromUtf8(str).toLatin1().data(), 16);  // default for XML is UTF-8
+//          strlcpy(signallabel[total_edf_signals], str, 17);
+          strlcpy(signallabel[total_edf_signals], QString::fromUtf8(str).toLatin1().data(), 17);  // default for XML is UTF-8
         }
 
       signallabel[total_edf_signals][16] = 0;
@@ -628,16 +628,16 @@ void UI_UNISENS2EDFwindow::SelectFileButton()
 
       if(char_encoding == 1)  // Latin-1
       {
-        strncpy(signallabel[total_edf_signals], str, 16);
+        strlcpy(signallabel[total_edf_signals], str, 17);
       }
       else if(char_encoding == 2)
         {
-          strncpy(signallabel[total_edf_signals], QString::fromUtf8(str).toLatin1().data(), 16);
+          strlcpy(signallabel[total_edf_signals], QString::fromUtf8(str).toLatin1().data(), 17);
         }
         else
         {
-//          strncpy(signallabel[total_edf_signals], str, 16);
-          strncpy(signallabel[total_edf_signals], QString::fromUtf8(str).toLatin1().data(), 16);  // default for XML is UTF-8
+//          strlcpy(signallabel[total_edf_signals], str, 17);
+          strlcpy(signallabel[total_edf_signals], QString::fromUtf8(str).toLatin1().data(), 17);  // default for XML is UTF-8
         }
 
       signallabel[total_edf_signals][16] = 0;
@@ -1974,16 +1974,16 @@ int UI_UNISENS2EDFwindow::get_signalparameters_from_BIN_attributes(struct xml_ha
     }
     else if(char_encoding == 1)  // Latin-1
       {
-        strncpy(physdim[file_nr], str, 8);
+        strlcpy(physdim[file_nr], str, 9);
       }
       else if(char_encoding == 2)
         {
-          strncpy(physdim[file_nr], QString::fromUtf8(str).toLatin1().data(), 8);
+          strlcpy(physdim[file_nr], QString::fromUtf8(str).toLatin1().data(), 9);
         }
         else
         {
-//          strncpy(physdim[file_nr], str, 8);
-          strncpy(physdim[file_nr], QString::fromUtf8(str).toLatin1().data(), 8);  // default for XML is UTF-8
+//          strlcpy(physdim[file_nr], str, 9);
+          strlcpy(physdim[file_nr], QString::fromUtf8(str).toLatin1().data(), 9);  // default for XML is UTF-8
         }
 
   physdim[file_nr][8] = 0;
