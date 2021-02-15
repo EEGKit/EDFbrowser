@@ -4,6 +4,10 @@
 
  - Save montage: it's now possible to select the method used to identify the signal, label based or index based.
 
+ - File Info: Signals: Make sure the content (if any) of the pre-filter and transducer fields are visible.
+   It happened that, depending on the column width, the first part of the field wasn't visible which could give
+   the false impression that the field was empty.
+
 
 
  version 1.81      February 2, 2021
