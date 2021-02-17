@@ -8,6 +8,9 @@
    It happened that, depending on the column width, the first part of the field wasn't visible which could give
    the false impression that the field was empty.
 
+ - Import annotations/events: make it possible to import annotations from a discontinuous (EDF+D or BDF+D) file
+   also when the datarecord duration is set to zero.
+
 
 
  version 1.81      February 2, 2021

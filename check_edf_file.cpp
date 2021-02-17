@@ -30,7 +30,7 @@
 
 
 
-struct edfhdrblock * EDFfileCheck::check_edf_file(FILE *inputfile, char *txt_string, int txt_len, int live_stream)
+struct edfhdrblock * EDFfileCheck::check_edf_file(FILE *inputfile, char *txt_string, int txt_len, int live_stream, int import_annots_active)
 {
   int i, j, p, r=0, n,
       dotposition,
@@ -563,14 +563,24 @@ struct edfhdrblock * EDFfileCheck::check_edf_file(FILE *inputfile, char *txt_str
   edfhdr->data_record_duration = atof(scratchpad);
   if(dblcmp(edfhdr->data_record_duration, 0.0) != 1)
   {
-    snprintf(txt_string, txt_len, "Error, record duration is invalid: \"%s\", should be > 0",
-            scratchpad);
-    free(edf_hdr);
-    free(edfhdr);
-    return NULL;
+    if(import_annots_active)
+    {
+      edfhdr->data_record_duration = 0;
+      edfhdr->long_data_record_duration = 0;
+    }
+    else
+    {
+      snprintf(txt_string, txt_len, "Error, record duration is invalid: \"%s\", should be > 0",
+              scratchpad);
+      free(edf_hdr);
+      free(edfhdr);
+      return NULL;
+    }
   }
-
-  edfhdr->long_data_record_duration = get_long_duration(scratchpad);
+  else
+  {
+    edfhdr->long_data_record_duration = get_long_duration(scratchpad);
+  }
 
   free(edf_hdr);
 
@@ -661,13 +671,27 @@ struct edfhdrblock * EDFfileCheck::check_edf_file(FILE *inputfile, char *txt_str
   }
   if((edfhdr->edfsignals!=edfhdr->nr_annot_chns)||((!edfhdr->edfplus)&&(!edfhdr->bdfplus)))
   {
-    if(edfhdr->data_record_duration<0.000001)
+    if(import_annots_active)
     {
-      snprintf(txt_string, txt_len, "Error, record duration is invalid, should be >0");
-      free(edf_hdr);
-      free(edfhdr->edfparam);
-      free(edfhdr);
-      return NULL;
+      if(edfhdr->data_record_duration<-0.000001)
+      {
+        snprintf(txt_string, txt_len, "Error, record duration is invalid, should be >=0");
+        free(edf_hdr);
+        free(edfhdr->edfparam);
+        free(edfhdr);
+        return NULL;
+      }
+    }
+    else
+    {
+      if(edfhdr->data_record_duration<0.000001)
+      {
+        snprintf(txt_string, txt_len, "Error, record duration is invalid, should be >0");
+        free(edf_hdr);
+        free(edfhdr->edfparam);
+        free(edfhdr);
+        return NULL;
+      }
     }
   }
 
@@ -1151,15 +1175,24 @@ struct edfhdrblock * EDFfileCheck::check_edf_file(FILE *inputfile, char *txt_str
     edfhdr->edfparam[i].smp_per_record = n;
     edfhdr->recordsize += n;
 
-    edfhdr->edfparam[i].sf_f = (double)(edfhdr->edfparam[i].smp_per_record) / edfhdr->data_record_duration;
-
-    if(((long long)(edfhdr->edfparam[i].smp_per_record) * TIME_DIMENSION) % edfhdr->long_data_record_duration)
+    if(edfhdr->long_data_record_duration == 0)
     {
       edfhdr->edfparam[i].sf_int = 0;
+
+      edfhdr->edfparam[i].sf_f = 0;
     }
     else
     {
-      edfhdr->edfparam[i].sf_int = ((long long)(edfhdr->edfparam[i].smp_per_record) * TIME_DIMENSION) / edfhdr->long_data_record_duration;
+      edfhdr->edfparam[i].sf_f = (double)(edfhdr->edfparam[i].smp_per_record) / edfhdr->data_record_duration;
+
+      if(((long long)(edfhdr->edfparam[i].smp_per_record) * TIME_DIMENSION) % edfhdr->long_data_record_duration)
+      {
+        edfhdr->edfparam[i].sf_int = 0;
+      }
+      else
+      {
+        edfhdr->edfparam[i].sf_int = ((long long)(edfhdr->edfparam[i].smp_per_record) * TIME_DIMENSION) / edfhdr->long_data_record_duration;
+      }
     }
 
     edfhdr->edfparam[i].smpls = edfhdr->edfparam[i].smp_per_record * edfhdr->datarecords;

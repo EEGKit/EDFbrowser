@@ -142,7 +142,7 @@ void UI_EDFDwindow::SelectFileButton()
 
   EDFfileCheck EDFfilechecker;
 
-  edfhdr = EDFfilechecker.check_edf_file(inputfile, txt_string, 2048);
+  edfhdr = EDFfilechecker.check_edf_file(inputfile, txt_string, 2048, 0, 0);
   if(edfhdr==NULL)
   {
     fclose(inputfile);

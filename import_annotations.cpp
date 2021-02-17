@@ -1469,7 +1469,7 @@ int UI_ImportAnnotationswindow::import_from_edfplus(void)
 
   str[0] = 0;
 
-  edfhdr = EDFfilechecker.check_edf_file(inputfile, str, 2048, 0);
+  edfhdr = EDFfilechecker.check_edf_file(inputfile, str, 2048, 0, 1);
   if(edfhdr==NULL)
   {
     strlcat(str, "\n File is not a valid EDF or BDF file.", 2048);

@@ -49,7 +49,7 @@ class EDFfileCheck
 
 public:
 
-  struct edfhdrblock * check_edf_file(FILE *, char *, int, int live_stream=0);
+  struct edfhdrblock * check_edf_file(FILE *, char *, int, int, int);
 
 private:
 
