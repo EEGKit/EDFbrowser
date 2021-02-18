@@ -1196,6 +1196,23 @@ struct edfhdrblock * EDFfileCheck::check_edf_file(FILE *inputfile, char *txt_str
     }
 
     edfhdr->edfparam[i].smpls = edfhdr->edfparam[i].smp_per_record * edfhdr->datarecords;
+
+    if(edfhdr->long_data_record_duration == 0)
+    {
+      if(!edfhdr->edfparam[i].annotation)
+      {
+        if(edfhdr->edfparam[i].smp_per_record > 1)
+        {
+          snprintf(txt_string, txt_len, "Error, Datarecord duration is 0 but number of samples in datarecord of signal %i is out of range: %i,\nshould be 1",
+                 i + 1,
+                 n);
+          free(edf_hdr);
+          free(edfhdr->edfparam);
+          free(edfhdr);
+          return NULL;
+        }
+      }
+    }
   }
 
   if(edfhdr->bdf)
