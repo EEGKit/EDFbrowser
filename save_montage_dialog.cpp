@@ -59,8 +59,8 @@ UI_SaveMontagewindow::UI_SaveMontagewindow(QWidget *w_parent)
     new QListWidgetItem(QString::fromLocal8Bit(mainwindow->edfheaderlist[i]->filename), filelist);
   }
 
-  radio_group_box = new QGroupBox("Select signal identification method");
-  label_radio_button = new QRadioButton("use signal label   (requires that the signal label must have the exact same name)");
+  radio_group_box = new QGroupBox("Signal identification method");
+  label_radio_button = new QRadioButton("use signal label   (requires that the signal label must have the exact same name, best option for most use cases)");
   index_radio_button = new QRadioButton("use signal index   (requires that the signal must have the exact same position/order in the file)");
   label_radio_button->setChecked(true);
 
