@@ -404,6 +404,8 @@ void UI_cdsa_window::start_button_clicked()
          *smplbuf=NULL,
          log_minimum_offset=0;
 
+  char str[1024]={""};
+
   struct fft_wrap_settings_struct *dft;
 
   QPixmap *pxm=NULL;
@@ -534,6 +536,8 @@ void UI_cdsa_window::start_button_clicked()
 //
 //   printf("start_button_clicked(): segmentlen: %i\n", segmentlen);
 //
+//   printf("start_button_clicked(): datarecords in file: %lli\n", signalcomp->edfhdr->datarecords);
+//
 //   printf("start_button_clicked(): samples_in_file: %lli\n", samples_in_file);
 //
 //   printf("start_button_clicked(): smpls_in_segment: %i\n", smpls_in_segment);
@@ -595,8 +599,9 @@ void UI_cdsa_window::start_button_clicked()
     err = fbr.process_signalcomp(i * smpls_in_segment);
     if(err)
     {
+      snprintf(str, 1024, "Internal error (-3)  fbr() error: %i", err);
       progress.reset();
-      QMessageBox messagewindow(QMessageBox::Critical, "Error", "Internal error (-3)");
+      QMessageBox messagewindow(QMessageBox::Critical, "Error", str);
       messagewindow.exec();
       return;
     }

@@ -153,7 +153,7 @@ double * FilteredBlockReadClass::init_signalcomp(struct signalcompblock *i_signa
     {
       edf_hdl = edfhdr.handle;
 
-      printf("datarecord_duration: %lli    smp_in_datarecord: %i    sf: %f Hz   total samples in file: %lli\n",
+      printf("init_signalcomp(): datarecord_duration: %lli    smp_in_datarecord: %i    sf: %f Hz   total samples in file: %lli\n",
              edfhdr.datarecord_duration, edfhdr.signalparam[0].smp_in_datarecord,
              (edfhdr.signalparam[0].smp_in_datarecord * EDFLIB_TIME_DIMENSION) / (double)edfhdr.datarecord_duration,
               edfhdr.signalparam[0].smp_in_file);
@@ -370,10 +370,10 @@ int FilteredBlockReadClass::process_signalcomp(int datarecord_or_sample_start)
       dig_value += f_tmp;
     }
 #ifdef FBR_DEBUG
-    if(((dig_value - edf_ibuf[s - s_off]) > 1) || ((dig_value - edf_ibuf[s - s_off]) < -1 ))
-    {
-      printf("dig_value: %f   edf_ibuf[%lli]: %i\n", dig_value, s - s_off, edf_ibuf[s - s_off]);
-    }
+//     if(((dig_value - edf_ibuf[s - s_off]) > 1) || ((dig_value - edf_ibuf[s - s_off]) < -1 ))
+//     {
+//       printf("dig_value: %f   edf_ibuf[%lli]: %i\n", dig_value, s - s_off, edf_ibuf[s - s_off]);
+//     }
 #endif
     if(!skip_filters)
     {
