@@ -11,6 +11,9 @@
  - Import annotations/events: make it possible to import annotations from a discontinuous (EDF+D or BDF+D) file
    also when the datarecord duration is set to zero.
 
+ - CDSA: fixed a bug that caused a message "Internal error (-3)" when there's a particular ratio between
+   the datarecord duration of an EDF file and the segment length of the CDSA.
+
 
 
  version 1.81      February 2, 2021
