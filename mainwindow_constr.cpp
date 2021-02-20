@@ -301,7 +301,7 @@ UI_Mainwindow::UI_Mainwindow()
   raw2edf_var.offset = 0;
   raw2edf_var.skipblocksize = 0;
   raw2edf_var.skipbytes = 1;
-  strlcpy(raw2edf_var.phys_dim, "uV              ", 16);
+  strlcpy(raw2edf_var.phys_dim, "uV", 16);
 
   annot_filter = (struct annot_filter_struct *)calloc(1, sizeof(struct annot_filter_struct));
   annot_filter->tmin = 1000;

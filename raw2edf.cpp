@@ -1065,8 +1065,7 @@ void UI_RAW2EDFapp::loadbuttonpressed()
     }
 
     strlcpy(raw2edf_var->phys_dim, result, 16);
-    latin1_to_ascii(raw2edf_var->phys_dim, 16);
-    raw2edf_var->phys_dim[15] = 0;
+    latin1_to_ascii(raw2edf_var->phys_dim, strlen(raw2edf_var->phys_dim));
     trim_spaces(raw2edf_var->phys_dim);
 
     xml_go_up(xml_hdl);

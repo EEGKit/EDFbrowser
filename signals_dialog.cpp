@@ -94,9 +94,6 @@ UI_Signalswindow::UI_Signalswindow(QWidget *w_parent)
   label6 = new QLabel;
   label6->setText("Signal Composition (derivation)");
 
-  colorlabel = new QLabel;
-  colorlabel->setText("  Trace color");
-
   signallist = new QListWidget;
   signallist->setFont(*mainwindow->monofont);
   signallist->setSelectionBehavior(QAbstractItemView::SelectRows);

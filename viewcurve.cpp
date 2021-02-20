@@ -3871,11 +3871,9 @@ void ViewCurve::sidemenu_close()
 {
   if(AliasLineEdit->isModified() == true)
   {
-    strncpy(mainwindow->signalcomp[signal_nr]->alias, AliasLineEdit->text().toLatin1().data(), 16);
+    strlcpy(mainwindow->signalcomp[signal_nr]->alias, AliasLineEdit->text().toLatin1().data(), 17);
 
-    latin1_to_ascii(mainwindow->signalcomp[signal_nr]->alias, 16);
-
-    mainwindow->signalcomp[signal_nr]->alias[16] = 0;
+    latin1_to_ascii(mainwindow->signalcomp[signal_nr]->alias, strlen(mainwindow->signalcomp[signal_nr]->alias));
 
     trim_spaces(mainwindow->signalcomp[signal_nr]->alias);
   }
