@@ -552,7 +552,7 @@ void UI_ZScoreWindow::startButtonClicked()
 
   FilteredBlockReadClass blockread;
 
-  buf = blockread.init_signalcomp(signalcomp, 1, 0);
+  buf = blockread.init_signalcomp(signalcomp, 1, 0, 0, NULL);
   if(buf == NULL)
   {
     QMessageBox messagewindow(QMessageBox::Critical, "Error", "Internal error: init_signalcomp()");

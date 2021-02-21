@@ -209,7 +209,7 @@ void UI_unify_resolution::SaveButtonClicked()
 
   if((phys_max_spinbox->value() < 1.0) && (phys_max_spinbox->value() > -1.0))
   {
-    QMessageBox::critical(myobjectDialog, "Error", "Please set the new physical maximum value higher than 1.0 or lower than -1.0.");
+    QMessageBox::critical(myobjectDialog, "Error", "Please set the new physical maximum value higher than 1.0 or lower than -1.0.", QMessageBox::Close);
     return;
   }
 

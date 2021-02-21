@@ -525,7 +525,7 @@ void UI_ExportFilteredSignalsWindow::StartExport()
 
     block_reader[new_edfsignals] = new FilteredBlockReadClass;
 
-    filtered_blockread_buf[new_edfsignals] = block_reader[new_edfsignals]->init_signalcomp(signalcomp[new_edfsignals], 1, 0);
+    filtered_blockread_buf[new_edfsignals] = block_reader[new_edfsignals]->init_signalcomp(signalcomp[new_edfsignals], 1, 0, 0, NULL);
 
     smp_per_record[new_edfsignals] = block_reader[new_edfsignals]->samples_in_buf();
 

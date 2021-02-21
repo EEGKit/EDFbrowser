@@ -68,8 +68,7 @@ UI_QRS_detector::UI_QRS_detector(QWidget *w_parent, struct signalcompblock *sign
   filenum = mainwindow->get_filenum(signalcomp->edfhdr);
   if(filenum < 0)
   {
-    QMessageBox messagewindow(QMessageBox::Critical, "Error", "Internal error: filenum < 0");
-    messagewindow.exec();
+    QMessageBox::critical(mainwindow, "Error", "Internal error: filenum < 0", QMessageBox::Close);
     return;
   }
 
@@ -107,7 +106,7 @@ UI_QRS_detector::UI_QRS_detector(QWidget *w_parent, struct signalcompblock *sign
 
   total_datrecs = signalcomp->edfhdr->datarecords;
 
-  processed_samples_buf = fbr.init_signalcomp(signalcomp, 1, 0);
+  processed_samples_buf = fbr.init_signalcomp(signalcomp, 1, 0, 0, NULL);
   if(processed_samples_buf == NULL)
   {
     goto OUT_EXIT_RETURN;

@@ -70,7 +70,7 @@ private:
 
 
 public:
-  double * init_signalcomp(struct signalcompblock *, int, int, int mode=0);
+  double * init_signalcomp(struct signalcompblock *, int, int, int, int *);
   int process_signalcomp(int);
   long long samples_in_buf(void);
   FilteredBlockReadClass();

@@ -190,7 +190,7 @@ void UI_ECGExport::Export_RR_intervals()
 
     class FilteredBlockReadClass blockrd;
 
-    buf = blockrd.init_signalcomp(signalcomp, 1, 0);
+    buf = blockrd.init_signalcomp(signalcomp, 1, 0, 0, NULL);
     if(buf == NULL)
     {
       QMessageBox messagewindow(QMessageBox::Critical, "Error", "Error, can not initialize FilteredBlockReadClass.");

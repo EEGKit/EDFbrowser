@@ -392,7 +392,8 @@ void UI_cdsa_window::start_button_clicked()
       overlap,
       window_func,
       log_density=0,
-      power_density=0;
+      power_density=0,
+      ret_err=0;
 
   long long samples_in_file;
 
@@ -556,11 +557,21 @@ void UI_cdsa_window::start_button_clicked()
 
   FilteredBlockReadClass fbr;
 
-  smplbuf = fbr.init_signalcomp(signalcomp, smpls_in_segment, 0, 1);
+  ret_err = 0;
+
+  smplbuf = fbr.init_signalcomp(signalcomp, smpls_in_segment, 0, 1, &ret_err);
   if(smplbuf == NULL)
   {
-    QMessageBox messagewindow(QMessageBox::Critical, "Error", "Internal error (-1)");
-    messagewindow.exec();
+    if(ret_err == 1)
+    {
+      QMessageBox::critical(myobjectDialog, "Error",
+                            "The system was not able to provide enough resources (memory) to perform the requested action.",
+                            QMessageBox::Close);
+    }
+    else
+    {
+      QMessageBox::critical(myobjectDialog, "Error", "Internal error (-1)", QMessageBox::Close);
+    }
     return;
   }
 
@@ -572,8 +583,7 @@ void UI_cdsa_window::start_button_clicked()
   dft = fft_wrap_create(smplbuf, smpls_in_segment, smpl_in_block, window_func, overlap);
   if(dft == NULL)
   {
-    QMessageBox messagewindow(QMessageBox::Critical, "Error", "Internal error (-2)");
-    messagewindow.exec();
+    QMessageBox::critical(myobjectDialog, "Error", "Internal error (-2)", QMessageBox::Close);
     return;
   }
 
@@ -601,8 +611,7 @@ void UI_cdsa_window::start_button_clicked()
     {
       snprintf(str, 1024, "Internal error (-3)  fbr() error: %i", err);
       progress.reset();
-      QMessageBox messagewindow(QMessageBox::Critical, "Error", str);
-      messagewindow.exec();
+      QMessageBox::critical(myobjectDialog, "Error", str, QMessageBox::Close);
       return;
     }
 
