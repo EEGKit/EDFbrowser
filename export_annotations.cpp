@@ -227,14 +227,14 @@ void UI_ExportAnnotationswindow::ExportButtonClicked()
   int i, j, n,
       len,
       csv_format=0,
-      hdl,
+      hdl=-1,
       annot_cnt,
       temp,
       include_duration;
 
-  char path[MAX_PATH_LENGTH],
-       str[1024],
-       separator;
+  char path[MAX_PATH_LENGTH]={""},
+       str[1024]={""},
+       separator=';';
 
   FILE *annotationfile=NULL;
 
@@ -392,8 +392,7 @@ void UI_ExportAnnotationswindow::ExportButtonClicked()
 
   if(mainwindow->file_is_opened(path))
   {
-    QMessageBox messagewindow(QMessageBox::Critical, "Export annotations", "Error, selected file is in use.");
-    messagewindow.exec();
+    QMessageBox::critical(ExportAnnotsDialog, "Error", "Selected file is in use", QMessageBox::Close);
     return;
   }
 
@@ -430,8 +429,7 @@ void UI_ExportAnnotationswindow::ExportButtonClicked()
     annotationfile = fopeno(path, "wb");
     if(annotationfile==NULL)
     {
-      QMessageBox messagewindow(QMessageBox::Critical, "Error", "Can not open annotationfile for writing.");
-      messagewindow.exec();
+      QMessageBox::critical(ExportAnnotsDialog, "Error", "Cannot open annotation file for writing", QMessageBox::Close);
       ExportAnnotsDialog->close();
       edfplus_annotation_empty_list(annot_list);
       free(annot_list);
@@ -454,14 +452,13 @@ void UI_ExportAnnotationswindow::ExportButtonClicked()
       {
         break;
       }
-      strncpy(str, annot->description, 1024);
-      str[1023] = 0;
+      strlcpy(str, annot->description, 1024);
       utf8_to_latin1(str);
 
       len = strlen(str);
       for(i=0; i<len; i++)
       {
-        if((((unsigned char *)str)[i] < 32) || (((unsigned char *)str)[i] == ','))
+        if((((unsigned char *)str)[i] < 32) || (((unsigned char *)str)[i] == separator))
         {
           str[i] = '.';
         }
@@ -597,8 +594,7 @@ void UI_ExportAnnotationswindow::ExportButtonClicked()
     annotationfile = fopeno(path, "wb");
     if(annotationfile==NULL)
     {
-      QMessageBox messagewindow(QMessageBox::Critical, "Error", "Can not open annotationfile for writing.");
-      messagewindow.exec();
+      QMessageBox::critical(ExportAnnotsDialog, "Error", "Cannot open annotation file for writing", QMessageBox::Close);
       ExportAnnotsDialog->close();
       edfplus_annotation_empty_list(annot_list);
       free(annot_list);
@@ -688,8 +684,7 @@ void UI_ExportAnnotationswindow::ExportButtonClicked()
                                   break;
       }
 
-      QMessageBox messagewindow(QMessageBox::Critical, "Error", str);
-      messagewindow.exec();
+      QMessageBox::critical(ExportAnnotsDialog, "Error", str, QMessageBox::Close);
       edfplus_annotation_empty_list(annot_list);
       free(annot_list);
       ExportAnnotsDialog->close();
@@ -804,8 +799,7 @@ void UI_ExportAnnotationswindow::ExportButtonClicked()
 
     if(edfclose_file(hdl) != 0)
     {
-      QMessageBox messagewindow(QMessageBox::Critical, "Error", "An error occurred: edfclose_file()");
-      messagewindow.exec();
+      QMessageBox::critical(ExportAnnotsDialog, "Error", "An error occurred: edfclose_file()", QMessageBox::Close);
     }
 
     edfplus_annotation_empty_list(annot_list);
