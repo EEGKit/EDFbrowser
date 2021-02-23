@@ -567,8 +567,6 @@ void UI_unify_resolution::select_file_button_clicked()
 
   for(i=0; i<edfhdr->edfsignals; i++)
   {
-    signals_list->setRowHeight(i, 25);
-
     signals_list->setCellWidget(i, 0, new QCheckBox(edfhdr->edfparam[i].label));
     ((QCheckBox *)(signals_list->cellWidget(i, 0)))->setTristate(false);
     if(edfhdr->edfparam[i].annotation)

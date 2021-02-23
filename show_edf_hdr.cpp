@@ -296,7 +296,6 @@ void UI_EDFhdrwindow::show_params(int row)
 
   for(i=0; i<signal_cnt; i++)
   {
-    signallist->setRowHeight(i, 25);
     ql = new QLineEdit(mainwindow->edfheaderlist[row]->edfparam[i].label);
     ql->setReadOnly(true);
     ql->setCursorPosition(0);

@@ -360,8 +360,6 @@ void UI_BDF2EDFwindow::SelectFileButton()
 
   for(i=0; i<edfhdr->edfsignals; i++)
   {
-    SignalsTablewidget->setRowHeight(i, 25);
-
     SignalsTablewidget->setCellWidget(i, 0, new QCheckBox(edfhdr->edfparam[i].label));
     ((QCheckBox *)(SignalsTablewidget->cellWidget(i, 0)))->setTristate(false);
     ((QCheckBox *)(SignalsTablewidget->cellWidget(i, 0)))->setCheckState(Qt::Checked);

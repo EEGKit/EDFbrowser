@@ -608,7 +608,6 @@ void UI_Signalswindow::AddSubtractButtonsClicked(int subtract)
     else
     {
       compositionlist->insertRow(k);
-      compositionlist->setRowHeight(k, 25);
       snprintf(str, 200, "%i", s + 1);
       compositionlist->setCellWidget(k, 0, new QLabel(str));
       ((QLabel *)(compositionlist->cellWidget(k, 0)))->setAlignment(Qt::AlignCenter);

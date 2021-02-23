@@ -817,8 +817,6 @@ void UI_headerEditorWindow::read_header()
 
   for(i=0; i<edfsignals; i++)
   {
-    signallist->setRowHeight(i, 25);
-
     strncpy(scratchpad, hdr + 256 + (i * 16), 16);
     scratchpad[16] = 0;
     remove_trailing_spaces(scratchpad);
