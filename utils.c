@@ -714,6 +714,34 @@ void latin1_to_ascii(char *str, int len)
 }
 
 
+int utf8_set_length(char *str, int new_len)
+{
+  int i, len;
+
+  if(str == NULL)  return 0;
+
+  if(new_len < 1)  return 0;
+
+  len = strlen(str);
+
+  if(new_len >= len)  return len;
+
+  for(i=new_len-1; i>=0; i--)
+  {
+    if((((unsigned char *)str)[i] & 0b11000000) != 0b10000000)
+    {
+      str[i] = 0;
+
+      return i;
+    }
+  }
+
+  str[0] = 0;
+
+  return 0;
+}
+
+
 int antoi(const char *input_str, int len)
 {
   char str[4096];

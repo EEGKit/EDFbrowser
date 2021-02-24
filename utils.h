@@ -65,6 +65,7 @@ int get_directory_from_path(char *dest, const char *src, int size);  /* size is 
 void latin1_to_ascii(char *, int);
 void latin1_to_utf8(char *, int);
 void utf8_to_latin1(char *);
+int utf8_set_length(char *, int);
 int antoi(const char *, int);
 int atoi_nonlocalized(const char *);
 double atof_nonlocalized(const char *);

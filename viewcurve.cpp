@@ -1580,9 +1580,9 @@ void ViewCurve::drawCurve_stage_2(QPainter *painter, int w_width, int w_height, 
       font_pixel_width=12;
 
   char *viewbuf,
-       string[600],
-       str2[32],
-       str3[128],
+       string[600]="",
+       str2[32]="",
+       str3[128]="",
        str4[1024]="";
 
   long long time_ppixel,
@@ -1591,11 +1591,11 @@ void ViewCurve::drawCurve_stage_2(QPainter *painter, int w_width, int w_height, 
             l_tmp,
             l_tmp2=0;
 
-  struct signalcompblock **signalcomp;
+  struct signalcompblock **signalcomp=NULL;
 
-  struct annotation_list *annot_list;
+  struct annotation_list *annot_list=NULL;
 
-  struct annotationblock *annot;
+  struct annotationblock *annot=NULL;
 
   struct date_time_struct date_time_str;
 
@@ -2231,9 +2231,9 @@ void ViewCurve::drawCurve_stage_2(QPainter *painter, int w_width, int w_height, 
               painter->drawText(marker_x + 5, (h - 5) - ((j % 3) * font_pixel_height * 2), string);
             }
 
-            strncpy(string, annot->description, 20);
+            strlcpy(string, annot->description, 24);
 
-            string[20] = 0;
+            utf8_set_length(string, 20);
 
             if(printing)
             {
