@@ -1,5 +1,5 @@
 
- version 1.82      to be defined
+ version 1.82      February 27, 2021
  --------------
 
  - Save montage: it's now possible to select the method used to identify the signal, label based or index based.
