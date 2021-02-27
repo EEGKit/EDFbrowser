@@ -2231,9 +2231,9 @@ void ViewCurve::drawCurve_stage_2(QPainter *painter, int w_width, int w_height, 
               painter->drawText(marker_x + 5, (h - 5) - ((j % 3) * font_pixel_height * 2), string);
             }
 
-            strlcpy(string, annot->description, 24);
+            strlcpy(string, annot->description, 80);
 
-            utf8_set_length(string, 20);
+            utf8_set_char_len(string, 20);
 
             if(printing)
             {

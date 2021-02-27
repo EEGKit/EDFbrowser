@@ -714,7 +714,7 @@ void latin1_to_ascii(char *str, int len)
 }
 
 
-int utf8_set_length(char *str, int new_len)
+int utf8_set_byte_len(char *str, int new_len)
 {
   int i, len;
 
@@ -737,6 +737,77 @@ int utf8_set_length(char *str, int new_len)
   }
 
   str[0] = 0;
+
+  return 0;
+}
+
+
+int utf8_set_char_len(char *str, int new_len)
+{
+  int i, j=0;
+
+  if(str == NULL)  return 0;
+
+  if(new_len < 0)  return 0;
+
+  for(i=0; ; i++)
+  {
+    if(str[i] == 0)  break;
+
+    if((((unsigned char *)str)[i] & 0b11000000) != 0b10000000)
+    {
+      if(j == new_len)
+      {
+        str[i] = 0;
+
+        return j;
+      }
+
+      j++;
+    }
+  }
+
+  return j;
+}
+
+
+int utf8_strlen(const char *str)
+{
+  int i, j=0;
+
+  if(str == NULL)  return 0;
+
+  for(i=0; ; i++)
+  {
+    if(str[i] == 0)  break;
+
+    if((((unsigned char *)str)[i] & 0b11000000) != 0b10000000)
+    {
+      j++;
+    }
+  }
+
+  return j;
+}
+
+
+int utf8_idx(const char *str, int idx)
+{
+  int i, j=0;
+
+  if(str == NULL)  return 0;
+
+  for(i=0; ; i++)
+  {
+    if(str[i] == 0)  break;
+
+    if((((unsigned char *)str)[i] & 0b11000000) != 0b10000000)
+    {
+      if(j == idx)  return i;
+
+      j++;
+    }
+  }
 
   return 0;
 }

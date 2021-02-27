@@ -65,7 +65,14 @@ int get_directory_from_path(char *dest, const char *src, int size);  /* size is 
 void latin1_to_ascii(char *, int);
 void latin1_to_utf8(char *, int);
 void utf8_to_latin1(char *);
-int utf8_set_length(char *, int);
+int utf8_strlen(const char *);  /* returns the number of utf8 characters in the string */
+int utf8_idx(const char *, int);  /* returns the byte offset of the nth utf8 character */
+/* limits the length in bytes of the string while avoiding creating an illegal utf8 character at the end of the string */
+/* returns the new byte length */
+int utf8_set_byte_len(char *, int);
+/* limits the length in utf8 chars of the string */
+/* returns the new utf8 char length */
+int utf8_set_char_len(char *, int);
 int antoi(const char *, int);
 int atoi_nonlocalized(const char *);
 double atof_nonlocalized(const char *);
