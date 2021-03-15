@@ -335,7 +335,7 @@ int xml_strncpy_decode_entity(char *dest, const char *src, int n)
 
     dest[i] = src[i + p];
 
-    if(i >= (n - 1))
+    if((i + p) >= (n - 1))
     {
       i++;
 
@@ -396,7 +396,8 @@ static int xml_attribute(const char *data, const char *item, char *result, int r
   int i, j,
       data_len,
       item_len,
-      quote=0;
+      quote=0,
+      new_len=0;
 
   if(data == NULL)
   {
@@ -409,10 +410,10 @@ static int xml_attribute(const char *data, const char *item, char *result, int r
   data_len = strlen(data);
   item_len = strlen(item);
 
-  if((data_len < 4) || (item_len >= (data_len - 4)))
+  if((data_len < 4) || (item_len > (data_len - 3)))
   {
 #ifdef XMLDEBUG_TEST
-    printf("XML: error at line: %i\n", __LINE__);
+    printf("XML: error at line: %i   data_len: %i    item_len: %i\ndata: ->%.7s<-\nitem: ->%.4s<-\n", __LINE__, data_len, item_len, data, item);
 #endif
     return XML_ERROR_GEN;
   }
@@ -435,7 +436,7 @@ static int xml_attribute(const char *data, const char *item, char *result, int r
 
     if(!strncmp(data + i, item, item_len))
     {
-      if((i + item_len) < (data_len - 3))
+      if((i + item_len) <= (data_len - 3))
       {
         if(!strncmp(data + i + item_len, "=\"", 2))
         {
@@ -449,11 +450,11 @@ static int xml_attribute(const char *data, const char *item, char *result, int r
               {
                 if(result != NULL)
                 {
-                  xml_strncpy_decode_entity(result, data + i, j - i);
-                  result[j - i] = 0;
+                  new_len = xml_strncpy_decode_entity(result, data + i, j - i);
+                  result[new_len] = 0;
                 }
 
-                return j - i;
+                return new_len;
               }
             }
           }
