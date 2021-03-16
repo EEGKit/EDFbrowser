@@ -74,7 +74,7 @@ class UI_AveragerWindow : public QObject
   Q_OBJECT
 
 public:
-  UI_AveragerWindow(QWidget *, int, struct edfhdrblock *);
+  UI_AveragerWindow(QWidget *, struct annotationblock *);
 
   ~UI_AveragerWindow();
 
@@ -88,7 +88,10 @@ QDialog     *averager_dialog;
 QLineEdit   *annot_name_line_edit;
 
 QPushButton *CloseButton,
-            *StartButton;
+            *StartButton,
+            *set_start_button,
+            *set_end_button,
+            *set_display_range_button;
 
 QListWidget *list;
 
@@ -118,6 +121,9 @@ void process_avg(struct signalcompblock *);
 private slots:
 
 void startButtonClicked();
+void set_start_button_clicked();
+void set_end_button_clicked();
+void set_display_range_button_clicked();
 
 };
 

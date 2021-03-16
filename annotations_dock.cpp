@@ -304,6 +304,8 @@ void UI_Annotationswindow::show_stats(bool)
 
 void UI_Annotationswindow::filt_ival_time(bool)
 {
+  char str[4096]="";
+
   struct annotation_list *annot_list;
 
   struct annotationblock *annot;
@@ -329,6 +331,13 @@ void UI_Annotationswindow::filt_ival_time(bool)
   annot_list = &(edf_hdr->annot_list);
 
   annot = edfplus_annotation_get_item_visible_only(annot_list, list->currentRow());
+  if(annot == NULL)
+  {
+    snprintf(str, 4096, "Nullpointer returned: file: %s line %i", __FILE__, __LINE__);
+    QMessageBox messagewindow(QMessageBox::Critical, "Error", str);
+    messagewindow.exec();
+    return;
+  }
 
   UI_AnnotFilterWindow filter_wndw(mainwindow, annot, mainwindow->annot_filter, edf_hdr);
 }
@@ -851,6 +860,12 @@ void UI_Annotationswindow::unhide_all_annots(bool)
 
 void UI_Annotationswindow::average_annot(bool)
 {
+  char str[4096]="";
+
+  struct annotation_list *annot_list;
+
+  struct annotationblock *annot;
+
   if(mainwindow->files_open < 1)
   {
     return;
@@ -877,7 +892,25 @@ void UI_Annotationswindow::average_annot(bool)
     return;
   }
 
-  UI_AveragerWindow average_wndw(mainwindow, list->currentRow(), edf_hdr);
+  annot_list = &(edf_hdr->annot_list);
+  if(annot_list == NULL)
+  {
+    snprintf(str, 4096, "Nullpointer returned: file: %s line %i", __FILE__, __LINE__);
+    QMessageBox messagewindow(QMessageBox::Critical, "Error", str);
+    messagewindow.exec();
+    return;
+  }
+
+  annot = edfplus_annotation_get_item_visible_only(annot_list, list->currentRow());
+  if(annot == NULL)
+  {
+    snprintf(str, 4096, "Nullpointer returned: file: %s line %i", __FILE__, __LINE__);
+    QMessageBox messagewindow(QMessageBox::Critical, "Error", str);
+    messagewindow.exec();
+    return;
+  }
+
+  UI_AveragerWindow average_wndw(mainwindow, annot);
 }
 
 

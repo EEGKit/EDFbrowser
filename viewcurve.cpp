@@ -47,9 +47,15 @@ ViewCurve::ViewCurve(QWidget *w_parent) : QWidget(w_parent)
 
   ruler_pen = new QPen(Qt::SolidPattern, 0, Qt::SolidLine, Qt::SquareCap, Qt::BevelJoin);
 
+  context_menu = new QMenu(w_parent);
+  average_annot_act = new QAction("Average", this);
+  context_menu->addAction(average_annot_act);
+
   active_markers = (struct active_markersblock *)calloc(1, sizeof(struct active_markersblock));
 
   annot_marker_moving = 0;
+
+  active_marker_context_menu_request_idx = 0;
 
   use_move_events = 0;
   panning_moving = 0;
@@ -153,6 +159,8 @@ ViewCurve::ViewCurve(QWidget *w_parent) : QWidget(w_parent)
   shift_page_down_shortcut = NULL;
 
   arrowkeys_shortcuts_global_set_enabled(true);
+
+  QObject::connect(average_annot_act, SIGNAL(triggered(bool)), this, SLOT(average_annot(bool)));
 }
 
 
@@ -677,6 +685,27 @@ void ViewCurve::mousePressEvent(QMouseEvent *press_event)
       ruler_moving = 0;
 
       update();
+    }
+
+    if(!use_move_events)
+    {
+      if(!mainwindow->annot_editor_active)
+      {
+        if((!ruler_moving)&&(!crosshair_1.moving)&&(!crosshair_2.moving))
+        {
+          for(i=0; i<active_markers->count; i++)
+          {
+            if(m_x>(active_markers->list[i]->x_pos-5)&&(m_x<(active_markers->list[i]->x_pos+5)))
+            {
+              active_marker_context_menu_request_idx = i;
+
+              context_menu->exec(QCursor::pos());
+
+              break;
+            }
+          }
+        }
+      }
     }
   }
 
@@ -5180,6 +5209,42 @@ void ViewCurve::dropEvent(QDropEvent *e)
 
   emit file_dropped();
 }
+
+
+void ViewCurve::average_annot(bool)
+{
+  int idx;
+
+  if(mainwindow->files_open < 1)
+  {
+    return;
+  }
+
+  if(!mainwindow->signalcomps)
+  {
+    QMessageBox messagewindow(QMessageBox::Critical, "Error", "First add a signal to the screen.");
+    messagewindow.exec();
+
+    return;
+  }
+
+  if(mainwindow->annot_editor_active)
+  {
+    QMessageBox messagewindow(QMessageBox::Critical, "Error", "Close the annotation editor and try again.");
+    messagewindow.exec();
+
+    return;
+  }
+
+  idx = active_marker_context_menu_request_idx;
+  if((idx < 0) || (idx >= active_markers->count))
+  {
+    return;
+  }
+
+  UI_AveragerWindow average_wndw(mainwindow, active_markers->list[idx]);
+}
+
 
 
 

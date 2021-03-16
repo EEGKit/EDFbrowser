@@ -100,7 +100,7 @@ UI_AverageCurveWindow::UI_AverageCurveWindow(struct signalcompblock *signal_comp
   curve1->setMarker1Color(Qt::yellow);
   curve1->create_button("to EDF/BDF");
 
-  snprintf(str, 1024, "Averaging %i triggers \"%s\"", avg_cnt, avg_annotation);
+  snprintf(str, 1024, "Averaging %.32s  %i triggers \"%s\"", signalcomp->signallabel, avg_cnt, avg_annotation);
   curve1->setUpperLabel1(str);
 
   flywheel1 = new UI_Flywheel;

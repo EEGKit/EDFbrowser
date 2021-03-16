@@ -31,17 +31,13 @@
 
 
 
-UI_AveragerWindow::UI_AveragerWindow(QWidget *w_parent, int annot_nr, struct edfhdrblock *e_hdr)
+UI_AveragerWindow::UI_AveragerWindow(QWidget *w_parent, struct annotationblock *annot)
 {
   int i;
 
-  long long recording_duration;
-
-  struct annotationblock *annot_ptr;
-
   mainwindow = (UI_Mainwindow *)w_parent;
 
-  edf_hdr = e_hdr;
+  edf_hdr = (struct edfhdrblock *)(annot->edfhdr);
 
   averager_dialog = new QDialog(w_parent);
 
@@ -52,7 +48,6 @@ UI_AveragerWindow::UI_AveragerWindow(QWidget *w_parent, int annot_nr, struct edf
   averager_dialog->setSizeGripEnabled(true);
 
   annot_name_line_edit = new QLineEdit;
-  annot_name_line_edit->setReadOnly(true);
 
   QLabel *signalLabel = new QLabel;
   signalLabel->setText("Select signal(s):");
@@ -63,9 +58,7 @@ UI_AveragerWindow::UI_AveragerWindow(QWidget *w_parent, int annot_nr, struct edf
 
   time1.setHMS(0, 0, 0, 0);
 
-  recording_duration = (edf_hdr->datarecords * edf_hdr->long_data_record_duration) / TIME_DIMENSION;
-
-  time2.setHMS((recording_duration / 3600) % 24, (recording_duration % 3600) / 60, recording_duration % 60, 0);
+  time2.setHMS((edf_hdr->recording_len_sec / 3600) % 24, (edf_hdr->recording_len_sec % 3600) / 60, edf_hdr->recording_len_sec % 60, 0);
 
   day_spinbox1 = new QSpinBox;
   day_spinbox1->setRange(0, 9);
@@ -78,7 +71,7 @@ UI_AveragerWindow::UI_AveragerWindow(QWidget *w_parent, int annot_nr, struct edf
   day_spinbox2 = new QSpinBox;
   day_spinbox2->setRange(0, 9);
   day_spinbox2->setToolTip("Days (24-hour units)");
-  day_spinbox2->setValue((int)(recording_duration / (86400)));
+  day_spinbox2->setValue(edf_hdr->recording_len_sec / 86400);
 
   timeEdit2 = new QTimeEdit;
   timeEdit2->setDisplayFormat("hh:mm:ss.zzz");
@@ -102,6 +95,15 @@ UI_AveragerWindow::UI_AveragerWindow(QWidget *w_parent, int annot_nr, struct edf
   StartButton = new QPushButton;
   StartButton->setText("Start");
 
+  set_start_button = new QPushButton;
+  set_start_button->setText("Set to minimum");
+
+  set_end_button = new QPushButton;
+  set_end_button->setText("Set to maximum");
+
+  set_display_range_button = new QPushButton;
+  set_display_range_button->setText("as displayed");
+
   for(i=0; i<mainwindow->signalcomps; i++)
   {
     if(mainwindow->signalcomp[i]->alias[0] != 0)
@@ -116,9 +118,7 @@ UI_AveragerWindow::UI_AveragerWindow(QWidget *w_parent, int annot_nr, struct edf
 
   list->setCurrentRow(0, QItemSelectionModel::Select);
 
-  annot_ptr = edfplus_annotation_get_item_visible_only(&(edf_hdr->annot_list), annot_nr);
-
-  strlcpy(annot_str, annot_ptr->description, MAX_ANNOTATION_LEN + 1);
+  strlcpy(annot_str, annot->description, MAX_ANNOTATION_LEN + 1);
   trim_spaces(annot_str);
 
   annot_name_line_edit->setText(annot_str);
@@ -126,22 +126,30 @@ UI_AveragerWindow::UI_AveragerWindow(QWidget *w_parent, int annot_nr, struct edf
   QHBoxLayout *hlayout3 = new QHBoxLayout;
   hlayout3->addWidget(day_spinbox1);
   hlayout3->addWidget(timeEdit1);
+  hlayout3->addWidget(set_start_button);
 
   QHBoxLayout *hlayout4 = new QHBoxLayout;
   hlayout4->addWidget(day_spinbox2);
   hlayout4->addWidget(timeEdit2);
+  hlayout4->addWidget(set_end_button);
+
+  QHBoxLayout *hlayout5 = new QHBoxLayout;
+  hlayout5->addWidget(set_display_range_button);
+  hlayout5->addStretch(1000);
 
   QFormLayout *flayout = new QFormLayout;
   flayout->addRow(" ", (QWidget *)NULL);
   flayout->addRow("Use annotation:", annot_name_line_edit);
   flayout->addRow(" ", (QWidget *)NULL);
-  flayout->addRow("From: (d:hh:mm:ss.mmm)", hlayout3);
-  flayout->addRow(" ", (QWidget *)NULL);
-  flayout->addRow("To: (d:hh:mm:ss.mmm)", hlayout4);
+  flayout->addRow("Average period:", avg_periodspinbox);
   flayout->addRow(" ", (QWidget *)NULL);
   flayout->addRow("Ratio of time before and after trigger:", ratioBox);
   flayout->addRow(" ", (QWidget *)NULL);
-  flayout->addRow("Average period:", avg_periodspinbox);
+  flayout->addRow("Range from: (d:hh:mm:ss.mmm)", hlayout3);
+  flayout->addRow(" ", (QWidget *)NULL);
+  flayout->addRow("Range to: (d:hh:mm:ss.mmm)", hlayout4);
+  flayout->addRow(" ", (QWidget *)NULL);
+  flayout->addRow("Set range:", hlayout5);
   flayout->addRow(" ", (QWidget *)NULL);
 
   QHBoxLayout *hlayout2 = new QHBoxLayout;
@@ -167,8 +175,11 @@ UI_AveragerWindow::UI_AveragerWindow(QWidget *w_parent, int annot_nr, struct edf
 
   averager_dialog->setLayout(hlayout1);
 
-  QObject::connect(CloseButton, SIGNAL(clicked()), averager_dialog, SLOT(close()));
-  QObject::connect(StartButton, SIGNAL(clicked()), this,            SLOT(startButtonClicked()));
+  QObject::connect(CloseButton,              SIGNAL(clicked()), averager_dialog, SLOT(close()));
+  QObject::connect(StartButton,              SIGNAL(clicked()), this,            SLOT(startButtonClicked()));
+  QObject::connect(set_start_button,         SIGNAL(clicked()), this,            SLOT(set_start_button_clicked()));
+  QObject::connect(set_end_button,           SIGNAL(clicked()), this,            SLOT(set_end_button_clicked()));
+  QObject::connect(set_display_range_button, SIGNAL(clicked()), this,            SLOT(set_display_range_button_clicked()));
 
   averager_dialog->exec();
 }
@@ -200,6 +211,14 @@ void UI_AveragerWindow::startButtonClicked()
 
   QList<QListWidgetItem *> itemList;
 
+  strlcpy(annot_str, annot_name_line_edit->text().toUtf8().data(), MAX_ANNOTATION_LEN + 1);
+  trim_spaces(annot_str);
+  if(!strlen(annot_str))
+  {
+    QMessageBox messagewindow(QMessageBox::Critical, "Error", "You have to enter an annotation.");
+    messagewindow.exec();
+    return;
+  }
 
   mainwindow->average_period = avg_periodspinbox->value();
   mainwindow->average_ratio = ratioBox->currentIndex();
@@ -411,7 +430,7 @@ void UI_AveragerWindow::startButtonClicked()
     if(!avg_cnt)
     {
       snprintf(scratchpad, 1024,
-               "The selected annotation/trigger \"%s\" is not in the selected timewindow\n"
+               "The selected annotation/trigger \"%s\" is not found in the selected timewindow\n"
                "%i:%02i:%02i - %i:%02i:%02i",
                annot_str,
                timeEdit1->time().hour(), timeEdit1->time().minute(), timeEdit1->time().second(),
@@ -663,7 +682,44 @@ void UI_AveragerWindow::process_avg(struct signalcompblock *signalcomp)
 }
 
 
+void UI_AveragerWindow::set_start_button_clicked()
+{
+  time1.setHMS(0, 0, 0, 0);
 
+  timeEdit1->setTime(time1);
+
+  day_spinbox1->setValue(0);
+}
+
+
+void UI_AveragerWindow::set_end_button_clicked()
+{
+  time2.setHMS((edf_hdr->recording_len_sec / 3600) % 24, (edf_hdr->recording_len_sec % 3600) / 60, edf_hdr->recording_len_sec % 60, 0);
+
+  timeEdit2->setTime(time2);
+
+  day_spinbox2->setValue(edf_hdr->recording_len_sec / 86400);
+}
+
+
+void UI_AveragerWindow::set_display_range_button_clicked()
+{
+  long long starttime = edf_hdr->viewtime / TIME_DIMENSION;
+
+  long long endtime = (edf_hdr->viewtime + mainwindow->pagetime) / TIME_DIMENSION;
+
+  time1.setHMS((starttime / 3600) % 24, (starttime % 3600) / 60, starttime % 60, 0);
+
+  timeEdit1->setTime(time1);
+
+  day_spinbox1->setValue(starttime / 86400);
+
+  time2.setHMS((endtime / 3600) % 24, (endtime % 3600) / 60, endtime % 60, 0);
+
+  timeEdit2->setTime(time2);
+
+  day_spinbox2->setValue(endtime / 86400);
+}
 
 
 

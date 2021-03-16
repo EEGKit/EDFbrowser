@@ -34,6 +34,9 @@
 #include <QWidget>
 #include <QPainter>
 #include <QMouseEvent>
+#include <QMenu>
+#include <QAction>
+#include <QCursor>
 #include <QDialog>
 #include <QPushButton>
 #include <QLineEdit>
@@ -87,6 +90,7 @@
 #include "z_ratio_filter.h"
 #include "cdsa_dialog.h"
 #include "run_qrs_detector.h"
+#include "averager_dialog.h"
 
 #include "third_party/fidlib/fidlib.h"
 
@@ -175,7 +179,8 @@ public:
       label_press_y_position,
       cpu_cnt,
       floating_ruler_value,
-      linear_interpol;
+      linear_interpol,
+      active_marker_context_menu_request_idx;
 
   long long pan_mov_start_viewtime[MAXFILES];
 
@@ -264,6 +269,10 @@ private:
               *signal_pen,
               *ruler_pen;
 
+  QMenu       *context_menu;
+
+  QAction     *average_annot_act;
+
   int         printing,
               w,
               h;
@@ -300,6 +309,8 @@ protected slots:
   void sidemenu_close();
   void cdsa_button();
   void QRSdetectButton();
+
+  void average_annot(bool);
 
 protected:
   void paintEvent(QPaintEvent *);
