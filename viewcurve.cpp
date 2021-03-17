@@ -2766,8 +2766,7 @@ void ViewCurve::drawCurve_stage_1(QPainter *painter, int w_width, int w_height, 
 
   if(graphicBuf==NULL)
   {
-    QMessageBox messagewindow(QMessageBox::Critical, "Error", "The system was not able to provide enough resources (memory) to perform the requested action.");
-    messagewindow.exec();
+    QMessageBox::critical(this, "Error", "The system was not able to provide enough resources (memory) to perform the requested action.");
     return;
   }
 
@@ -3945,9 +3944,7 @@ void ViewCurve::ECGdetectButton()
 
   if(mainwindow->signalcomp[signal_nr]->edfhdr->edfparam[mainwindow->signalcomp[signal_nr]->edfsignal[0]].sf_f < 199.999)
   {
-    QMessageBox messagewindow(QMessageBox::Critical, "Error", "Sample rate of selected signal is less than 200 Hz!");
-    messagewindow.exec();
-
+    QMessageBox::critical(this, "Error", "Sample rate of selected signal is less than 200 Hz!");
     return;
   }
 
@@ -3967,25 +3964,18 @@ void ViewCurve::ECGdetectButton()
       }
       else
       {
-        QMessageBox messagewindow(QMessageBox::Critical, "Error", "Unknown unit (physical dimension), expected uV or mV or V");
-        messagewindow.exec();
-
+        QMessageBox::critical(this, "Error", "Unknown unit (physical dimension), expected uV or mV or V");
         return;
       }
 
   if(mainwindow->signalcomp[signal_nr]->zratio_filter != NULL)
   {
-    QMessageBox messagewindow(QMessageBox::Critical, "Error", "Z-ratio is active for this signal!");
-    messagewindow.exec();
-
-    return;
+    QMessageBox::critical(this, "Error", "Z-ratio is active for this signal!");
   }
 
   if(mainwindow->signalcomp[signal_nr]->ecg_filter != NULL)
   {
-    QMessageBox messagewindow(QMessageBox::Critical, "Error", "Heartrate detection is already active for this signal!");
-    messagewindow.exec();
-
+    QMessageBox::critical(this, "Error", "Heartrate detection is already active for this signal!");
     return;
   }
 
@@ -4002,9 +3992,7 @@ void ViewCurve::ECGdetectButton()
 
   if(newsignalcomp->ecg_filter == NULL)
   {
-    QMessageBox messagewindow(QMessageBox::Critical, "Error", "Could not create the QRS detector.");
-    messagewindow.exec();
-
+    QMessageBox::critical(this, "Error", "Could not create the QRS detector.");
     return;
   }
 
@@ -4055,9 +4043,7 @@ void ViewCurve::QRSdetectButton()
 
   if(mainwindow->signalcomp[signal_nr]->edfhdr->edfparam[mainwindow->signalcomp[signal_nr]->edfsignal[0]].sf_f < 199.999)
   {
-    QMessageBox messagewindow(QMessageBox::Critical, "Error", "Sample rate of selected signal is less than 200 Hz!");
-    messagewindow.exec();
-
+    QMessageBox::critical(this, "Error", "Sample rate of selected signal is less than 200 Hz!");
     return;
   }
 
@@ -4067,17 +4053,13 @@ void ViewCurve::QRSdetectButton()
      (strcmp(str, "mV")) && (strcmp(str, "ECG mV")) && (strcmp(str, "EEG mV")) &&
      (strcmp(str, "V")) && (strcmp(str, "ECG V")) && (strcmp(str, "EEG V")))
   {
-    QMessageBox messagewindow(QMessageBox::Critical, "Error", "Unknown unit (physical dimension), expected uV or mV or V");
-    messagewindow.exec();
-
+    QMessageBox::critical(this, "Error", "Unknown unit (physical dimension), expected uV or mV or V");
     return;
   }
 
   if(mainwindow->signalcomp[signal_nr]->zratio_filter != NULL)
   {
-    QMessageBox messagewindow(QMessageBox::Critical, "Error", "Z-ratio is active for this signal!");
-    messagewindow.exec();
-
+    QMessageBox::critical(this, "Error", "Z-ratio is active for this signal!");
     return;
   }
 
@@ -4186,15 +4168,13 @@ void ViewCurve::cdsa_button()
 
   if(mainwindow->signalcomp[signal_nr]->edfhdr->edfparam[mainwindow->signalcomp[signal_nr]->edfsignal[0]].sf_int < 30)
   {
-    QMessageBox messagewindow(QMessageBox::Critical, "Error", "Samplefrequency must be at least 30Hz and must be an integer value.");
-    messagewindow.exec();
+    QMessageBox::critical(this, "Error", "Samplefrequency must be at least 30Hz and must be an integer value.");
     return;
   }
 
   if(mainwindow->signalcomp[signal_nr]->edfhdr->recording_len_sec < 30)
   {
-    QMessageBox messagewindow(QMessageBox::Critical, "Error", "Recording length must be at least 30 seconds.");
-    messagewindow.exec();
+    QMessageBox::critical(this, "Error", "Recording length must be at least 30 seconds.");
     return;
   }
 
@@ -4221,25 +4201,19 @@ void ViewCurve::Z_scoringButton()
 
   if(mainwindow->signalcomp[signal_nr]->ecg_filter != NULL)
   {
-    QMessageBox messagewindow(QMessageBox::Critical, "Error", "Heartrate detection is active for this signal!");
-    messagewindow.exec();
-
+    QMessageBox::critical(this, "Error", "Heartrate detection is active for this signal!");
     return;
   }
 
   if(mainwindow->signalcomp[signal_nr]->zratio_filter != NULL)
   {
-    QMessageBox messagewindow(QMessageBox::Critical, "Error", "Z-ratio is already active for this signal!");
-    messagewindow.exec();
-
+    QMessageBox::critical(this, "Error", "Z-ratio is already active for this signal!");
     return;
   }
 
   if(mainwindow->annot_editor_active)
   {
-    QMessageBox messagewindow(QMessageBox::Critical, "Error", "Close the annotation editor and try again.");
-    messagewindow.exec();
-
+    QMessageBox::critical(this, "Error", "Close the annotation editor and try again.");
     return;
   }
 
@@ -4682,33 +4656,25 @@ void ViewCurve::RulerButton()
 
   if((mainwindow->pagetime / TIME_DIMENSION) < 2LL)
   {
-    QMessageBox messagewindow(QMessageBox::Warning, "Ruler", "The ruler can not be used when the Timescale\n is set to a value less than 2 seconds.");
-    messagewindow.exec();
-
+    QMessageBox::warning(this, "Ruler", "The ruler can not be used when the Timescale\n is set to a value less than 2 seconds.");
     goto END_OF_FUNC;
   }
 
   if((mainwindow->pagetime / TIME_DIMENSION) > 120LL)
   {
-    QMessageBox messagewindow(QMessageBox::Warning, "Ruler", "The ruler can not be used when the Timescale\n is set to a value more than 120 seconds.");
-    messagewindow.exec();
-
+    QMessageBox::warning(this, "Ruler", "The ruler can not be used when the Timescale\n is set to a value more than 120 seconds.");
     goto END_OF_FUNC;
   }
 
   if((mainwindow->signalcomp[signal_nr]->voltpercm < 1.0) && (mainwindow->signalcomp[signal_nr]->voltpercm > -1.0))
   {
-    QMessageBox messagewindow(QMessageBox::Warning, "Ruler", "The ruler can not be used when the Amplitude\n is set to a value less than 1.");
-    messagewindow.exec();
-
+    QMessageBox::warning(this, "Ruler", "The ruler can not be used when the Amplitude\n is set to a value less than 1.");
     goto END_OF_FUNC;
   }
 
   if((mainwindow->signalcomp[signal_nr]->voltpercm > 2000.0) || (mainwindow->signalcomp[signal_nr]->voltpercm < -2000.0))
   {
-    QMessageBox messagewindow(QMessageBox::Warning, "Ruler", "The ruler can not be used when the Amplitude\n is set to a value more than 2000.");
-    messagewindow.exec();
-
+    QMessageBox::warning(this, "Ruler", "The ruler can not be used when the Amplitude\n is set to a value more than 2000.");
     goto END_OF_FUNC;
   }
 
@@ -5222,17 +5188,13 @@ void ViewCurve::average_annot(bool)
 
   if(!mainwindow->signalcomps)
   {
-    QMessageBox messagewindow(QMessageBox::Critical, "Error", "First add a signal to the screen.");
-    messagewindow.exec();
-
+    QMessageBox::critical(this, "Error", "First add a signal to the screen.");
     return;
   }
 
   if(mainwindow->annot_editor_active)
   {
-    QMessageBox messagewindow(QMessageBox::Critical, "Error", "Close the annotation editor and try again.");
-    messagewindow.exec();
-
+    QMessageBox::critical(this, "Error", "Close the annotation editor and try again.");
     return;
   }
 

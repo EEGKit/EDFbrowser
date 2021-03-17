@@ -172,8 +172,7 @@ UI_Annotationswindow::UI_Annotationswindow(struct edfhdrblock *e_hdr, QWidget *w
 
 void UI_Annotationswindow::more_button_clicked(bool)
 {
-  QMessageBox messagewindow(QMessageBox::Information, "Info", "Right-click on an annotation for more options.");
-  messagewindow.exec();
+  QMessageBox::information(mainwindow,  "Info", "Right-click on an annotation for more options.");
   return;
 }
 
@@ -270,8 +269,7 @@ void UI_Annotationswindow::show_stats(bool)
 
   if(mainwindow->annot_editor_active)
   {
-    QMessageBox messagewindow(QMessageBox::Critical, "Error", "Close the annotation editor and try again.");
-    messagewindow.exec();
+    QMessageBox::critical(mainwindow, "Error", "Close the annotation editor and try again.");
     return;
   }
 
@@ -317,9 +315,7 @@ void UI_Annotationswindow::filt_ival_time(bool)
 
   if(mainwindow->annot_editor_active)
   {
-    QMessageBox messagewindow(QMessageBox::Critical, "Error", "Close the annotation editor and try again.");
-    messagewindow.exec();
-
+    QMessageBox::critical(mainwindow, "Error", "Close the annotation editor and try again.");
     return;
   }
 
@@ -873,17 +869,13 @@ void UI_Annotationswindow::average_annot(bool)
 
   if(!mainwindow->signalcomps)
   {
-    QMessageBox messagewindow(QMessageBox::Critical, "Error", "First add a signal to the screen.");
-    messagewindow.exec();
-
+    QMessageBox::critical(mainwindow, "Error", "First add a signal to the screen.");
     return;
   }
 
   if(mainwindow->annot_editor_active)
   {
-    QMessageBox messagewindow(QMessageBox::Critical, "Error", "Close the annotation editor and try again.");
-    messagewindow.exec();
-
+    QMessageBox::critical(mainwindow, "Error", "Close the annotation editor and try again.");
     return;
   }
 

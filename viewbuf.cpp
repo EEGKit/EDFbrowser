@@ -229,14 +229,13 @@ void UI_Mainwindow::setup_viewbuf()
     {
       live_stream_active = 0;
 #if defined(__LP64__) || defined(__MINGW64__)
-      QMessageBox messagewindow(QMessageBox::Critical, "Error", "Somehow you hit the memory limit...\n"
-                                                                "Decrease the timescale and/or number of traces and try again.");
+      QMessageBox::critical(this, "Error", "Somehow you hit the memory limit...\n"
+                                           "Decrease the timescale and/or number of traces and try again.");
 #else
-      QMessageBox messagewindow(QMessageBox::Critical, "Error", "You have hit the memory limit of 4.2GB.\n"
-                                                                "Decrease the timescale and/or number of traces and try again.");
+      QMessageBox::critical(this, "Error", "You have hit the memory limit of 4.2GB.\n"
+                                           "Decrease the timescale and/or number of traces and try again.\n"
+                                           "Consider switching to the 64-bit version.");
 #endif
-      messagewindow.exec();
-
       remove_all_signals();
       return;
     }
@@ -245,8 +244,7 @@ void UI_Mainwindow::setup_viewbuf()
     if(viewbuf==NULL)
     {
       live_stream_active = 0;
-      QMessageBox messagewindow(QMessageBox::Critical, "Error", "Internal error: Memory allocation error:\n\"prefilterbuf\"");
-      messagewindow.exec();
+      QMessageBox::critical(this, "Error", "Internal error: Memory allocation error:\n\"prefilterbuf\"");
       remove_all_signals();
       return;
     }
@@ -271,8 +269,7 @@ void UI_Mainwindow::setup_viewbuf()
           if(fread(viewbuf + signalcomp[i]->viewbufoffset, signalcomp[i]->viewbufsize, 1, signalcomp[i]->edfhdr->file_hdl)!=1)
           {
             live_stream_active = 0;
-            QMessageBox messagewindow(QMessageBox::Critical, "Error", "A read error occurred. 2");
-            messagewindow.exec();
+            QMessageBox::critical(this, "Error", "A read error occurred. 2");
             remove_all_signals();
             return;
           }
@@ -309,8 +306,7 @@ void UI_Mainwindow::setup_viewbuf()
             if(fread(viewbuf + signalcomp[i]->viewbufoffset, signalcomp[i]->viewbufsize, 1, signalcomp[i]->edfhdr->file_hdl)!=1)
             {
               live_stream_active = 0;
-              QMessageBox messagewindow(QMessageBox::Critical, "Error", "A read error occurred. 3");
-              messagewindow.exec();
+              QMessageBox::critical(this, "Error", "A read error occurred. 3");
               remove_all_signals();
               return;
             }
@@ -601,14 +597,13 @@ void UI_Mainwindow::setup_viewbuf()
     {
       live_stream_active = 0;
 #if defined(__LP64__) || defined(__MINGW64__)
-      QMessageBox messagewindow(QMessageBox::Critical, "Error", "Somehow you hit the memory limit...\n"
-                                                                "Decrease the timescale and/or number of traces and try again.");
+      QMessageBox::critical(this, "Error", "Somehow you hit the memory limit...\n"
+                                           "Decrease the timescale and/or number of traces and try again.");
 #else
-      QMessageBox messagewindow(QMessageBox::Critical, "Error", "You have hit the memory limit of 4.2GB.\n"
-                                                                "Decrease the timescale and/or number of traces and try again.");
+      QMessageBox::critical(this, "Error", "You have hit the memory limit of 4.2GB.\n"
+                                           "Decrease the timescale and/or number of traces and try again.\n"
+                                           "Consider switching to the 64-bit version.");
 #endif
-      messagewindow.exec();
-
       remove_all_signals();
       return;
     }
@@ -617,10 +612,8 @@ void UI_Mainwindow::setup_viewbuf()
     if(viewbuf==NULL)
     {
       live_stream_active = 0;
-      QMessageBox messagewindow(QMessageBox::Critical, "Error", "The system was not able to provide enough resources (memory) to perform the requested action.\n"
-                                                                "Decrease the timescale and try again.");
-      messagewindow.exec();
-
+      QMessageBox::critical(this, "Error", "The system was not able to provide enough resources (memory) to perform the requested action.\n"
+                                           "Decrease the timescale and try again.");
       remove_all_signals();
       return;
     }
@@ -679,8 +672,7 @@ void UI_Mainwindow::setup_viewbuf()
         if(fread(viewbuf + signalcomp[i]->viewbufoffset, readsize, 1, signalcomp[i]->edfhdr->file_hdl)!=1)
         {
           live_stream_active = 0;
-          QMessageBox messagewindow(QMessageBox::Critical, "Error", "A read error occurred. 5");
-          messagewindow.exec();
+          QMessageBox::critical(this, "Error", "A read error occurred. 5");
           remove_all_signals();
           return;
         }
@@ -759,8 +751,7 @@ void UI_Mainwindow::setup_viewbuf()
           if(fread(viewbuf + signalcomp[i]->viewbufoffset, readsize, 1, signalcomp[i]->edfhdr->file_hdl)!=1)
           {
             live_stream_active = 0;
-            QMessageBox messagewindow(QMessageBox::Critical, "Error", "A read error occurred. 6");
-            messagewindow.exec();
+            QMessageBox::critical(this, "Error", "A read error occurred. 6");
             remove_all_signals();
             return;
           }

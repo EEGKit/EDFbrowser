@@ -182,8 +182,7 @@ void UI_Mainwindow::open_stream()
 {
   if(files_open)
   {
-    QMessageBox messagewindow(QMessageBox::Critical, "Error", "Close all files before opening a stream.");
-    messagewindow.exec();
+    QMessageBox::critical(this, "Error", "Close all files before opening a stream.");
     return;
   }
 
@@ -331,23 +330,20 @@ void UI_Mainwindow::save_file()
 
   if(file_is_opened(f_path))
   {
-    QMessageBox messagewindow(QMessageBox::Critical, "Error", "Selected file is in use.");
-    messagewindow.exec();
+    QMessageBox::critical(this, "Error", "Selected file is in use.");
     return;
   }
 
   outputfile = fopeno(f_path, "wb");
   if(outputfile==NULL)
   {
-    QMessageBox messagewindow(QMessageBox::Critical, "Error", "Can not create a file for writing.");
-    messagewindow.exec();
+    QMessageBox::critical(this, "Error", "Can not create a file for writing.");
     return;
   }
 
   if(save_annotations(this, outputfile, hdr))
   {
-    QMessageBox messagewindow(QMessageBox::Critical, "Error", "An error occurred during saving.");
-    messagewindow.exec();
+    QMessageBox::critical(this, "Error", "An error occurred during saving.");
     fclose(outputfile);
     return;
   }
@@ -372,6 +368,7 @@ void UI_Mainwindow::save_file()
   save_act->setEnabled(false);
 
   delete annotationEditDock;
+  annotationEditDock = NULL;
 
   maincurve->update();
 }
@@ -718,8 +715,7 @@ void UI_Mainwindow::reduce_signals()
 {
   if(!files_open)
   {
-    QMessageBox messagewindow(QMessageBox::Critical, "Error", "You have to open the file first.");
-    messagewindow.exec();
+    QMessageBox::critical(this, "Error", "You have to open the file first.");
     return;
   }
 
@@ -1361,66 +1357,64 @@ void UI_Mainwindow::annotation_editor()
 
   stop_playback();
 
-  if(!files_open)  return;
-
-  if(files_open==1)
+  if(files_open!=1)
   {
+    QMessageBox::critical(this, "Error", "Editing annotations is possible when you have opened one file only.");
+    return;
+  }
+
+  if(edfheaderlist[0]->annots_not_read)
+  {
+    edfplus_annotation_empty_list(&edfheaderlist[0]->annot_list);
+
+    if(annotations_dock[0] != NULL)
+    {
+      annotations_dock[0]->docklist->close();
+      delete annotations_dock[0];
+      annotations_dock[0] = NULL;
+    }
+
+    edfheaderlist[0]->annots_not_read = 0;
+
+    EDF_annotations annotations;
+
+    annotations.get_annotations(edfheaderlist[0], read_nk_trigger_signal);
+
     if(edfheaderlist[0]->annots_not_read)
     {
-      edfplus_annotation_empty_list(&edfheaderlist[0]->annot_list);
-
-      if(annotations_dock[0] != NULL)
-      {
-        annotations_dock[0]->docklist->close();
-        delete annotations_dock[0];
-        annotations_dock[0] = NULL;
-      }
-
-      edfheaderlist[0]->annots_not_read = 0;
-
-      EDF_annotations annotations;
-
-      annotations.get_annotations(edfheaderlist[0], read_nk_trigger_signal);
-
-      if(edfheaderlist[0]->annots_not_read)
-      {
-        QMessageBox messagewindow(QMessageBox::Critical, "Error", "Editing annotations is not possible when you abort the scanning of the file.");
-        messagewindow.exec();
-
-        return;
-      }
+      QMessageBox::critical(this, "Error", "Editing annotations is not possible when you abort the scanning of the file.");
+      return;
     }
+  }
 
-    if(annotations_dock[0]==NULL)
-    {
-      annotations_dock[0] = new UI_Annotationswindow(edfheaderlist[0], this);
+  if(annotations_dock[0]==NULL)
+  {
+    annotations_dock[0] = new UI_Annotationswindow(edfheaderlist[0], this);
 
-      addDockWidget(Qt::RightDockWidgetArea, annotations_dock[0]->docklist, Qt::Vertical);
-    }
+    addDockWidget(Qt::RightDockWidgetArea, annotations_dock[0]->docklist, Qt::Vertical);
+  }
 
-    maincurve->active_markers->edf_hdr = edfheaderlist[0];
+  maincurve->active_markers->edf_hdr = edfheaderlist[0];
 
-    annotations_dock[0]->docklist->show();
+  annotations_dock[0]->docklist->show();
 
-    if(annotationEditDock == NULL)
-    {
-      annotationEditDock = new UI_AnnotationEditwindow(edfheaderlist[0], this);
+  if(annotationEditDock == NULL)
+  {
+    printf("annotationEditDock = new    file: %s  line: %i\n", __FILE__, __LINE__);
 
-      addToolBar(Qt::BottomToolBarArea, annotationEditDock->dockedit);
+    annotationEditDock = new UI_AnnotationEditwindow(edfheaderlist[0], this);
 
-      insertToolBarBreak(annotationEditDock->dockedit);
-    }
-    else
-    {
-      annotationEditDock->set_edf_header(edfheaderlist[0]);
+    addToolBar(Qt::BottomToolBarArea, annotationEditDock->dockedit);
 
-      annotationEditDock->dockedit->show();
-    }
+    insertToolBarBreak(annotationEditDock->dockedit);
   }
   else
   {
-    QMessageBox messagewindow(QMessageBox::Critical, "Error", "Editing annotations is possible when you have opened one file only.");
-    messagewindow.exec();
+    printf("annotationEditDock pointer re-used!    file: %s  line: %i\n", __FILE__, __LINE__);
+
+    annotationEditDock->set_edf_header(edfheaderlist[0]);
+
+    annotationEditDock->dockedit->show();
   }
 }
 
@@ -1444,9 +1438,8 @@ void UI_Mainwindow::show_spectrum_dock()
     }
     else
     {
-      QMessageBox messagewindow(QMessageBox::Critical, "Error", "The maximum number of docked Power Spectrum windows has been reached.\n"
-                                                                "Close one first.");
-      messagewindow.exec();
+      QMessageBox::critical(this, "Error", "The maximum number of docked Power Spectrum windows has been reached.\n"
+                                           "Close one first.");
     }
 
     return;
@@ -1471,15 +1464,13 @@ void UI_Mainwindow::show_cdsa_dock()
 
     if(signalcomp[0]->edfhdr->edfparam[signalcomp[0]->edfsignal[0]].sf_int < 30)
     {
-      QMessageBox messagewindow(QMessageBox::Critical, "Error", "Samplefrequency must be at least 30Hz and must be an integer value.");
-      messagewindow.exec();
+      QMessageBox::critical(this, "Error", "Samplefrequency must be at least 30Hz and must be an integer value.");
       return;
     }
 
     if(signalcomp[0]->edfhdr->recording_len_sec < 30)
     {
-      QMessageBox messagewindow(QMessageBox::Critical, "Error", "Recording length must be at least 30 seconds.");
-      messagewindow.exec();
+      QMessageBox::critical(this, "Error", "Recording length must be at least 30 seconds.");
       return;
     }
 
@@ -1547,28 +1538,22 @@ void UI_Mainwindow::open_new_file()
 
   if(annot_editor_active && files_open)
   {
-    QMessageBox messagewindow(QMessageBox::Critical, "Error", "You can not open multiple files when editing annotations.\n"
-                                                              "Close the annotation edit window first.");
-    messagewindow.exec();
-
+    QMessageBox::critical(this, "Error", "You can not open multiple files when editing annotations.\n"
+                                         "Close the annotation edit window first.");
     cmdlineargument = 0;
-
     return;
   }
 
   if((files_open > 0) && (live_stream_active))
   {
-    QMessageBox messagewindow(QMessageBox::Critical, "Error", "You can not open multiple files while a streaming file is open.\n"
-                                                              "Close the streaming file first.");
-    messagewindow.exec();
-
+    QMessageBox::critical(this, "Error", "You can not open multiple files while a streaming file is open.\n"
+                                         "Close the streaming file first.");
     return;
   }
 
   if(files_open >= MAXFILES)
   {
-    QMessageBox messagewindow(QMessageBox::Critical, "Error", "There are too many files opened.");
-    messagewindow.exec();
+    QMessageBox::critical(this, "Error", "There are too many files opened.");
     cmdlineargument = 0;
     return;
   }
@@ -1674,11 +1659,8 @@ void UI_Mainwindow::open_new_file()
     {
       snprintf(str, 2048, "File has an unknown extension:  \"%s\"", path + (len - 4));
 
-      QMessageBox messagewindow(QMessageBox::Critical, "Error", QString::fromLocal8Bit(str));
-      messagewindow.exec();
-
+      QMessageBox::critical(this, "Error", QString::fromLocal8Bit(str));
       cmdlineargument = 0;
-
       return;
     }
 
@@ -1687,8 +1669,7 @@ void UI_Mainwindow::open_new_file()
     {
       snprintf(str, 2048, "Can not open file for reading:\n\"%s\"\n"
                           "Check if you have the right permissions.", path);
-      QMessageBox messagewindow(QMessageBox::Critical, "Error", QString::fromLocal8Bit(str));
-      messagewindow.exec();
+      QMessageBox::critical(this, "Error", QString::fromLocal8Bit(str));
       cmdlineargument = 0;
       return;
     }
@@ -1717,11 +1698,8 @@ void UI_Mainwindow::open_new_file()
 
       strlcat(str, "\n File is not a valid EDF or BDF file.", 2048);
 
-      QMessageBox messagewindow(QMessageBox::Critical, "Error", str);
-      messagewindow.exec();
-
+      QMessageBox::critical(this, "Error", str);
       cmdlineargument = 0;
-
       return;
     }
 
@@ -1729,25 +1707,22 @@ void UI_Mainwindow::open_new_file()
     {
       if(edfhdr->edf)
       {
-        QMessageBox messagewindow(QMessageBox::Critical, "Error", "EDFbrowser can not show EDF+D (discontiguous) files.\n"
-                                                                  "Convert this file to EDF+C first. You can find this converter\n"
-                                                                  "in the Tools menu (EDF+D to EDF+C converter).");
-        messagewindow.exec();
+        QMessageBox::critical(this, "Error", "EDFbrowser can not show EDF+D (discontiguous) files.\n"
+                                             "Convert this file to EDF+C first. You can find this converter\n"
+                                             "in the Tools menu (EDF+D to EDF+C converter).");
       }
 
       if(edfhdr->bdf)
       {
-        QMessageBox messagewindow(QMessageBox::Critical, "Error", "EDFbrowser can not show BDF+D (discontiguous) files.\n"
-                                                                  "Convert this file to BDF+C first. You can find this converter\n"
-                                                                  "in the Tools menu (EDF+D to EDF+C converter).");
-        messagewindow.exec();
+        QMessageBox::critical(this, "Error", "EDFbrowser can not show BDF+D (discontiguous) files.\n"
+                                             "Convert this file to BDF+C first. You can find this converter\n"
+                                             "in the Tools menu (EDF+D to EDF+C converter).");
       }
 
       free(edfhdr->edfparam);
       free(edfhdr);
       fclose(newfile);
       cmdlineargument = 0;
-
       return;
     }
 
@@ -2706,6 +2681,7 @@ void UI_Mainwindow::close_all_files()
   }
 
   delete annotationEditDock;
+  annotationEditDock = NULL;
 
   save_act->setEnabled(false);
 
@@ -3555,8 +3531,7 @@ void UI_Mainwindow::export_to_ascii()
 {
   if(!files_open)
   {
-    QMessageBox messagewindow(QMessageBox::Critical, "Error", "You have to open a file first.");
-    messagewindow.exec();
+    QMessageBox::critical(this, "Error", "You have to open a file first.");
     return;
   }
 
@@ -3596,8 +3571,7 @@ void UI_Mainwindow::qrs_detector()
   {
     snprintf(str, 2048, "Sample rate of selected signal is %.1f Hz."
                         "The QRS detector needs a samplerate of 200 Hz or higher.", sf);
-    QMessageBox messagewindow(QMessageBox::Critical, "Error", str);
-    messagewindow.exec();
+    QMessageBox::critical(this, "Error", str);
     return;
   }
 
@@ -3609,16 +3583,13 @@ void UI_Mainwindow::qrs_detector()
   {
     snprintf(str, 2048, "Unknown unit (physical dimension): \"%s\", expected uV or mV or V",
              signalcomp[signal_nr]->edfhdr->edfparam[signalcomp[signal_nr]->edfsignal[0]].physdimension);
-    QMessageBox messagewindow(QMessageBox::Critical, "Error", str);
-    messagewindow.exec();
+    QMessageBox::critical(this, "Error", str);
     return;
   }
 
   if(signalcomp[signal_nr]->zratio_filter != NULL)
   {
-    QMessageBox messagewindow(QMessageBox::Critical, "Error", "Z-ratio is active for this signal!");
-    messagewindow.exec();
-
+    QMessageBox::critical(this, "Error", "Z-ratio is active for this signal!");
     return;
   }
 
@@ -3638,8 +3609,7 @@ void UI_Mainwindow::export_annotations()
 {
   if(!files_open)
   {
-    QMessageBox messagewindow(QMessageBox::Critical, "Error", "You have to open a file first.");
-    messagewindow.exec();
+    QMessageBox::critical(this, "Error", "You have to open a file first.");
     return;
   }
 
@@ -3657,8 +3627,7 @@ void UI_Mainwindow::check_edf_compatibility()
 {
   if(!files_open)
   {
-    QMessageBox messagewindow(QMessageBox::Critical, "Error", "You have to open the file first.");
-    messagewindow.exec();
+    QMessageBox::critical(this, "Error", "You have to open the file first.");
     return;
   }
 
@@ -3670,8 +3639,7 @@ void UI_Mainwindow::unify_resolution()
 {
   if(!files_open)
   {
-    QMessageBox messagewindow(QMessageBox::Critical, "Error", "You have to open a file first.");
-    messagewindow.exec();
+    QMessageBox::critical(this, "Error", "You have to open a file first.");
     return;
   }
 
@@ -3972,8 +3940,7 @@ void UI_Mainwindow::edfplus_remove_duplicate_annotations()
 
   if(!files_open)
   {
-    QMessageBox messagewindow(QMessageBox::Critical, "Error", "You have to open a file first.");
-    messagewindow.exec();
+    QMessageBox::critical(this, "Error", "You have to open a file first.");
     return;
   }
 
@@ -4006,8 +3973,7 @@ void UI_Mainwindow::edfplus_remove_duplicate_annotations()
   }
 
   snprintf(str, 256, "Removed %i duplicates from the annotationlist(s)", dup_cnt);
-  QMessageBox messagewindow(QMessageBox::Information, "Ready", str);
-  messagewindow.exec();
+  QMessageBox::information(this, "Ready", str);
 }
 
 
@@ -4039,8 +4005,7 @@ struct signalcompblock * UI_Mainwindow::create_signalcomp_copy(struct signalcomp
   newsignalcomp = (struct signalcompblock *)calloc(1, sizeof(struct signalcompblock));
   if(newsignalcomp == NULL)
   {
-    QMessageBox messagewindow(QMessageBox::Critical, "Error", "malloc() error");
-    messagewindow.exec();
+    QMessageBox::critical(this, "Error", "malloc() error");
     return NULL;
   }
 
@@ -4051,8 +4016,7 @@ struct signalcompblock * UI_Mainwindow::create_signalcomp_copy(struct signalcomp
     newsignalcomp->spike_filter = create_spike_filter_copy(original_signalcomp->spike_filter);
     if(newsignalcomp->spike_filter == NULL)
     {
-      QMessageBox messagewindow(QMessageBox::Critical, "Error", "malloc() error");
-      messagewindow.exec();
+      QMessageBox::critical(this, "Error", "malloc() error");
       free(signalcomp);
       return NULL;
     }
@@ -4063,8 +4027,7 @@ struct signalcompblock * UI_Mainwindow::create_signalcomp_copy(struct signalcomp
     newsignalcomp->plif_ecg_filter = plif_subtract_filter_create_copy(original_signalcomp->plif_ecg_filter);
     if(newsignalcomp->plif_ecg_filter == NULL)
     {
-      QMessageBox messagewindow(QMessageBox::Critical, "Error", "malloc() error");
-      messagewindow.exec();
+      QMessageBox::critical(this, "Error", "malloc() error");
       free(signalcomp);
       return NULL;
     }
@@ -4077,8 +4040,7 @@ struct signalcompblock * UI_Mainwindow::create_signalcomp_copy(struct signalcomp
     newsignalcomp->filter[i] = create_filter_copy(original_signalcomp->filter[i]);
     if(newsignalcomp->filter[i] == NULL)
     {
-      QMessageBox messagewindow(QMessageBox::Critical, "Error", "malloc() error");
-      messagewindow.exec();
+      QMessageBox::critical(this, "Error", "malloc() error");
       free(signalcomp);
       return NULL;
     }
@@ -4089,8 +4051,7 @@ struct signalcompblock * UI_Mainwindow::create_signalcomp_copy(struct signalcomp
     newsignalcomp->ravg_filter[i] = create_ravg_filter_copy(original_signalcomp->ravg_filter[i]);
     if(newsignalcomp->ravg_filter[i] == NULL)
     {
-      QMessageBox messagewindow(QMessageBox::Critical, "Error", "malloc() error");
-      messagewindow.exec();
+      QMessageBox::critical(this, "Error", "malloc() error");
       free(signalcomp);
       return NULL;
     }
@@ -4101,8 +4062,7 @@ struct signalcompblock * UI_Mainwindow::create_signalcomp_copy(struct signalcomp
     newsignalcomp->fir_filter = create_fir_filter_copy(original_signalcomp->fir_filter);
     if(newsignalcomp->fir_filter == NULL)
     {
-      QMessageBox messagewindow(QMessageBox::Critical, "Error", "malloc() error");
-      messagewindow.exec();
+      QMessageBox::critical(this, "Error", "malloc() error");
       free(signalcomp);
       return NULL;
     }
@@ -4198,8 +4158,7 @@ struct signalcompblock * UI_Mainwindow::create_signalcomp_copy(struct signalcomp
 
     if(err != NULL)
     {
-      QMessageBox messagewindow(QMessageBox::Critical, "Error", err);
-      messagewindow.exec();
+      QMessageBox::critical(this, "Error", err);
       free(err);
       free(signalcomp);
       return NULL;
