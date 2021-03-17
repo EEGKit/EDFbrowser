@@ -863,8 +863,28 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   hlayout_tmp = new QHBoxLayout;
   hlayout_tmp->addWidget(lineedit4_1);
   hlayout_tmp->addStretch(1000);
-  flayout4_2->addRow("R-wave description string", hlayout_tmp);
+  flayout4_2->addRow("R-peak description string", hlayout_tmp);
   QObject::connect(lineedit4_1, SIGNAL(textEdited(const QString)), this, SLOT(lineedit4_1_changed(const QString)));
+
+  checkbox4_8 = new QCheckBox;
+  checkbox4_8->setTristate(false);
+  checkbox4_8->setToolTip("If checked, the signal's name will be concatenated to the R-peak description,\n"
+                          "e.g.: R-peak V2");
+  if(mainwindow->use_signallabel_in_annot_descr)
+  {
+    checkbox4_8->setCheckState(Qt::Checked);
+  }
+  else
+  {
+    checkbox4_8->setCheckState(Qt::Unchecked);
+  }
+  hlayout_tmp = new QHBoxLayout;
+  hlayout_tmp->addWidget(checkbox4_8);
+  hlayout_tmp->addStretch(1000);
+  flayout4_2->addRow("Add signallabel to R-peak description", hlayout_tmp);
+  flayout4_2->labelForField(hlayout_tmp)->setToolTip("If checked, the signal's name will be concatenated to the R-peak description,\n"
+                                                     "e.g.: R-peak V2");
+  QObject::connect(checkbox4_8, SIGNAL(stateChanged(int)), this, SLOT(checkbox4_8Clicked(int)));
 
   hlayout_tmp = new QHBoxLayout;
   hlayout_tmp->addLayout(flayout4_1);
@@ -1525,6 +1545,20 @@ void UI_OptionsDialog::checkbox4_7Clicked(int state)
   if(state==Qt::Unchecked)
   {
     mainwindow->auto_update_annot_onset = 0;
+  }
+}
+
+
+void UI_OptionsDialog::checkbox4_8Clicked(int state)
+{
+  if(state==Qt::Checked)
+  {
+    mainwindow->use_signallabel_in_annot_descr = 1;
+  }
+
+  if(state==Qt::Unchecked)
+  {
+    mainwindow->use_signallabel_in_annot_descr = 0;
   }
 }
 

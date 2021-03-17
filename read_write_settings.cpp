@@ -1398,6 +1398,23 @@ void UI_Mainwindow::read_general_settings()
       xml_go_up(xml_hdl);
     }
 
+    if(!(xml_goto_nth_element_inside(xml_hdl, "use_signallabel_in_annot_descr", 0)))
+    {
+      if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+      {
+        xml_close(xml_hdl);
+        return;
+      }
+
+      use_signallabel_in_annot_descr = atoi(result);
+      if(use_signallabel_in_annot_descr != 1)
+      {
+        use_signallabel_in_annot_descr = 0;
+      }
+
+      xml_go_up(xml_hdl);
+    }
+
     xml_go_up(xml_hdl);
   }
 
@@ -2426,6 +2443,7 @@ void UI_Mainwindow::write_settings()
 
     fprintf(cfgfile, "    <ecg_qrs>\n");
     fprintf(cfgfile, "      <r_peak_description>%s</r_peak_description>\n", ecg_qrs_rpeak_descr);
+    fprintf(cfgfile, "      <use_signallabel_in_annot_descr>%i</use_signallabel_in_annot_descr>\n", use_signallabel_in_annot_descr);
     fprintf(cfgfile, "    </ecg_qrs>\n");
 
     fprintf(cfgfile, "    <live_stream_update_interval>%i</live_stream_update_interval>\n", live_stream_update_interval);

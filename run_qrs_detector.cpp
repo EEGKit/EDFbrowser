@@ -39,7 +39,8 @@ UI_QRS_detector::UI_QRS_detector(QWidget *w_parent, struct signalcompblock *sign
       filenum=-1,
       instance_num=0;
 
-  char str[32]={""};
+  char str[32]="",
+       rpeak_descr[MAX_ANNOTATION_LEN]="";
 
   double *processed_samples_buf=NULL;
 
@@ -151,9 +152,22 @@ UI_QRS_detector::UI_QRS_detector(QWidget *w_parent, struct signalcompblock *sign
     mainwindow->annotationlist_backup = edfplus_annotation_create_list_copy(&mainwindow->edfheaderlist[filenum]->annot_list);
   }
 
+  strncpy(rpeak_descr, mainwindow->ecg_qrs_rpeak_descr, MAX_ANNOTATION_LEN);
+  if(mainwindow->use_signallabel_in_annot_descr)
+  {
+    strlcat(rpeak_descr, " ", MAX_ANNOTATION_LEN);
+    if(strlen(signalcomp->alias))
+    {
+      strlcat(rpeak_descr, signalcomp->alias, MAX_ANNOTATION_LEN);
+    }
+    else
+    {
+      strlcat(rpeak_descr, signalcomp->signallabel, MAX_ANNOTATION_LEN);
+    }
+  }
+
   memset(&annotation, 0, sizeof(struct annotationblock));
-  strncpy(annotation.description, mainwindow->ecg_qrs_rpeak_descr, MAX_ANNOTATION_LEN);
-  annotation.description[MAX_ANNOTATION_LEN] = 0;
+  strlcpy(annotation.description, rpeak_descr, MAX_ANNOTATION_LEN);
 
   for(i=0; i<beat_cnt; i++)
   {
@@ -216,7 +230,7 @@ UI_QRS_detector::UI_QRS_detector(QWidget *w_parent, struct signalcompblock *sign
 
   dock_param.mainwindow = mainwindow;
 
-  strlcpy(dock_param.annot_name, mainwindow->ecg_qrs_rpeak_descr, 16);
+  strlcpy(dock_param.annot_name, rpeak_descr, 64);
 
   mainwindow->hrv_dock[instance_num] = new UI_hrv_dock(mainwindow, dock_param);
 

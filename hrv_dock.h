@@ -79,9 +79,9 @@ class hrv_curve_widget;
 struct hrv_dock_param_struct
 {
   int instance_num;
-  char annot_name[32];
+  char annot_name[64];
   struct edfhdrblock *edfhdr;
-  UI_Mainwindow  *mainwindow;
+  UI_Mainwindow *mainwindow;
 };
 
 

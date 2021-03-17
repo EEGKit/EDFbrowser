@@ -152,6 +152,7 @@ QCheckBox      *checkbox1,
                *checkbox4_5,
                *checkbox4_6,
                *checkbox4_7,
+               *checkbox4_8,
                *checkbox2_1,
                *checkbox2_2;
 
@@ -211,6 +212,7 @@ void checkbox4_4Clicked(int);
 void checkbox4_5Clicked(int);
 void checkbox4_6Clicked(int);
 void checkbox4_7Clicked(int);
+void checkbox4_8Clicked(int);
 void ApplyButtonClicked();
 void colorBarButtonClicked(SpecialButton *);
 void DefaultButton2Clicked();

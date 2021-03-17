@@ -273,7 +273,8 @@ public:
       sys_monofont_size,
       font_pixel_height,
       font_pixel_width,
-      use_diverse_signal_colors;
+      use_diverse_signal_colors,
+      use_signallabel_in_annot_descr;
 
   unsigned long long pagetime,
                      maxfilesize_to_readin_annotations,
