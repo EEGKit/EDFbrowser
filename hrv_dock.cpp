@@ -490,7 +490,7 @@ void hrv_curve_widget::paintEvent(QPaintEvent *)
   long long hr_ival=0,
             former_onset=-1;
 
-  char str[64];
+  char str[MAX_ANNOTATION_LEN];
 
   struct annotation_list *annot_list;
 
@@ -532,7 +532,7 @@ void hrv_curve_widget::paintEvent(QPaintEvent *)
       break;
     }
 
-    strlcpy(str, annot->description, 48);
+    strlcpy(str, annot->description, MAX_ANNOTATION_LEN);
     trim_spaces(str);
 
     if(!strcmp(str, param.annot_name))

@@ -238,7 +238,8 @@ void UI_Annotationswindow::show_heart_rate(bool)
 
   dock_param.mainwindow = mainwindow;
 
-  strlcpy(dock_param.annot_name, annot->description, 32);
+  strlcpy(dock_param.annot_name, annot->description, MAX_ANNOTATION_LEN);
+  trim_spaces(dock_param.annot_name);
 
   mainwindow->hrv_dock[instance_num] = new UI_hrv_dock(mainwindow, dock_param);
 
