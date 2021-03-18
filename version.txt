@@ -1,4 +1,14 @@
 
+ version 1.83      to be defined
+ --------------
+
+ - Annotations list: don't change file position when accessing the contextmenu by right-clicking on an annotation.
+
+ - QRS detector: added the possibility to concatenate the signal's name to the annotation description. This behavour
+   can be enabled/disabled in the options/settings.
+
+
+
  version 1.82      February 27, 2021
  --------------
 
