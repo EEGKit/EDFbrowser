@@ -59,6 +59,14 @@
 #include <QRectF>
 #include <QPoint>
 #include <QToolBar>
+#include <QAction>
+#include <QMenu>
+#include <QToolTip>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QFormLayout>
+#include <QDialog>
+#include <QEvent>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -115,10 +123,24 @@ private:
 
   int is_deleted;
 
+  QMenu *context_menu;
+
+  QPushButton *settings_close_button;
+
+  QSpinBox *max_bpm_spinbox,
+           *min_bpm_spinbox,
+           *height_spinbox;
+
 private slots:
 
   void file_pos_changed(long long);
   void hrv_dock_destroyed(QObject *);
+  void show_context_menu(QPoint);
+  void show_settings(bool);
+  void close_dock(bool);
+  void max_bpm_spinbox_changed(int);
+  void min_bpm_spinbox_changed(int);
+  void height_spinbox_changed(int);
 
 };
 

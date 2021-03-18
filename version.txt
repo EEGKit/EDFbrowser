@@ -7,6 +7,9 @@
  - QRS detector: added the possibility to concatenate the signal's name to the annotation description. This behavour
    can be enabled/disabled in the options/settings.
 
+ - Heart Rate Variability plot: added a configuration dialog where you you can adjust the vertical scale (BPM)
+   and the height of the plotting window.
+
 
 
  version 1.82      February 27, 2021

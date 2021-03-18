@@ -152,7 +152,7 @@ UI_QRS_detector::UI_QRS_detector(QWidget *w_parent, struct signalcompblock *sign
     mainwindow->annotationlist_backup = edfplus_annotation_create_list_copy(&mainwindow->edfheaderlist[filenum]->annot_list);
   }
 
-  strncpy(rpeak_descr, mainwindow->ecg_qrs_rpeak_descr, MAX_ANNOTATION_LEN);
+  strlcpy(rpeak_descr, mainwindow->ecg_qrs_rpeak_descr, MAX_ANNOTATION_LEN);
   if(mainwindow->use_signallabel_in_annot_descr)
   {
     strlcat(rpeak_descr, " ", MAX_ANNOTATION_LEN);

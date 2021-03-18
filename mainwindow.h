@@ -274,7 +274,10 @@ public:
       font_pixel_height,
       font_pixel_width,
       use_diverse_signal_colors,
-      use_signallabel_in_annot_descr;
+      use_signallabel_in_annot_descr,
+      hrvdock_max_bpm,
+      hrvdock_min_bpm,
+      hrvdock_height;
 
   unsigned long long pagetime,
                      maxfilesize_to_readin_annotations,
@@ -374,7 +377,7 @@ public:
 
   struct signalcompblock * create_signalcomp_copy(struct signalcompblock *);
 
-  void enable_hrv_stats_toolbar(const char *, struct annotation_list *);
+  void enable_hrv_stats_toolbar(const char *, struct annotation_list *, struct signalcompblock *);
 
 #ifdef Q_OS_WIN32
   QString specialFolder(int);

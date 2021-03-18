@@ -1418,6 +1418,50 @@ void UI_Mainwindow::read_general_settings()
     xml_go_up(xml_hdl);
   }
 
+  if(!(xml_goto_nth_element_inside(xml_hdl, "hrvdock", 0)))
+  {
+    if(!(xml_goto_nth_element_inside(xml_hdl, "hrvdock_max_bpm", 0)))
+    {
+      if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+      {
+        xml_close(xml_hdl);
+        return;
+      }
+
+      hrvdock_max_bpm = atoi(result);
+
+      xml_go_up(xml_hdl);
+    }
+
+    if(!(xml_goto_nth_element_inside(xml_hdl, "hrvdock_min_bpm", 0)))
+    {
+      if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+      {
+        xml_close(xml_hdl);
+        return;
+      }
+
+      hrvdock_min_bpm = atoi(result);
+
+      xml_go_up(xml_hdl);
+    }
+
+    if(!(xml_goto_nth_element_inside(xml_hdl, "hrvdock_height", 0)))
+    {
+      if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+      {
+        xml_close(xml_hdl);
+        return;
+      }
+
+      hrvdock_height = atoi(result);
+
+      xml_go_up(xml_hdl);
+    }
+
+    xml_go_up(xml_hdl);
+  }
+
   if(!(xml_goto_nth_element_inside(xml_hdl, "live_stream_update_interval", 0)))
   {
     if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
@@ -2445,6 +2489,12 @@ void UI_Mainwindow::write_settings()
     fprintf(cfgfile, "      <r_peak_description>%s</r_peak_description>\n", ecg_qrs_rpeak_descr);
     fprintf(cfgfile, "      <use_signallabel_in_annot_descr>%i</use_signallabel_in_annot_descr>\n", use_signallabel_in_annot_descr);
     fprintf(cfgfile, "    </ecg_qrs>\n");
+
+    fprintf(cfgfile, "    <hrvdock>\n");
+    fprintf(cfgfile, "      <hrvdock_max_bpm>%i</hrvdock_max_bpm>\n", hrvdock_max_bpm);
+    fprintf(cfgfile, "      <hrvdock_min_bpm>%i</hrvdock_min_bpm>\n", hrvdock_min_bpm);
+    fprintf(cfgfile, "      <hrvdock_height>%i</hrvdock_height>\n", hrvdock_height);
+    fprintf(cfgfile, "    </hrvdock>\n");
 
     fprintf(cfgfile, "    <live_stream_update_interval>%i</live_stream_update_interval>\n", live_stream_update_interval);
 

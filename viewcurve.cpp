@@ -4065,7 +4065,7 @@ void ViewCurve::QRSdetectButton()
 
   UI_QRS_detector ui_qrs_det(mainwindow, mainwindow->signalcomp[signal_nr]);
 
-  mainwindow->enable_hrv_stats_toolbar(mainwindow->ecg_qrs_rpeak_descr, &mainwindow->signalcomp[signal_nr]->edfhdr->annot_list);
+  mainwindow->enable_hrv_stats_toolbar(mainwindow->ecg_qrs_rpeak_descr, &mainwindow->signalcomp[signal_nr]->edfhdr->annot_list, mainwindow->signalcomp[signal_nr]);
 }
 
 

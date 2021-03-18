@@ -485,7 +485,7 @@ UI_StatisticWindow::UI_StatisticWindow(struct signalcompblock *signalcomp,
   {
     free(beat_interval_list);
 
-    mainwindow->enable_hrv_stats_toolbar(annot->description, annot_list);
+    mainwindow->enable_hrv_stats_toolbar(annot->description, annot_list, NULL);
   }
 
   Label1->setText(stat_str);

@@ -53,11 +53,13 @@ UI_hrv_dock::UI_hrv_dock(QWidget *w_parent, struct hrv_dock_param_struct par)
   frame->setContentsMargins(0, 0, 0, 0);
 
   hrv_curve = new hrv_curve_widget;
-  hrv_curve->setMinimumHeight(100 * h_scaling);
-  hrv_curve->setMinimumWidth(100 * w_scaling);
+  hrv_curve->setMinimumHeight(mainwindow->hrvdock_height);
+  hrv_curve->setMaximumHeight(mainwindow->hrvdock_height);
+  hrv_curve->setMinimumWidth(500);
   hrv_curve->setContentsMargins(0, 0, 0, 0);
   hrv_curve->set_params(&param);
-  hrv_curve->set_range(40, 180);
+  hrv_curve->set_range(mainwindow->hrvdock_min_bpm, mainwindow->hrvdock_max_bpm);
+  hrv_curve->setToolTip(param.annot_name);
 
   trck_indic = new simple_tracking_indicator3;
   trck_indic->set_scaling(w_scaling, h_scaling);
@@ -69,7 +71,7 @@ UI_hrv_dock::UI_hrv_dock(QWidget *w_parent, struct hrv_dock_param_struct par)
   srl_indic->set_params(&param);
   srl_indic->setContentsMargins(0, 0, 0, 0);
   srl_indic->setMinimumWidth(70 * w_scaling);
-  srl_indic->set_range(40, 180);
+  srl_indic->set_range(mainwindow->hrvdock_min_bpm, mainwindow->hrvdock_max_bpm);
 
   ruler_label = new QLabel;
   ruler_label->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
@@ -88,10 +90,20 @@ UI_hrv_dock::UI_hrv_dock(QWidget *w_parent, struct hrv_dock_param_struct par)
   hrv_dock->setAllowedAreas(Qt::TopToolBarArea | Qt::BottomToolBarArea);
   hrv_dock->addWidget(frame);
   hrv_dock->setAttribute(Qt::WA_DeleteOnClose, true);
+  hrv_dock->setContextMenuPolicy(Qt::CustomContextMenu);
 
-  QObject::connect(mainwindow, SIGNAL(file_position_changed(long long)), this, SLOT(file_pos_changed(long long)));
-  QObject::connect(mainwindow, SIGNAL(file_position_changed(long long)), this, SLOT(file_pos_changed(long long)));
-  QObject::connect(hrv_dock,   SIGNAL(destroyed(QObject *)),             this, SLOT(hrv_dock_destroyed(QObject *)));
+  context_menu = new QMenu;
+  QAction *settings_act = new QAction("Settings");
+  QAction *close_act = new QAction("Close");
+  context_menu->addAction(settings_act);
+  context_menu->addAction(close_act);
+
+  QObject::connect(mainwindow,   SIGNAL(file_position_changed(long long)),   this, SLOT(file_pos_changed(long long)));
+  QObject::connect(mainwindow,   SIGNAL(file_position_changed(long long)),   this, SLOT(file_pos_changed(long long)));
+  QObject::connect(hrv_dock,     SIGNAL(destroyed(QObject *)),               this, SLOT(hrv_dock_destroyed(QObject *)));
+  QObject::connect(hrv_dock,     SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(show_context_menu(QPoint)));
+  QObject::connect(settings_act, SIGNAL(triggered(bool)),                    this, SLOT(show_settings(bool)));
+  QObject::connect(close_act,    SIGNAL(triggered(bool)),                    this, SLOT(close_dock(bool)));
 
   file_pos_changed(0);
 }
@@ -108,6 +120,8 @@ UI_hrv_dock::~UI_hrv_dock()
     param.edfhdr->hrv_dock[param.instance_num] = 0;
 
     mainwindow->hrv_dock[param.instance_num] = NULL;
+
+    delete context_menu;
   }
 }
 
@@ -127,6 +141,8 @@ void UI_hrv_dock::hrv_dock_destroyed(QObject *)
     param.edfhdr->hrv_dock[param.instance_num] = 0;
 
     mainwindow->hrv_dock[param.instance_num] = NULL;
+
+    delete context_menu;
   }
 
   delete this;
@@ -136,6 +152,116 @@ void UI_hrv_dock::hrv_dock_destroyed(QObject *)
 void UI_hrv_dock::file_pos_changed(long long)
 {
   trck_indic->set_position((int)((param.edfhdr->viewtime + (mainwindow->pagetime / 2)) / 10000000LL));
+}
+
+
+void UI_hrv_dock::show_context_menu(QPoint)
+{
+  context_menu->exec(QCursor::pos());
+}
+
+
+void UI_hrv_dock::show_settings(bool)
+{
+  QDialog *dialog = new QDialog;
+  dialog->setMinimumSize(300 * mainwindow->w_scaling, 200 * mainwindow->h_scaling);
+  dialog->setWindowTitle("Heartrate");
+  dialog->setModal(true);
+  dialog->setAttribute(Qt::WA_DeleteOnClose, true);
+  dialog->setSizeGripEnabled(true);
+
+  settings_close_button = new QPushButton("Close");
+
+  max_bpm_spinbox = new QSpinBox;
+  max_bpm_spinbox->setRange(70, 250);
+  max_bpm_spinbox->setValue(mainwindow->hrvdock_max_bpm);
+
+  min_bpm_spinbox = new QSpinBox;
+  min_bpm_spinbox->setRange(0, 60);
+  min_bpm_spinbox->setValue(mainwindow->hrvdock_min_bpm);
+
+  height_spinbox = new QSpinBox;
+  height_spinbox->setRange(80, 500);
+  height_spinbox->setSingleStep(10);
+  height_spinbox->setValue(mainwindow->hrvdock_height);
+
+  QHBoxLayout *hlayout1 = new QHBoxLayout;
+  hlayout1->addWidget(max_bpm_spinbox);
+  hlayout1->addStretch(1000);
+
+  QHBoxLayout *hlayout2 = new QHBoxLayout;
+  hlayout2->addWidget(min_bpm_spinbox);
+  hlayout2->addStretch(1000);
+
+  QHBoxLayout *hlayout3 = new QHBoxLayout;
+  hlayout3->addWidget(height_spinbox);
+  hlayout3->addStretch(1000);
+
+  QHBoxLayout *hlayout4 = new QHBoxLayout;
+  hlayout4->addStretch(1000);
+  hlayout4->addWidget(settings_close_button);
+
+  QFormLayout *flayout = new QFormLayout;
+  flayout->addRow(" ", (QWidget *)NULL);
+  flayout->addRow("Maximum BPM:", hlayout1);
+  flayout->addRow(" ", (QWidget *)NULL);
+  flayout->addRow("Minimum BPM:", hlayout2);
+  flayout->addRow(" ", (QWidget *)NULL);
+  flayout->addRow("Height:", hlayout3);
+  flayout->addRow(" ", (QWidget *)NULL);
+
+  QVBoxLayout *vlayout1 = new QVBoxLayout;
+  vlayout1->addLayout(flayout);
+  vlayout1->addStretch(1000);
+  vlayout1->addLayout(hlayout4);
+
+  dialog->setLayout(vlayout1);
+
+  QObject::connect(settings_close_button, SIGNAL(clicked()),         dialog, SLOT(close()));
+  QObject::connect(max_bpm_spinbox,       SIGNAL(valueChanged(int)), this,   SLOT(max_bpm_spinbox_changed(int)));
+  QObject::connect(min_bpm_spinbox,       SIGNAL(valueChanged(int)), this,   SLOT(min_bpm_spinbox_changed(int)));
+  QObject::connect(height_spinbox,        SIGNAL(valueChanged(int)), this,   SLOT(height_spinbox_changed(int)));
+
+  dialog->exec();
+}
+
+
+void UI_hrv_dock::height_spinbox_changed(int val)
+{
+  mainwindow->hrvdock_height = val;
+
+  hrv_curve->setMinimumHeight(mainwindow->hrvdock_height);
+  hrv_curve->setMaximumHeight(mainwindow->hrvdock_height);
+}
+
+
+void UI_hrv_dock::max_bpm_spinbox_changed(int val)
+{
+  mainwindow->hrvdock_max_bpm = val;
+
+  srl_indic->set_range(mainwindow->hrvdock_min_bpm, mainwindow->hrvdock_max_bpm);
+  srl_indic->update();
+
+  hrv_curve->set_range(mainwindow->hrvdock_min_bpm, mainwindow->hrvdock_max_bpm);
+  hrv_curve->update();
+}
+
+
+void UI_hrv_dock::min_bpm_spinbox_changed(int val)
+{
+  mainwindow->hrvdock_min_bpm = val;
+
+  srl_indic->set_range(mainwindow->hrvdock_min_bpm, mainwindow->hrvdock_max_bpm);
+  srl_indic->update();
+
+  hrv_curve->set_range(mainwindow->hrvdock_min_bpm, mainwindow->hrvdock_max_bpm);
+  hrv_curve->update();
+}
+
+
+void UI_hrv_dock::close_dock(bool)
+{
+  delete this;
 }
 
 
@@ -435,6 +561,8 @@ void hrv_curve_widget::paintEvent(QPaintEvent *)
     }
   }
 }
+
+
 
 
 

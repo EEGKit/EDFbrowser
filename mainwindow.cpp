@@ -3595,7 +3595,7 @@ void UI_Mainwindow::qrs_detector()
 
   UI_QRS_detector ui_qrs_det(this, signalcomp[signal_nr]);
 
-  enable_hrv_stats_toolbar(ecg_qrs_rpeak_descr, &signalcomp[signal_nr]->edfhdr->annot_list);
+  enable_hrv_stats_toolbar(ecg_qrs_rpeak_descr, &signalcomp[signal_nr]->edfhdr->annot_list, signalcomp[signal_nr]);
 }
 
 
@@ -4203,11 +4203,31 @@ int UI_Mainwindow::get_filenum(struct edfhdrblock *ptr)
 }
 
 
-void UI_Mainwindow::enable_hrv_stats_toolbar(const char *annotation, struct annotation_list *annot_list)
+void UI_Mainwindow::enable_hrv_stats_toolbar(const char *annotation, struct annotation_list *annot_list, struct signalcompblock *sigcomp)
 {
-  if((annotation == NULL) || (annot_list == NULL))  return;
+  char annot_descr[MAX_ANNOTATION_LEN]="";
 
-  strlcpy(toolbar_stats.annot_label, annotation, MAX_ANNOTATION_LEN + 1);
+  if(annotation == NULL)  return;
+
+  strlcpy(annot_descr, annotation, MAX_ANNOTATION_LEN);
+
+  if(sigcomp != NULL)
+  {
+    if(use_signallabel_in_annot_descr)
+    {
+      strlcat(annot_descr, " ", MAX_ANNOTATION_LEN);
+      if(strlen(sigcomp->alias))
+      {
+        strlcat(annot_descr, sigcomp->alias, MAX_ANNOTATION_LEN);
+      }
+      else
+      {
+        strlcat(annot_descr, sigcomp->signallabel, MAX_ANNOTATION_LEN);
+      }
+    }
+  }
+
+  strlcpy(toolbar_stats.annot_label, annot_descr, MAX_ANNOTATION_LEN);
 
   toolbar_stats.annot_list = annot_list;
 
