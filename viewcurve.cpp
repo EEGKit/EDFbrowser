@@ -48,6 +48,8 @@ ViewCurve::ViewCurve(QWidget *w_parent) : QWidget(w_parent)
   ruler_pen = new QPen(Qt::SolidPattern, 0, Qt::SolidLine, Qt::SquareCap, Qt::BevelJoin);
 
   context_menu = new QMenu(w_parent);
+  select_annot_act = new QAction("Select", this);
+  context_menu->addAction(select_annot_act);
   average_annot_act = new QAction("Average", this);
   context_menu->addAction(average_annot_act);
 
@@ -160,6 +162,7 @@ ViewCurve::ViewCurve(QWidget *w_parent) : QWidget(w_parent)
 
   arrowkeys_shortcuts_global_set_enabled(true);
 
+  QObject::connect(select_annot_act,  SIGNAL(triggered(bool)), this, SLOT(select_annot(bool)));
   QObject::connect(average_annot_act, SIGNAL(triggered(bool)), this, SLOT(average_annot(bool)));
 }
 
@@ -578,7 +581,7 @@ void ViewCurve::mousePressEvent(QMouseEvent *press_event)
       {
         for(i=0; i<active_markers->count; i++)
         {
-          if(m_x>(active_markers->list[i]->x_pos-5)&&(m_x<(active_markers->list[i]->x_pos+5)))
+          if(m_x>(active_markers->list[i]->x_pos-(5*w_scaling))&&(m_x<(active_markers->list[i]->x_pos+(5*w_scaling))))
           {
             active_markers->selected = i;
 
@@ -695,7 +698,7 @@ void ViewCurve::mousePressEvent(QMouseEvent *press_event)
         {
           for(i=0; i<active_markers->count; i++)
           {
-            if(m_x>(active_markers->list[i]->x_pos-5)&&(m_x<(active_markers->list[i]->x_pos+5)))
+            if(m_x>(active_markers->list[i]->x_pos-(5*w_scaling))&&(m_x<(active_markers->list[i]->x_pos+(5*w_scaling))))
             {
               active_marker_context_menu_request_idx = i;
 
@@ -796,7 +799,7 @@ void ViewCurve::mouseReleaseEvent(QMouseEvent *release_event)
         mainwindow->annotationEditDock->set_selected_annotation(active_markers->list[active_markers->selected]);
       }
 
-      mainwindow->annotations_dock[mainwindow->get_filenum(active_markers->edf_hdr)]->updateList();
+      mainwindow->annotations_dock[mainwindow->get_filenum(active_markers->edf_hdr)]->updateList(0);
 
       mainwindow->annotations_edited = 1;
 
@@ -5174,6 +5177,37 @@ void ViewCurve::dropEvent(QDropEvent *e)
   strlcpy(mainwindow->drop_path, e->mimeData()->urls().first().toLocalFile().toLocal8Bit().data(), MAX_PATH_LENGTH);
 
   emit file_dropped();
+}
+
+
+void ViewCurve::select_annot(bool)
+{
+  int i, idx;
+
+  if(mainwindow->files_open < 1)
+  {
+    return;
+  }
+
+  idx = active_marker_context_menu_request_idx;
+  if((idx < 0) || (idx >= active_markers->count))
+  {
+    return;
+  }
+
+  for(i=0; i<active_markers->count; i++)
+  {
+    if(i == idx)
+    {
+      active_markers->list[i]->selected_in_dock = 1;
+    }
+    else
+    {
+      active_markers->list[i]->selected_in_dock = 0;
+    }
+  }
+
+  mainwindow->annotations_dock[mainwindow->get_filenum((edfhdrblock *)(active_markers->list[idx]->edfhdr))]->updateList(1);
 }
 
 

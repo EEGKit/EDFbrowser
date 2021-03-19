@@ -204,7 +204,7 @@ UI_QRS_detector::UI_QRS_detector(QWidget *w_parent, struct signalcompblock *sign
 
     mainwindow->annotations_edited = 1;
 
-    mainwindow->annotations_dock[filenum]->updateList();
+    mainwindow->annotations_dock[filenum]->updateList(0);
 
     mainwindow->save_act->setEnabled(true);
   }

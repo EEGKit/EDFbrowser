@@ -90,7 +90,7 @@ public:
 
   QListWidget  *list;
 
-  void updateList(void);
+  void updateList(int);
 
 private:
 

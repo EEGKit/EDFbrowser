@@ -271,7 +271,8 @@ private:
 
   QMenu       *context_menu;
 
-  QAction     *average_annot_act;
+  QAction     *select_annot_act,
+              *average_annot_act;
 
   int         printing,
               w,
@@ -310,6 +311,7 @@ protected slots:
   void cdsa_button();
   void QRSdetectButton();
 
+  void select_annot(bool);
   void average_annot(bool);
 
 protected:

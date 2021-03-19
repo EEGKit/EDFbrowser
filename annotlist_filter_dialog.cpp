@@ -170,7 +170,7 @@ void UI_AnnotFilterWindow::undo_filter()
     annot->hided = 0;
   }
 
-  annots_dock->updateList();
+  annots_dock->updateList(0);
 
   mainwindow->maincurve->update();
 }
@@ -356,7 +356,7 @@ void UI_AnnotFilterWindow::apply_filter()
     annot_before = annot;
   }
 
-  annots_dock->updateList();
+  annots_dock->updateList(0);
 
   mainwindow->maincurve->update();
 }

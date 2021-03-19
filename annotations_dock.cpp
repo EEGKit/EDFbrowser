@@ -139,7 +139,7 @@ UI_Annotationswindow::UI_Annotationswindow(struct edfhdrblock *e_hdr, QWidget *w
 
   docklist->setWidget(dialog1);
 
-  updateList();
+  updateList(0);
 
   QObject::connect(list,                       SIGNAL(itemClicked(QListWidgetItem *)), this, SLOT(annotation_selected(QListWidgetItem *)));
   QObject::connect(docklist,                   SIGNAL(visibilityChanged(bool)),        this, SLOT(hide_editdock(bool)));
@@ -364,7 +364,7 @@ void UI_Annotationswindow::hide_all_NK_triggers(bool)
     }
   }
 
-  updateList();
+  updateList(0);
 
   mainwindow->maincurve->update();
 }
@@ -394,7 +394,7 @@ void UI_Annotationswindow::hide_all_BS_triggers(bool)
     }
   }
 
-  updateList();
+  updateList(0);
 
   mainwindow->maincurve->update();
 }
@@ -424,7 +424,7 @@ void UI_Annotationswindow::unhide_all_NK_triggers(bool)
     }
   }
 
-  updateList();
+  updateList(0);
 
   mainwindow->maincurve->update();
 }
@@ -454,7 +454,7 @@ void UI_Annotationswindow::unhide_all_BS_triggers(bool)
     }
   }
 
-  updateList();
+  updateList(0);
 
   mainwindow->maincurve->update();
 }
@@ -497,7 +497,7 @@ void UI_Annotationswindow::delayed_list_filter_update()
       }
     }
 
-    updateList();
+    updateList(0);
 
     mainwindow->maincurve->update();
 
@@ -577,7 +577,7 @@ void UI_Annotationswindow::delayed_list_filter_update()
     }
   }
 
-  updateList();
+  updateList(0);
 
   mainwindow->maincurve->update();
 }
@@ -688,7 +688,7 @@ void UI_Annotationswindow::hide_annot(bool)
 
   annot->hided = 1;
 
-  updateList();
+  updateList(0);
 
   mainwindow->maincurve->update();
 }
@@ -719,7 +719,7 @@ void UI_Annotationswindow::unhide_annot(bool)
 
   annot->hided = 0;
 
-  updateList();
+  updateList(0);
 
   mainwindow->maincurve->update();
 }
@@ -777,7 +777,7 @@ void UI_Annotationswindow::hide_same_annots(bool)
     }
   }
 
-  updateList();
+  updateList(0);
 
   mainwindow->maincurve->update();
 }
@@ -824,7 +824,7 @@ void UI_Annotationswindow::unhide_same_annots(bool)
     }
   }
 
-  updateList();
+  updateList(0);
 
   mainwindow->maincurve->update();
 }
@@ -849,7 +849,7 @@ void UI_Annotationswindow::unhide_all_annots(bool)
     annot->hided_in_list = 0;
   }
 
-  updateList();
+  updateList(0);
 
   mainwindow->maincurve->update();
 }
@@ -923,7 +923,7 @@ void UI_Annotationswindow::checkbox1_clicked(int state)
     mainwindow->annotations_onset_relative = 0;
   }
 
-  updateList();
+  updateList(0);
 
   mainwindow->maincurve->update();
 }
@@ -941,7 +941,7 @@ void UI_Annotationswindow::hide_editdock(bool visible)
 
 
 
-void UI_Annotationswindow::updateList(void)
+void UI_Annotationswindow::updateList(int scroll_to_item_requested)
 {
   char str[MAX_ANNOTATION_LEN + 32];
 
@@ -949,7 +949,8 @@ void UI_Annotationswindow::updateList(void)
       sz=0,
       jump=0,
       modified=0,
-      scroll_val=0;
+      scroll_val=0,
+      selected_in_dock_idx=-1;
 
   QListWidgetItem *listitem;
 
@@ -994,6 +995,11 @@ void UI_Annotationswindow::updateList(void)
     if(annot->hided_in_list)
     {
       continue;
+    }
+
+    if(annot->selected_in_dock)
+    {
+      selected_in_dock_idx = j;
     }
 
     if(relative)
@@ -1114,8 +1120,6 @@ void UI_Annotationswindow::updateList(void)
 
         annotation_selected(list->currentItem());
       }
-
-      selected = -1;
     }
 
     if(modified)
@@ -1124,7 +1128,14 @@ void UI_Annotationswindow::updateList(void)
 
       mainwindow->save_act->setEnabled(true);
     }
+  }
 
+  if((scroll_to_item_requested) && (selected_in_dock_idx>=0))
+  {
+    list->setCurrentItem(list->item(selected_in_dock_idx));
+  }
+  else
+  {
     list->verticalScrollBar()->setValue(scroll_val);
   }
 

@@ -589,7 +589,7 @@ void UI_ImportAnnotationswindow::ImportButtonClicked()
 
     mainwindow->annotations_edited = 1;
 
-    mainwindow->annotations_dock[0]->updateList();
+    mainwindow->annotations_dock[0]->updateList(0);
 
     mainwindow->save_act->setEnabled(true);
   }

@@ -1027,7 +1027,7 @@ void UI_ZScoreWindow::get_annotationsButtonClicked()
 
     mainwindow->annotations_edited = 1;
 
-    mainwindow->annotations_dock[filenum]->updateList();
+    mainwindow->annotations_dock[filenum]->updateList(0);
 
     mainwindow->save_act->setEnabled(true);
   }

@@ -361,7 +361,7 @@ void UI_Mainwindow::save_file()
     annotationlist_backup = NULL;
   }
 
-  annotations_dock[0]->updateList();
+  annotations_dock[0]->updateList(0);
 
   annotations_edited = 0;
 
@@ -1400,7 +1400,7 @@ void UI_Mainwindow::annotation_editor()
 
   if(annotationEditDock == NULL)
   {
-    printf("annotationEditDock = new    file: %s  line: %i\n", __FILE__, __LINE__);
+//    printf("annotationEditDock = new    file: %s  line: %i\n", __FILE__, __LINE__);
 
     annotationEditDock = new UI_AnnotationEditwindow(edfheaderlist[0], this);
 
@@ -1410,7 +1410,7 @@ void UI_Mainwindow::annotation_editor()
   }
   else
   {
-    printf("annotationEditDock pointer re-used!    file: %s  line: %i\n", __FILE__, __LINE__);
+//    printf("annotationEditDock pointer re-used!    file: %s  line: %i\n", __FILE__, __LINE__);
 
     annotationEditDock->set_edf_header(edfheaderlist[0]);
 
@@ -3963,7 +3963,7 @@ void UI_Mainwindow::edfplus_remove_duplicate_annotations()
     {
       if(annotations_dock[i] != NULL)
       {
-        annotations_dock[i]->updateList();
+        annotations_dock[i]->updateList(0);
       }
     }
 

@@ -228,7 +228,7 @@ void UI_AnnotationEditwindow::modifyButtonClicked()
   file_num = mainwindow->get_filenum((struct edfhdrblock *)(annot->edfhdr));
   if(file_num >= 0)
   {
-    mainwindow->annotations_dock[file_num]->updateList();
+    mainwindow->annotations_dock[file_num]->updateList(0);
   }
 
   update_description_completer();
@@ -280,7 +280,7 @@ void UI_AnnotationEditwindow::deleteButtonClicked()
   file_num = mainwindow->get_filenum((struct edfhdrblock *)(annot->edfhdr));
   if(file_num >= 0)
   {
-    mainwindow->annotations_dock[file_num]->updateList();
+    mainwindow->annotations_dock[file_num]->updateList(0);
   }
 
   update_description_completer();
@@ -337,7 +337,7 @@ void UI_AnnotationEditwindow::createButtonClicked()
   file_num = mainwindow->get_filenum((struct edfhdrblock *)(annotation.edfhdr));
   if(file_num >= 0)
   {
-    mainwindow->annotations_dock[file_num]->updateList();
+    mainwindow->annotations_dock[file_num]->updateList(0);
   }
 
   update_description_completer();
