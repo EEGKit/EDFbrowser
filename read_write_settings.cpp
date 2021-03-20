@@ -2477,16 +2477,21 @@ void UI_Mainwindow::write_settings()
     fprintf(cfgfile, "    <hypnogram>\n");
     for(i=0; i<6; i++)
     {
-      fprintf(cfgfile, "      <stage_name>%s</stage_name>\n", hypnogram_stage_name[i]);
+      xml_strlcpy_encode_entity(str, hypnogram_stage_name[i], 1024);
+
+      fprintf(cfgfile, "      <stage_name>%s</stage_name>\n", str);
     }
     for(i=0; i<6; i++)
     {
-      fprintf(cfgfile, "      <annot_name>%s</annot_name>\n", hypnogram_annot_name[i]);
+      xml_strlcpy_encode_entity(str, hypnogram_annot_name[i], 1024);
+
+      fprintf(cfgfile, "      <annot_name>%s</annot_name>\n", str);
     }
     fprintf(cfgfile, "    </hypnogram>\n");
 
     fprintf(cfgfile, "    <ecg_qrs>\n");
-    fprintf(cfgfile, "      <r_peak_description>%s</r_peak_description>\n", ecg_qrs_rpeak_descr);
+    xml_strlcpy_encode_entity(str, ecg_qrs_rpeak_descr, 1024);
+    fprintf(cfgfile, "      <r_peak_description>%s</r_peak_description>\n", str);
     fprintf(cfgfile, "      <use_signallabel_in_annot_descr>%i</use_signallabel_in_annot_descr>\n", use_signallabel_in_annot_descr);
     fprintf(cfgfile, "    </ecg_qrs>\n");
 
