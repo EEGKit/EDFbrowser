@@ -93,8 +93,8 @@ UI_hrv_dock::UI_hrv_dock(QWidget *w_parent, struct hrv_dock_param_struct par)
   hrv_dock->setContextMenuPolicy(Qt::CustomContextMenu);
 
   context_menu = new QMenu;
-  QAction *settings_act = new QAction("Settings");
-  QAction *close_act = new QAction("Close");
+  QAction *settings_act = new QAction("Settings", this);
+  QAction *close_act = new QAction("Close", this);
   context_menu->addAction(settings_act);
   context_menu->addAction(close_act);
 
