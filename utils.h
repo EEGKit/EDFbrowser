@@ -59,6 +59,10 @@ void str_insert_substr(char *str, int pos, int len, const char *substr, int subp
 /* Returns the number of substrings replaced. */
 int str_replace_substr(char *str, int len, int n, const char *dest_substr, const char *src_substr);
 
+/* converts non-readable non-ascii characters in "<0xhh>" */
+/* arguments: destination string, source string, maximum destination length including the terminating null byte */
+int convert_non_ascii_to_hex(char *,  const char *, int);
+
 void remove_extension_from_filename(char *);  /* removes extension including the dot */
 int get_filename_from_path(char *dest, const char *src, int size);  /* size is size of destination, returns length of filename */
 int get_directory_from_path(char *dest, const char *src, int size);  /* size is size of destination, returns length of directory */

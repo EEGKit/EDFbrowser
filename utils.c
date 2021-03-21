@@ -2426,6 +2426,39 @@ int str_replace_substr(char *str, int len, int n, const char *dest_substr, const
 }
 
 
+int convert_non_ascii_to_hex(char *dest,  const char *src, int destlen)
+{
+  int i, len, newlen=0;
+
+  len = strlen(src);
+
+  for(i=0; i<len; i++)
+  {
+    if((src[i] < 32) || (src[i] > 126))
+    {
+      if((newlen + 7) >= destlen)
+      {
+        break;
+      }
+
+      newlen += snprintf(dest + newlen, 7, "<0x%.2x>", (unsigned char)src[i]);
+    }
+    else
+    {
+      if((newlen + 2) >= destlen)
+      {
+        break;
+      }
+
+      dest[newlen++] = src[i];
+    }
+  }
+
+  dest[newlen] = 0;
+
+  return newlen;
+}
+
 
 
 
