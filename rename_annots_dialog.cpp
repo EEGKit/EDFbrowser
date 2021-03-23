@@ -31,17 +31,17 @@
 
 UI_rename_annots_dialog::UI_rename_annots_dialog(QWidget *w_parent)
 {
-//  int i, sz=0;
+  int n;
 
   mainwindow = (UI_Mainwindow *)w_parent;
 
   replacements_cnt = 0;
 
-//   struct edfhdrblock *hdr;
-//
-//   hdr = mainwindow->edfheaderlist[0];
-//
-//   struct annotationblock *annot=NULL;
+  struct edfhdrblock *hdr;
+
+  hdr = mainwindow->edfheaderlist[0];
+
+  struct annotationblock *annot=NULL;
 
   rename_dialog = new QDialog(mainwindow);
   rename_dialog->setMinimumSize(300 * mainwindow->w_scaling, 250 * mainwindow->h_scaling);
@@ -81,19 +81,21 @@ UI_rename_annots_dialog::UI_rename_annots_dialog(QWidget *w_parent)
   vlayout1->addLayout(hlayout1);
   vlayout1->addSpacing(10);
 
-//   sz = edfplus_annotation_size(&hdr->annot_list);
-//
-//   for(i=0; i<sz; i++)
-//   {
-//     annot = edfplus_annotation_get_item_visible_only(&hdr->annot_list, i);
-//     if(annot->)
-//     {
-//       break;
-//     }
-//   }
+  if(mainwindow->annotations_dock[0] != NULL)
+  {
+    n = mainwindow->annotations_dock[0]->get_last_pressed_row();
+    if(n >= 0)
+    {
+      annot = edfplus_annotation_get_item_visible_only(&hdr->annot_list, n);
+      if(annot != NULL)
+      {
+        line_edit1->setText(QString::fromUtf8(annot->description));
+      }
+    }
+  }
 
   QObject::connect(cancel_button, SIGNAL(clicked()), rename_dialog, SLOT(close()));
-  QObject::connect(rename_button, SIGNAL(clicked()), this, SLOT(rename_all_func()));
+  QObject::connect(rename_button, SIGNAL(clicked()), this,          SLOT(rename_all_func()));
 
   rename_dialog->setLayout(vlayout1);
   rename_dialog->exec();
