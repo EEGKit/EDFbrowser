@@ -64,6 +64,8 @@ UI_Annotationswindow::UI_Annotationswindow(struct edfhdrblock *e_hdr, QWidget *w
 
   hide_bs_triggers = 0;
 
+  last_pressed_annotation = -1;
+
   dialog1 = new QDialog;
 
   checkbox1 = new QCheckBox("Relative ");
@@ -144,6 +146,7 @@ UI_Annotationswindow::UI_Annotationswindow(struct edfhdrblock *e_hdr, QWidget *w
   updateList(0);
 
   QObject::connect(list,                       SIGNAL(itemClicked(QListWidgetItem *)), this, SLOT(annotation_selected(QListWidgetItem *)));
+  QObject::connect(list,                       SIGNAL(itemPressed(QListWidgetItem *)), this, SLOT(annotation_pressed(QListWidgetItem *)));
   QObject::connect(docklist,                   SIGNAL(visibilityChanged(bool)),        this, SLOT(hide_editdock(bool)));
   QObject::connect(checkbox1,                  SIGNAL(stateChanged(int)),              this, SLOT(checkbox1_clicked(int)));
   QObject::connect(checkbox2,                  SIGNAL(stateChanged(int)),              this, SLOT(checkbox2_clicked(int)));
@@ -1203,6 +1206,35 @@ void UI_Annotationswindow::updateList(int scroll_to_item_requested)
 }
 
 
+int UI_Annotationswindow::get_last_pressed_row(void)
+{
+  return last_pressed_annotation;
+}
+
+
+void UI_Annotationswindow::annotation_pressed(QListWidgetItem *item)
+{
+  int n, sz;
+
+  struct annotationblock *annot;
+
+  struct annotation_list *annot_list = &(edf_hdr->annot_list);
+
+  n = item->data(Qt::UserRole).toInt();
+
+  sz = edfplus_annotation_size(annot_list);
+
+  if(n >= sz)  return;
+
+  last_pressed_annotation = n;
+
+  edfplus_annotation_cancel_all_selected_in_dock(annot_list);
+
+  annot = edfplus_annotation_get_item(annot_list, n);
+
+  annot->selected_in_dock = 1;
+}
+
 
 void UI_Annotationswindow::annotation_selected(QListWidgetItem * item, int centered)
 {
@@ -1219,6 +1251,8 @@ void UI_Annotationswindow::annotation_selected(QListWidgetItem * item, int cente
   sz = edfplus_annotation_size(annot_list);
 
   if(n >= sz)  return;
+
+  last_pressed_annotation = n;
 
   edfplus_annotation_cancel_all_selected_in_dock(annot_list);
 

@@ -93,13 +93,16 @@ public:
 
   void updateList(int);
 
+  int get_last_pressed_row(void);
+
 private:
 
   int relative,
       selected,
       invert_filter,
       hide_nk_triggers,
-      hide_bs_triggers;
+      hide_bs_triggers,
+      last_pressed_annotation;
 
   struct edfhdrblock *edf_hdr;
 
@@ -137,6 +140,7 @@ private:
 private slots:
 
   void annotation_selected(QListWidgetItem *, int centered=1);
+  void annotation_pressed(QListWidgetItem *);
   void hide_editdock(bool);
   void checkbox1_clicked(int);
   void checkbox2_clicked(int);
