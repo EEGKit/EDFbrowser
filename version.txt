@@ -12,6 +12,8 @@
 
  - Annotation markers: Right-clicking on an annotationmarker now opens a context menu with a couple of options.
 
+ - Added the possibility to mass-rename annotations.
+
 
 
  version 1.82      February 27, 2021

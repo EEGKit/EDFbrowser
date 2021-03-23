@@ -415,6 +415,30 @@ int edfplus_annotation_remove_duplicates(struct annotation_list *list)
 }
 
 
+int edfplus_annotation_rename_multiple(struct annotation_list *list, const char *descr_old, const char *descr_new)
+{
+  int i, ren_cnt=0;
+
+  struct annotationblock *annot;
+
+  if(list == NULL)  return -1;
+
+  for(i=0; i<list->sz; i++)
+  {
+    annot = &list->items[list->idx[i]];
+    if(annot == NULL)  break;
+
+    if(strcmp(annot->description, descr_old))  continue;
+
+    strlcpy(annot->description, descr_new, MAX_ANNOTATION_LEN_II);
+
+    ren_cnt++;
+  }
+
+  return ren_cnt;
+}
+
+
 void edfplus_annotation_cancel_all_selected_in_dock(struct annotation_list *list)
 {
   int i;

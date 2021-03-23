@@ -33,6 +33,8 @@
 #include <string.h>
 #include <stdio.h>
 
+#include "utils.h"
+
 #define MAX_ANNOTATION_LEN_II   512
 
 
@@ -77,6 +79,7 @@ int edfplus_annotation_get_index(struct annotation_list *, struct annotationbloc
 void edfplus_annotation_sort(struct annotation_list *, void (*)(void));
 struct annotation_list * edfplus_annotation_create_list_copy(struct annotation_list *);
 int edfplus_annotation_remove_duplicates(struct annotation_list *);
+int edfplus_annotation_rename_multiple(struct annotation_list *, const char *, const char *);
 int edfplus_annotation_get_max_annotation_strlen(struct annotation_list *);
 void edfplus_annotation_copy_list(struct annotation_list *, struct annotation_list *);
 long long edfplus_annotation_get_long_from_number(const char *);

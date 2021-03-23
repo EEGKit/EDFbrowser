@@ -70,6 +70,7 @@
 #include "annotlist_filter_dialog.h"
 #include "statistics_dialog.h"
 #include "hrv_dock.h"
+#include "rename_annots_dialog.h"
 
 
 class UI_Mainwindow;
@@ -128,7 +129,8 @@ private:
           *show_stats_act,
           *show_heart_rate_act,
           *edit_annotations_act,
-          *remove_duplicates_act;
+          *remove_duplicates_act,
+          *rename_all_act;
 
   QTimer *delayed_list_filter_update_timer;
 
@@ -155,6 +157,7 @@ private slots:
   void show_stats(bool);
   void show_heart_rate(bool);
   void delayed_list_filter_update();
+  void rename_all();
 };
 
 

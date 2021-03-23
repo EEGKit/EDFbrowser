@@ -104,6 +104,7 @@ UI_Annotationswindow::UI_Annotationswindow(struct edfhdrblock *e_hdr, QWidget *w
   show_heart_rate_act = new QAction("Heart Rate", list);
   edit_annotations_act = new QAction("Edit annotations", list);
   remove_duplicates_act = new QAction("Remove duplicates", list);
+  rename_all_act = new QAction("Rename", list);
 
   list->setContextMenuPolicy(Qt::ActionsContextMenu);
   list->insertAction(NULL, show_between_act);
@@ -122,6 +123,7 @@ UI_Annotationswindow::UI_Annotationswindow(struct edfhdrblock *e_hdr, QWidget *w
   list->insertAction(NULL, show_heart_rate_act);
   list->insertAction(NULL, edit_annotations_act);
   list->insertAction(NULL, remove_duplicates_act);
+  list->insertAction(NULL, rename_all_act);
 
   QHBoxLayout *h_layout = new QHBoxLayout;
   h_layout->addWidget(checkbox1);
@@ -166,14 +168,68 @@ UI_Annotationswindow::UI_Annotationswindow(struct edfhdrblock *e_hdr, QWidget *w
 
   QObject::connect(remove_duplicates_act,      SIGNAL(triggered(bool)),                mainwindow, SLOT(edfplus_remove_duplicate_annotations()));
 
+  QObject::connect(rename_all_act,             SIGNAL(triggered(bool)),                this, SLOT(rename_all()));
+
   QObject::connect(delayed_list_filter_update_timer, SIGNAL(timeout()),                this, SLOT(delayed_list_filter_update()));
+}
+
+
+void UI_Annotationswindow::rename_all()
+{
+  char str[4096]="";
+
+  struct annotation_list *annot_list;
+
+  struct annotationblock *annot;
+
+  if(mainwindow->files_open < 1)
+  {
+    return;
+  }
+
+  if(mainwindow->files_open > 1)
+  {
+    QMessageBox::critical(mainwindow, "Error", "Requested action is not permitted when multiple files are opened.");
+    return;
+  }
+
+  if(mainwindow->annot_editor_active)
+  {
+    QMessageBox::critical(mainwindow, "Error", "Close the annotation editor and try again.");
+    return;
+  }
+
+  if(list->count() < 1)
+  {
+    QMessageBox::critical(mainwindow, "Error", "There are no annotations.");
+    return;
+  }
+
+  annot_list = &(edf_hdr->annot_list);
+  if(annot_list == NULL)
+  {
+    snprintf(str, 4096, "Nullpointer returned: file: %s line %i", __FILE__, __LINE__);
+    QMessageBox messagewindow(QMessageBox::Critical, "Error", str);
+    messagewindow.exec();
+    return;
+  }
+
+  annot = edfplus_annotation_get_item_visible_only(annot_list, list->currentRow());
+  if(annot == NULL)
+  {
+    snprintf(str, 4096, "Nullpointer returned: file: %s line %i", __FILE__, __LINE__);
+    QMessageBox messagewindow(QMessageBox::Critical, "Error", str);
+    messagewindow.exec();
+    return;
+  }
+
+  UI_rename_annots_dialog rename_dialog(mainwindow);
 }
 
 
 void UI_Annotationswindow::more_button_clicked(bool)
 {
   QMessageBox::information(mainwindow,  "Info", "Right-click on an annotation for more options.");
-  return;
 }
 
 
@@ -1241,7 +1297,6 @@ void UI_Annotationswindow::annotation_selected(QListWidgetItem * item, int cente
 
   mainwindow->setup_viewbuf();
 }
-
 
 
 
