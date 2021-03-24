@@ -5195,15 +5195,13 @@ void ViewCurve::select_annot(bool)
     return;
   }
 
+  edfplus_annotation_cancel_all_selected_in_dock(&((edfhdrblock *)(active_markers->list[idx]->edfhdr))->annot_list);
+
   for(i=0; i<active_markers->count; i++)
   {
     if(i == idx)
     {
       active_markers->list[i]->selected_in_dock = 1;
-    }
-    else
-    {
-      active_markers->list[i]->selected_in_dock = 0;
     }
   }
 
