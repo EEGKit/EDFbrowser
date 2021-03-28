@@ -14,6 +14,8 @@
 
  - Added the possibility to mass-rename annotations.
 
+ - Moving Average Filter: improve run-in behaviour of the plotting at the start of a file.
+
 
 
  version 1.82      February 27, 2021

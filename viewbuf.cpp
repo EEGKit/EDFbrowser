@@ -104,6 +104,8 @@ void UI_Mainwindow::setup_viewbuf()
         {
           pre_time = (double)(signalcomp[i]->ravg_filter[k]->size + 3) / signalcomp[i]->edfhdr->edfparam[signalcomp[i]->edfsignal[0]].sf_f;
         }
+
+        reset_ravg_filter(0, signalcomp[i]->ravg_filter[k]);
       }
     }
 
