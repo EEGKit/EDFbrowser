@@ -107,6 +107,7 @@ UI_Annotationswindow::UI_Annotationswindow(struct edfhdrblock *e_hdr, QWidget *w
   edit_annotations_act = new QAction("Edit annotations", list);
   remove_duplicates_act = new QAction("Remove duplicates", list);
   rename_all_act = new QAction("Rename", list);
+  delete_all_act = new QAction("Delete", list);
 
   list->setContextMenuPolicy(Qt::ActionsContextMenu);
   list->insertAction(NULL, show_between_act);
@@ -126,6 +127,7 @@ UI_Annotationswindow::UI_Annotationswindow(struct edfhdrblock *e_hdr, QWidget *w
   list->insertAction(NULL, edit_annotations_act);
   list->insertAction(NULL, remove_duplicates_act);
   list->insertAction(NULL, rename_all_act);
+  list->insertAction(NULL, delete_all_act);
 
   QHBoxLayout *h_layout = new QHBoxLayout;
   h_layout->addWidget(checkbox1);
@@ -173,7 +175,14 @@ UI_Annotationswindow::UI_Annotationswindow(struct edfhdrblock *e_hdr, QWidget *w
 
   QObject::connect(rename_all_act,             SIGNAL(triggered(bool)),                this, SLOT(rename_all()));
 
+  QObject::connect(delete_all_act,             SIGNAL(triggered(bool)),                this, SLOT(delete_all()));
+
   QObject::connect(delayed_list_filter_update_timer, SIGNAL(timeout()),                this, SLOT(delayed_list_filter_update()));
+}
+
+
+void UI_Annotationswindow::delete_all()
+{
 }
 
 
