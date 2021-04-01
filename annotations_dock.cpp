@@ -183,6 +183,54 @@ UI_Annotationswindow::UI_Annotationswindow(struct edfhdrblock *e_hdr, QWidget *w
 
 void UI_Annotationswindow::delete_all()
 {
+  char str[4096]="";
+
+  struct annotation_list *annot_list;
+
+  struct annotationblock *annot;
+
+  if(mainwindow->files_open < 1)
+  {
+    return;
+  }
+
+  if(mainwindow->files_open > 1)
+  {
+    QMessageBox::critical(mainwindow, "Error", "Requested action is not permitted when multiple files are opened.");
+    return;
+  }
+
+  if(mainwindow->annot_editor_active)
+  {
+    QMessageBox::critical(mainwindow, "Error", "Close the annotation editor and try again.");
+    return;
+  }
+
+  if(list->count() < 1)
+  {
+    QMessageBox::critical(mainwindow, "Error", "There are no annotations.");
+    return;
+  }
+
+  annot_list = &(edf_hdr->annot_list);
+  if(annot_list == NULL)
+  {
+    snprintf(str, 4096, "Nullpointer returned: file: %s line %i", __FILE__, __LINE__);
+    QMessageBox messagewindow(QMessageBox::Critical, "Error", str);
+    messagewindow.exec();
+    return;
+  }
+
+  annot = edfplus_annotation_get_item_visible_only(annot_list, list->currentRow());
+  if(annot == NULL)
+  {
+    snprintf(str, 4096, "Nullpointer returned: file: %s line %i", __FILE__, __LINE__);
+    QMessageBox messagewindow(QMessageBox::Critical, "Error", str);
+    messagewindow.exec();
+    return;
+  }
+
+  UI_rename_annots_dialog rename_dialog(mainwindow, 1);
 }
 
 
@@ -235,7 +283,7 @@ void UI_Annotationswindow::rename_all()
     return;
   }
 
-  UI_rename_annots_dialog rename_dialog(mainwindow);
+  UI_rename_annots_dialog rename_dialog(mainwindow, 0);
 }
 
 
@@ -1011,14 +1059,15 @@ void UI_Annotationswindow::hide_editdock(bool visible)
 
 void UI_Annotationswindow::updateList(int scroll_to_item_requested)
 {
-  char str[MAX_ANNOTATION_LEN + 32];
-
-  int j,
+  int j=0,
       sz=0,
       jump=0,
       modified=0,
       scroll_val=0,
       selected_in_dock_idx=-1;
+
+  char str[MAX_ANNOTATION_LEN + 32]="",
+       str2[1024]="";
 
   QListWidgetItem *listitem;
 
@@ -1212,6 +1261,10 @@ void UI_Annotationswindow::updateList(int scroll_to_item_requested)
   QApplication::restoreOverrideCursor();
 
   mainwindow->annot_dock_updated();
+
+  snprintf(str2, 1024, "Annotations      (%i)", list->count());
+
+  docklist->setWindowTitle(str2);
 }
 
 

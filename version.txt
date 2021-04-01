@@ -14,6 +14,10 @@
 
  - Added the possibility to mass-rename annotations.
 
+ - Added the possibility to mass-delete annotations.
+
+ - Annotations list: show the number of items in the list.
+
  - Moving Average Filter: improve run-in behaviour of the plotting at the start of a file.
 
 

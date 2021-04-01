@@ -29,11 +29,13 @@
 #include "rename_annots_dialog.h"
 
 
-UI_rename_annots_dialog::UI_rename_annots_dialog(QWidget *w_parent)
+UI_rename_annots_dialog::UI_rename_annots_dialog(QWidget *w_parent, int delete_ann)
 {
   int n;
 
   mainwindow = (UI_Mainwindow *)w_parent;
+
+  delete_annots = delete_ann;
 
   replacements_cnt = 0;
 
@@ -45,27 +47,52 @@ UI_rename_annots_dialog::UI_rename_annots_dialog(QWidget *w_parent)
 
   rename_dialog = new QDialog(mainwindow);
   rename_dialog->setMinimumSize(300 * mainwindow->w_scaling, 250 * mainwindow->h_scaling);
-  rename_dialog->setWindowTitle("Rename annotations");
+  if(delete_annots)
+  {
+    rename_dialog->setWindowTitle("Delete annotations");
+  }
+  else
+  {
+    rename_dialog->setWindowTitle("Rename annotations");
+  }
   rename_dialog->setModal(true);
   rename_dialog->setAttribute(Qt::WA_DeleteOnClose, true);
   rename_dialog->setSizeGripEnabled(true);
 
   line_edit1 = new QLineEdit;
   line_edit1->setMaxLength(MAX_ANNOTATION_LEN);
-  line_edit2 = new QLineEdit;
-  line_edit2->setMaxLength(MAX_ANNOTATION_LEN);
+  if(!delete_annots)
+  {
+    line_edit2 = new QLineEdit;
+    line_edit2->setMaxLength(MAX_ANNOTATION_LEN);
+  }
 
   cancel_button = new QPushButton;
   cancel_button->setText("Close");
   rename_button = new QPushButton;
-  rename_button->setText("Rename");
+  if(delete_annots)
+  {
+    rename_button->setText("Delete");
+  }
+  else
+  {
+    rename_button->setText("Rename");
+  }
 
   QFormLayout *flayout = new QFormLayout;
   flayout->addRow(" ", (QWidget *)NULL);
-  flayout->addRow("Replace:", line_edit1);
-  flayout->addRow(" ", (QWidget *)NULL);
-  flayout->addRow("with:", line_edit2);
-  flayout->addRow(" ", (QWidget *)NULL);
+  if(delete_annots)
+  {
+    flayout->addRow("Delete:", line_edit1);
+    flayout->addRow(" ", (QWidget *)NULL);
+  }
+  else
+  {
+    flayout->addRow("Replace:", line_edit1);
+    flayout->addRow(" ", (QWidget *)NULL);
+    flayout->addRow("with:", line_edit2);
+    flayout->addRow(" ", (QWidget *)NULL);
+  }
 
   QHBoxLayout *hlayout1 = new QHBoxLayout;
   hlayout1->addSpacing(10);
@@ -95,10 +122,75 @@ UI_rename_annots_dialog::UI_rename_annots_dialog(QWidget *w_parent)
   }
 
   QObject::connect(cancel_button, SIGNAL(clicked()), rename_dialog, SLOT(close()));
-  QObject::connect(rename_button, SIGNAL(clicked()), this,          SLOT(rename_all_func()));
+  if(delete_annots)
+  {
+    QObject::connect(rename_button, SIGNAL(clicked()), this, SLOT(delete_all_func()));
+  }
+  else
+  {
+    QObject::connect(rename_button, SIGNAL(clicked()), this, SLOT(rename_all_func()));
+  }
 
   rename_dialog->setLayout(vlayout1);
   rename_dialog->exec();
+}
+
+
+void UI_rename_annots_dialog::delete_all_func()
+{
+  int backup = 0;
+
+  char str[4096]="";
+
+  struct edfhdrblock *hdr;
+
+  hdr = mainwindow->edfheaderlist[0];
+
+  if(line_edit1->text().size() < 1)
+  {
+    QMessageBox::critical(rename_dialog, "Error", "Need a description string.");
+    return;
+  }
+
+  if(mainwindow->annotationlist_backup==NULL)
+  {
+    mainwindow->annotationlist_backup = edfplus_annotation_create_list_copy(&hdr->annot_list);
+
+    backup = 1;
+  }
+
+  replacements_cnt = edfplus_annotation_delete_multiple(&hdr->annot_list, line_edit1->text().toUtf8().data());
+
+  if(replacements_cnt > 0)
+  {
+    mainwindow->annotations_edited = 1;
+
+    mainwindow->annotations_dock[0]->updateList(0);
+
+    mainwindow->save_act->setEnabled(true);
+
+    snprintf(str, 4096, "Deleted %i annotations.", replacements_cnt);
+
+    QMessageBox::information(rename_dialog, "Ready", str);
+  }
+  else
+  {
+    if(backup)
+    {
+      if(mainwindow->annotationlist_backup != NULL)
+      {
+        edfplus_annotation_empty_list(&hdr->annot_list);
+
+        hdr->annot_list = *mainwindow->annotationlist_backup;
+
+        free(mainwindow->annotationlist_backup);
+
+        mainwindow->annotationlist_backup = NULL;
+      }
+    }
+
+    QMessageBox::information(rename_dialog, "Ready", "There are no annotations with the given description.");
+  }
 }
 
 

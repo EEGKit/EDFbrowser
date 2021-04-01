@@ -80,13 +80,14 @@ class UI_rename_annots_dialog : public QObject
   Q_OBJECT
 
 public:
-  UI_rename_annots_dialog(QWidget *);
+  UI_rename_annots_dialog(QWidget *, int);
 
 private:
 
   UI_Mainwindow  *mainwindow;
 
-  int replacements_cnt;
+  int replacements_cnt,
+      delete_annots;
 
   QDialog *rename_dialog;
 
@@ -99,6 +100,7 @@ private:
 private slots:
 
   void rename_all_func();
+  void delete_all_func();
 
 };
 
