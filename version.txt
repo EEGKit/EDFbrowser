@@ -7,7 +7,7 @@
  - QRS detector: added the possibility to concatenate the signal's name to the annotation description. This behavour
    can be enabled/disabled in the options/settings.
 
- - Heart Rate Variability plot: added a configuration dialog where you you can adjust the vertical scale (BPM)
+ - Heart Rate Variability plot: added a configuration dialog where you can adjust the vertical scale (BPM)
    and the height of the plotting window. It can be accessed by right-clicking on the plot.
 
  - Annotation markers: Right-clicking on an annotationmarker now opens a context menu with a couple of options.
