@@ -20,6 +20,8 @@
 
  - Moving Average Filter: improve run-in behaviour of the plotting at the start of a file.
 
+ - Heartrate plot toolbar: Fixed a possible crash caused by a double free when closing the plot toolbar.
+
 
 
  version 1.82      February 27, 2021

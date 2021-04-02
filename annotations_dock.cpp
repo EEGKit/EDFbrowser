@@ -295,7 +295,7 @@ void UI_Annotationswindow::more_button_clicked(bool)
 
 void UI_Annotationswindow::show_heart_rate(bool)
 {
-  int instance_num;
+  int instance_num, row;
 
   char str[4096]="";
 
@@ -310,6 +310,13 @@ void UI_Annotationswindow::show_heart_rate(bool)
 
   if(list->count() < 1)
   {
+    QMessageBox::critical(mainwindow, "Error", "There are no annotations.");
+    return;
+  }
+
+  row = list->currentRow();
+  if(row >= list->count())
+  {
     return;
   }
 
@@ -322,7 +329,7 @@ void UI_Annotationswindow::show_heart_rate(bool)
     return;
   }
 
-  annot = edfplus_annotation_get_item_visible_only(annot_list, list->currentRow());
+  annot = edfplus_annotation_get_item_visible_only(annot_list, row);
   if(annot == NULL)
   {
     snprintf(str, 4096, "Nullpointer returned: file: %s line %i", __FILE__, __LINE__);

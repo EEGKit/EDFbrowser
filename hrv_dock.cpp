@@ -92,7 +92,7 @@ UI_hrv_dock::UI_hrv_dock(QWidget *w_parent, struct hrv_dock_param_struct par)
   hrv_dock->setAttribute(Qt::WA_DeleteOnClose, true);
   hrv_dock->setContextMenuPolicy(Qt::CustomContextMenu);
 
-  context_menu = new QMenu;
+  context_menu = new QMenu(hrv_dock);
   QAction *settings_act = new QAction("Settings", this);
   QAction *close_act = new QAction("Close", this);
   context_menu->addAction(settings_act);
@@ -120,8 +120,6 @@ UI_hrv_dock::~UI_hrv_dock()
     param.edfhdr->hrv_dock[param.instance_num] = 0;
 
     mainwindow->hrv_dock[param.instance_num] = NULL;
-
-    delete context_menu;
   }
 }
 
@@ -141,8 +139,6 @@ void UI_hrv_dock::hrv_dock_destroyed(QObject *)
     param.edfhdr->hrv_dock[param.instance_num] = 0;
 
     mainwindow->hrv_dock[param.instance_num] = NULL;
-
-    delete context_menu;
   }
 
   delete this;
@@ -504,6 +500,8 @@ void hrv_curve_widget::paintEvent(QPaintEvent *)
   painter.setRenderHint(QPainter::Qt4CompatiblePainting, true);
 #endif
   painter.fillRect(0, 0, w, h, Qt::lightGray);
+
+  painter.drawText(5 * mainwindow->w_scaling, 18 * mainwindow->h_scaling, param.annot_name);
 
   offset = ((double)h / 12.0);
 
