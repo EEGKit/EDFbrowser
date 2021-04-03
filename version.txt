@@ -1,5 +1,5 @@
 
- version 1.83      to be defined
+ version 1.83      April 3, 2021
  --------------
 
  - Annotations list: don't change file position when accessing the contextmenu by right-clicking on an annotation.
