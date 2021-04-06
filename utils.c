@@ -142,7 +142,7 @@ int get_directory_from_path(char *dest, const char *src, int sz)
     return 0;
   }
 
-  for(i=len-1; i>=0; i--)
+  for(i=len-1; i>0; i--)
   {
     if((src[i]=='/') || (src[i]=='\\'))
     {
@@ -150,15 +150,11 @@ int get_directory_from_path(char *dest, const char *src, int sz)
     }
   }
 
-  strncpy(dest, src, sz);
+  strlcpy(dest, src, sz);
 
   if(i < sz)
   {
     dest[i] = 0;
-  }
-  else
-  {
-    dest[sz-1] = 0;
   }
 
   return strlen(dest);
