@@ -1093,8 +1093,6 @@ static int xml_process_tag(const char *str, struct xml_handle *handle_p)
 
   if(len < 2)  return 0;
 
-  if(str[len] == '/')  len--;
-
   mem_sz = len + 2;
   if(mem_sz > handle_p->attributes_sz[handle_p->level])
   {
