@@ -99,13 +99,17 @@ int i, j,
 
   unsigned long long int file_sz=0;
 
+  long long onset=0;
+
   short *inbuf=NULL,
         *outbuf=NULL;
 
   char path[MAX_PATH_LENGTH]={""},
        hdr[4096]={""},
        scratchpad[4096]={""},
-       tmp_str[128]={""};
+       tmp_str[128]={""},
+       rbuf[4]={0,0,0,0},
+       annot_descr[128]="";
 
   const char *lead_label[20]={"Unknown","Generic bipolar","X bipolar","Y bipolar","Z bipolar","I","II","III","aVR","aVL",
                               "aVF","V1","V2","V3","V4","V5","V6","ES","AS","AI"};
@@ -152,7 +156,7 @@ struct
     return;
   }
 
-  snprintf(scratchpad, 4096, "Processing file:\n%s", path);
+  snprintf(scratchpad, 4096, "Processing ecg file:\n%s", path);
   textEdit1->append(QString::fromLocal8Bit(scratchpad));
 
   fseek(inputfile, 0, SEEK_END);
@@ -570,6 +574,266 @@ struct
       textEdit1->append("Error, edf_blockwrite_digital_short_samples()\n");
       goto OUT_EXIT;
     }
+  }
+
+/////// CHECK ANNOTATIONS FILE ///////////////////////////
+
+  remove_extension_from_filename(path);
+  strlcat(path, ".ann", MAX_PATH_LENGTH);
+
+  fclose(inputfile);
+
+  inputfile = fopen(path, "rb");
+  if(inputfile == NULL)
+  {
+    textEdit1->append("Done\n");
+    goto OUT_EXIT;
+  }
+
+  snprintf(scratchpad, 4096, "Processing annotations file:\n%s", path);
+  textEdit1->append(QString::fromLocal8Bit(scratchpad));
+
+  fseek(inputfile, 0, SEEK_END);
+
+  file_sz = ftell(inputfile);
+
+  if(file_sz < 522)
+  {
+    textEdit1->append("Error, annotations file is too small.");
+    goto OUT_EXIT;
+  }
+
+  rewind(inputfile);
+
+  if(fread(hdr, 522, 1, inputfile) != 1)
+  {
+    textEdit1->append("A read error occurred when trying to read the header.");
+    goto OUT_EXIT;
+  }
+
+  if(strncmp(hdr, "ANN  1.0", 8))
+  {
+    textEdit1->append("Error, wrong magic string in header.");
+    goto OUT_EXIT;
+  }
+
+////////////////////////////////// GET THE HEADER DATA ////////////////////////
+
+  var_block_sz = *((int *)(hdr + 10));
+  if(var_block_sz < 0)
+  {
+    textEdit1->append("Error, parameter size of variable length block in header is lower than zero.");
+    goto OUT_EXIT;
+  }
+
+  ecg_smpl_sz = *((int *)(hdr + 14));
+  if(ecg_smpl_sz < 0)
+  {
+    textEdit1->append("Error, parameter ECG sample size in header is lower than zero.");
+    goto OUT_EXIT;
+  }
+
+  if(var_block_sz == 0)
+  {
+    var_block_offset = 522;
+  }
+  else
+  {
+    var_block_offset = *((int *)(hdr + 18));
+  }
+
+  if(var_block_offset != 522)
+  {
+    textEdit1->append("Error, parameter offset of variable length block in header differs from 522");
+    goto OUT_EXIT;
+  }
+
+  ecg_block_offset = *((int *)(hdr + 22));
+  if(ecg_block_offset != (var_block_sz + 522))
+  {
+    textEdit1->append("Error, parameter offset of ECG block in header differs from 522 + variable length block");
+    goto OUT_EXIT;
+  }
+
+  if((unsigned long)ecg_block_offset > file_sz)
+  {
+    textEdit1->append("Error, start of ECG block is after end of file.");
+    goto OUT_EXIT;
+  }
+
+  chns = *((short *)(hdr + 156));
+  if(chns < 1)
+  {
+    textEdit1->append("Error, number of leads is less than 1.");
+    goto OUT_EXIT;
+  }
+
+  if(chns > ISHNE_MAX_CHNS)
+  {
+    textEdit1->append("Error, number of leads is more than 12.");
+    goto OUT_EXIT;
+  }
+
+  sf = *((short *)(hdr + 272));
+  if(sf < 1)
+  {
+    textEdit1->append("Error, sampling rate is less than 1Hz.");
+    goto OUT_EXIT;
+  }
+
+  sex = *((short *)(hdr + 128));
+  if((sex < 0) || (sex > 2))
+  {
+    textEdit1->append("Error, subject sex is out of range.");
+    goto OUT_EXIT;
+  }
+
+  if(check_crc(inputfile, var_block_offset + var_block_sz))
+  {
+    textEdit1->append("CRC error, file header is corrupt.");
+    goto OUT_EXIT;
+  }
+
+////////////////////////////// GET THE LEAD DATA ////////////////////////////////////
+
+  for(i=0; i<chns; i++)
+  {
+    lead_spec[i] = *((short *)(hdr + 158 + (i * 2)));
+    if((lead_spec[i] < 0) || (lead_spec[i] > 19))
+    {
+      snprintf(scratchpad, 4096, "Error, lead specification of lead %i is out of range.", i + 1);
+      textEdit1->append(scratchpad);
+      goto OUT_EXIT;
+    }
+
+    amp_resolution[i] = *((short *)(hdr + 206 + (i * 2)));
+    if(amp_resolution[i] < 1)
+    {
+      snprintf(scratchpad, 4096, "Error, amplitude resolution of lead %i is less than 1nV.", i + 1);
+      textEdit1->append(scratchpad);
+      goto OUT_EXIT;
+    }
+  }
+
+/////////////////////////////////////// GET THE START DATE AND TIME /////////////////////
+
+  start_dt.day = *((short *)(hdr + 138));
+  if((start_dt.day < 1) || (start_dt.day > 31))
+  {
+    textEdit1->append("Error, illegal start date.");
+    goto OUT_EXIT;
+  }
+
+  start_dt.month = *((short *)(hdr + 140));
+  if((start_dt.month < 1) || (start_dt.month > 12))
+  {
+    textEdit1->append("Error, illegal start date.");
+    goto OUT_EXIT;
+  }
+
+  start_dt.year = *((short *)(hdr + 142));
+  if((start_dt.year < 1000) || (start_dt.year > 3000))
+  {
+    textEdit1->append("Error, illegal start date.");
+    goto OUT_EXIT;
+  }
+
+  start_dt.hour = *((short *)(hdr + 150));
+  if((start_dt.hour < 0) || (start_dt.hour > 23))
+  {
+    textEdit1->append("Error, illegal start time.");
+    goto OUT_EXIT;
+  }
+
+  start_dt.minute = *((short *)(hdr + 152));
+  if((start_dt.minute < 0) || (start_dt.minute > 59))
+  {
+    textEdit1->append("Error, illegal start time.");
+    goto OUT_EXIT;
+  }
+
+  start_dt.second = *((short *)(hdr + 154));
+  if((start_dt.second < 0) || (start_dt.second > 59))
+  {
+    textEdit1->append("Error, illegal start time.");
+    goto OUT_EXIT;
+  }
+
+  birthdate_valid = 1;
+
+  birth_d.year = *((short *)(hdr + 136));
+  if((birth_d.year < 1000) || (birth_d.year > 3000))
+  {
+    birthdate_valid = 0;
+  }
+
+  birth_d.month = *((short *)(hdr + 134));
+  if((birth_d.month < 1) || (birth_d.month > 12))
+  {
+    birthdate_valid = 0;
+  }
+
+  birth_d.day = *((short *)(hdr + 132));
+  if((birth_d.day < 1) || (birth_d.day > 31))
+  {
+    birthdate_valid = 0;
+  }
+
+/////////////////// Start conversion //////////////////////////////////////////
+
+  fseek(inputfile, ecg_block_offset, SEEK_SET);
+
+  while(1)
+  {
+    if(fread(rbuf, 4, 1, inputfile) != 1)
+    {
+      break;
+    }
+
+    if(rbuf[0] == 'N')
+    {
+      strlcpy(annot_descr, "Normal beat", 128);
+    }
+    else if(rbuf[0] == 'V')
+      {
+        strlcpy(annot_descr, "Premature ventricular contraction", 128);
+      }
+      else if(rbuf[0] == 'S')
+        {
+          strlcpy(annot_descr, "Supraventricular premature or ectopic beat", 128);
+        }
+        else if(rbuf[0] == 'C')
+          {
+            strlcpy(annot_descr, "Calibration Pulse", 128);
+          }
+          else if(rbuf[0] == 'B')
+            {
+              strlcpy(annot_descr, "Bundle branche block beat", 128);
+            }
+            else if(rbuf[0] == 'P')
+              {
+                strlcpy(annot_descr, "Pace", 128);
+              }
+              else if(rbuf[0] == 'X')
+                {
+                  strlcpy(annot_descr, "Artefact", 128);
+                }
+                else if(rbuf[0] == '!')
+                  {
+                    strlcpy(annot_descr, "Timeout", 128);
+                  }
+                  else if(rbuf[0] == 'U')
+                    {
+                      strlcpy(annot_descr, "Unknown", 128);
+                    }
+                    else
+                    {
+                      strlcpy(annot_descr, "Unspecified", 128);
+                    }
+
+    onset += *((unsigned short *)(rbuf + 2));
+
+    edfwrite_annotation_latin1(edf_hdl, (onset * 10000LL) / sf, -1, annot_descr);
   }
 
   textEdit1->append("Done\n");

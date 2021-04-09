@@ -1,4 +1,11 @@
 
+ version 1.84      to be defined
+ --------------
+
+ - Ishne ECG to EDF+ converter: added support to read and include the annotations file (*.ann).
+
+
+
  version 1.83      April 3, 2021
  --------------
 
