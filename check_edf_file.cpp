@@ -561,24 +561,22 @@ struct edfhdrblock * EDFfileCheck::check_edf_file(FILE *inputfile, char *txt_str
   }
 
   edfhdr->data_record_duration = atof(scratchpad);
-  if(dblcmp(edfhdr->data_record_duration, 0.0) != 1)
+  if(dblcmp(edfhdr->data_record_duration, 0) == 0)
   {
-    if(import_annots_active)
-    {
-      edfhdr->data_record_duration = 0;
-      edfhdr->long_data_record_duration = 0;
-    }
-    else
-    {
-      snprintf(txt_string, txt_len, "Error, record duration is invalid: \"%s\", should be > 0",
-              scratchpad);
-      free(edf_hdr);
-      free(edfhdr);
-      return NULL;
-    }
+    edfhdr->data_record_duration = 0;
+    edfhdr->long_data_record_duration = 0LL;
   }
   else
   {
+    if(edfhdr->data_record_duration<-0.000001)
+    {
+      snprintf(txt_string, txt_len, "Error, datarecord duration is less than 0");
+      free(edf_hdr);
+      free(edfhdr->edfparam);
+      free(edfhdr);
+      return NULL;
+    }
+
     edfhdr->long_data_record_duration = get_long_duration(scratchpad);
   }
 
@@ -669,29 +667,26 @@ struct edfhdrblock * EDFfileCheck::check_edf_file(FILE *inputfile, char *txt_str
     free(edfhdr);
     return NULL;
   }
-  if((edfhdr->edfsignals!=edfhdr->nr_annot_chns)||((!edfhdr->edfplus)&&(!edfhdr->bdfplus)))
+  if((!import_annots_active) && (edfhdr->long_data_record_duration == 0LL))
   {
-    if(import_annots_active)
+    if((edfhdr->edfplus)||(edfhdr->bdfplus))
     {
-      if(edfhdr->data_record_duration<-0.000001)
-      {
-        snprintf(txt_string, txt_len, "Error, record duration is invalid, should be >=0");
-        free(edf_hdr);
-        free(edfhdr->edfparam);
-        free(edfhdr);
-        return NULL;
-      }
+      snprintf(txt_string, txt_len, "Datarecord duration of this file is 0.\n"
+                                    "If you want to import annotations from this file,\n"
+                                    "go to Tools -> Import annotations/events and select\n"
+                                    "tab \"EDF+/BDF+\"");
+      free(edf_hdr);
+      free(edfhdr->edfparam);
+      free(edfhdr);
+      return NULL;
     }
     else
     {
-      if(edfhdr->data_record_duration<0.000001)
-      {
-        snprintf(txt_string, txt_len, "Error, record duration is invalid, should be >0");
-        free(edf_hdr);
-        free(edfhdr->edfparam);
-        free(edfhdr);
-        return NULL;
-      }
+      snprintf(txt_string, txt_len, "Error, datarecord duration is invalid, should be > 0");
+      free(edf_hdr);
+      free(edfhdr->edfparam);
+      free(edfhdr);
+      return NULL;
     }
   }
 
