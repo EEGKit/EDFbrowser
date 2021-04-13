@@ -515,6 +515,12 @@ struct
     }
   }
 
+  if(edf_set_number_of_annotation_signals(edf_hdl, 2))
+  {
+    textEdit1->append("Error, edf_set_number_of_annotation_signals()\n");
+    goto OUT_EXIT;
+  }
+
 /////////////////// Start conversion //////////////////////////////////////////
 
 //   printf("sf: %i   chns: %i   var_block_offset: %i   var_block_sz: %i   ecg_block_offset: %i   ecg_smpl_sz: %i   total_blocks: %i\n",
