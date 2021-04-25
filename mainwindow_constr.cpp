@@ -291,6 +291,7 @@ UI_Mainwindow::UI_Mainwindow()
   hrvdock_max_bpm = 180;
   hrvdock_min_bpm =  40;
   hrvdock_height = 150;
+  hrvdock_trace_color = Qt::red;
 
   z_score_var.crossoverfreq = 7.5;
   z_score_var.z_threshold = 0.0;

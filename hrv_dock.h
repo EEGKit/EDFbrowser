@@ -67,6 +67,7 @@
 #include <QFormLayout>
 #include <QDialog>
 #include <QEvent>
+#include <QColorDialog>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -76,6 +77,7 @@
 #include "mainwindow.h"
 #include "utils.h"
 #include "edf_annot_list.h"
+#include "special_button.h"
 
 
 class UI_Mainwindow;
@@ -131,6 +133,10 @@ private:
            *min_bpm_spinbox,
            *height_spinbox;
 
+  QColor trace_color;
+
+  SpecialButton *color_button;
+
 private slots:
 
   void file_pos_changed(long long);
@@ -141,7 +147,7 @@ private slots:
   void max_bpm_spinbox_changed(int);
   void min_bpm_spinbox_changed(int);
   void height_spinbox_changed(int);
-
+  void color_button_clicked();
 };
 
 
@@ -224,6 +230,8 @@ public:
 
   void set_range(int, int);
 
+  void set_trace_color(QColor);
+
 public slots:
 
 protected:
@@ -236,6 +244,8 @@ private:
   double bpm_min,
          bpm_max,
          bpm_range;
+
+  QColor trace_color;
 };
 
 

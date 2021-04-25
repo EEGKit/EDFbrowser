@@ -46,6 +46,8 @@ UI_hrv_dock::UI_hrv_dock(QWidget *w_parent, struct hrv_dock_param_struct par)
 
   is_deleted = 0;
 
+  trace_color = mainwindow->hrvdock_trace_color;
+
   frame = new QFrame;
   frame->setFrameStyle(QFrame::NoFrame);
   frame->setLineWidth(0);
@@ -60,6 +62,7 @@ UI_hrv_dock::UI_hrv_dock(QWidget *w_parent, struct hrv_dock_param_struct par)
   hrv_curve->set_params(&param);
   hrv_curve->set_range(mainwindow->hrvdock_min_bpm, mainwindow->hrvdock_max_bpm);
   hrv_curve->setToolTip(param.annot_name);
+  hrv_curve->set_trace_color(trace_color);
 
   trck_indic = new simple_tracking_indicator3;
   trck_indic->set_scaling(w_scaling, h_scaling);
@@ -160,7 +163,7 @@ void UI_hrv_dock::show_context_menu(QPoint)
 void UI_hrv_dock::show_settings(bool)
 {
   QDialog *dialog = new QDialog;
-  dialog->setMinimumSize(300 * mainwindow->w_scaling, 200 * mainwindow->h_scaling);
+  dialog->setMinimumSize(300 * mainwindow->w_scaling, 250 * mainwindow->h_scaling);
   dialog->setWindowTitle("Heartrate");
   dialog->setModal(true);
   dialog->setAttribute(Qt::WA_DeleteOnClose, true);
@@ -181,6 +184,9 @@ void UI_hrv_dock::show_settings(bool)
   height_spinbox->setSingleStep(10);
   height_spinbox->setValue(mainwindow->hrvdock_height);
 
+  color_button = new SpecialButton;
+  color_button->setColor(trace_color);
+
   QHBoxLayout *hlayout1 = new QHBoxLayout;
   hlayout1->addWidget(max_bpm_spinbox);
   hlayout1->addStretch(1000);
@@ -194,8 +200,12 @@ void UI_hrv_dock::show_settings(bool)
   hlayout3->addStretch(1000);
 
   QHBoxLayout *hlayout4 = new QHBoxLayout;
+  hlayout4->addWidget(color_button);
   hlayout4->addStretch(1000);
-  hlayout4->addWidget(settings_close_button);
+
+  QHBoxLayout *hlayout5 = new QHBoxLayout;
+  hlayout5->addStretch(1000);
+  hlayout5->addWidget(settings_close_button);
 
   QFormLayout *flayout = new QFormLayout;
   flayout->addRow(" ", (QWidget *)NULL);
@@ -205,18 +215,21 @@ void UI_hrv_dock::show_settings(bool)
   flayout->addRow(" ", (QWidget *)NULL);
   flayout->addRow("Height:", hlayout3);
   flayout->addRow(" ", (QWidget *)NULL);
+  flayout->addRow("Trace color:", hlayout4);
+  flayout->addRow(" ", (QWidget *)NULL);
 
   QVBoxLayout *vlayout1 = new QVBoxLayout;
   vlayout1->addLayout(flayout);
   vlayout1->addStretch(1000);
-  vlayout1->addLayout(hlayout4);
+  vlayout1->addLayout(hlayout5);
 
   dialog->setLayout(vlayout1);
 
-  QObject::connect(settings_close_button, SIGNAL(clicked()),         dialog, SLOT(close()));
-  QObject::connect(max_bpm_spinbox,       SIGNAL(valueChanged(int)), this,   SLOT(max_bpm_spinbox_changed(int)));
-  QObject::connect(min_bpm_spinbox,       SIGNAL(valueChanged(int)), this,   SLOT(min_bpm_spinbox_changed(int)));
-  QObject::connect(height_spinbox,        SIGNAL(valueChanged(int)), this,   SLOT(height_spinbox_changed(int)));
+  QObject::connect(settings_close_button, SIGNAL(clicked()),         dialog,        SLOT(close()));
+  QObject::connect(max_bpm_spinbox,       SIGNAL(valueChanged(int)), this,          SLOT(max_bpm_spinbox_changed(int)));
+  QObject::connect(min_bpm_spinbox,       SIGNAL(valueChanged(int)), this,          SLOT(min_bpm_spinbox_changed(int)));
+  QObject::connect(height_spinbox,        SIGNAL(valueChanged(int)), this,          SLOT(height_spinbox_changed(int)));
+  QObject::connect(color_button,          SIGNAL(clicked(SpecialButton *)), this,   SLOT(color_button_clicked()));
 
   dialog->exec();
 }
@@ -251,6 +264,26 @@ void UI_hrv_dock::min_bpm_spinbox_changed(int val)
   srl_indic->update();
 
   hrv_curve->set_range(mainwindow->hrvdock_min_bpm, mainwindow->hrvdock_max_bpm);
+  hrv_curve->update();
+}
+
+
+void UI_hrv_dock::color_button_clicked()
+{
+  QColor c = QColorDialog::getColor(trace_color, hrv_curve, "Set trace color");
+  if(c.isValid() == false)
+  {
+    return;
+  }
+
+  trace_color = c;
+
+  mainwindow->hrvdock_trace_color = trace_color;
+
+  color_button->setColor(trace_color);
+
+  hrv_curve->set_trace_color(trace_color);
+
   hrv_curve->update();
 }
 
@@ -449,6 +482,8 @@ hrv_curve_widget::hrv_curve_widget(QWidget *w_parent) : QWidget(w_parent)
   bpm_max = 180;
 
   bpm_range = bpm_max - bpm_min;
+
+  trace_color = Qt::red;
 }
 
 
@@ -467,6 +502,12 @@ void hrv_curve_widget::set_range(int min, int max)
   bpm_min = min;
 
   bpm_range = bpm_max - bpm_min;
+}
+
+
+void hrv_curve_widget::set_trace_color(QColor color)
+{
+  trace_color = color;
 }
 
 
@@ -511,7 +552,7 @@ void hrv_curve_widget::paintEvent(QPaintEvent *)
 
   offset += bpm_min * pixel_per_unit;
 
-  painter.setPen(Qt::red);
+  painter.setPen(trace_color);
 //  painter.setPen(QPen(QBrush(Qt::red, Qt::SolidPattern), 2, Qt::SolidLine, Qt::SquareCap, Qt::BevelJoin));
 
   if(mainwindow == NULL)  return;

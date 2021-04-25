@@ -1459,6 +1459,8 @@ void UI_Mainwindow::read_general_settings()
       xml_go_up(xml_hdl);
     }
 
+    get_rgbcolor_settings(xml_hdl, "hrvdock_trace_color", 0, &hrvdock_trace_color);
+
     xml_go_up(xml_hdl);
   }
 
@@ -2499,6 +2501,14 @@ void UI_Mainwindow::write_settings()
     fprintf(cfgfile, "      <hrvdock_max_bpm>%i</hrvdock_max_bpm>\n", hrvdock_max_bpm);
     fprintf(cfgfile, "      <hrvdock_min_bpm>%i</hrvdock_min_bpm>\n", hrvdock_min_bpm);
     fprintf(cfgfile, "      <hrvdock_height>%i</hrvdock_height>\n", hrvdock_height);
+    fprintf(cfgfile, "      <hrvdock_trace_color>\n"
+                     "        <red>%i</red>\n"
+                     "        <green>%i</green>\n"
+                     "        <blue>%i</blue>\n"
+                     "      </hrvdock_trace_color>\n",
+                            hrvdock_trace_color.red(),
+                            hrvdock_trace_color.green(),
+                            hrvdock_trace_color.blue());
     fprintf(cfgfile, "    </hrvdock>\n");
 
     fprintf(cfgfile, "    <live_stream_update_interval>%i</live_stream_update_interval>\n", live_stream_update_interval);

@@ -87,6 +87,7 @@
 #include <QSize>
 #include <QToolTip>
 #include <QKeySequence>
+#include <QColor>
 
 #if QT_VERSION >= 0x050200
 #include <QFontDatabase>
@@ -278,6 +279,8 @@ public:
       hrvdock_max_bpm,
       hrvdock_min_bpm,
       hrvdock_height;
+
+  QColor hrvdock_trace_color;
 
   unsigned long long pagetime,
                      maxfilesize_to_readin_annotations,
