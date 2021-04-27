@@ -35,7 +35,7 @@ UI_headerEditorWindow::UI_headerEditorWindow(QWidget *w_parent)
   mainwindow = (UI_Mainwindow *)w_parent;
 
   myobjectDialog = new QDialog;
-  myobjectDialog->setMinimumSize(600 * mainwindow->w_scaling, 500 * mainwindow->h_scaling);
+  myobjectDialog->setMinimumSize(670 * mainwindow->w_scaling, 670 * mainwindow->h_scaling);
   myobjectDialog->setWindowTitle("EDF header editor");
   myobjectDialog->setSizeGripEnabled(true);
   myobjectDialog->setModal(true);
@@ -164,18 +164,47 @@ UI_headerEditorWindow::UI_headerEditorWindow(QWidget *w_parent)
   charsleft2Label = new QLabel;
   charsleft2Label->setVisible(false);
 
+  label13 = new QLabel;
+  label13->setText("Number of datarecords");
+  label13->setVisible(false);
+
+  lineEdit10 = new QLineEdit;
+  lineEdit10->setEnabled(false);
+  lineEdit10->setVisible(false);
+
+  label14 = new QLabel;
+  label14->setText("Datarecord duration");
+  label14->setVisible(false);
+
+  lineEdit11 = new QLineEdit;
+  lineEdit11->setEnabled(false);
+  lineEdit11->setVisible(false);
+
+  label15 = new QLabel;
+  label15->setText("Number of signals");
+  label15->setVisible(false);
+
+  lineEdit12 = new QLineEdit;
+  lineEdit12->setEnabled(false);
+  lineEdit12->setVisible(false);
+
 /************************************* TAB 2 *********************************/
 
   signallist = new QTableWidget;
   signallist->setSelectionMode(QAbstractItemView::NoSelection);
   signallist->setEditTriggers(QAbstractItemView::NoEditTriggers);
-  signallist->setColumnCount(4);
+  signallist->setColumnCount(9);
   signallist->setSelectionMode(QAbstractItemView::NoSelection);
   QStringList horizontallabels;
   horizontallabels += "Label";
   horizontallabels += "Physical dimension";
   horizontallabels += "Prefilter";
   horizontallabels += "Transducer";
+  horizontallabels += "Physical maximum";
+  horizontallabels += "Physical minimum";
+  horizontallabels += "Digital maximum";
+  horizontallabels += "Digital minimum";
+  horizontallabels += "Samples per datarecord";
   signallist->setHorizontalHeaderLabels(horizontallabels);
   signallist->resizeColumnsToContents();
 
@@ -219,6 +248,10 @@ UI_headerEditorWindow::UI_headerEditorWindow(QWidget *w_parent)
   flayout->addRow(label8, lineEdit8);
   flayout->addRow(label9, lineEdit9);
   flayout->addRow(NULL, charsleft2Label);
+  flayout->addRow(" ", (QWidget *)NULL);
+  flayout->addRow(label13, lineEdit10);
+  flayout->addRow(label14, lineEdit11);
+  flayout->addRow(label15, lineEdit12);
 
   QVBoxLayout *vlayout2 = new QVBoxLayout;
   vlayout2->addWidget(fileNameLabel);
@@ -253,16 +286,17 @@ UI_headerEditorWindow::UI_headerEditorWindow(QWidget *w_parent)
 
   QMessageBox::warning(myobjectDialog, "Warning", "Always make a backup copy of your file before using this tool");
 
-  connect(pushButton1, SIGNAL(clicked()), myobjectDialog, SLOT(close()));
-  connect(pushButton2, SIGNAL(clicked()), this,           SLOT(save_hdr()));
-  connect(pushButton3, SIGNAL(clicked()), this,           SLOT(open_file()));
-  connect(helpButton,  SIGNAL(clicked()), this,           SLOT(helpbuttonpressed()));
+  connect(pushButton1,    SIGNAL(clicked()),            myobjectDialog, SLOT(close()));
+  connect(pushButton2,    SIGNAL(clicked()),            this,           SLOT(save_hdr()));
+  connect(pushButton3,    SIGNAL(clicked()),            this,           SLOT(open_file()));
+  connect(helpButton,     SIGNAL(clicked()),            this,           SLOT(helpbuttonpressed()));
+  connect(myobjectDialog, SIGNAL(destroyed(QObject *)), this,           SLOT(dialog_closed()));
 
   myobjectDialog->exec();
 }
 
 
-void UI_headerEditorWindow::closeEvent(QCloseEvent *cl_event)
+void UI_headerEditorWindow::dialog_closed()
 {
   if(file != NULL)
   {
@@ -273,8 +307,6 @@ void UI_headerEditorWindow::closeEvent(QCloseEvent *cl_event)
   {
     free(hdr);
   }
-
-  cl_event->accept();
 }
 
 
@@ -321,6 +353,9 @@ void UI_headerEditorWindow::open_file()
   lineEdit7->clear();
   lineEdit8->clear();
   lineEdit9->clear();
+  lineEdit10->clear();
+  lineEdit11->clear();
+  lineEdit12->clear();
 
   signallist->setRowCount(0);
 
@@ -632,7 +667,7 @@ void UI_headerEditorWindow::read_header()
     remove_trailing_spaces(str);
     lineEdit5->setText(str);
 
-    strlcpy(scratchpad, hdr + 88, 256);
+    strncpy(scratchpad, hdr + 88, 80);
     scratchpad[80] = 0;
     strlcat(scratchpad, "    ", 256);
 
@@ -815,6 +850,27 @@ void UI_headerEditorWindow::read_header()
 
   recordsize = 0;
 
+  label13->setVisible(true);
+  strncpy(scratchpad, hdr + 236, 8);
+  scratchpad[8] = 0;
+  remove_trailing_spaces(scratchpad);
+  lineEdit10->setVisible(true);
+  lineEdit10->setText(scratchpad);
+
+  label14->setVisible(true);
+  strncpy(scratchpad, hdr + 244, 8);
+  scratchpad[8] = 0;
+  remove_trailing_spaces(scratchpad);
+  lineEdit11->setVisible(true);
+  lineEdit11->setText(scratchpad);
+
+  label15->setVisible(true);
+  strncpy(scratchpad, hdr + 252, 4);
+  scratchpad[4] = 0;
+  remove_trailing_spaces(scratchpad);
+  lineEdit12->setVisible(true);
+  lineEdit12->setText(scratchpad);
+
   for(i=0; i<edfsignals; i++)
   {
     strncpy(scratchpad, hdr + 256 + (i * 16), 16);
@@ -844,6 +900,46 @@ void UI_headerEditorWindow::read_header()
     signallist->setCellWidget(i, 3, new QLineEdit(scratchpad));
     ((QLineEdit *)(signallist->cellWidget(i, 3)))->setMaxLength(80);
     ((QLineEdit *)(signallist->cellWidget(i, 3)))->setText(scratchpad);
+
+    strncpy(scratchpad, hdr + 256 + (edfsignals * 112) + (i * 8), 8);
+    scratchpad[8] = 0;
+    remove_trailing_spaces(scratchpad);
+    signallist->setCellWidget(i, 4, new QLineEdit(scratchpad));
+    ((QLineEdit *)(signallist->cellWidget(i, 4)))->setMaxLength(80);
+    ((QLineEdit *)(signallist->cellWidget(i, 4)))->setText(scratchpad);
+    ((QLineEdit *)(signallist->cellWidget(i, 4)))->setEnabled(false);
+
+    strncpy(scratchpad, hdr + 256 + (edfsignals * 104) + (i * 8), 8);
+    scratchpad[8] = 0;
+    remove_trailing_spaces(scratchpad);
+    signallist->setCellWidget(i, 5, new QLineEdit(scratchpad));
+    ((QLineEdit *)(signallist->cellWidget(i, 5)))->setMaxLength(80);
+    ((QLineEdit *)(signallist->cellWidget(i, 5)))->setText(scratchpad);
+    ((QLineEdit *)(signallist->cellWidget(i, 5)))->setEnabled(false);
+
+    strncpy(scratchpad, hdr + 256 + (edfsignals * 128) + (i * 8), 8);
+    scratchpad[8] = 0;
+    remove_trailing_spaces(scratchpad);
+    signallist->setCellWidget(i, 6, new QLineEdit(scratchpad));
+    ((QLineEdit *)(signallist->cellWidget(i, 6)))->setMaxLength(80);
+    ((QLineEdit *)(signallist->cellWidget(i, 6)))->setText(scratchpad);
+    ((QLineEdit *)(signallist->cellWidget(i, 6)))->setEnabled(false);
+
+    strncpy(scratchpad, hdr + 256 + (edfsignals * 120) + (i * 8), 8);
+    scratchpad[8] = 0;
+    remove_trailing_spaces(scratchpad);
+    signallist->setCellWidget(i, 7, new QLineEdit(scratchpad));
+    ((QLineEdit *)(signallist->cellWidget(i, 7)))->setMaxLength(80);
+    ((QLineEdit *)(signallist->cellWidget(i, 7)))->setText(scratchpad);
+    ((QLineEdit *)(signallist->cellWidget(i, 7)))->setEnabled(false);
+
+    strncpy(scratchpad, hdr + 256 + (edfsignals * 216) + (i * 8), 8);
+    scratchpad[8] = 0;
+    remove_trailing_spaces(scratchpad);
+    signallist->setCellWidget(i, 8, new QLineEdit(scratchpad));
+    ((QLineEdit *)(signallist->cellWidget(i, 8)))->setMaxLength(80);
+    ((QLineEdit *)(signallist->cellWidget(i, 8)))->setText(scratchpad);
+    ((QLineEdit *)(signallist->cellWidget(i, 8)))->setEnabled(false);
 
     strncpy(scratchpad, hdr + 256 + (edfsignals * 216) + (i * 8), 8);
     scratchpad[8] = 0;

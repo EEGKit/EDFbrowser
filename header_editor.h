@@ -101,6 +101,9 @@ QLabel       *label1,
              *label9,
              *label11,
              *label12,
+             *label13,
+             *label14,
+             *label15,
              *fileNameLabel,
              *charsleft1Label,
              *charsleft2Label,
@@ -114,7 +117,10 @@ QLineEdit    *lineEdit1,
              *lineEdit6,
              *lineEdit7,
              *lineEdit8,
-             *lineEdit9;
+             *lineEdit9,
+             *lineEdit10,
+             *lineEdit11,
+             *lineEdit12;
 
 QComboBox    *comboBox1;
 
@@ -148,7 +154,7 @@ private slots:
 void open_file();
 void save_hdr();
 void read_header();
-void closeEvent(QCloseEvent *);
+void dialog_closed();
 void calculate_chars_left_name(int);
 int calculate_chars_left_name(const QString &);
 int calculate_chars_left_recording(const QString &);
