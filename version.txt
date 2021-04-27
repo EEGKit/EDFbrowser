@@ -4,6 +4,14 @@
 
  - Ishne ECG to EDF+ converter: added support to read and include the annotations file (*.ann).
 
+ - Heartrate variability plot: added the possibility to change the trace color.
+
+ - EDF check: when refusing to open a file because the datarecord duration is 0 and
+   filetype is EDF+ or BDF+, inform the user that the annotations in that file can still
+   be imported using Tools -> Import annotations.
+
+ - Header editor: Show also fields that are not allowded to edit (these fields will be shown in read-only mode).
+                  Removed a memory leak.
 
 
  version 1.83      April 3, 2021
