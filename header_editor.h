@@ -77,6 +77,7 @@ class UI_headerEditorWindow : public QDialog
 
 public:
   UI_headerEditorWindow(QWidget *parent);
+  ~UI_headerEditorWindow();
 
   UI_Mainwindow *mainwindow;
 
@@ -154,7 +155,6 @@ private slots:
 void open_file();
 void save_hdr();
 void read_header();
-void dialog_closed();
 void calculate_chars_left_name(int);
 int calculate_chars_left_name(const QString &);
 int calculate_chars_left_recording(const QString &);

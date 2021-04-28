@@ -49,6 +49,8 @@ UI_headerEditorWindow::UI_headerEditorWindow(QWidget *w_parent)
 
   file = NULL;
 
+  hdr = NULL;
+
 /************************************* TAB 1 *********************************/
 
   fileNameLabel = new QLabel;
@@ -282,21 +284,18 @@ UI_headerEditorWindow::UI_headerEditorWindow(QWidget *w_parent)
 
   myobjectDialog->setLayout(vlayout1);
 
-  hdr = (char *)malloc(256 * 2050);
-
   QMessageBox::warning(myobjectDialog, "Warning", "Always make a backup copy of your file before using this tool");
 
   connect(pushButton1,    SIGNAL(clicked()),            myobjectDialog, SLOT(close()));
   connect(pushButton2,    SIGNAL(clicked()),            this,           SLOT(save_hdr()));
   connect(pushButton3,    SIGNAL(clicked()),            this,           SLOT(open_file()));
   connect(helpButton,     SIGNAL(clicked()),            this,           SLOT(helpbuttonpressed()));
-  connect(myobjectDialog, SIGNAL(destroyed(QObject *)), this,           SLOT(dialog_closed()));
 
   myobjectDialog->exec();
 }
 
 
-void UI_headerEditorWindow::dialog_closed()
+UI_headerEditorWindow::~UI_headerEditorWindow()
 {
   if(file != NULL)
   {
@@ -361,6 +360,8 @@ void UI_headerEditorWindow::open_file()
 
   fileNameLabel->clear();
 
+  free(hdr);
+  hdr = (char *)malloc(256 * 3);
   if(hdr==NULL)
   {
     QMessageBox messagewindow(QMessageBox::Critical, "Error", "A memory allocation error occurred. (hdr)");
@@ -402,6 +403,8 @@ void UI_headerEditorWindow::open_file()
     file = NULL;
     return;
   }
+
+  hdr[256] = 0;
 
   if(!(strncmp(hdr, "0       ", 8)))  edf = 1;
 
@@ -484,7 +487,18 @@ void UI_headerEditorWindow::read_header()
 
   rewind(file);
 
-  if(fread(hdr, (256 * edfsignals) + 256, 1, file) != 1)
+  free(hdr);
+  hdr = (char *)malloc(256 * (edfsignals + 3));
+  if(hdr==NULL)
+  {
+    QMessageBox messagewindow(QMessageBox::Critical, "Error", "A memory allocation error occurred. (hdr)");
+    messagewindow.exec();
+    fclose(file);
+    file = NULL;
+    return;
+  }
+
+  if(fread(hdr, 256 * (edfsignals + 1), 1, file) != 1)
   {
     QMessageBox messagewindow(QMessageBox::Critical, "Error", "Can not read from file.");
     messagewindow.exec();
@@ -492,6 +506,8 @@ void UI_headerEditorWindow::read_header()
     file = NULL;
     return;
   }
+
+  hdr[256 * (edfsignals + 1)] = 0;
 
   startTimeDate->setVisible(true);
   startTimeDateLabel->setVisible(true);
