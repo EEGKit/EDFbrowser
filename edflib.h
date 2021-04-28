@@ -138,6 +138,8 @@ extern "C" {
  * characters with accents, umlauts, tilde, etc. to their "normal" equivalent without the accent/umlaut/tilde/etc.
  * in order to create a valid EDF file.
  *
+ * The samplefrequency of a signal is calculated as follows: sf = (smp_in_datarecord * EDFLIB_TIME_DIMENSION) / datarecord_duration
+ *
  * The description/name of an EDF+ annotation on the other hand, is encoded in UTF-8.
  *
  */
@@ -347,7 +349,8 @@ int edfopen_file_writeonly(const char *path, int filetype, int number_of_signals
 
 int edf_set_samplefrequency(int handle, int edfsignal, int samplefrequency);
 
-/* Sets the samplefrequency of signal edfsignal. (In reallity, it sets the number of samples in a datarecord.) */
+/* Sets the samplefrequency of signal edfsignal. (In reality, it sets the number of samples in a datarecord */
+/* which equals the samplefrequency only when the datarecords have a duration of 1 second) */
 /* Returns 0 on success, otherwise -1 */
 /* This function is required for every signal and can be called only after opening a */
 /* file in writemode and before the first sample write action */
