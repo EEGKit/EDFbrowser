@@ -454,16 +454,6 @@ void UI_headerEditorWindow::open_file()
     return;
   }
 
-  if(edfsignals > 2049)
-  {
-    QMessageBox messagewindow(QMessageBox::Critical, "Error", "Number of signals in header is more than 2048.\n"
-                                                              "This tool can not process more than 2048 signals.");
-    messagewindow.exec();
-    fclose(file);
-    file = NULL;
-    return;
-  }
-
   fseeko(file, 0LL, SEEK_END);
   filesize = ftello(file);
   if(filesize < (((edfsignals + 1LL) * 256LL) + edfsignals))
