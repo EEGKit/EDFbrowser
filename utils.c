@@ -498,6 +498,17 @@ void latin1_to_utf8(char *latin1_str, int len)
 }
 
 
+void sanitize_ascii(char *s)
+{
+  for( ; *s; s++)
+  {
+    if((*s < 32) || (*s > 126))
+    {
+      *s = '.';
+    }
+  }
+}
+
 
 void latin1_to_ascii(char *str, int len)
 {

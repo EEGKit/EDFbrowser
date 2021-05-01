@@ -190,6 +190,22 @@ UI_headerEditorWindow::UI_headerEditorWindow(QWidget *w_parent)
   lineEdit12->setEnabled(false);
   lineEdit12->setVisible(false);
 
+  label16 = new QLabel;
+  label16->setText("Reserved");
+  label16->setVisible(false);
+
+  lineEdit13 = new QLineEdit;
+  lineEdit13->setEnabled(false);
+  lineEdit13->setVisible(false);
+
+  label17 = new QLabel;
+  label17->setText("Version");
+  label17->setVisible(false);
+
+  lineEdit14 = new QLineEdit;
+  lineEdit14->setEnabled(false);
+  lineEdit14->setVisible(false);
+
 /************************************* TAB 2 *********************************/
 
   signallist = new QTableWidget;
@@ -251,9 +267,11 @@ UI_headerEditorWindow::UI_headerEditorWindow(QWidget *w_parent)
   flayout->addRow(label9, lineEdit9);
   flayout->addRow(NULL, charsleft2Label);
   flayout->addRow(" ", (QWidget *)NULL);
+  flayout->addRow(label17, lineEdit14);
   flayout->addRow(label13, lineEdit10);
   flayout->addRow(label14, lineEdit11);
   flayout->addRow(label15, lineEdit12);
+  flayout->addRow(label16, lineEdit13);
 
   QVBoxLayout *vlayout2 = new QVBoxLayout;
   vlayout2->addWidget(fileNameLabel);
@@ -355,13 +373,15 @@ void UI_headerEditorWindow::open_file()
   lineEdit10->clear();
   lineEdit11->clear();
   lineEdit12->clear();
+  lineEdit13->clear();
+  lineEdit14->clear();
 
   signallist->setRowCount(0);
 
   fileNameLabel->clear();
 
   free(hdr);
-  hdr = (char *)malloc(256 * 3);
+  hdr = (char *)calloc(1, 256 * 3);
   if(hdr==NULL)
   {
     QMessageBox messagewindow(QMessageBox::Critical, "Error", "A memory allocation error occurred. (hdr)");
@@ -488,7 +508,7 @@ void UI_headerEditorWindow::read_header()
   rewind(file);
 
   free(hdr);
-  hdr = (char *)malloc(256 * (edfsignals + 3));
+  hdr = (char *)calloc(1, 256 * (edfsignals + 3));
   if(hdr==NULL)
   {
     QMessageBox messagewindow(QMessageBox::Critical, "Error", "A memory allocation error occurred. (hdr)");
@@ -815,7 +835,7 @@ void UI_headerEditorWindow::read_header()
     connect(lineEdit8,   SIGNAL(textEdited(const QString &)), this, SLOT(calculate_chars_left_recording(const QString &)));
     connect(lineEdit9,   SIGNAL(textEdited(const QString &)), this, SLOT(calculate_chars_left_recording(const QString &)));
   }
-  else
+  else  // if(edfplus || bdfplus)
   {
     label3->setVisible(false);
     label4->setVisible(false);
@@ -849,12 +869,12 @@ void UI_headerEditorWindow::read_header()
     lineEdit1->setVisible(true);
     lineEdit2->setVisible(true);
 
-    strncpy(scratchpad, hdr + 8, 80);
+    memcpy(scratchpad, hdr + 8, 80);
     scratchpad[80] = 0;
     remove_trailing_spaces(scratchpad);
     lineEdit1->setText(scratchpad);
 
-    strncpy(scratchpad, hdr + 88, 80);
+    memcpy(scratchpad, hdr + 88, 80);
     scratchpad[80] = 0;
     remove_trailing_spaces(scratchpad);
     lineEdit2->setText(scratchpad);
@@ -867,57 +887,72 @@ void UI_headerEditorWindow::read_header()
   recordsize = 0;
 
   label13->setVisible(true);
-  strncpy(scratchpad, hdr + 236, 8);
+  memcpy(scratchpad, hdr + 236, 8);  /* number of datarecords */
   scratchpad[8] = 0;
   remove_trailing_spaces(scratchpad);
   lineEdit10->setVisible(true);
   lineEdit10->setText(scratchpad);
 
   label14->setVisible(true);
-  strncpy(scratchpad, hdr + 244, 8);
+  memcpy(scratchpad, hdr + 244, 8);  /* duration of a datarecord */
   scratchpad[8] = 0;
   remove_trailing_spaces(scratchpad);
   lineEdit11->setVisible(true);
   lineEdit11->setText(scratchpad);
 
   label15->setVisible(true);
-  strncpy(scratchpad, hdr + 252, 4);
+  memcpy(scratchpad, hdr + 252, 4);  /* number of signals */
   scratchpad[4] = 0;
   remove_trailing_spaces(scratchpad);
   lineEdit12->setVisible(true);
   lineEdit12->setText(scratchpad);
 
+  label16->setVisible(true);
+  memcpy(scratchpad, hdr + 192, 44);  /* reserved */
+  scratchpad[44] = 0;
+  remove_trailing_spaces(scratchpad);
+  lineEdit13->setVisible(true);
+  lineEdit13->setText(scratchpad);
+
+  label17->setVisible(true);
+  memcpy(scratchpad, hdr, 8);  /* version */
+  scratchpad[8] = 0;
+  remove_trailing_spaces(scratchpad);
+  sanitize_ascii(scratchpad);
+  lineEdit14->setVisible(true);
+  lineEdit14->setText(scratchpad);
+
   for(i=0; i<edfsignals; i++)
   {
-    strncpy(scratchpad, hdr + 256 + (i * 16), 16);
+    memcpy(scratchpad, hdr + 256 + (i * 16), 16);
     scratchpad[16] = 0;
     remove_trailing_spaces(scratchpad);
     signallist->setCellWidget(i, 0, new QLineEdit(scratchpad));
     ((QLineEdit *)(signallist->cellWidget(i, 0)))->setMaxLength(16);
     ((QLineEdit *)(signallist->cellWidget(i, 0)))->setText(scratchpad);
 
-    strncpy(scratchpad, hdr + 256 + (edfsignals * 96) + (i * 8), 8);
+    memcpy(scratchpad, hdr + 256 + (edfsignals * 96) + (i * 8), 8);
     scratchpad[8] = 0;
     remove_trailing_spaces(scratchpad);
     signallist->setCellWidget(i, 1, new QLineEdit(scratchpad));
     ((QLineEdit *)(signallist->cellWidget(i, 1)))->setMaxLength(8);
     ((QLineEdit *)(signallist->cellWidget(i, 1)))->setText(scratchpad);
 
-    strncpy(scratchpad, hdr + 256 + (edfsignals * 136) + (i * 80), 80);
+    memcpy(scratchpad, hdr + 256 + (edfsignals * 136) + (i * 80), 80);
     scratchpad[80] = 0;
     remove_trailing_spaces(scratchpad);
     signallist->setCellWidget(i, 2, new QLineEdit(scratchpad));
     ((QLineEdit *)(signallist->cellWidget(i, 2)))->setMaxLength(80);
     ((QLineEdit *)(signallist->cellWidget(i, 2)))->setText(scratchpad);
 
-    strncpy(scratchpad, hdr + 256 + (edfsignals * 16) + (i * 80), 80);
+    memcpy(scratchpad, hdr + 256 + (edfsignals * 16) + (i * 80), 80);
     scratchpad[80] = 0;
     remove_trailing_spaces(scratchpad);
     signallist->setCellWidget(i, 3, new QLineEdit(scratchpad));
     ((QLineEdit *)(signallist->cellWidget(i, 3)))->setMaxLength(80);
     ((QLineEdit *)(signallist->cellWidget(i, 3)))->setText(scratchpad);
 
-    strncpy(scratchpad, hdr + 256 + (edfsignals * 112) + (i * 8), 8);
+    memcpy(scratchpad, hdr + 256 + (edfsignals * 112) + (i * 8), 8);
     scratchpad[8] = 0;
     remove_trailing_spaces(scratchpad);
     signallist->setCellWidget(i, 4, new QLineEdit(scratchpad));
@@ -925,7 +960,7 @@ void UI_headerEditorWindow::read_header()
     ((QLineEdit *)(signallist->cellWidget(i, 4)))->setText(scratchpad);
     ((QLineEdit *)(signallist->cellWidget(i, 4)))->setEnabled(false);
 
-    strncpy(scratchpad, hdr + 256 + (edfsignals * 104) + (i * 8), 8);
+    memcpy(scratchpad, hdr + 256 + (edfsignals * 104) + (i * 8), 8);
     scratchpad[8] = 0;
     remove_trailing_spaces(scratchpad);
     signallist->setCellWidget(i, 5, new QLineEdit(scratchpad));
@@ -933,7 +968,7 @@ void UI_headerEditorWindow::read_header()
     ((QLineEdit *)(signallist->cellWidget(i, 5)))->setText(scratchpad);
     ((QLineEdit *)(signallist->cellWidget(i, 5)))->setEnabled(false);
 
-    strncpy(scratchpad, hdr + 256 + (edfsignals * 128) + (i * 8), 8);
+    memcpy(scratchpad, hdr + 256 + (edfsignals * 128) + (i * 8), 8);
     scratchpad[8] = 0;
     remove_trailing_spaces(scratchpad);
     signallist->setCellWidget(i, 6, new QLineEdit(scratchpad));
@@ -941,7 +976,7 @@ void UI_headerEditorWindow::read_header()
     ((QLineEdit *)(signallist->cellWidget(i, 6)))->setText(scratchpad);
     ((QLineEdit *)(signallist->cellWidget(i, 6)))->setEnabled(false);
 
-    strncpy(scratchpad, hdr + 256 + (edfsignals * 120) + (i * 8), 8);
+    memcpy(scratchpad, hdr + 256 + (edfsignals * 120) + (i * 8), 8);
     scratchpad[8] = 0;
     remove_trailing_spaces(scratchpad);
     signallist->setCellWidget(i, 7, new QLineEdit(scratchpad));
@@ -949,7 +984,7 @@ void UI_headerEditorWindow::read_header()
     ((QLineEdit *)(signallist->cellWidget(i, 7)))->setText(scratchpad);
     ((QLineEdit *)(signallist->cellWidget(i, 7)))->setEnabled(false);
 
-    strncpy(scratchpad, hdr + 256 + (edfsignals * 216) + (i * 8), 8);
+    memcpy(scratchpad, hdr + 256 + (edfsignals * 216) + (i * 8), 8);
     scratchpad[8] = 0;
     remove_trailing_spaces(scratchpad);
     signallist->setCellWidget(i, 8, new QLineEdit(scratchpad));
@@ -957,7 +992,7 @@ void UI_headerEditorWindow::read_header()
     ((QLineEdit *)(signallist->cellWidget(i, 8)))->setText(scratchpad);
     ((QLineEdit *)(signallist->cellWidget(i, 8)))->setEnabled(false);
 
-    strncpy(scratchpad, hdr + 256 + (edfsignals * 216) + (i * 8), 8);
+    memcpy(scratchpad, hdr + 256 + (edfsignals * 216) + (i * 8), 8);
     scratchpad[8] = 0;
     if(atoi(scratchpad) < 1)
     {

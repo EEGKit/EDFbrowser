@@ -105,6 +105,8 @@ QLabel       *label1,
              *label13,
              *label14,
              *label15,
+             *label16,
+             *label17,
              *fileNameLabel,
              *charsleft1Label,
              *charsleft2Label,
@@ -121,7 +123,9 @@ QLineEdit    *lineEdit1,
              *lineEdit9,
              *lineEdit10,
              *lineEdit11,
-             *lineEdit12;
+             *lineEdit12,
+             *lineEdit13,
+             *lineEdit14;
 
 QComboBox    *comboBox1;
 
