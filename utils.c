@@ -448,13 +448,14 @@ void utf8_to_latin1(char *utf8_str)
 }
 
 
-
+/* max string length: 4096 characters! */
 void latin1_to_utf8(char *latin1_str, int len)
 {
   int i, j;
 
-  unsigned char *str, tmp_str[1024];
+  unsigned char *str, tmp_str[4096];
 
+  if(len > 4096)  len = 4096;
 
   str = (unsigned char *)latin1_str;
 
