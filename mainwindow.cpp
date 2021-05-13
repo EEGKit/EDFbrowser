@@ -1353,9 +1353,16 @@ void UI_Mainwindow::show_annotations()
 
 void UI_Mainwindow::annotation_editor()
 {
-  stop_video_generic(0);
+//  stop_video_generic(0);
 
-  stop_playback();
+//  stop_playback();
+
+  if(playback_realtime_active)
+  {
+    playback_realtime_timer->stop();
+
+    playback_realtime_active = 0;
+  }
 
   if(files_open!=1)
   {

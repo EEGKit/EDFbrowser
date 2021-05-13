@@ -86,12 +86,12 @@ void UI_Mainwindow::start_stop_video()
     return;
   }
 
-  if(annot_editor_active)
-  {
-    msgbox.setText("Close the annotation editor first.");
-    msgbox.exec();
-    return;
-  }
+//   if(annot_editor_active)
+//   {
+//     msgbox.setText("Close the annotation editor first.");
+//     msgbox.exec();
+//     return;
+//   }
 
   strlcpy(videopath, QFileDialog::getOpenFileName(this, "Select media file", QString::fromLocal8Bit(recent_opendir),
                                                  "Video files (*.mkv *.mp4 *.mpg *.mpeg *.avi *.webm *.ogv *.ogg *.wmv *.mov *.m4v);;Audio files (*.wav *.ogg *.flac *.mp3 *.aac *.m4a *.wma);;All files (*)").toLocal8Bit().data(), MAX_PATH_LENGTH);
