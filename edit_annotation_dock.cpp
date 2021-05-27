@@ -76,7 +76,7 @@ UI_AnnotationEditwindow::UI_AnnotationEditwindow(struct edfhdrblock *e_hdr, QWid
   durationLabel->setText("Duration");
 
   duration_spinbox = new QDoubleSpinBox;
-  duration_spinbox->setRange(-1.0, 10000.0);
+  duration_spinbox->setRange(-1.0, 10000000.0);
   duration_spinbox->setSingleStep(1.0);
   duration_spinbox->setDecimals(3);
   duration_spinbox->setSuffix(" sec");
@@ -206,6 +206,8 @@ void UI_AnnotationEditwindow::modifyButtonClicked()
   {
     snprintf(annot->duration, 16, "%f", duration_spinbox->value());
 
+    remove_trailing_zeros(annot->duration);
+
     annot->long_duration = edfplus_annotation_get_long_from_number(annot->duration);
   }
   else
@@ -314,6 +316,8 @@ void UI_AnnotationEditwindow::createButtonClicked()
   if(dblcmp(duration_spinbox->value(), 0.0) > 0)
   {
     snprintf(annotation.duration, 16, "%f", duration_spinbox->value());
+
+    remove_trailing_zeros(annotation.duration);
 
     annotation.long_duration = edfplus_annotation_get_long_from_number(annotation.duration);
   }
