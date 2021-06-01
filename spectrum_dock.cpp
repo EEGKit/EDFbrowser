@@ -33,6 +33,9 @@
 #define SPECT_LOG_MINIMUM_LOG (-12)
 
 
+static const int dftsz_range[24]={200,1000,1024,2048,4096,5000,8192,10000,16384,32768,50000,65536,100000,
+                    131072,262144,500000,524288,1000000,1048576,2097152,4194304,5000000,8388608,10000000};
+
 
 UI_SpectrumDockWindow::UI_SpectrumDockWindow(QWidget *w_parent)
 {
@@ -242,6 +245,18 @@ UI_SpectrumDockWindow::UI_SpectrumDockWindow(QWidget *w_parent)
   dftsz_spinbox->setSuffix(" smpls");
   dftsz_spinbox->setValue(dftblocksize);
 
+  dftsz_box = new QComboBox;
+  dftsz_box->addItem("Blocksize: user defined");
+  dftsz_box->addItem("Blocksize: 1000 smpls");
+  dftsz_box->addItem("Blocksize: 1024 smpls");
+  dftsz_box->addItem("Blocksize: 2048 smpls");
+  dftsz_box->addItem("Blocksize: 4096 smpls");
+  dftsz_box->addItem("Blocksize: 5000 smpls");
+  dftsz_box->addItem("Blocksize: 8192 smpls");
+  dftsz_box->addItem("Blocksize: 10000 smpls");
+  dftsz_box->addItem("Blocksize: 16384 smpls");
+  dftsz_box->addItem("Blocksize: 32768 smpls");
+
   vlayout3 = new QVBoxLayout;
   vlayout3->addStretch(100);
   vlayout3->addWidget(flywheel1, 400);
@@ -263,6 +278,7 @@ UI_SpectrumDockWindow::UI_SpectrumDockWindow(QWidget *w_parent)
   vlayout2->addWidget(vlogButton);
   vlayout2->addWidget(colorBarButton);
   vlayout2->addWidget(windowBox);
+  vlayout2->addWidget(dftsz_box);
   vlayout2->addWidget(dftsz_spinbox);
   vlayout2->addWidget(overlap_box);
 
@@ -335,6 +351,7 @@ UI_SpectrumDockWindow::UI_SpectrumDockWindow(QWidget *w_parent)
   QObject::connect(dftsz_spinbox,   SIGNAL(valueChanged(int)),        this, SLOT(dftsz_value_changed(int)));
   QObject::connect(windowBox,       SIGNAL(currentIndexChanged(int)), this, SLOT(windowBox_changed(int)));
   QObject::connect(overlap_box,     SIGNAL(currentIndexChanged(int)), this, SLOT(overlap_box_changed(int)));
+  QObject::connect(dftsz_box,       SIGNAL(currentIndexChanged(int)), this, SLOT(dftsz_box_changed(int)));
 }
 
 
@@ -365,6 +382,43 @@ void UI_SpectrumDockWindow::dftsz_value_changed(int new_val)
   init_maxvalue = 1;
 
   update_curve();
+}
+
+
+void UI_SpectrumDockWindow::dftsz_box_changed(int idx)
+{
+  mainwindow->spectrum_blocksize_predefined = idx;
+
+  if(idx)
+  {
+    if(dftsz_range[idx] > samples)
+    {
+      dftsz_box->setCurrentIndex(0);
+
+      return;
+    }
+
+    dftsz_spinbox->setMaximum(32768);
+
+    dftsz_spinbox->setValue(dftsz_range[idx]);
+
+    dftsz_spinbox->setEnabled(false);
+  }
+  else
+  {
+    dftsz_spinbox->setEnabled(true);
+
+    dftsz_spinbox->setValue(dftsz_range[idx]);
+
+    if(samples < 1000)
+    {
+      dftsz_spinbox->setMaximum(samples);
+    }
+    else
+    {
+      dftsz_spinbox->setMaximum(1000);
+    }
+  }
 }
 
 
@@ -1026,7 +1080,7 @@ void UI_SpectrumDockWindow::update_curve()
     {
       for(i=0; i < spectrum_color->items; i++)
       {
-        spectrum_color->value[i] = 0.0;
+        spectrum_color->value[i] = 1e-15;
       }
     }
 
@@ -1037,7 +1091,7 @@ void UI_SpectrumDockWindow::update_curve()
     return;
   }
 
-  if(buf1_sz != signalcomp->samples_on_screen + 32)
+  if((unsigned)buf1_sz != signalcomp->samples_on_screen + 32)
   {
     free(buf1);
     buf1 = (double *)malloc((sizeof(double) * signalcomp->samples_on_screen) + 32);
@@ -1213,9 +1267,9 @@ void UI_SpectrumDockWindow::update_curve()
     dftblocksize--;
   }
 
-  if(dftblocksize > 1000)
+  if(dftblocksize > 32768)
   {
-    dftblocksize = 1000;
+    dftblocksize = 32768;
   }
 
   free_fft_wrap(fft_data);
