@@ -1,4 +1,15 @@
 
+ version 1.85      to be defined
+ --------------
+
+ - Allow using the annotation editor with video playback.
+
+ - Annotation editor:  increase maximum allowed duration of an annotation to 10000000 seconds (115 days).
+
+ - Spectrum dock: allow bigger DFT block sizes.
+
+
+
  version 1.84      May 2, 2021
  --------------
 
