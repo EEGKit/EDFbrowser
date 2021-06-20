@@ -888,13 +888,13 @@ void UI_SpectrumDockWindow::sliderMoved(int)
 
   strlcpy(str, "Center ", 1024);
   convert_to_metric_suffix(str + strlen(str), start_freq + ((max_freq - start_freq) / 2.0), 3, 1024 - strlen(str));
-  remove_trailing_zeros(str);
+//  remove_trailing_zeros(str);
   strlcat(str, "Hz", 1024);
   centerLabel->setText(str);
 
   strlcpy(str, "Span ", 1024);
   convert_to_metric_suffix(str + strlen(str), max_freq - start_freq, 3, 1024 - strlen(str));
-  remove_trailing_zeros(str);
+//  remove_trailing_zeros(str);
   strlcat(str, "Hz", 1024);
   spanLabel->setText(str);
 }

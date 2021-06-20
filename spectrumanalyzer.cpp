@@ -144,7 +144,7 @@ UI_FreqSpectrumWindow::UI_FreqSpectrumWindow(struct signalcompblock *signal_comp
 
   SpectrumDialog = new QDialog;
   SpectrumDialog->setAttribute(Qt::WA_DeleteOnClose, true);
-  SpectrumDialog->setMinimumSize(620 * mainwindow->w_scaling, 500 * mainwindow->h_scaling);
+  SpectrumDialog->setMinimumSize(700 * mainwindow->w_scaling, 500 * mainwindow->h_scaling);
   SpectrumDialog->setSizeGripEnabled(true);
   SpectrumDialog->setModal(false);
   SpectrumDialog->setWindowFlags(Qt::Window | Qt::WindowMinMaxButtonsHint | Qt::WindowCloseButtonHint);
@@ -790,13 +790,13 @@ void UI_FreqSpectrumWindow::sliderMoved(int)
 
   strlcpy(str, "Center ", 2048);
   convert_to_metric_suffix(str + strlen(str), start_freq + ((max_freq - start_freq) / 2.0), 3, 2048 - strlen(str));
-  remove_trailing_zeros(str);
+//  remove_trailing_zeros(str);
   strlcat(str, "Hz", 2048);
   centerLabel->setText(str);
 
   strlcpy(str, "Span ", 2048);
   convert_to_metric_suffix(str + strlen(str), max_freq - start_freq, 3, 2048 - strlen(str));
-  remove_trailing_zeros(str);
+//  remove_trailing_zeros(str);
   strlcat(str, "Hz", 2048);
   spanLabel->setText(str);
 }
