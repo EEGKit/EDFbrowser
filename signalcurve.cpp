@@ -65,8 +65,8 @@ SignalCurve::SignalCurve(QWidget *w_parent) : QWidget(w_parent)
   if(h_scaling > 4.0)  h_scaling = 4.0;
   if(h_scaling < 1.0)  h_scaling = 1.0;
 
-  sz_hint_w = 400 * w_scaling;
-  sz_hint_h = 400 * h_scaling;
+  sz_hint_w = 300 * w_scaling;
+  sz_hint_h = 300 * h_scaling;
 
   setMinimumSize(sz_hint_w, sz_hint_h);
 
