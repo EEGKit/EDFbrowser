@@ -1703,7 +1703,10 @@ void UI_Mainwindow::open_new_file()
     {
       fclose(newfile);
 
-      strlcat(str, "\n File is not a valid EDF or BDF file.", 2048);
+      if(strstr(str, "If you want to import annotations from this file") == NULL)
+      {
+        strlcat(str, "\n File is not a valid EDF or BDF file.", 2048);
+      }
 
       QMessageBox::critical(this, "Error", str);
       cmdlineargument = 0;
