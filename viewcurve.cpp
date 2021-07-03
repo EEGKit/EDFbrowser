@@ -4843,7 +4843,7 @@ void ViewCurve::resizeEvent(QResizeEvent *rs_event)
 
 inline void ViewCurve::floating_ruler(QPainter *painter, int x_pos, int y_pos, struct signalcompblock *signalcomp, int print_linewidth)
 {
-  int i, j;
+  int i, j, v_use_exp=0, h_use_exp=0;
 
   double d_tmp,
          d_tmp2,
@@ -4865,22 +4865,22 @@ inline void ViewCurve::floating_ruler(QPainter *painter, int x_pos, int y_pos, s
 
   if((mainwindow->pagetime / TIME_DIMENSION) < 2LL)
   {
-    return;
+    h_use_exp = 1;
   }
 
   if((mainwindow->pagetime / TIME_DIMENSION) > 60LL)
   {
-    return;
+    h_use_exp = 1;
   }
 
   if((signalcomp->voltpercm < 1.0) && (signalcomp->voltpercm > -1.0))
   {
-    return;
+    v_use_exp = 1;
   }
 
   if((signalcomp->voltpercm > 2000.0) || (signalcomp->voltpercm < -2000.0))
   {
-    return;
+    v_use_exp = 1;
   }
 
   x_pos *= printsize_x_factor;
@@ -4900,7 +4900,14 @@ inline void ViewCurve::floating_ruler(QPainter *painter, int x_pos, int y_pos, s
   {
     for(i=0; i<7; i++)
     {
-      snprintf(str_hz[i], 15, "%.1f",  (pixels_per_second / w_size) * (2.0 + i));
+      if(h_use_exp)
+      {
+        snprintf(str_hz[i], 15, "%.1e",  (pixels_per_second / w_size) * (2.0 + i));
+      }
+      else
+      {
+        snprintf(str_hz[i], 15, "%.1f",  (pixels_per_second / w_size) * (2.0 + i));
+      }
 
       str_hz[i][15] = 0;
     }
@@ -4909,7 +4916,14 @@ inline void ViewCurve::floating_ruler(QPainter *painter, int x_pos, int y_pos, s
     {
       for(i=0; i<5; i++)
       {
-        snprintf(str_uv[i], 15, "%.1f", signalcomp->voltpercm * i * (double)(signalcomp->polarity * -1));
+        if(v_use_exp)
+        {
+          snprintf(str_uv[i], 15, "%.1e", signalcomp->voltpercm * i * (double)(signalcomp->polarity * -1));
+        }
+        else
+        {
+          snprintf(str_uv[i], 15, "%.1f", signalcomp->voltpercm * i * (double)(signalcomp->polarity * -1));
+        }
 
         str_uv[i][15] = 0;
       }
@@ -4918,7 +4932,14 @@ inline void ViewCurve::floating_ruler(QPainter *painter, int x_pos, int y_pos, s
     {
       for(i=0; i<5; i++)
       {
-        snprintf(str_uv[i], 15, "%i", (int)(signalcomp->voltpercm * i * (double)(signalcomp->polarity * -1)));
+        if(v_use_exp)
+        {
+          snprintf(str_uv[i], 15, "%.0e", signalcomp->voltpercm * i * (double)(signalcomp->polarity * -1));
+        }
+        else
+        {
+          snprintf(str_uv[i], 15, "%i", (int)(signalcomp->voltpercm * i * (double)(signalcomp->polarity * -1)));
+        }
 
         str_uv[i][15] = 0;
       }
@@ -4928,7 +4949,14 @@ inline void ViewCurve::floating_ruler(QPainter *painter, int x_pos, int y_pos, s
   {
     for(i=0; i<7; i++)
     {
-      snprintf(str_hz[i], 15, "%.1f",  (pixels_per_second / w_size) * (9.0 + i));
+      if(h_use_exp)
+      {
+        snprintf(str_hz[i], 15, "%.1e",  (pixels_per_second / w_size) * (9.0 + i));
+      }
+      else
+      {
+        snprintf(str_hz[i], 15, "%.1f",  (pixels_per_second / w_size) * (9.0 + i));
+      }
 
       str_hz[i][15] = 0;
     }
@@ -4937,7 +4965,14 @@ inline void ViewCurve::floating_ruler(QPainter *painter, int x_pos, int y_pos, s
     {
       for(i=0; i<5; i++)
       {
-        snprintf(str_uv[i], 15, "%.1f", signalcomp->voltpercm * (4 - i) * (double)signalcomp->polarity);
+        if(v_use_exp)
+        {
+          snprintf(str_uv[i], 15, "%.1e", signalcomp->voltpercm * (4 - i) * (double)signalcomp->polarity);
+        }
+        else
+        {
+          snprintf(str_uv[i], 15, "%.1f", signalcomp->voltpercm * (4 - i) * (double)signalcomp->polarity);
+        }
 
         str_uv[i][15] = 0;
       }
@@ -4946,7 +4981,14 @@ inline void ViewCurve::floating_ruler(QPainter *painter, int x_pos, int y_pos, s
     {
       for(i=0; i<5; i++)
       {
-        snprintf(str_uv[i], 15, "%i", (int)(signalcomp->voltpercm * (4 - i)) * signalcomp->polarity);
+        if(v_use_exp)
+        {
+          snprintf(str_uv[i], 15, "%.0e", signalcomp->voltpercm * (4 - i) * signalcomp->polarity);
+        }
+        else
+        {
+          snprintf(str_uv[i], 15, "%i", (int)(signalcomp->voltpercm * (4 - i)) * signalcomp->polarity);
+        }
 
         str_uv[i][15] = 0;
       }
@@ -4955,7 +4997,14 @@ inline void ViewCurve::floating_ruler(QPainter *painter, int x_pos, int y_pos, s
 
   for(i=0; i<4; i++)
   {
-    snprintf(str_s[i], 15, "%.2f",  ((w / 40.0) / pixels_per_second) * (4 - i));
+    if(h_use_exp)
+    {
+      snprintf(str_s[i], 15, "%.1e",  ((w / 40.0) / pixels_per_second) * (4 - i));
+    }
+    else
+    {
+      snprintf(str_s[i], 15, "%.2f",  ((w / 40.0) / pixels_per_second) * (4 - i));
+    }
 
     str_s[i][15] = 0;
   }

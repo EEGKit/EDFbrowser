@@ -8,6 +8,9 @@
 
  - Spectrum dock: allow bigger DFT block sizes.
 
+ - Floating ruler: do not disappear when timescale or amplitude is set to a very high or low value,
+                   switch to exponential notation instead.
+
 
 
  version 1.84      May 2, 2021
