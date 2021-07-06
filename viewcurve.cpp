@@ -4635,6 +4635,11 @@ void ViewCurve::RulerButton()
     return;
   }
 
+  if((width() < 300) || (height() < 300))
+  {
+    return;
+  }
+
   crosshair_1.moving = 0;
   crosshair_2.moving = 0;
   ruler_active = 0;
@@ -4647,48 +4652,12 @@ void ViewCurve::RulerButton()
     mainwindow->signalcomp[i]->hasruler = 0;
   }
 
-  if(width() < 300)
-  {
-    goto END_OF_FUNC;
-  }
-
-  if(height() < 300)
-  {
-    goto END_OF_FUNC;
-  }
-
-  if((mainwindow->pagetime / TIME_DIMENSION) < 2LL)
-  {
-    QMessageBox::warning(this, "Ruler", "The ruler can not be used when the Timescale\n is set to a value less than 2 seconds.");
-    goto END_OF_FUNC;
-  }
-
-  if((mainwindow->pagetime / TIME_DIMENSION) > 120LL)
-  {
-    QMessageBox::warning(this, "Ruler", "The ruler can not be used when the Timescale\n is set to a value more than 120 seconds.");
-    goto END_OF_FUNC;
-  }
-
-  if((mainwindow->signalcomp[signal_nr]->voltpercm < 1.0) && (mainwindow->signalcomp[signal_nr]->voltpercm > -1.0))
-  {
-    QMessageBox::warning(this, "Ruler", "The ruler can not be used when the Amplitude\n is set to a value less than 1.");
-    goto END_OF_FUNC;
-  }
-
-  if((mainwindow->signalcomp[signal_nr]->voltpercm > 2000.0) || (mainwindow->signalcomp[signal_nr]->voltpercm < -2000.0))
-  {
-    QMessageBox::warning(this, "Ruler", "The ruler can not be used when the Amplitude\n is set to a value more than 2000.");
-    goto END_OF_FUNC;
-  }
-
   ruler_x_position = 200;
   ruler_y_position = 200;
   mainwindow->signalcomp[signal_nr]->hasruler = 1;
   ruler_active = 1;
 
   update();
-
-END_OF_FUNC:
 
   sidemenu->close();
 }
