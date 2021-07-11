@@ -2468,7 +2468,35 @@ int convert_non_ascii_to_hex(char *dest,  const char *src, int destlen)
 }
 
 
+/* returns greatest common divisor */
+int t_gcd(int a, int b)
+{
+  if(!a)
+  {
+    return b;
+  }
 
+  while(b)
+  {
+    if(a > b)
+    {
+      a = a - b;
+    }
+    else
+    {
+      b = b - a;
+    }
+  }
+
+  return a;
+}
+
+
+/* returns least common multiple */
+int t_lcm(int a, int b)
+{
+  return ((a * b) / t_gcd(a, b));
+}
 
 
 

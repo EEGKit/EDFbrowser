@@ -124,6 +124,9 @@ int dblcmp(double, double);  /* returns 0 when equal */
 
 int base64_dec(const void *, void *, int);
 
+int t_gcd(int, int);  /* returns greatest common divisor */
+int t_lcm(int, int);  /* returns least common multiple */
+
 /* sz is size of destination, returns length of string in dest.
  * This is different than the official BSD implementation!
  * From the BSD man-page:
