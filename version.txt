@@ -11,6 +11,9 @@
  - Floating ruler: do not disappear when timescale or amplitude is set to a very high or low value,
                    switch to exponential notation instead.
 
+ - Annotation editor: when clicking on an annotation in the waveform window, make sure the annotation is selected
+   and visible in the annotations list.
+
 
 
  version 1.84      May 2, 2021

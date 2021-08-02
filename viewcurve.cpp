@@ -794,12 +794,16 @@ void ViewCurve::mouseReleaseEvent(QMouseEvent *release_event)
 
       active_markers->list[active_markers->selected]->selected = 1;
 
+      edfplus_annotation_cancel_all_selected_in_dock(&((edfhdrblock *)(active_markers->list[active_markers->selected]->edfhdr))->annot_list);
+
+      active_markers->list[active_markers->selected]->selected_in_dock = 1;
+
       if(mainwindow->annotationEditDock != NULL)
       {
         mainwindow->annotationEditDock->set_selected_annotation(active_markers->list[active_markers->selected]);
       }
 
-      mainwindow->annotations_dock[mainwindow->get_filenum(active_markers->edf_hdr)]->updateList(0);
+      mainwindow->annotations_dock[mainwindow->get_filenum(active_markers->edf_hdr)]->updateList(1);
 
       mainwindow->annotations_edited = 1;
 
