@@ -585,9 +585,22 @@ void ViewCurve::mousePressEvent(QMouseEvent *press_event)
           {
             active_markers->selected = i;
 
-            annot_marker_moving = 1;
-
             active_markers->list[i]->selected = 1;
+
+            if(QApplication::keyboardModifiers() == Qt::ShiftModifier)
+            {
+              edfplus_annotation_cancel_all_selected_in_dock(&((edfhdrblock *)(active_markers->list[i]->edfhdr))->annot_list);
+
+              active_markers->list[i]->selected_in_dock = 1;
+
+              mainwindow->annotationEditDock->set_selected_annotation(active_markers->list[i]);
+
+              mainwindow->annotations_dock[mainwindow->get_filenum(active_markers->edf_hdr)]->updateList(1);
+            }
+            else
+            {
+              annot_marker_moving = 1;
+            }
 
             break;
           }
