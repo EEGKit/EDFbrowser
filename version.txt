@@ -14,6 +14,8 @@
  - Annotation editor: when clicking on an annotation in the waveform window, make sure the annotation is selected
    and visible in the annotations list. Keeping the shift-key pressed during this operation will prevent the annotation from moving.
 
+ - Header info: show number of datarecords.
+
 
 
  version 1.84      May 2, 2021

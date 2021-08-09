@@ -101,6 +101,10 @@ UI_EDFhdrwindow::UI_EDFhdrwindow(QWidget *w_parent)
   line_edit21->setReadOnly(true);
   line_edit21a = new QLineEdit;
   line_edit21a->setReadOnly(true);
+  line_edit22 = new QLineEdit;
+  line_edit22->setReadOnly(true);
+  line_edit22a = new QLineEdit;
+  line_edit22a->setReadOnly(true);
 
   QFormLayout *flayout1 = new QFormLayout;
   flayout1->addRow("Subject code", line_edit1);
@@ -117,6 +121,7 @@ UI_EDFhdrwindow::UI_EDFhdrwindow(QWidget *w_parent)
   flayout1->addRow("Device", line_edit12);
   flayout1->addRow("Additional info", line_edit13);
   flayout1->addRow("Datarecord duration", line_edit20);
+  flayout1->addRow("Datarecords", line_edit22);
   flayout1->addRow("Version", line_edit21);
 
   QFormLayout *flayout2 = new QFormLayout;
@@ -126,6 +131,7 @@ UI_EDFhdrwindow::UI_EDFhdrwindow(QWidget *w_parent)
   flayout2->addRow("Duration", line_edit4a);
   flayout2->addRow("Reserved", line_edit5a);
   flayout2->addRow("Datarecord duration", line_edit20a);
+  flayout2->addRow("Datarecords", line_edit22a);
   flayout2->addRow("Version", line_edit21a);
 
   QVBoxLayout *vlayout2 = new QVBoxLayout;
@@ -270,6 +276,15 @@ void UI_EDFhdrwindow::show_params(int row)
 
   line_edit20->setText(str);
   line_edit20a->setText(str);
+
+#ifdef Q_OS_WIN32
+  __mingw_snprintf(str,  512, "%lli", mainwindow->edfheaderlist[row]->datarecords)
+#else
+  snprintf(str,  512, "%lli", mainwindow->edfheaderlist[row]->datarecords);
+#endif
+
+  line_edit22->setText(str);
+  line_edit22a->setText(str);
 
   line_edit21->setText(mainwindow->edfheaderlist[row]->version);
   line_edit21a->setText(mainwindow->edfheaderlist[row]->version);
