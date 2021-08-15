@@ -581,32 +581,32 @@ void UI_unify_resolution::select_file_button_clicked()
 
     signals_list->setCellWidget(i, 1, new QDoubleSpinBox);
     ((QDoubleSpinBox *)(signals_list->cellWidget(i, 1)))->setRange(-1e9, 1e9);
-    ((QDoubleSpinBox *)(signals_list->cellWidget(i, 1)))->setValue(edfhdr->edfparam[i].bitvalue);
     ((QDoubleSpinBox *)(signals_list->cellWidget(i, 1)))->setSuffix(edfhdr->edfparam[i].physdimension);
     ((QDoubleSpinBox *)(signals_list->cellWidget(i, 1)))->setDecimals(8);
     ((QDoubleSpinBox *)(signals_list->cellWidget(i, 1)))->setEnabled(false);
+    ((QDoubleSpinBox *)(signals_list->cellWidget(i, 1)))->setValue(edfhdr->edfparam[i].bitvalue);
 
     signals_list->setCellWidget(i, 2, new QDoubleSpinBox);
     ((QDoubleSpinBox *)(signals_list->cellWidget(i, 2)))->setRange(-1e9, 1e9);
-    ((QDoubleSpinBox *)(signals_list->cellWidget(i, 2)))->setValue(edfhdr->edfparam[i].phys_max);
     ((QDoubleSpinBox *)(signals_list->cellWidget(i, 2)))->setDecimals(6);
     ((QDoubleSpinBox *)(signals_list->cellWidget(i, 2)))->setEnabled(false);
+    ((QDoubleSpinBox *)(signals_list->cellWidget(i, 2)))->setValue(edfhdr->edfparam[i].phys_max);
 
     signals_list->setCellWidget(i, 3, new QDoubleSpinBox);
     ((QDoubleSpinBox *)(signals_list->cellWidget(i, 3)))->setRange(-1e9, 1e9);
-    ((QDoubleSpinBox *)(signals_list->cellWidget(i, 3)))->setValue(edfhdr->edfparam[i].phys_min);
     ((QDoubleSpinBox *)(signals_list->cellWidget(i, 3)))->setDecimals(6);
     ((QDoubleSpinBox *)(signals_list->cellWidget(i, 3)))->setEnabled(false);
+    ((QDoubleSpinBox *)(signals_list->cellWidget(i, 3)))->setValue(edfhdr->edfparam[i].phys_min);
 
     signals_list->setCellWidget(i, 4, new QSpinBox);
     ((QSpinBox *)(signals_list->cellWidget(i, 4)))->setRange(-9999999, 99999999);
-    ((QSpinBox *)(signals_list->cellWidget(i, 4)))->setValue(edfhdr->edfparam[i].dig_max);
     ((QSpinBox *)(signals_list->cellWidget(i, 4)))->setEnabled(false);
+    ((QSpinBox *)(signals_list->cellWidget(i, 4)))->setValue(edfhdr->edfparam[i].dig_max);
 
     signals_list->setCellWidget(i, 5, new QSpinBox);
     ((QSpinBox *)(signals_list->cellWidget(i, 5)))->setRange(-9999999, 99999999);
-    ((QSpinBox *)(signals_list->cellWidget(i, 5)))->setValue(edfhdr->edfparam[i].dig_min);
     ((QSpinBox *)(signals_list->cellWidget(i, 5)))->setEnabled(false);
+    ((QSpinBox *)(signals_list->cellWidget(i, 5)))->setValue(edfhdr->edfparam[i].dig_min);
   }
 
   select_button->setEnabled(true);
