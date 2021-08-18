@@ -16,6 +16,8 @@
 
  - Header info: show number of datarecords.
 
+ - Filter dialog: fixed a bug in the GUI.
+
 
 
  version 1.84      May 2, 2021

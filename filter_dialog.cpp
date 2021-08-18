@@ -24,7 +24,6 @@
 ***************************************************************************
 */
 
-
 /*
 
 type:
@@ -61,13 +60,11 @@ model:
 #include "filter_dialog.h"
 
 
-
 UI_FilterDialog::UI_FilterDialog(QWidget *w_parent)
 {
   int i;
 
   QListWidgetItem *item;
-
 
   arraysize = 400;
 
@@ -408,14 +405,12 @@ void UI_FilterDialog::updatecurve(void)
 }
 
 
-
 void UI_FilterDialog::rippleboxvaluechanged(double value)
 {
   last_ripple = value;
 
   updatecurve();
 }
-
 
 
 void UI_FilterDialog::filtermodelboxvaluechanged(int model)
@@ -448,14 +443,17 @@ void UI_FilterDialog::filtermodelboxvaluechanged(int model)
       {
         orderbox->setMaximum(16);
       }
+      orderbox->setSingleStep(2);
+      orderbox->setMinimum(2);
+      orderbox->setValue(last_order * 2);
     }
     else
     {
       orderbox->setMaximum(8);
+      orderbox->setSingleStep(1);
+      orderbox->setMinimum(1);
+      orderbox->setValue(last_order);
     }
-    orderbox->setSingleStep(1);
-    orderbox->setMinimum(1);
-    orderbox->setValue(last_order);
     orderbox->setVisible(true);
   }
 
@@ -464,7 +462,7 @@ void UI_FilterDialog::filtermodelboxvaluechanged(int model)
     ripplebox->setVisible(false);
     orderlabel->setText("Slope roll-off:");
     orderlabel->setVisible(true);
-    ordervaluelabel->setText(QString::number(6 * orderbox->value(), 'f', 0).append(" dB / octave"));
+    ordervaluelabel->setText(QString::number(6 * last_order, 'f', 0).append(" dB / octave"));
     ordervaluelabel->setVisible(true);
   }
 
@@ -506,7 +504,6 @@ void UI_FilterDialog::filtermodelboxvaluechanged(int model)
   QObject::connect(orderbox, SIGNAL(valueChanged(int)),        this, SLOT(orderboxvaluechanged(int)));
   QObject::connect(modelbox, SIGNAL(currentIndexChanged(int)), this, SLOT(filtermodelboxvaluechanged(int)));
 }
-
 
 
 void UI_FilterDialog::orderboxvaluechanged(int order)
@@ -580,7 +577,6 @@ void UI_FilterDialog::orderboxvaluechanged(int order)
 
   updatecurve();
 }
-
 
 
 void UI_FilterDialog::filtertypeboxvaluechanged(int type)
@@ -731,7 +727,6 @@ void UI_FilterDialog::filtertypeboxvaluechanged(int type)
 }
 
 
-
 void UI_FilterDialog::frequencyboxvaluechanged(double value)
 {
   char str[256];
@@ -752,7 +747,6 @@ void UI_FilterDialog::frequencyboxvaluechanged(double value)
 }
 
 
-
 void UI_FilterDialog::freq2boxvaluechanged(double value)
 {
   QObject::disconnect(freqbox, SIGNAL(valueChanged(double)), this, SLOT(frequencyboxvaluechanged(double)));
@@ -766,7 +760,6 @@ void UI_FilterDialog::freq2boxvaluechanged(double value)
 
   updatecurve();
 }
-
 
 
 void UI_FilterDialog::ApplyButtonClicked()
@@ -1007,6 +1000,14 @@ void UI_FilterDialog::ApplyButtonClicked()
 
   mainwindow->setup_viewbuf();
 }
+
+
+
+
+
+
+
+
 
 
 
