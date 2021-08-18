@@ -32,6 +32,15 @@
 #define DEFAULT_COLOR_LIST_SZ  (6)
 
 
+static const char font_sz_example_txt[]={
+  "The quick brown fox jumps over the lazy dog. 0123456789 AaBbYyZz\n\n"
+  "European Data Format (EDF) is a standard file format designed for exchange and storage of medical time series."
+  " Being an open and non-proprietary format, EDF(+) is commonly used to archive, exchange and analyse data from"
+  " commercial devices in a format that is independent of the acquisition system. In this way, the data can be"
+  " retrieved and analyzed by independent software. EDF(+) software (browsers, checkers, ...) and example files"
+  " are freely available."};
+
+
 UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
 {
   int i;
@@ -769,6 +778,8 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   hlayout_tmp->addStretch(1000);
   flayout4_1->addRow("Use Multi-Threading", hlayout_tmp);
   QObject::connect(checkbox4_4, SIGNAL(stateChanged(int)), this, SLOT(checkbox4_4Clicked(int)));
+  flayout4_1->labelForField(hlayout_tmp)->setToolTip("Use all available CPU cores to render the signal waveforms on the screen");
+  checkbox4_4->setToolTip("Use all available CPU cores to render the signal waveforms on the screen");
 
   QFormLayout *flayout4_2 = new QFormLayout;
   flayout4_2->setSpacing(20);
@@ -838,6 +849,10 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   hlayout_tmp->addStretch(1000);
   flayout4_2->addRow("Use linear interpolation for plotting", hlayout_tmp);
   QObject::connect(checkbox4_6, SIGNAL(stateChanged(int)), this, SLOT(checkbox4_6Clicked(int)));
+  flayout4_2->labelForField(hlayout_tmp)->setToolTip("Draw a straight line between samplepoints (smoothing),\n"
+                                                     "this avoids the stairstep effect when zooming in and/or at low samplerates");
+  checkbox4_6->setToolTip("Draw a straight line between samplepoints (smoothing),\n"
+                          "this avoids the stairstep effect when zooming in and/or at low samplerates");
 
   checkbox4_7 = new QCheckBox;
   checkbox4_7->setTristate(false);
@@ -912,7 +927,7 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   spinbox5_1->setRange(8, 24);
   spinbox5_1->setValue(mainwindow->font_size);
   textEdit5_1 = new QTextEdit;
-  textEdit5_1->setPlainText("The quick brown fox jumps over the lazy dog. 0123456789 AaBbYyZz");
+  textEdit5_1->setPlainText(font_sz_example_txt);
   hlayout_tmp = new QHBoxLayout;
   hlayout_tmp->addWidget(spinbox5_1);
   hlayout_tmp->addWidget(textEdit5_1, 500);
@@ -924,7 +939,7 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   spinbox5_2->setValue(mainwindow->monofont_size);
   textEdit5_2 = new QTextEdit;
   textEdit5_2->setFont(*mainwindow->monofont);
-  textEdit5_2->setPlainText("The quick brown fox jumps over the lazy dog. 0123456789 AaBbYyZz");
+  textEdit5_2->setPlainText(font_sz_example_txt);
   hlayout_tmp = new QHBoxLayout;
   hlayout_tmp->addWidget(spinbox5_2);
   hlayout_tmp->addWidget(textEdit5_2, 500);
@@ -2530,7 +2545,7 @@ void UI_OptionsDialog::spinBox5_1ValueChanged(int val)
   QFont myfont = *mainwindow->myfont;
   myfont.setPointSize(val);
   textEdit5_1->setFont(myfont);
-  textEdit5_1->setPlainText("The quick brown fox jumps over the lazy dog. 0123456789 AaBbYyZz");
+  textEdit5_1->setPlainText(font_sz_example_txt);
 
   ApplyButton5->setEnabled(true);
 }
@@ -2541,7 +2556,7 @@ void UI_OptionsDialog::spinBox5_2ValueChanged(int val)
   QFont monofont = *mainwindow->monofont;
   monofont.setPointSize(val);
   textEdit5_2->setFont(monofont);
-  textEdit5_2->setPlainText("The quick brown fox jumps over the lazy dog. 0123456789 AaBbYyZz");
+  textEdit5_2->setPlainText(font_sz_example_txt);
 
   ApplyButton5->setEnabled(true);
 }
