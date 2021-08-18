@@ -35,7 +35,6 @@ int BDF_triggers::get_triggers(struct edfhdrblock *hdr)
   int i, j,
       sf,
       status_signal=0,
-      error,
       edfsignals,
       bufsize,
       jump_file,
@@ -101,35 +100,17 @@ int BDF_triggers::get_triggers(struct edfhdrblock *hdr)
     }
   }
 
-  error = 1;
-
-  switch(sf)
+  for(i=32; ; i*=2)
   {
-    case 16384 : error = 0;
-                 break;
-    case  8192 : error = 0;
-                 break;
-    case  4096 : error = 0;
-                 break;
-    case  2048 : error = 0;
-                 break;
-    case  1024 : error = 0;
-                 break;
-    case   512 : error = 0;
-                 break;
-    case   256 : error = 0;
-                 break;
-    case   128 : error = 0;
-                 break;
-    case    64 : error = 0;
-                 break;
-    case    32 : error = 0;
-                 break;
-  }
+    if(i > 262144)
+    {
+      return 0;
+    }
 
-  if(error)
-  {
-    return 0;
+    if(i == sf)
+    {
+      break;
+    }
   }
 
   status_signal = edfsignals - 1;
