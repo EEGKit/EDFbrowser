@@ -73,11 +73,29 @@ int BDF_triggers::get_triggers(struct edfhdrblock *hdr)
     return 0;
   }
 
+  if(strcmp(hdr->reserved, "24BIT                                       "))
+  {
+    return 0;
+  }
+
   sf = hdr->edfparam[0].smp_per_record;
 
   for(i=1; i<edfsignals; i++)
   {
     if(hdr->edfparam[i].smp_per_record != sf)
+    {
+      return 0;
+    }
+  }
+
+  for(i=0; i<edfsignals; i++)
+  {
+    if(hdr->edfparam[i].dig_max != 8388607)
+    {
+      return 0;
+    }
+
+    if(hdr->edfparam[i].dig_min != -8388608)
     {
       return 0;
     }
@@ -114,17 +132,9 @@ int BDF_triggers::get_triggers(struct edfhdrblock *hdr)
     return 0;
   }
 
-  for(i=0; i<edfsignals; i++)
-  {
-    if(!(strcmp(hdr->edfparam[i].label, "Status          ")))
-    {
-      status_signal = i;
+  status_signal = edfsignals - 1;
 
-      break;
-    }
-  }
-
-  if(i == edfsignals)
+  if(strcmp(hdr->edfparam[status_signal].label, "Status          "))
   {
     return 0;
   }
