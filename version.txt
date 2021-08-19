@@ -18,6 +18,10 @@
 
  - Filter dialog: fixed a bug in the GUI.
 
+ - Signals dialog: when creating a derivation between two or more signals, in case there's a
+   problem because the signals have different values for the resolution, advise how to
+   correct the problem.
+
 
 
  version 1.84      May 2, 2021
