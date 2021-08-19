@@ -31,6 +31,15 @@
 #define DEFAULT_COLOR_LIST_SZ  (6)
 
 
+static const char derivation_err_str[]={
+  "It is only possible to make derivations from signals which:\n"
+  " - are from the same file\n"
+  " - have the same samplerate\n"
+  " - have the same physical dimension (e.g. uV)\n"
+  " - have the same resolution (e.g. uV/bit)"};
+
+
+
 UI_Signalswindow::UI_Signalswindow(QWidget *w_parent)
 {
   int i, tmp;
@@ -525,14 +534,8 @@ void UI_Signalswindow::AddSubtractButtonsClicked(int subtract)
     {
       if(smp_per_record!=mainwindow->edfheaderlist[row]->edfparam[s].smp_per_record)
       {
-        QMessageBox messagewindow(QMessageBox::Warning, "Warning",
-                                     "It is only possible to make derivations from signals which:\n"
-                                     " - are from the same file\n"
-                                     " - have the same samplerate\n"
-                                     " - have the same physical dimension (e.g. uV)\n"
-                                     " - have the same resolution (e.g. uV/bit)");
+        QMessageBox messagewindow(QMessageBox::Warning, "Warning", derivation_err_str);
         messagewindow.exec();
-
         continue;
       }
     }
@@ -545,14 +548,8 @@ void UI_Signalswindow::AddSubtractButtonsClicked(int subtract)
     {
       if(strcmp(physdimension, mainwindow->edfheaderlist[row]->edfparam[s].physdimension))
       {
-        QMessageBox messagewindow(QMessageBox::Warning, "Warning",
-                                     "It is only possible to make derivations from signals which:\n"
-                                     " - are from the same file\n"
-                                     " - have the same samplerate\n"
-                                     " - have the same physical dimension (e.g. uV)\n"
-                                     " - have the same resolution (e.g. uV/bit)");
+        QMessageBox messagewindow(QMessageBox::Warning, "Warning", derivation_err_str);
         messagewindow.exec();
-
         continue;
       }
     }
@@ -565,14 +562,14 @@ void UI_Signalswindow::AddSubtractButtonsClicked(int subtract)
     {
       if(dblcmp(bitvalue, mainwindow->edfheaderlist[row]->edfparam[s].bitvalue))
       {
-        QMessageBox messagewindow(QMessageBox::Warning, "Warning",
-                                     "It is only possible to make derivations from signals which:\n"
-                                     " - are from the same file\n"
-                                     " - have the same samplerate\n"
-                                     " - have the same physical dimension (e.g. uV)\n"
-                                     " - have the same resolution (e.g. uV/bit)");
+        QMessageBox messagewindow(QMessageBox::Warning, "Warning", derivation_err_str);
         messagewindow.exec();
-
+        messagewindow.setIcon(QMessageBox::Information);
+        messagewindow.setWindowTitle("Help");
+        messagewindow.setText("In this case the problem is that the resolution of the signals selected for the derivation,"
+                              "have different values. You can correct this with the tool \"Unify resolution\" in the tools menu."
+                              "Have a look at the manual for the details.");
+        messagewindow.exec();
         continue;
       }
     }
