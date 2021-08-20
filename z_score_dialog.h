@@ -29,27 +29,7 @@
 #define ZSCORE_FORM1_H
 
 
-#include <QtGlobal>
-#include <QApplication>
-#include <QObject>
-#include <QListWidget>
-#include <QListWidgetItem>
-#include <QDialog>
-#include <QPushButton>
-#include <QLabel>
-#include <QProgressDialog>
-#include <QList>
-#include <QTime>
-#include <QTimeEdit>
-#include <QSpinBox>
-#include <QDoubleSpinBox>
-#include <QRadioButton>
-#include <QMessageBox>
-#include <QAction>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QGridLayout>
-#include <QFormLayout>
+#include "qt_headers.h"
 
 #include <stdio.h>
 #include <stdlib.h>

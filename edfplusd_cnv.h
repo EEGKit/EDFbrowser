@@ -29,20 +29,7 @@
 #define UI_EDFD2EDFCFORM_H
 
 
-#include <QtGlobal>
-#include <QApplication>
-#include <QDialog>
-#include <QPushButton>
-#include <QObject>
-#include <QTextEdit>
-#include <QFileDialog>
-#include <QProgressDialog>
-#include <QString>
-#include <QByteArray>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QGridLayout>
-#include <QFormLayout>
+#include "qt_headers.h"
 
 #include <stdio.h>
 #include <stdlib.h>

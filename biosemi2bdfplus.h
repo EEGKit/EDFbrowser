@@ -29,25 +29,7 @@
 #define UI_BIOSEMI2BDFFORM_H
 
 
-#include <QtGlobal>
-#include <QApplication>
-#include <QObject>
-#include <QDialog>
-#include <QLabel>
-#include <QPushButton>
-#include <QRadioButton>
-#include <QLineEdit>
-#include <QFileDialog>
-#include <QCursor>
-#include <QProgressDialog>
-#include <QCheckBox>
-#include <QMessageBox>
-#include <QString>
-#include <QPixmap>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QGridLayout>
-#include <QFormLayout>
+#include "qt_headers.h"
 
 #include <stdio.h>
 #include <stdlib.h>

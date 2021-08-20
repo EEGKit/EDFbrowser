@@ -37,8 +37,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define SPIKEFILTER_SPIKE_NO      0
-#define SPIKEFILTER_SPIKE_ONSET   1
+#define SPIKEFILTER_SPIKE_NO      (0)
+#define SPIKEFILTER_SPIKE_ONSET   (1)
 
 
 #ifdef __cplusplus

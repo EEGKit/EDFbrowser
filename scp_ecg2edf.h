@@ -29,21 +29,7 @@
 #define UI_SCPECG2EDFFORM_H
 
 
-#include <QtGlobal>
-#include <QApplication>
-#include <QDialog>
-#include <QPushButton>
-#include <QObject>
-#include <QTextEdit>
-#include <QFileDialog>
-#include <QCursor>
-#include <QProgressDialog>
-#include <QString>
-#include <QByteArray>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QGridLayout>
-#include <QFormLayout>
+#include "qt_headers.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -55,7 +41,7 @@
 #include "edflib.h"
 #include "utc_date_time.h"
 
-#define SCP_ECG_MAX_CHNS 256
+#define SCP_ECG_MAX_CHNS   (256)
 
 
 class UI_Mainwindow;

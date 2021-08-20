@@ -32,28 +32,7 @@
 
 
 
-#include <QtGlobal>
-#include <QApplication>
-#include <QObject>
-#include <QDialog>
-#include <QLabel>
-#include <QPushButton>
-#include <QTableWidget>
-#include <QTableWidgetItem>
-#include <QListWidget>
-#include <QListWidgetItem>
-#include <QList>
-#include <QAction>
-#include <QMessageBox>
-#include <QVariant>
-#include <QString>
-#include <QSpinBox>
-#include <QDoubleSpinBox>
-#include <QStringList>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QGridLayout>
-#include <QFormLayout>
+#include "qt_headers.h"
 
 #include <stdio.h>
 #include <stdlib.h>

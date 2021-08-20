@@ -28,18 +28,7 @@
 #ifndef UI_VIEW_MAINFORM_H
 #define UI_VIEW_MAINFORM_H
 
-#include <QtGlobal>
-#include <QApplication>
-#include <QEventLoop>
-#include <QMainWindow>
-#include <QMenuBar>
-#include <QMenu>
-#include <QFont>
-#include <QToolBar>
-#include <QSlider>
-#include <QCloseEvent>
-#include <QDialog>
-#include <QLabel>
+#include "qt_headers.h"
 
 #ifdef Q_OS_WIN32
   #include <windows.h>
@@ -59,38 +48,6 @@
 #else
   #include <sys/types.h>
   #include <sys/stat.h>
-#endif
-
-#include <QFileDialog>
-#include <QAction>
-#include <QActionGroup>
-#include <QPixmap>
-#include <QSplashScreen>
-#include <QTimer>
-#include <QElapsedTimer>
-#include <QDesktopServices>
-#include <QUrl>
-#include <QLibrary>
-#include <QString>
-#include <QLocale>
-#include <QMessageBox>
-#include <QProgressDialog>
-#include <QList>
-#include <QProcess>
-#include <QProcessEnvironment>
-#include <QVariant>
-#include <QTcpSocket>
-#include <QHostAddress>
-#include <QDir>
-#include <QRect>
-#include <QFontMetrics>
-#include <QSize>
-#include <QToolTip>
-#include <QKeySequence>
-#include <QColor>
-
-#if QT_VERSION >= 0x050200
-#include <QFontDatabase>
 #endif
 
 #include <stdio.h>

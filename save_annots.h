@@ -31,15 +31,11 @@
 #define SAVE_ANNOTATIONS_H
 
 
-
+#include "qt_headers.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-#include <QtGlobal>
-#include <QApplication>
-#include <QProgressDialog>
 
 #include "global.h"
 #include "mainwindow.h"

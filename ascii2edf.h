@@ -29,34 +29,7 @@
 #define UI_ASCII2EDFFORM_H
 
 
-#include <QtGlobal>
-#include <QApplication>
-#include <QObject>
-#include <QDialog>
-#include <QLabel>
-#include <QPushButton>
-#include <QLineEdit>
-#include <QSpinBox>
-#include <QDoubleSpinBox>
-#include <QDateTimeEdit>
-#include <QDateTime>
-#include <QTableWidget>
-#include <QString>
-#include <QStringList>
-#include <QFileDialog>
-#include <QCursor>
-#include <QCheckBox>
-#include <QRadioButton>
-#include <QGroupBox>
-#include <QMessageBox>
-#include <QPixmap>
-#include <QDesktopServices>
-#include <QUrl>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QGridLayout>
-#include <QFormLayout>
-#include <QToolTip>
+#include "qt_headers.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -68,8 +41,8 @@
 #include "mainwindow.h"
 
 
-#define ASCII_MAX_EDF_SIGNALS 512
-#define ASCII_MAX_LINE_LEN 2048
+#define ASCII_MAX_EDF_SIGNALS   (512)
+#define ASCII_MAX_LINE_LEN     (2048)
 
 
 class UI_Mainwindow;

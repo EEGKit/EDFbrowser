@@ -29,20 +29,8 @@
 #ifndef VIEWCURVE_H
 #define VIEWCURVE_H
 
-#include <QObject>
-#include <QtGlobal>
-#include <QWidget>
-#include <QPainter>
-#include <QMouseEvent>
-#include <QMenu>
-#include <QAction>
-#include <QCursor>
-#include <QDialog>
-#include <QPushButton>
-#include <QLineEdit>
-#include <QDoubleSpinBox>
-#include <QComboBox>
-#include <QLabel>
+#include "qt_headers.h"
+
 #if QT_VERSION < 0x050000
 #include <QPrinter>
 #else
@@ -51,23 +39,8 @@
 #if QT_VERSION >= 0x050D00
 #include <QPageSize>
 #endif
-#include <QPixmap>
+
 #include <QPrintDialog>
-#include <QColor>
-#include <QPen>
-#include <QMessageBox>
-#include <QString>
-#include <QThread>
-#include <QDragEnterEvent>
-#include <QDropEvent>
-#include <QUrl>
-#include <QList>
-#include <QShortcut>
-#include <QKeySequence>
-#include <QFormLayout>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QGridLayout>
 
 #include <stdio.h>
 #include <stdlib.h>

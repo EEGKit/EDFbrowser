@@ -29,14 +29,7 @@
 #define CHECKFORUPDATES_H
 
 
-#include <QtGlobal>
-#include <QApplication>
-#include <QNetworkAccessManager>
-#include <QNetworkRequest>
-#include <QNetworkReply>
-#include <QUrl>
-#include <QMessageBox>
-#include <QDesktopServices>
+#include "qt_headers.h"
 
 #include <stdio.h>
 #include <stdlib.h>

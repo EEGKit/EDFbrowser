@@ -31,20 +31,7 @@
 
 
 
-#include <QtGlobal>
-#include <QApplication>
-#include <QObject>
-#include <QWidget>
-#include <QDialog>
-#include <QSlider>
-#include <QLabel>
-#include <QString>
-#include <QMessageBox>
-#include <QCheckBox>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QGridLayout>
-#include <QFormLayout>
+#include "qt_headers.h"
 
 #include <stdio.h>
 #include <string.h>

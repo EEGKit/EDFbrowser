@@ -32,21 +32,7 @@
 
 
 
-#include <QtGlobal>
-#include <QApplication>
-#include <QObject>
-#include <QWidget>
-#include <QDialog>
-#include <QLabel>
-#include <QPushButton>
-#include <QTimeEdit>
-#include <QTime>
-#include <QSpinBox>
-#include <QMessageBox>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QGridLayout>
-#include <QFormLayout>
+#include "qt_headers.h"
 
 #include <string.h>
 

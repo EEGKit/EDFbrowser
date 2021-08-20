@@ -32,11 +32,7 @@
 #define BDF_TRIGGERS_H
 
 
-#include <QtGlobal>
-#include <QApplication>
-#include <QMessageBox>
-#include <QProgressDialog>
-#include <QCursor>
+#include "qt_headers.h"
 
 #include <stdio.h>
 #include <stdlib.h>

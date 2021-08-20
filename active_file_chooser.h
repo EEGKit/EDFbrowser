@@ -32,17 +32,11 @@
 
 
 
-#include <QtGlobal>
-#include <QApplication>
-#include <QObject>
-#include <QWidget>
-#include <QDialog>
-#include <QPushButton>
-#include <QString>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QGridLayout>
-#include <QFormLayout>
+#include "qt_headers.h"
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "global.h"
 #include "mainwindow.h"

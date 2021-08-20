@@ -29,31 +29,7 @@
 #define UI_RAW2EDFFORM_H
 
 
-#include <QtGlobal>
-#include <QApplication>
-#include <QObject>
-#include <QDialog>
-#include <QLabel>
-#include <QPushButton>
-#include <QLineEdit>
-#include <QSpinBox>
-#include <QDoubleSpinBox>
-#include <QDateTimeEdit>
-#include <QDateTime>
-#include <QString>
-#include <QFileDialog>
-#include <QCursor>
-#include <QCheckBox>
-#include <QMessageBox>
-#include <QPixmap>
-#include <QToolTip>
-#include <QComboBox>
-#include <QDesktopServices>
-#include <QUrl>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QGridLayout>
-#include <QFormLayout>
+#include "qt_headers.h"
 
 #include <stdio.h>
 #include <stdlib.h>

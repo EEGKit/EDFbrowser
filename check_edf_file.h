@@ -32,6 +32,8 @@
 #define CHECK_EDF_FILE1_H
 
 
+#include "qt_headers.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -39,8 +41,6 @@
 #include "global.h"
 #include "utc_date_time.h"
 #include "utils.h"
-
-#include <QApplication>
 
 
 

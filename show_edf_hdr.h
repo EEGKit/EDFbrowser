@@ -32,25 +32,11 @@
 
 
 
-#include <QtGlobal>
-#include <QApplication>
-#include <QObject>
-#include <QDialog>
-#include <QTabWidget>
-#include <QTableWidget>
-#include <QListWidget>
-#include <QListWidgetItem>
-#include <QLabel>
-#include <QFrame>
-#include <QPushButton>
-#include <QString>
-#include <QStringList>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QGridLayout>
-#include <QFormLayout>
-#include <QStackedLayout>
-#include <QStackedWidget>
+#include "qt_headers.h"
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "global.h"
 #include "mainwindow.h"

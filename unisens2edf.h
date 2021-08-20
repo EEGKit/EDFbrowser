@@ -29,22 +29,7 @@
 #define UI_UNISENS2EDFFORM_H
 
 
-#include <QtGlobal>
-#include <QApplication>
-#include <QObject>
-#include <QDialog>
-#include <QPushButton>
-#include <QFileDialog>
-#include <QCursor>
-#include <QString>
-#include <QStringList>
-#include <QByteArray>
-#include <QProgressDialog>
-#include <QTextEdit>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QGridLayout>
-#include <QFormLayout>
+#include "qt_headers.h"
 
 #include <stdio.h>
 #include <stdlib.h>

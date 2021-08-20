@@ -29,26 +29,7 @@
 #define UI_BDF2EDFFORM_H
 
 
-#include <QtGlobal>
-#include <QApplication>
-#include <QObject>
-#include <QDialog>
-#include <QLabel>
-#include <QPushButton>
-#include <QCheckBox>
-#include <QTableWidget>
-#include <QFileDialog>
-#include <QCursor>
-#include <QString>
-#include <QStringList>
-#include <QByteArray>
-#include <QDoubleSpinBox>
-#include <QMessageBox>
-#include <QProgressDialog>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QGridLayout>
-#include <QFormLayout>
+#include "qt_headers.h"
 
 #include <stdio.h>
 #include <stdlib.h>

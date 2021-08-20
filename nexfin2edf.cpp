@@ -29,6 +29,8 @@
 #include "nexfin2edf.h"
 
 
+#define N_MAX_SIGNALS   (32)
+
 
 UI_NEXFIN2EDFwindow::UI_NEXFIN2EDFwindow(QWidget *w_parent, char *recent_dir, char *save_dir)
 {
@@ -137,18 +139,18 @@ void UI_NEXFIN2EDFwindow::SelectFileButton()
        outputfilename[MAX_PATH_LENGTH],
        line[2048],
        scratchpad[128],
-       labels[MAX_SIGNALS][17],
-       phys_dim[MAX_SIGNALS][9],
-       phys_min[MAX_SIGNALS][9],
-       phys_max[MAX_SIGNALS][9],
+       labels[N_MAX_SIGNALS][17],
+       phys_dim[N_MAX_SIGNALS][9],
+       phys_min[N_MAX_SIGNALS][9],
+       phys_max[N_MAX_SIGNALS][9],
        patientname[81],
        recording[81],
        datetime[128];
 
 
-  double sensitivity[MAX_SIGNALS],
-         new_value[MAX_SIGNALS],
-         old_value[MAX_SIGNALS];
+  double sensitivity[N_MAX_SIGNALS],
+         new_value[N_MAX_SIGNALS],
+         old_value[N_MAX_SIGNALS];
 
   union{
          short two;
@@ -171,7 +173,7 @@ void UI_NEXFIN2EDFwindow::SelectFileButton()
     file_type = 32;
   }
 
-  for(j=0; j<MAX_SIGNALS; j++)
+  for(j=0; j<N_MAX_SIGNALS; j++)
   {
     old_value[j] = 0.0;
   }
@@ -296,7 +298,7 @@ void UI_NEXFIN2EDFwindow::SelectFileButton()
 
     if(((temp==separator)||(temp=='\n'))&&(edfsignals<7))
     {
-      if(edfsignals>=MAX_SIGNALS)
+      if(edfsignals>=N_MAX_SIGNALS)
       {
         QMessageBox messagewindow(QMessageBox::Critical, "Error", "Too many labels/signals (7).");
         messagewindow.exec();

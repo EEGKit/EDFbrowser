@@ -29,27 +29,7 @@
 #define UI_WAV2EDFFORM_H
 
 
-#include <QtGlobal>
-#include <QApplication>
-#include <QDialog>
-#include <QLabel>
-#include <QLineEdit>
-#include <QDateTimeEdit>
-#include <QDateTime>
-#include <QPushButton>
-#include <QObject>
-#include <QFileDialog>
-#include <QCheckBox>
-#include <QCursor>
-#include <QDoubleSpinBox>
-#include <QProgressDialog>
-#include <QMessageBox>
-#include <QString>
-#include <QPixmap>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QGridLayout>
-#include <QFormLayout>
+#include "qt_headers.h"
 
 #include <stdlib.h>
 #include <stdio.h>

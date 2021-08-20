@@ -30,14 +30,7 @@
 #ifndef FLYWHEELBUTTON_H
 #define FLYWHEELBUTTON_H
 
-#include <QtGlobal>
-#include <QWidget>
-#include <QPainter>
-#include <QMouseEvent>
-#include <QTimer>
-#include <QColor>
-#include <QLinearGradient>
-#include <QBrush>
+#include "qt_headers.h"
 
 #include <sys/time.h>
 #include <math.h>

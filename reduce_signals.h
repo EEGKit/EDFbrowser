@@ -29,31 +29,7 @@
 #define UI_REDUCESIGNALSFORM_H
 
 
-#include <QtGlobal>
-#include <QApplication>
-#include <QDialog>
-#include <QLabel>
-#include <QPushButton>
-#include <QCheckBox>
-#include <QObject>
-#include <QTableWidget>
-#include <QFileDialog>
-#include <QCursor>
-#include <QString>
-#include <QStringList>
-#include <QSpinBox>
-#include <QRadioButton>
-#include <QMessageBox>
-#include <QComboBox>
-#include <QVariant>
-#include <QProgressDialog>
-#include <QDesktopServices>
-#include <QUrl>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QGridLayout>
-#include <QFormLayout>
-#include <QToolTip>
+#include "qt_headers.h"
 
 #include <stdio.h>
 #include <stdlib.h>

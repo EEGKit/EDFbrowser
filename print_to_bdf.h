@@ -32,12 +32,7 @@
 
 
 
-#include <QtGlobal>
-#include <QApplication>
-#include <QFileDialog>
-#include <QMessageBox>
-#include <QString>
-#include <QCursor>
+#include "qt_headers.h"
 
 #include <stdio.h>
 #include <stdlib.h>

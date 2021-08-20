@@ -29,38 +29,7 @@
 #define UI_CDSAFORM_H
 
 
-#include <QtGlobal>
-#include <QApplication>
-#include <QObject>
-#include <QWidget>
-#include <QDialog>
-#include <QLabel>
-#include <QLineEdit>
-#include <QDateTimeEdit>
-#include <QPushButton>
-#include <QObject>
-#include <QFileDialog>
-#include <QCheckBox>
-#include <QCursor>
-#include <QDoubleSpinBox>
-#include <QProgressDialog>
-#include <QMessageBox>
-#include <QString>
-#include <QPixmap>
-#include <QDesktopServices>
-#include <QUrl>
-#include <QTextEdit>
-#include <QSpinBox>
-#include <QComboBox>
-#include <QPainter>
-#include <QPen>
-#include <QColor>
-#include <QDockWidget>
-#include <QToolTip>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QGridLayout>
-#include <QFormLayout>
+#include "qt_headers.h"
 
 #include <stdlib.h>
 #include <stdio.h>

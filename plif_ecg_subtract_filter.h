@@ -34,7 +34,7 @@
 #include <stdio.h>
 
 
-#define PLIF_NBUFS   40
+#define PLIF_NBUFS   (40)
 
 
 #ifdef __cplusplus

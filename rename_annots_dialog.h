@@ -29,38 +29,7 @@
 #define UI_RENAMEANNOTSFORM_H
 
 
-#include <QtGlobal>
-#include <QApplication>
-#include <QObject>
-#include <QWidget>
-#include <QFrame>
-#include <QDialog>
-#include <QLabel>
-#include <QLineEdit>
-#include <QDateTimeEdit>
-#include <QPushButton>
-#include <QObject>
-#include <QFileDialog>
-#include <QCheckBox>
-#include <QCursor>
-#include <QDoubleSpinBox>
-#include <QProgressDialog>
-#include <QMessageBox>
-#include <QString>
-#include <QPixmap>
-#include <QTextEdit>
-#include <QSpinBox>
-#include <QComboBox>
-#include <QPainter>
-#include <QPen>
-#include <QColor>
-#include <QDockWidget>
-#include <QRectF>
-#include <QPoint>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QGridLayout>
-#include <QFormLayout>
+#include "qt_headers.h"
 
 #include <stdlib.h>
 #include <stdio.h>

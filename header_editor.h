@@ -29,33 +29,7 @@
 #define UI_HEADEREDITORFORM_H
 
 
-#include <QtGlobal>
-#include <QApplication>
-#include <QObject>
-#include <QDialog>
-#include <QTabWidget>
-#include <QFileDialog>
-#include <QString>
-#include <QTableWidget>
-#include <QListWidgetItem>
-#include <QLabel>
-#include <QPushButton>
-#include <QStringList>
-#include <QLineEdit>
-#include <QCloseEvent>
-#include <QComboBox>
-#include <QDateEdit>
-#include <QDate>
-#include <QCheckBox>
-#include <QMessageBox>
-#include <QDateTimeEdit>
-#include <QFile>
-#include <QDesktopServices>
-#include <QUrl>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QGridLayout>
-#include <QFormLayout>
+#include "qt_headers.h"
 
 #include <stdio.h>
 #include <stdlib.h>

@@ -28,6 +28,8 @@
 
 #include "fino2edf.h"
 
+#define F_MAX_SIGNALS   (32)
+
 
 
 UI_FINO2EDFwindow::UI_FINO2EDFwindow(QWidget *w_parent, char *recent_dir, char *save_dir)
@@ -109,18 +111,18 @@ void UI_FINO2EDFwindow::SelectFileButton()
        outputfilename[MAX_PATH_LENGTH],
        line[2048],
        scratchpad[128],
-       labels[MAX_SIGNALS][17],
-       phys_dim[MAX_SIGNALS][9],
-       phys_min[MAX_SIGNALS][9],
-       phys_max[MAX_SIGNALS][9],
+       labels[F_MAX_SIGNALS][17],
+       phys_dim[F_MAX_SIGNALS][9],
+       phys_min[F_MAX_SIGNALS][9],
+       phys_max[F_MAX_SIGNALS][9],
        patientname[81],
        recording[81],
        datetime[128];
 
 
-  double sensitivity[MAX_SIGNALS],
-         new_value[MAX_SIGNALS],
-         old_value[MAX_SIGNALS];
+  double sensitivity[F_MAX_SIGNALS],
+         new_value[F_MAX_SIGNALS],
+         old_value[F_MAX_SIGNALS];
 
   union{
          short two;
@@ -129,7 +131,7 @@ void UI_FINO2EDFwindow::SelectFileButton()
 
 
 
-  for(j=0; j<MAX_SIGNALS; j++)
+  for(j=0; j<F_MAX_SIGNALS; j++)
   {
     old_value[j] = 0.0;
   }
@@ -273,7 +275,7 @@ void UI_FINO2EDFwindow::SelectFileButton()
 
     if((temp==separator)||(temp=='\n'))
     {
-      if(edfsignals>=MAX_SIGNALS)
+      if(edfsignals>=F_MAX_SIGNALS)
       {
         QMessageBox messagewindow(QMessageBox::Critical, "Error", "Too many labels/signals (7).");
         messagewindow.exec();

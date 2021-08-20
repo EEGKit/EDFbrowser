@@ -30,12 +30,8 @@
 #define SIGNALCURVE_H
 
 
-#include <QtGlobal>
-#include <QWidget>
-#include <QMouseEvent>
-#include <QPainter>
-#include <QPainterPath>
-#include <QPushButton>
+#include "qt_headers.h"
+
 #if QT_VERSION < 0x050000
 #include <QPrinter>
 #else
@@ -45,26 +41,16 @@
 #if QT_VERSION >= 0x050D00
 #include <QPageSize>
 #endif
-#include <QFileDialog>
-#include <QPixmap>
-#include <QPen>
-#include <QString>
-#include <QStringList>
-#include <QFont>
-#include <QMessageBox>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QGridLayout>
-#include <QFormLayout>
-#include <QFontMetrics>
 
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "utils.h"
 
 
-#define MAXSPECTRUMMARKERS 16
-#define SC_MAX_PATH_LEN 1024
+#define MAXSPECTRUMMARKERS     (16)
+#define SC_MAX_PATH_LEN      (1024)
 
 
 struct spectrum_markersblock{
