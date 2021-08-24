@@ -115,7 +115,14 @@ int BDF_triggers::get_triggers(struct edfhdrblock *hdr)
 
   status_signal = edfsignals - 1;
 
-  if(strcmp(hdr->edfparam[status_signal].label, "Status          "))
+  if(strcmp(hdr->edfparam[status_signal].label, "Status          ") ||
+     strcmp(hdr->edfparam[status_signal].physdimension, "Boolean ") ||
+     strcmp(hdr->edfparam[status_signal].prefilter, "No filtering                                                                    ") ||
+     strcmp(hdr->edfparam[status_signal].transducer, "Triggers and Status                                                             ") ||
+     (hdr->edfparam[status_signal].dig_max != 8388607) ||
+     (hdr->edfparam[status_signal].dig_min != -8388608) ||
+     (dblcmp(hdr->edfparam[status_signal].phys_max, 8388607)) ||
+     (dblcmp(hdr->edfparam[status_signal].phys_min, -8388608)))
   {
     return 0;
   }
