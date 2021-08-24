@@ -153,6 +153,23 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   hlayout_tmp->addStretch(1000);
   flayout1_1->addRow("First Crosshair color", hlayout_tmp);
 
+  checkbox6 = new QCheckBox;
+  checkbox6->setTristate(false);
+  if(mainwindow->maincurve->crosshair_1.has_hor_line)
+  {
+    checkbox6->setCheckState(Qt::Checked);
+  }
+  else
+  {
+    checkbox6->setCheckState(Qt::Unchecked);
+  }
+  checkbox6->setToolTip("Show a horizontal line like a real crosshair");
+  hlayout_tmp = new QHBoxLayout;
+  hlayout_tmp->addWidget(checkbox6);
+  hlayout_tmp->addStretch(1000);
+  flayout1_1->addRow("Crosshair horizontal line", hlayout_tmp);
+  flayout1_1->labelForField(hlayout_tmp)->setToolTip("Show a horizontal line like a real crosshair");
+
   QFormLayout *flayout1_2 = new QFormLayout;
   flayout1_2->setSpacing(20);
 
@@ -282,6 +299,18 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   hlayout_tmp->addStretch(1000);
   flayout1_2->addRow("Clip signals to pane", hlayout_tmp);
 
+  spinbox1_1 = new QSpinBox;
+  spinbox1_1->setSuffix(" px");
+  spinbox1_1->setMinimum(0);
+  spinbox1_1->setMaximum(32);
+  spinbox1_1->setValue(mainwindow->maincurve->crosshair_1.dot_sz);
+  spinbox1_1->setToolTip("Radius of center dot of the crosshairs in pixels, 0 means no dot");
+  hlayout_tmp = new QHBoxLayout;
+  hlayout_tmp->addWidget(spinbox1_1);
+  hlayout_tmp->addStretch(1000);
+  flayout1_2->addRow("Crosshair circle", hlayout_tmp);
+  flayout1_2->labelForField(hlayout_tmp)->setToolTip("Radius of center dot of the crosshairs in pixels, 0 means no dot");
+
   colorSchema_Dark_Button = new QPushButton;
   colorSchema_Dark_Button->setText("\"Dark\"");
 
@@ -358,12 +387,14 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   QObject::connect(checkbox3,               SIGNAL(stateChanged(int)),        this, SLOT(checkbox3Clicked(int)));
   QObject::connect(checkbox4,               SIGNAL(stateChanged(int)),        this, SLOT(checkbox4Clicked(int)));
   QObject::connect(checkbox5,               SIGNAL(stateChanged(int)),        this, SLOT(checkbox5Clicked(int)));
+  QObject::connect(checkbox6,               SIGNAL(stateChanged(int)),        this, SLOT(checkbox6Clicked(int)));
   QObject::connect(checkbox16,              SIGNAL(stateChanged(int)),        this, SLOT(checkbox16Clicked(int)));
   QObject::connect(saveColorSchemaButton,   SIGNAL(clicked()),                this, SLOT(saveColorSchemaButtonClicked()));
   QObject::connect(loadColorSchemaButton,   SIGNAL(clicked()),                this, SLOT(loadColorSchemaButtonClicked()));
   QObject::connect(colorSchema_Blue_on_Gray_Button, SIGNAL(clicked()),        this, SLOT(loadColorSchema_blue_gray()));
   QObject::connect(colorSchema_NK_Button,   SIGNAL(clicked()),                this, SLOT(loadColorSchema_NK()));
   QObject::connect(colorSchema_Dark_Button, SIGNAL(clicked()),                this, SLOT(loadColorSchema_Dark()));
+  QObject::connect(spinbox1_1,              SIGNAL(valueChanged(int)),        this, SLOT(spinBox1_1ValueChanged(int)));
 
   tabholder->addTab(tab1, "Colors");
 
@@ -995,6 +1026,15 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
 }
 
 
+void UI_OptionsDialog::spinBox1_1ValueChanged(int val)
+{
+  mainwindow->maincurve->crosshair_1.dot_sz = val;
+  mainwindow->maincurve->crosshair_2.dot_sz = val;
+
+  mainwindow->maincurve->update();
+}
+
+
 void UI_OptionsDialog::spinBox4_3ValueChanged(int filesize)
 {
   mainwindow->maxfilesize_to_readin_annotations = (long long)filesize * 1048576LL;
@@ -1427,6 +1467,24 @@ void UI_OptionsDialog::checkbox5Clicked(int state)
   {
     mainwindow->annot_filter->hide_in_list_only = 0;
   }
+}
+
+
+void UI_OptionsDialog::checkbox6Clicked(int state)
+{
+  if(state==Qt::Checked)
+  {
+    mainwindow->maincurve->crosshair_1.has_hor_line = 1;
+    mainwindow->maincurve->crosshair_2.has_hor_line = 1;
+  }
+
+  if(state==Qt::Unchecked)
+  {
+    mainwindow->maincurve->crosshair_1.has_hor_line = 0;
+    mainwindow->maincurve->crosshair_2.has_hor_line = 0;
+  }
+
+  mainwindow->maincurve->update();
 }
 
 

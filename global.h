@@ -308,6 +308,8 @@ struct crossHairStruct{
         double value;
         long long time;
         long long time_relative;
+        int has_hor_line;
+        int dot_sz;
        };
 
 struct video_player_struct{

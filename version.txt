@@ -22,6 +22,8 @@
    problem because the signals have different values for the resolution, advise how to
    correct the problem.
 
+ - Crosshairs: you can now change the looks of the crosshairs: enable/disable the horizontal line and
+               enable/disable a center dot with configurable size. See the first tab of the settings/options.
 
 
  version 1.84      May 2, 2021

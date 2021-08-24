@@ -125,6 +125,9 @@ ViewCurve::ViewCurve(QWidget *w_parent) : QWidget(w_parent)
   memset(&crosshair_1, 0, sizeof(struct crossHairStruct));
   memset(&crosshair_2, 0, sizeof(struct crossHairStruct));
 
+  crosshair_1.dot_sz = 4;
+  crosshair_2.dot_sz = 4;
+
 /////////////////////////////////////////////////////////
 
   signal_nr = 0;
@@ -2452,7 +2455,15 @@ void ViewCurve::drawCurve_stage_2(QPainter *painter, int w_width, int w_height, 
       else
       {
         painter->setPen((Qt::GlobalColor)crosshair_1.color);
-        painter->drawLine(0, crosshair_1.y_value, w, crosshair_1.y_value);
+        if(crosshair_1.has_hor_line)
+        {
+          painter->drawLine(0, crosshair_1.y_value, w, crosshair_1.y_value);
+        }
+        if(crosshair_1.dot_sz)
+        {
+          painter->setBrush(QBrush((Qt::GlobalColor)crosshair_1.color));
+          painter->drawEllipse(crosshair_1.x_position - crosshair_1.dot_sz, crosshair_1.y_value - crosshair_1.dot_sz, crosshair_1.dot_sz * 2 + 1, crosshair_1.dot_sz * 2 + 1);
+        }
         painter->drawLine(crosshair_1.x_position, 0, crosshair_1.x_position, h);
         snprintf(string, 128, "%+f %s",
                         crosshair_1.value,
@@ -2538,7 +2549,15 @@ void ViewCurve::drawCurve_stage_2(QPainter *painter, int w_width, int w_height, 
       else
       {
         painter->setPen((Qt::GlobalColor)crosshair_2.color);
-        painter->drawLine(0, crosshair_2.y_value, w, crosshair_2.y_value);
+        if(crosshair_2.has_hor_line)
+        {
+          painter->drawLine(0, crosshair_2.y_value, w, crosshair_2.y_value);
+        }
+        if(crosshair_2.dot_sz)
+        {
+          painter->setBrush(QBrush((Qt::GlobalColor)crosshair_2.color));
+          painter->drawEllipse(crosshair_2.x_position - crosshair_2.dot_sz, crosshair_2.y_value - crosshair_2.dot_sz, crosshair_2.dot_sz * 2 + 1, crosshair_2.dot_sz * 2 + 1);
+        }
         painter->drawLine(crosshair_2.x_position, 0, crosshair_2.x_position, h);
         snprintf(string, 128, "%+f %s",
                         crosshair_2.value,

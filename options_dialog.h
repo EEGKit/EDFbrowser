@@ -90,7 +90,8 @@ SpecialButton  *BgColorButton,
                *slabel2_1,
                *slabel2_3;
 
-QSpinBox       *spinbox2_1,
+QSpinBox       *spinbox1_1,
+               *spinbox2_1,
                *spinbox2_2,
                *spinbox3_1,
                *spinbox4_1,
@@ -112,6 +113,7 @@ QCheckBox      *checkbox1,
                *checkbox3_1,
                *checkbox4,
                *checkbox5,
+               *checkbox6,
                *checkbox16,
                *checkbox4_1,
                *checkbox4_2,
@@ -171,6 +173,7 @@ void checkbox2_2Clicked(int);
 void checkbox3Clicked(int);
 void checkbox4Clicked(int);
 void checkbox5Clicked(int);
+void checkbox6Clicked(int);
 void checkbox16Clicked(int);
 void checkbox3_1Clicked(int);
 void checkbox4_1Clicked(int);
@@ -187,6 +190,7 @@ void DefaultButton2Clicked();
 void checkBoxChanged(int);
 void ApplyButton2Clicked();
 void radioButtonToggled(bool);
+void spinBox1_1ValueChanged(int);
 void spinBoxValueChanged(double);
 void spinBox3_1ValueChanged(int);
 void dspinBox3_2ValueChanged(double);

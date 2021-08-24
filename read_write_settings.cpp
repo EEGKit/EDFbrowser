@@ -286,6 +286,72 @@ void UI_Mainwindow::read_color_settings()
   }
   maincurve->crosshair_2.color = atoi(result);
 
+  xml_go_up(xml_hdl);
+
+  if(!xml_goto_nth_element_inside(xml_hdl, "crosshair_1_has_hor_line", 0))
+  {
+    if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+    {
+      xml_close(xml_hdl);
+      return;
+    }
+    maincurve->crosshair_1.has_hor_line = atoi(result);
+  }
+
+  xml_go_up(xml_hdl);
+
+  if(!xml_goto_nth_element_inside(xml_hdl, "crosshair_2_has_hor_line", 0))
+  {
+    if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+    {
+      xml_close(xml_hdl);
+      return;
+    }
+    maincurve->crosshair_2.has_hor_line = atoi(result);
+  }
+
+  xml_go_up(xml_hdl);
+
+  if(!xml_goto_nth_element_inside(xml_hdl, "crosshair_1_dot_sz", 0))
+  {
+    if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+    {
+      xml_close(xml_hdl);
+      return;
+    }
+    maincurve->crosshair_1.dot_sz = atoi(result);
+    if(maincurve->crosshair_1.dot_sz < 0)
+    {
+      maincurve->crosshair_1.dot_sz = 0;
+    }
+    if(maincurve->crosshair_1.dot_sz > 32)
+    {
+      maincurve->crosshair_1.dot_sz = 32;
+    }
+  }
+
+  xml_go_up(xml_hdl);
+
+  if(!xml_goto_nth_element_inside(xml_hdl, "crosshair_2_dot_sz", 0))
+  {
+    if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+    {
+      xml_close(xml_hdl);
+      return;
+    }
+    maincurve->crosshair_2.dot_sz = atoi(result);
+    if(maincurve->crosshair_2.dot_sz < 0)
+    {
+      maincurve->crosshair_2.dot_sz = 0;
+    }
+    if(maincurve->crosshair_2.dot_sz > 32)
+    {
+      maincurve->crosshair_2.dot_sz = 32;
+    }
+  }
+
+  xml_go_up(xml_hdl);
+
   xml_close(xml_hdl);
 }
 
@@ -2281,6 +2347,18 @@ void UI_Mainwindow::write_settings()
 
     fprintf(cfgfile, "      <crosshair_2_color>%i</crosshair_2_color>\n",
                     maincurve->crosshair_2.color);
+
+    fprintf(cfgfile, "      <crosshair_1_has_hor_line>%i</crosshair_1_has_hor_line>\n",
+                    maincurve->crosshair_1.has_hor_line);
+
+    fprintf(cfgfile, "      <crosshair_2_has_hor_line>%i</crosshair_2_has_hor_line>\n",
+                    maincurve->crosshair_2.has_hor_line);
+
+    fprintf(cfgfile, "      <crosshair_1_dot_sz>%i</crosshair_1_dot_sz>\n",
+                    maincurve->crosshair_1.dot_sz);
+
+    fprintf(cfgfile, "      <crosshair_2_dot_sz>%i</crosshair_2_dot_sz>\n",
+                    maincurve->crosshair_2.dot_sz);
 
     fprintf(cfgfile, "      <floating_ruler_color>%i</floating_ruler_color>\n",
                     maincurve->floating_ruler_color);
