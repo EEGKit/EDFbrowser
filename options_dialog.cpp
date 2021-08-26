@@ -902,6 +902,8 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   hlayout_tmp->addStretch(1000);
   flayout4_2->addRow("Auto update annotation-editor onsettime", hlayout_tmp);
   QObject::connect(checkbox4_7, SIGNAL(stateChanged(int)), this, SLOT(checkbox4_7Clicked(int)));
+  flayout4_2->labelForField(hlayout_tmp)->setToolTip("Enabling this option will automatically update the onsettime field of the annotation-editor\n"
+                                                     "when scrolling and a cross-hair is active.");
 
   lineedit4_1 = new QLineEdit;
   lineedit4_1->setMaxLength(31);
