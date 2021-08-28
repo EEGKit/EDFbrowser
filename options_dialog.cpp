@@ -33,11 +33,11 @@
 
 
 static const char font_sz_example_txt[]={
-  "The quick brown fox jumps over the lazy dog. 0123456789 AaBbYyZz\n\n"
+  "The quick brown fox jumps over the lazy dog. 0123456789 AaBbCcDdEeWwXxYyZz\n\n"
   "European Data Format (EDF) is a standard file format designed for exchange and storage of medical time series."
-  " Being an open and non-proprietary format, EDF(+) is commonly used to archive, exchange and analyse data from"
+  " Being an open and non-proprietary format, EDF+/BDF+ is commonly used to archive, exchange and analyse data from"
   " commercial devices in a format that is independent of the acquisition system. In this way, the data can be"
-  " retrieved and analyzed by independent software. EDF(+) software (browsers, checkers, ...) and example files"
+  " retrieved and analyzed by independent software. EDF+/BDF+ software (browsers, checkers, ...) and example files"
   " are freely available."};
 
 
@@ -146,39 +146,8 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   hlayout_tmp->addStretch(1000);
   flayout1_1->addRow("Baseline color", hlayout_tmp);
 
-  Crh1ColorButton = new SpecialButton;
-  Crh1ColorButton->setColor((Qt::GlobalColor)mainwindow->maincurve->crosshair_1.color);
-  hlayout_tmp = new QHBoxLayout;
-  hlayout_tmp->addWidget(Crh1ColorButton);
-  hlayout_tmp->addStretch(1000);
-  flayout1_1->addRow("First Crosshair color", hlayout_tmp);
-
-  checkbox6 = new QCheckBox;
-  checkbox6->setTristate(false);
-  if(mainwindow->maincurve->crosshair_1.has_hor_line)
-  {
-    checkbox6->setCheckState(Qt::Checked);
-  }
-  else
-  {
-    checkbox6->setCheckState(Qt::Unchecked);
-  }
-  checkbox6->setToolTip("Show a horizontal line like a real crosshair");
-  hlayout_tmp = new QHBoxLayout;
-  hlayout_tmp->addWidget(checkbox6);
-  hlayout_tmp->addStretch(1000);
-  flayout1_1->addRow("Crosshair horizontal line", hlayout_tmp);
-  flayout1_1->labelForField(hlayout_tmp)->setToolTip("Show a horizontal line like a real crosshair");
-
   QFormLayout *flayout1_2 = new QFormLayout;
   flayout1_2->setSpacing(20);
-
-  Crh2ColorButton = new SpecialButton;
-  Crh2ColorButton->setColor((Qt::GlobalColor)mainwindow->maincurve->crosshair_2.color);
-  hlayout_tmp = new QHBoxLayout;
-  hlayout_tmp->addWidget(Crh2ColorButton);
-  hlayout_tmp->addStretch(1000);
-  flayout1_2->addRow("Second Crosshair color", hlayout_tmp);
 
   FrColorButton = new SpecialButton;
   FrColorButton->setColor((Qt::GlobalColor)mainwindow->maincurve->floating_ruler_color);
@@ -299,18 +268,6 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   hlayout_tmp->addStretch(1000);
   flayout1_2->addRow("Clip signals to pane", hlayout_tmp);
 
-  spinbox1_1 = new QSpinBox;
-  spinbox1_1->setSuffix(" px");
-  spinbox1_1->setMinimum(0);
-  spinbox1_1->setMaximum(32);
-  spinbox1_1->setValue(mainwindow->maincurve->crosshair_1.dot_sz);
-  spinbox1_1->setToolTip("Radius of center dot of the crosshairs in pixels, 0 means no dot");
-  hlayout_tmp = new QHBoxLayout;
-  hlayout_tmp->addWidget(spinbox1_1);
-  hlayout_tmp->addStretch(1000);
-  flayout1_2->addRow("Crosshair circle", hlayout_tmp);
-  flayout1_2->labelForField(hlayout_tmp)->setToolTip("Radius of center dot of the crosshairs in pixels, 0 means no dot");
-
   colorSchema_Dark_Button = new QPushButton;
   colorSchema_Dark_Button->setText("\"Dark\"");
 
@@ -373,8 +330,6 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   QObject::connect(TxtColorButton,          SIGNAL(clicked(SpecialButton *)), this, SLOT(TxtColorButtonClicked(SpecialButton *)));
   QObject::connect(SigColorButton,          SIGNAL(clicked(SpecialButton *)), this, SLOT(SigColorButtonClicked(SpecialButton *)));
   QObject::connect(BaseColorButton,         SIGNAL(clicked(SpecialButton *)), this, SLOT(BaseColorButtonClicked(SpecialButton *)));
-  QObject::connect(Crh1ColorButton,         SIGNAL(clicked(SpecialButton *)), this, SLOT(Crh1ColorButtonClicked(SpecialButton *)));
-  QObject::connect(Crh2ColorButton,         SIGNAL(clicked(SpecialButton *)), this, SLOT(Crh2ColorButtonClicked(SpecialButton *)));
   QObject::connect(FrColorButton,           SIGNAL(clicked(SpecialButton *)), this, SLOT(FrColorButtonClicked(SpecialButton *)));
   QObject::connect(AnnotMkrButton,          SIGNAL(clicked(SpecialButton *)), this, SLOT(AnnotMkrButtonClicked(SpecialButton *)));
   QObject::connect(AnnotMkrSelButton,       SIGNAL(clicked(SpecialButton *)), this, SLOT(AnnotMkrSelButtonClicked(SpecialButton *)));
@@ -387,16 +342,80 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   QObject::connect(checkbox3,               SIGNAL(stateChanged(int)),        this, SLOT(checkbox3Clicked(int)));
   QObject::connect(checkbox4,               SIGNAL(stateChanged(int)),        this, SLOT(checkbox4Clicked(int)));
   QObject::connect(checkbox5,               SIGNAL(stateChanged(int)),        this, SLOT(checkbox5Clicked(int)));
-  QObject::connect(checkbox6,               SIGNAL(stateChanged(int)),        this, SLOT(checkbox6Clicked(int)));
   QObject::connect(checkbox16,              SIGNAL(stateChanged(int)),        this, SLOT(checkbox16Clicked(int)));
   QObject::connect(saveColorSchemaButton,   SIGNAL(clicked()),                this, SLOT(saveColorSchemaButtonClicked()));
   QObject::connect(loadColorSchemaButton,   SIGNAL(clicked()),                this, SLOT(loadColorSchemaButtonClicked()));
   QObject::connect(colorSchema_Blue_on_Gray_Button, SIGNAL(clicked()),        this, SLOT(loadColorSchema_blue_gray()));
   QObject::connect(colorSchema_NK_Button,   SIGNAL(clicked()),                this, SLOT(loadColorSchema_NK()));
   QObject::connect(colorSchema_Dark_Button, SIGNAL(clicked()),                this, SLOT(loadColorSchema_Dark()));
-  QObject::connect(spinbox1_1,              SIGNAL(valueChanged(int)),        this, SLOT(spinBox1_1ValueChanged(int)));
 
   tabholder->addTab(tab1, "Colors");
+
+/////////////////////////////////////// tab 6 Crosshairs ////////////////////////////////////////////////////////////////////////
+
+  tab6 = new QWidget;
+
+  QFormLayout *flayout6_1 = new QFormLayout;
+  flayout6_1->setSpacing(20);
+
+  Crh1ColorButton = new SpecialButton;
+  Crh1ColorButton->setColor((Qt::GlobalColor)mainwindow->maincurve->crosshair_1.color);
+  hlayout_tmp = new QHBoxLayout;
+  hlayout_tmp->addWidget(Crh1ColorButton);
+  hlayout_tmp->addStretch(1000);
+  flayout6_1->addRow("First Crosshair color", hlayout_tmp);
+
+  Crh2ColorButton = new SpecialButton;
+  Crh2ColorButton->setColor((Qt::GlobalColor)mainwindow->maincurve->crosshair_2.color);
+  hlayout_tmp = new QHBoxLayout;
+  hlayout_tmp->addWidget(Crh2ColorButton);
+  hlayout_tmp->addStretch(1000);
+  flayout6_1->addRow("Second Crosshair color", hlayout_tmp);
+
+  checkbox6 = new QCheckBox;
+  checkbox6->setTristate(false);
+  if(mainwindow->maincurve->crosshair_1.has_hor_line)
+  {
+    checkbox6->setCheckState(Qt::Checked);
+  }
+  else
+  {
+    checkbox6->setCheckState(Qt::Unchecked);
+  }
+  checkbox6->setToolTip("Show a horizontal line like a real crosshair");
+  hlayout_tmp = new QHBoxLayout;
+  hlayout_tmp->addWidget(checkbox6);
+  hlayout_tmp->addStretch(1000);
+  flayout6_1->addRow("Crosshair horizontal line", hlayout_tmp);
+  flayout6_1->labelForField(hlayout_tmp)->setToolTip("Show a horizontal line like a real crosshair");
+
+  spinbox1_1 = new QSpinBox;
+  spinbox1_1->setSuffix(" px");
+  spinbox1_1->setMinimum(0);
+  spinbox1_1->setMaximum(32);
+  spinbox1_1->setValue(mainwindow->maincurve->crosshair_1.dot_sz);
+  spinbox1_1->setToolTip("Radius of center dot of the crosshairs in pixels, 0 means no dot");
+  hlayout_tmp = new QHBoxLayout;
+  hlayout_tmp->addWidget(spinbox1_1);
+  hlayout_tmp->addStretch(1000);
+  flayout6_1->addRow("Crosshair circle", hlayout_tmp);
+  flayout6_1->labelForField(hlayout_tmp)->setToolTip("Radius of center dot of the crosshairs in pixels, 0 means no dot");
+
+  QVBoxLayout *vlayout6_1 = new QVBoxLayout;
+  vlayout6_1->addLayout(flayout6_1);
+  vlayout6_1->addStretch(1000);
+
+  QHBoxLayout *hlayout6_1 = new QHBoxLayout;
+  hlayout6_1->addLayout(vlayout6_1);
+  hlayout6_1->addStretch(1000);
+  tab6->setLayout(hlayout6_1);
+
+  QObject::connect(Crh1ColorButton,         SIGNAL(clicked(SpecialButton *)), this, SLOT(Crh1ColorButtonClicked(SpecialButton *)));
+  QObject::connect(Crh2ColorButton,         SIGNAL(clicked(SpecialButton *)), this, SLOT(Crh2ColorButtonClicked(SpecialButton *)));
+  QObject::connect(checkbox6,               SIGNAL(stateChanged(int)),        this, SLOT(checkbox6Clicked(int)));
+  QObject::connect(spinbox1_1,              SIGNAL(valueChanged(int)),        this, SLOT(spinBox1_1ValueChanged(int)));
+
+  tabholder->addTab(tab6, "Crosshairs");
 
 /////////////////////////////////////// tab 2 Calibration ///////////////////////////////////////////////////////////////////////
 
