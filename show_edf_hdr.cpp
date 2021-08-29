@@ -278,7 +278,7 @@ void UI_EDFhdrwindow::show_params(int row)
   line_edit20a->setText(str);
 
 #ifdef Q_OS_WIN32
-  __mingw_snprintf(str,  512, "%lli", mainwindow->edfheaderlist[row]->datarecords)
+  __mingw_snprintf(str,  512, "%lli", mainwindow->edfheaderlist[row]->datarecords);
 #else
   snprintf(str,  512, "%lli", mainwindow->edfheaderlist[row]->datarecords);
 #endif

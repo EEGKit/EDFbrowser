@@ -96,7 +96,6 @@
 #include <QProgressBar>
 #include <QLCDNumber>
 #include <QPalette>
-#include <QTimeZone>
 #include <QDockWidget>
 #include <QScrollBar>
 #include <QTimeEdit>

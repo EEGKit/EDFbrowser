@@ -1,5 +1,5 @@
 
- version 1.85      to be defined
+ version 1.85      August 29, 2021
  --------------
 
  - Allow using the annotation editor with video playback.
