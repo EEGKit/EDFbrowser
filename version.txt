@@ -1,4 +1,11 @@
 
+ version 1.86      to be decided
+ --------------
+
+ - Export to ASCII (CSV): fixed a bug that caused the program to hang forever when
+   exporting a file with an extremely long datarecord duration.
+
+
  version 1.85      August 29, 2021
  --------------
 

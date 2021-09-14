@@ -840,7 +840,7 @@ void UI_AsciiExportwindow::ExportButtonClicked()
 
         d_tmp = edfparamascii[j].smp_written * edfparamascii[j].time_step;
 
-        if((d_tmp<(time_tmp+0.00000000000001))&&(d_tmp>(time_tmp-0.00000000000001))&&(edfparamascii[j].smp_written<edfparamascii[j].smp_per_record))
+        if((!dblcmp(d_tmp, time_tmp)) && (edfparamascii[j].smp_written<edfparamascii[j].smp_per_record))
         {
           if(bdf)
           {
