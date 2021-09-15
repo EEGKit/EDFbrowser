@@ -2109,11 +2109,11 @@ int dblcmp(double val1, double val2)
 {
   long double diff = (long double)val1 - (long double)val2;
 
-  if(diff > 1e-13)
+  if(diff > 1e-13l)
   {
     return 1;
   }
-  else if(-diff > 1e-13)
+  else if(-diff > 1e-13l)
     {
       return -1;
     }
