@@ -3877,7 +3877,8 @@ void UI_Mainwindow::show_kb_shortcuts()
    "Keep middle mousebutton pressed to drag horizontally\n"
 
    "\nCtrl+Space\t\tToggle Playback or Pause\n"
-   "Ctrl+Shift+V\tToggle Playback with video\n"
+   "Ctrl+Shift+V\tToggle Playback with video\n",
+   QMessageBox::Close
   );
 
   messagewindow.exec();
