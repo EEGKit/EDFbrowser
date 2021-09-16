@@ -29,6 +29,8 @@
 #include "ascii_export.h"
 
 
+#define FP_SCALING   (1000000000LL)
+
 
 UI_AsciiExportwindow::UI_AsciiExportwindow(QWidget *w_parent)
 {
@@ -129,11 +131,12 @@ void UI_AsciiExportwindow::ExportButtonClicked()
        *outputfile,
        *annotationfile;
 
-  double data_record_duration,
-         elapsedtime,
-         time_tmp,
-         d_tmp,
-         value_tmp;
+  long long data_record_duration,
+            elapsedtime,
+            time_tmp,
+            d_tmp;
+
+  double value_tmp;
 
 
   if(!mainwindow->files_open)
@@ -251,7 +254,7 @@ void UI_AsciiExportwindow::ExportButtonClicked()
 
   strncpy(scratchpad, edf_hdr + 0xf4, 8);
   scratchpad[8] = 0;
-  data_record_duration = atof(scratchpad);
+  data_record_duration = atoll_x(scratchpad, FP_SCALING);
 
   nr_annot_chns = 0;
 
@@ -652,7 +655,7 @@ void UI_AsciiExportwindow::ExportButtonClicked()
         if(scratchpad[k]==20) break;
       }
       scratchpad[k] = 0;
-      elapsedtime = atof(scratchpad);
+      elapsedtime = atoll_x(scratchpad, FP_SCALING);
 
 /* process annotations */
 
@@ -796,7 +799,7 @@ void UI_AsciiExportwindow::ExportButtonClicked()
 
     do
     {
-      time_tmp = 10000000000.0;
+      time_tmp = 100000000000000LL;
       for(j=0; j<edfsignals; j++)
       {
         if((edfplus)||(bdfplus))
@@ -818,8 +821,11 @@ void UI_AsciiExportwindow::ExportButtonClicked()
         d_tmp = edfparamascii[j].smp_written * edfparamascii[j].time_step;
         if(d_tmp<time_tmp) time_tmp = d_tmp;
       }
-      fprintf(outputfile, "%f", elapsedtime + time_tmp);
-
+#ifdef Q_OS_WIN32
+      __mingw_fprintf(outputfile, "%lli.%09lli", (elapsedtime + time_tmp) / FP_SCALING, (elapsedtime + time_tmp) % FP_SCALING);
+#else
+      fprintf(outputfile, "%lli.%09lli", (elapsedtime + time_tmp) / FP_SCALING, (elapsedtime + time_tmp) % FP_SCALING);
+#endif
       for(j=0; j<edfsignals; j++)
       {
         if((edfplus)||(bdfplus))
@@ -840,7 +846,7 @@ void UI_AsciiExportwindow::ExportButtonClicked()
 
         d_tmp = edfparamascii[j].smp_written * edfparamascii[j].time_step;
 
-        if((!dblcmp(d_tmp, time_tmp)) && (edfparamascii[j].smp_written<edfparamascii[j].smp_per_record))
+        if((d_tmp == time_tmp) && (edfparamascii[j].smp_written<edfparamascii[j].smp_per_record))
         {
           if(bdf)
           {

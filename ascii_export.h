@@ -77,7 +77,7 @@ struct asciiedfparamblock{
          int buf_offset;
          double phys_min;
          double phys_max;
-         double time_step;
+         long long time_step;
          double sense;
        } *edfparamascii;
 
