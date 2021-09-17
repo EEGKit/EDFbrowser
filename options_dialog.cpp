@@ -45,6 +45,8 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
 {
   int i;
 
+  char str[512]="";
+
   mainwindow = (UI_Mainwindow *)w_parent;
 
   optionsdialog = new QDialog(w_parent);
@@ -521,6 +523,61 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   QObject::connect(checkbox2_1, SIGNAL(stateChanged(int)), this, SLOT(calibrate_checkbox_stateChanged(int)));
 
   tabholder->addTab(tab2, "Calibration");
+
+/////////////////////////////////////// tab 7 annotation editor ////////////////////////////////////////////////////////////////////////
+
+  tab7 = new QWidget;
+
+  QVBoxLayout *vlayout7_1 = new QVBoxLayout;
+
+  for(i=0; i<8; i++)
+  {
+    QFormLayout *flayout7_1 = new QFormLayout;
+    flayout7_1->setSpacing(20);
+
+    checkbox7_1[i] = new QCheckBox;
+    checkbox7_1[i]->setTristate(false);
+    if(mainwindow->annot_edit_user_button_enabled[i])
+    {
+      checkbox7_1[i]->setCheckState(Qt::Checked);
+    }
+    else
+    {
+      checkbox7_1[i]->setCheckState(Qt::Unchecked);
+    }
+
+    lineedit7_1[i] = new QLineEdit;
+    lineedit7_1[i]->setMaxLength(16);
+    lineedit7_1[i]->setText(QString::fromUtf8(mainwindow->annot_edit_user_button_name[i]));
+    if(checkbox7_1[i]->checkState() != Qt::Checked)
+    {
+      lineedit7_1[i]->setEnabled(false);
+    }
+
+    hlayout_tmp = new QHBoxLayout;
+    hlayout_tmp->addWidget(checkbox7_1[i]);
+    hlayout_tmp->addWidget(lineedit7_1[i]);
+    hlayout_tmp->addStretch(1000);
+    snprintf(str, 512, "Button %i", i + 1);
+    flayout7_1->addRow(str, hlayout_tmp);
+
+    vlayout7_1->addLayout(flayout7_1);
+  }
+
+  vlayout7_1->addStretch(1000);
+
+  QHBoxLayout *hlayout7_1 = new QHBoxLayout;
+  hlayout7_1->addLayout(vlayout7_1);
+  hlayout7_1->addStretch(1000);
+  tab7->setLayout(hlayout7_1);
+
+  for(i=0; i<8; i++)
+  {
+    QObject::connect(checkbox7_1[i], SIGNAL(stateChanged(int)),   this, SLOT(tab7_settings_changed()));
+    QObject::connect(lineedit7_1[i], SIGNAL(textEdited(QString)), this, SLOT(tab7_settings_changed()));
+  }
+
+  tabholder->addTab(tab7, "Annotation editor");
 
 /////////////////////////////////////// tab 3 Powerspectrum ///////////////////////////////////////////////////////////////////////
 
@@ -2649,7 +2706,26 @@ void UI_OptionsDialog::DefaultButton5Clicked()
 }
 
 
+void UI_OptionsDialog::tab7_settings_changed()
+{
+  int i;
 
+  for(i=0; i<8; i++)
+  {
+    if(checkbox7_1[i]->checkState() == Qt::Checked)
+    {
+      lineedit7_1[i]->setEnabled(true);
+      mainwindow->annot_edit_user_button_enabled[i] = 1;
+    }
+    else
+    {
+      lineedit7_1[i]->setEnabled(false);
+      mainwindow->annot_edit_user_button_enabled[i] = 0;
+    }
+
+    strlcpy(mainwindow->annot_edit_user_button_name[i], lineedit7_1[i]->text().toUtf8().data(), 64);
+  }
+}
 
 
 

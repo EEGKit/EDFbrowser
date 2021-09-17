@@ -100,7 +100,8 @@ private:
 
   QPushButton *modifybutton,
               *deletebutton,
-              *createbutton;
+              *createbutton,
+              *user_button[8];
 
   QComboBox *posNegTimebox;
 
@@ -111,6 +112,14 @@ private slots:
   void modifyButtonClicked();
   void deleteButtonClicked();
   void createButtonClicked();
+  void user_button_0_clicked();
+  void user_button_1_clicked();
+  void user_button_2_clicked();
+  void user_button_3_clicked();
+  void user_button_4_clicked();
+  void user_button_5_clicked();
+  void user_button_6_clicked();
+  void user_button_7_clicked();
 
   void dockedit_destroyed(QObject *);
 };

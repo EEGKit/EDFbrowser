@@ -32,6 +32,8 @@
 
 UI_AnnotationEditwindow::UI_AnnotationEditwindow(struct edfhdrblock *e_hdr, QWidget *w_parent)
 {
+  int i;
+
   mainwindow = (UI_Mainwindow *)w_parent;
 
   edf_hdr = e_hdr;
@@ -106,6 +108,16 @@ UI_AnnotationEditwindow::UI_AnnotationEditwindow(struct edfhdrblock *e_hdr, QWid
 
   update_description_completer();
 
+  for(i=0; i<8; i++)
+  {
+    user_button[i] = new QPushButton;
+    user_button[i]->setText(mainwindow->annot_edit_user_button_name[i]);
+    if(!mainwindow->annot_edit_user_button_enabled[i])
+    {
+      user_button[i]->setVisible(false);
+    }
+  }
+
   QHBoxLayout *hlayout1 = new QHBoxLayout;
   hlayout1->addStretch(1000);
   hlayout1->addWidget(descriptionLabel);
@@ -124,6 +136,11 @@ UI_AnnotationEditwindow::UI_AnnotationEditwindow(struct edfhdrblock *e_hdr, QWid
   hlayout1->addWidget(deletebutton);
   hlayout1->addStretch(100);
   hlayout1->addWidget(createbutton);
+  for(i=0; i<8; i++)
+  {
+    hlayout1->addStretch(100);
+    hlayout1->addWidget(user_button[i]);
+  }
   hlayout1->addStretch(1000);
 
   annot_edit_frame = new QFrame;
@@ -132,10 +149,19 @@ UI_AnnotationEditwindow::UI_AnnotationEditwindow(struct edfhdrblock *e_hdr, QWid
 
   dockedit->addWidget(annot_edit_frame);
 
-  QObject::connect(modifybutton, SIGNAL(clicked()),               this, SLOT(modifyButtonClicked()));
-  QObject::connect(deletebutton, SIGNAL(clicked()),               this, SLOT(deleteButtonClicked()));
-  QObject::connect(createbutton, SIGNAL(clicked()),               this, SLOT(createButtonClicked()));
-  QObject::connect(dockedit,     SIGNAL(destroyed(QObject *)),    this, SLOT(dockedit_destroyed(QObject *)));
+  QObject::connect(modifybutton, SIGNAL(clicked()),            this, SLOT(modifyButtonClicked()));
+  QObject::connect(deletebutton, SIGNAL(clicked()),            this, SLOT(deleteButtonClicked()));
+  QObject::connect(createbutton, SIGNAL(clicked()),            this, SLOT(createButtonClicked()));
+  QObject::connect(dockedit,     SIGNAL(destroyed(QObject *)), this, SLOT(dockedit_destroyed(QObject *)));
+
+  QObject::connect(user_button[0], SIGNAL(clicked()), this, SLOT(user_button_0_clicked()));
+  QObject::connect(user_button[1], SIGNAL(clicked()), this, SLOT(user_button_1_clicked()));
+  QObject::connect(user_button[2], SIGNAL(clicked()), this, SLOT(user_button_2_clicked()));
+  QObject::connect(user_button[3], SIGNAL(clicked()), this, SLOT(user_button_3_clicked()));
+  QObject::connect(user_button[4], SIGNAL(clicked()), this, SLOT(user_button_4_clicked()));
+  QObject::connect(user_button[5], SIGNAL(clicked()), this, SLOT(user_button_5_clicked()));
+  QObject::connect(user_button[6], SIGNAL(clicked()), this, SLOT(user_button_6_clicked()));
+  QObject::connect(user_button[7], SIGNAL(clicked()), this, SLOT(user_button_7_clicked()));
 
   mainwindow->maincurve->arrowkeys_shortcuts_global_set_enabled(false);
 }
@@ -582,6 +608,62 @@ void UI_AnnotationEditwindow::update_description_completer(void)
   completer->setModel(model);
 }
 
+
+void UI_AnnotationEditwindow::user_button_0_clicked()
+{
+  annot_descript_lineEdit->setText(QString::fromUtf8(mainwindow->annot_edit_user_button_name[0]));
+
+  createButtonClicked();
+}
+
+void UI_AnnotationEditwindow::user_button_1_clicked()
+{
+  annot_descript_lineEdit->setText(QString::fromUtf8(mainwindow->annot_edit_user_button_name[1]));
+
+  createButtonClicked();
+}
+
+void UI_AnnotationEditwindow::user_button_2_clicked()
+{
+  annot_descript_lineEdit->setText(QString::fromUtf8(mainwindow->annot_edit_user_button_name[2]));
+
+  createButtonClicked();
+}
+
+void UI_AnnotationEditwindow::user_button_3_clicked()
+{
+  annot_descript_lineEdit->setText(QString::fromUtf8(mainwindow->annot_edit_user_button_name[3]));
+
+  createButtonClicked();
+}
+
+void UI_AnnotationEditwindow::user_button_4_clicked()
+{
+  annot_descript_lineEdit->setText(QString::fromUtf8(mainwindow->annot_edit_user_button_name[4]));
+
+  createButtonClicked();
+}
+
+void UI_AnnotationEditwindow::user_button_5_clicked()
+{
+  annot_descript_lineEdit->setText(QString::fromUtf8(mainwindow->annot_edit_user_button_name[5]));
+
+  createButtonClicked();
+}
+
+void UI_AnnotationEditwindow::user_button_6_clicked()
+{
+  annot_descript_lineEdit->setText(QString::fromUtf8(mainwindow->annot_edit_user_button_name[6]));
+
+  createButtonClicked();
+}
+
+void UI_AnnotationEditwindow::user_button_7_clicked()
+{
+  annot_descript_lineEdit->setText(QString::fromUtf8(mainwindow->annot_edit_user_button_name[7]));
+
+  createButtonClicked();
+}
 
 
 

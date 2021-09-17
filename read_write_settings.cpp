@@ -1408,6 +1408,46 @@ void UI_Mainwindow::read_general_settings()
     xml_go_up(xml_hdl);
   }
 
+  if(!(xml_goto_nth_element_inside(xml_hdl, "annotation_editor", 0)))
+  {
+    for(i=0; i<8; i++)
+    {
+      if(!(xml_goto_nth_element_inside(xml_hdl, "annot_edit_user_button_enabled", i)))
+      {
+        if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+        {
+          xml_close(xml_hdl);
+          return;
+        }
+
+        if(atoi(result) == 1)
+        {
+          annot_edit_user_button_enabled[i] = 1;
+        }
+
+        xml_go_up(xml_hdl);
+      }
+    }
+
+    for(i=0; i<8; i++)
+    {
+      if(!(xml_goto_nth_element_inside(xml_hdl, "annot_edit_user_button_name", i)))
+      {
+        if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+        {
+          xml_close(xml_hdl);
+          return;
+        }
+
+        strlcpy(annot_edit_user_button_name[i], result, 64);
+
+        xml_go_up(xml_hdl);
+      }
+    }
+
+    xml_go_up(xml_hdl);
+  }
+
   if(!(xml_goto_nth_element_inside(xml_hdl, "hypnogram", 0)))
   {
     for(i=0; i<6; i++)
@@ -2588,6 +2628,18 @@ void UI_Mainwindow::write_settings()
                             hrvdock_trace_color.green(),
                             hrvdock_trace_color.blue());
     fprintf(cfgfile, "    </hrvdock>\n");
+
+    fprintf(cfgfile, "    <annotation_editor>\n");
+    for(i=0; i<8; i++)
+    {
+      fprintf(cfgfile, "      <annot_edit_user_button_enabled>%i</annot_edit_user_button_enabled>\n", annot_edit_user_button_enabled[i]);
+    }
+    for(i=0; i<8; i++)
+    {
+      xml_strlcpy_encode_entity(str, annot_edit_user_button_name[i], 1024);
+      fprintf(cfgfile, "      <annot_edit_user_button_name>%s</annot_edit_user_button_name>\n", str);
+    }
+    fprintf(cfgfile, "    </annotation_editor>\n");
 
     fprintf(cfgfile, "    <live_stream_update_interval>%i</live_stream_update_interval>\n", live_stream_update_interval);
 

@@ -124,7 +124,8 @@ QCheckBox      *checkbox1,
                *checkbox4_7,
                *checkbox4_8,
                *checkbox2_1,
-               *checkbox2_2;
+               *checkbox2_2,
+               *checkbox7_1[8];
 
 QTableWidget   *colorBarTable;
 
@@ -133,7 +134,8 @@ QRadioButton   *radiobutton1,
                *radiobutton3;
 
 QLineEdit      *lineEdit3_1,
-               *lineedit4_1;
+               *lineedit4_1,
+               *lineedit7_1[8];
 
 QGroupBox      *groupbox1;
 
@@ -147,7 +149,8 @@ QWidget        *tab1,
                *tab3,
                *tab4,
                *tab5,
-               *tab6;
+               *tab6,
+               *tab7;
 
 void update_interface(void);
 
@@ -214,6 +217,7 @@ void spinBox5_1ValueChanged(int);
 void spinBox5_2ValueChanged(int);
 void ApplyButton5Clicked();
 void DefaultButton5Clicked();
+void tab7_settings_changed();
 };
 
 

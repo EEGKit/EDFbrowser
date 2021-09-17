@@ -131,6 +131,19 @@ UI_Mainwindow::UI_Mainwindow()
 
   use_diverse_signal_colors = 0;
 
+  for(i=0; i<8; i++)
+  {
+    annot_edit_user_button_enabled[i] = 0;
+    annot_edit_user_button_name[i][0] = 0;
+  }
+  strlcpy(annot_edit_user_button_name[0], "W", 64);
+  strlcpy(annot_edit_user_button_name[1], "R", 64);
+  strlcpy(annot_edit_user_button_name[2], "N1", 64);
+  strlcpy(annot_edit_user_button_name[3], "N2", 64);
+  strlcpy(annot_edit_user_button_name[4], "N3", 64);
+  strlcpy(annot_edit_user_button_name[5], "N4", 64);
+  strlcpy(annot_edit_user_button_name[6], "N5", 64);
+
   drop_path[0] = 0;
 
   toolbar_stats.sz = 0;

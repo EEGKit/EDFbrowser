@@ -235,7 +235,8 @@ public:
       use_signallabel_in_annot_descr,
       hrvdock_max_bpm,
       hrvdock_min_bpm,
-      hrvdock_height;
+      hrvdock_height,
+      annot_edit_user_button_enabled[8];
 
   QColor hrvdock_trace_color;
 
@@ -256,7 +257,8 @@ public:
        drop_path[MAX_PATH_LENGTH],
        hypnogram_stage_name[6][32],
        hypnogram_annot_name[6][32],
-       ecg_qrs_rpeak_descr[32];
+       ecg_qrs_rpeak_descr[32],
+       annot_edit_user_button_name[8][64];
 
   double y_pixelsizefactor,
          x_pixelsizefactor,
