@@ -75,6 +75,7 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   BgColorButton = new SpecialButton;
   BgColorButton->setColor(mainwindow->maincurve->backgroundcolor);
   hlayout_tmp = new QHBoxLayout;
+  hlayout_tmp->setAlignment(Qt::AlignCenter);
   hlayout_tmp->addWidget(BgColorButton);
   hlayout_tmp->addStretch(1000);
   flayout1_1->addRow("Background color", hlayout_tmp);
@@ -82,6 +83,7 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   SrColorButton = new SpecialButton;
   SrColorButton->setColor(mainwindow->maincurve->small_ruler_color);
   hlayout_tmp = new QHBoxLayout;
+  hlayout_tmp->setAlignment(Qt::AlignCenter);
   hlayout_tmp->addWidget(SrColorButton);
   hlayout_tmp->addStretch(1000);
   flayout1_1->addRow("Small ruler color", hlayout_tmp);
@@ -89,6 +91,7 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   BrColorButton = new SpecialButton;
   BrColorButton->setColor(mainwindow->maincurve->big_ruler_color);
   hlayout_tmp = new QHBoxLayout;
+  hlayout_tmp->setAlignment(Qt::AlignCenter);
   hlayout_tmp->addWidget(BrColorButton);
   hlayout_tmp->addStretch(1000);
   flayout1_1->addRow("Big ruler color", hlayout_tmp);
@@ -96,6 +99,7 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   MrColorButton = new SpecialButton;
   MrColorButton->setColor(mainwindow->maincurve->mouse_rect_color);
   hlayout_tmp = new QHBoxLayout;
+  hlayout_tmp->setAlignment(Qt::AlignCenter);
   hlayout_tmp->addWidget(MrColorButton);
   hlayout_tmp->addStretch(1000);
   flayout1_1->addRow("Mouse rectangle color", hlayout_tmp);
@@ -103,6 +107,7 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   TxtColorButton = new SpecialButton;
   TxtColorButton->setColor(mainwindow->maincurve->text_color);
   hlayout_tmp = new QHBoxLayout;
+  hlayout_tmp->setAlignment(Qt::AlignCenter);
   hlayout_tmp->addWidget(TxtColorButton);
   hlayout_tmp->addStretch(1000);
   flayout1_1->addRow("Text color", hlayout_tmp);
@@ -110,6 +115,7 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   SigColorButton = new SpecialButton;
   SigColorButton->setColor((Qt::GlobalColor)mainwindow->maincurve->signal_color);
   hlayout_tmp = new QHBoxLayout;
+  hlayout_tmp->setAlignment(Qt::AlignCenter);
   hlayout_tmp->addWidget(SigColorButton);
   hlayout_tmp->addStretch(1000);
   flayout1_1->addRow("Signals color", hlayout_tmp);
@@ -126,6 +132,7 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
     checkbox16->setCheckState(Qt::Unchecked);
   }
   hlayout_tmp = new QHBoxLayout;
+  hlayout_tmp->setAlignment(Qt::AlignCenter);
   hlayout_tmp->addWidget(checkbox16);
   hlayout_tmp->addStretch(1000);
   flayout1_1->addRow("Vary signal colors", hlayout_tmp);
@@ -143,6 +150,7 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   BaseColorButton = new SpecialButton;
   BaseColorButton->setColor(mainwindow->maincurve->baseline_color);
   hlayout_tmp = new QHBoxLayout;
+  hlayout_tmp->setAlignment(Qt::AlignCenter);
   hlayout_tmp->addWidget(checkbox3);
   hlayout_tmp->addWidget(BaseColorButton);
   hlayout_tmp->addStretch(1000);
@@ -154,6 +162,7 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   FrColorButton = new SpecialButton;
   FrColorButton->setColor((Qt::GlobalColor)mainwindow->maincurve->floating_ruler_color);
   hlayout_tmp = new QHBoxLayout;
+  hlayout_tmp->setAlignment(Qt::AlignCenter);
   hlayout_tmp->addWidget(FrColorButton);
   hlayout_tmp->addStretch(1000);
   flayout1_2->addRow("Floating ruler color", hlayout_tmp);
@@ -175,6 +184,7 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   AnnotMkrSelButton->setColor(mainwindow->maincurve->annot_marker_selected_color);
   AnnotMkrSelButton->setToolTip("The second color is used to indicate if it's selected");
   hlayout_tmp = new QHBoxLayout;
+  hlayout_tmp->setAlignment(Qt::AlignCenter);
   hlayout_tmp->addWidget(checkbox2);
   hlayout_tmp->addWidget(AnnotMkrButton);
   hlayout_tmp->addWidget(AnnotMkrSelButton);
@@ -192,6 +202,7 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
     checkbox2_1->setCheckState(Qt::Unchecked);
   }
   hlayout_tmp = new QHBoxLayout;
+  hlayout_tmp->setAlignment(Qt::AlignCenter);
   hlayout_tmp->addWidget(checkbox2_1);
   hlayout_tmp->addStretch(1000);
   flayout1_2->addRow("Show duration at marker", hlayout_tmp);
@@ -203,6 +214,7 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   AnnotDurationSelectedButton->setColor(mainwindow->maincurve->annot_duration_color_selected);
   AnnotDurationSelectedButton->setToolTip("The second color is used to indicate if it's selected");
   hlayout_tmp = new QHBoxLayout;
+  hlayout_tmp->setAlignment(Qt::AlignCenter);
   hlayout_tmp->addWidget(AnnotDurationButton);
   hlayout_tmp->addWidget(AnnotDurationSelectedButton);
   hlayout_tmp->addStretch(1000);
@@ -220,6 +232,7 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   }
   checkbox2_2->setToolTip("Show the colored background only at the bottom of the screen");
   hlayout_tmp = new QHBoxLayout;
+  hlayout_tmp->setAlignment(Qt::AlignCenter);
   hlayout_tmp->addWidget(checkbox2_2);
   hlayout_tmp->addStretch(1000);
   flayout1_2->addRow("Show only at screen bottom", hlayout_tmp);
@@ -236,6 +249,7 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
     checkbox5->setCheckState(Qt::Unchecked);
   }
   hlayout_tmp = new QHBoxLayout;
+  hlayout_tmp->setAlignment(Qt::AlignCenter);
   hlayout_tmp->addWidget(checkbox5);
   hlayout_tmp->addStretch(1000);
   flayout1_2->addRow("Annotations: filter list only", hlayout_tmp);
@@ -251,6 +265,7 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
     checkbox1->setCheckState(Qt::Unchecked);
   }
   hlayout_tmp = new QHBoxLayout;
+  hlayout_tmp->setAlignment(Qt::AlignCenter);
   hlayout_tmp->addWidget(checkbox1);
   hlayout_tmp->addStretch(1000);
   flayout1_2->addRow("Print in grayscale", hlayout_tmp);
@@ -266,6 +281,7 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
     checkbox4->setCheckState(Qt::Unchecked);
   }
   hlayout_tmp = new QHBoxLayout;
+  hlayout_tmp->setAlignment(Qt::AlignCenter);
   hlayout_tmp->addWidget(checkbox4);
   hlayout_tmp->addStretch(1000);
   flayout1_2->addRow("Clip signals to pane", hlayout_tmp);
@@ -363,6 +379,7 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   Crh1ColorButton = new SpecialButton;
   Crh1ColorButton->setColor((Qt::GlobalColor)mainwindow->maincurve->crosshair_1.color);
   hlayout_tmp = new QHBoxLayout;
+  hlayout_tmp->setAlignment(Qt::AlignCenter);
   hlayout_tmp->addWidget(Crh1ColorButton);
   hlayout_tmp->addStretch(1000);
   flayout6_1->addRow("First Crosshair color", hlayout_tmp);
@@ -370,6 +387,7 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   Crh2ColorButton = new SpecialButton;
   Crh2ColorButton->setColor((Qt::GlobalColor)mainwindow->maincurve->crosshair_2.color);
   hlayout_tmp = new QHBoxLayout;
+  hlayout_tmp->setAlignment(Qt::AlignCenter);
   hlayout_tmp->addWidget(Crh2ColorButton);
   hlayout_tmp->addStretch(1000);
   flayout6_1->addRow("Second Crosshair color", hlayout_tmp);
@@ -386,6 +404,7 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   }
   checkbox6->setToolTip("Show a horizontal line like a real crosshair");
   hlayout_tmp = new QHBoxLayout;
+  hlayout_tmp->setAlignment(Qt::AlignCenter);
   hlayout_tmp->addWidget(checkbox6);
   hlayout_tmp->addStretch(1000);
   flayout6_1->addRow("Crosshair horizontal line", hlayout_tmp);
@@ -398,6 +417,7 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   spinbox1_1->setValue(mainwindow->maincurve->crosshair_1.dot_sz);
   spinbox1_1->setToolTip("Radius of center dot of the crosshairs in pixels, 0 means no dot");
   hlayout_tmp = new QHBoxLayout;
+  hlayout_tmp->setAlignment(Qt::AlignCenter);
   hlayout_tmp->addWidget(spinbox1_1);
   hlayout_tmp->addStretch(1000);
   flayout6_1->addRow("Crosshair circle", hlayout_tmp);
@@ -528,13 +548,13 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
 
   tab7 = new QWidget;
 
-  QVBoxLayout *vlayout7_1 = new QVBoxLayout;
+  QFormLayout *flayout7_1 = new QFormLayout;
+  flayout7_1->setSpacing(20);
+
+  flayout7_1->addRow(" ", (QWidget *)NULL);
 
   for(i=0; i<8; i++)
   {
-    QFormLayout *flayout7_1 = new QFormLayout;
-    flayout7_1->setSpacing(20);
-
     checkbox7_1[i] = new QCheckBox;
     checkbox7_1[i]->setTristate(false);
     if(mainwindow->annot_edit_user_button_enabled[i])
@@ -545,9 +565,11 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
     {
       checkbox7_1[i]->setCheckState(Qt::Unchecked);
     }
+    checkbox7_1[i]->setToolTip("Enables a button to quickly create a predefined annotation");
 
     lineedit7_1[i] = new QLineEdit;
     lineedit7_1[i]->setMaxLength(16);
+    lineedit7_1[i]->setToolTip("Description of the new annotation");
     lineedit7_1[i]->setText(QString::fromUtf8(mainwindow->annot_edit_user_button_name[i]));
     if(checkbox7_1[i]->checkState() != Qt::Checked)
     {
@@ -555,15 +577,40 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
     }
 
     hlayout_tmp = new QHBoxLayout;
+    hlayout_tmp->setAlignment(Qt::AlignCenter);
     hlayout_tmp->addWidget(checkbox7_1[i]);
     hlayout_tmp->addWidget(lineedit7_1[i]);
     hlayout_tmp->addStretch(1000);
     snprintf(str, 512, "Button %i", i + 1);
     flayout7_1->addRow(str, hlayout_tmp);
-
-    vlayout7_1->addLayout(flayout7_1);
+    flayout7_1->labelForField(hlayout_tmp)->setToolTip("If enabled, it creates a button to quickly create a predefined annotation");
   }
 
+  flayout7_1->addRow(" ", (QWidget *)NULL);
+
+  checkbox7_2 = new QCheckBox;
+  checkbox7_2->setTristate(false);
+  checkbox7_2->setToolTip("Enabling this option will automatically update the onsettime field of the annotation-editor\n"
+                          "when scrolling/navigating and a cross-hair is active.");
+  if(mainwindow->auto_update_annot_onset)
+  {
+    checkbox7_2->setCheckState(Qt::Checked);
+  }
+  else
+  {
+    checkbox7_2->setCheckState(Qt::Unchecked);
+  }
+  hlayout_tmp = new QHBoxLayout;
+  hlayout_tmp->setAlignment(Qt::AlignCenter);
+  hlayout_tmp->addWidget(checkbox7_2);
+  hlayout_tmp->addStretch(1000);
+  flayout7_1->addRow("Auto update annotation-editor onsettime", hlayout_tmp);
+  QObject::connect(checkbox7_2, SIGNAL(stateChanged(int)), this, SLOT(checkbox7_2Clicked(int)));
+  flayout7_1->labelForField(hlayout_tmp)->setToolTip("Enabling this option will automatically update the onsettime field of the annotation-editor\n"
+                                                     "when scrolling/navigating and a cross-hair is active.");
+
+  QVBoxLayout *vlayout7_1 = new QVBoxLayout;
+  vlayout7_1->addLayout(flayout7_1);
   vlayout7_1->addStretch(1000);
 
   QHBoxLayout *hlayout7_1 = new QHBoxLayout;
@@ -664,6 +711,7 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   spinbox3_1->setSingleStep(2);
   spinbox3_1->setValue(mainwindow->maxdftblocksize);
   hlayout_tmp = new QHBoxLayout;
+  hlayout_tmp->setAlignment(Qt::AlignCenter);
   hlayout_tmp->addWidget(spinbox3_1);
   hlayout_tmp->addStretch(1000);
   flayout3_1->addRow("FFT blocksize:", hlayout_tmp);
@@ -685,6 +733,7 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
     checkbox3_1->setCheckState(Qt::Unchecked);
   }
   hlayout_tmp = new QHBoxLayout;
+  hlayout_tmp->setAlignment(Qt::AlignCenter);
   hlayout_tmp->addWidget(dspinbox3_2);
   hlayout_tmp->addSpacing(20);
   hlayout_tmp->addWidget(checkbox3_1);
@@ -777,6 +826,7 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
     checkbox4_1->setCheckState(Qt::Unchecked);
   }
   hlayout_tmp = new QHBoxLayout;
+  hlayout_tmp->setAlignment(Qt::AlignCenter);
   hlayout_tmp->addWidget(checkbox4_1);
   hlayout_tmp->addStretch(1000);
   flayout4_1->addRow("Reload last used montage", hlayout_tmp);
@@ -789,6 +839,7 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   spinbox4_3->setSingleStep(1);
   spinbox4_3->setValue((int)(mainwindow->maxfilesize_to_readin_annotations / 1048576LL));
   hlayout_tmp = new QHBoxLayout;
+  hlayout_tmp->setAlignment(Qt::AlignCenter);
   hlayout_tmp->addWidget(spinbox4_3);
   hlayout_tmp->addStretch(1000);
   flayout4_1->addRow("Do not read annotations, Biosemi Status signal\n"
@@ -807,6 +858,7 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
     checkbox4_2->setCheckState(Qt::Unchecked);
   }
   hlayout_tmp = new QHBoxLayout;
+  hlayout_tmp->setAlignment(Qt::AlignCenter);
   hlayout_tmp->addWidget(checkbox4_2);
   hlayout_tmp->addStretch(1000);
   flayout4_1->addRow("Read Biosemi Status signal", hlayout_tmp);
@@ -823,6 +875,7 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
     checkbox4_3->setCheckState(Qt::Unchecked);
   }
   hlayout_tmp = new QHBoxLayout;
+  hlayout_tmp->setAlignment(Qt::AlignCenter);
   hlayout_tmp->addWidget(checkbox4_3);
   hlayout_tmp->addStretch(1000);
   flayout4_1->addRow("Read Nihon Kohden Trigger/Marker signal", hlayout_tmp);
@@ -835,6 +888,7 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   spinbox4_1->setSingleStep(1);
   spinbox4_1->setValue(mainwindow->live_stream_update_interval);
   hlayout_tmp = new QHBoxLayout;
+  hlayout_tmp->setAlignment(Qt::AlignCenter);
   hlayout_tmp->addWidget(spinbox4_1);
   hlayout_tmp->addStretch(1000);
   flayout4_1->addRow("livestream update interval", hlayout_tmp);
@@ -852,6 +906,7 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
     combobox4_1->setCurrentIndex(1);
   }
   hlayout_tmp = new QHBoxLayout;
+  hlayout_tmp->setAlignment(Qt::AlignCenter);
   hlayout_tmp->addWidget(combobox4_1);
   hlayout_tmp->addStretch(1000);
   flayout4_1->addRow("Powerline Frequency", hlayout_tmp);
@@ -864,6 +919,7 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   spinbox4_2->setSingleStep(1);
   spinbox4_2->setValue(mainwindow->mousewheelsens);
   hlayout_tmp = new QHBoxLayout;
+  hlayout_tmp->setAlignment(Qt::AlignCenter);
   hlayout_tmp->addWidget(spinbox4_2);
   hlayout_tmp->addStretch(1000);
   flayout4_1->addRow("Mousewheel stepsize\n"
@@ -881,6 +937,7 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
     checkbox4_4->setCheckState(Qt::Unchecked);
   }
   hlayout_tmp = new QHBoxLayout;
+  hlayout_tmp->setAlignment(Qt::AlignCenter);
   hlayout_tmp->addWidget(checkbox4_4);
   hlayout_tmp->addStretch(1000);
   flayout4_1->addRow("Use Multi-Threading", hlayout_tmp);
@@ -902,6 +959,7 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
     checkbox4_5->setCheckState(Qt::Unchecked);
   }
   hlayout_tmp = new QHBoxLayout;
+  hlayout_tmp->setAlignment(Qt::AlignCenter);
   hlayout_tmp->addWidget(checkbox4_5);
   hlayout_tmp->addStretch(1000);
   flayout4_2->addRow("Check for updates during startup", hlayout_tmp);
@@ -913,6 +971,7 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   combobox4_2->addItem("date real (relative)");
   combobox4_2->setCurrentIndex(mainwindow->viewtime_indicator_type);
   hlayout_tmp = new QHBoxLayout;
+  hlayout_tmp->setAlignment(Qt::AlignCenter);
   hlayout_tmp->addWidget(combobox4_2);
   hlayout_tmp->addStretch(1000);
   flayout4_2->addRow("Viewtime / fileposition indicator", hlayout_tmp);
@@ -924,6 +983,7 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   combobox4_3->addItem("Filename with full path");
   combobox4_3->setCurrentIndex(mainwindow->mainwindow_title_type);
   hlayout_tmp = new QHBoxLayout;
+  hlayout_tmp->setAlignment(Qt::AlignCenter);
   hlayout_tmp->addWidget(combobox4_3);
   hlayout_tmp->addStretch(1000);
   flayout4_2->addRow("Window title content", hlayout_tmp);
@@ -935,6 +995,7 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   dspinbox4_4->setSuffix(" /cm");
   dspinbox4_4->setValue(mainwindow->default_amplitude);
   hlayout_tmp = new QHBoxLayout;
+  hlayout_tmp->setAlignment(Qt::AlignCenter);
   hlayout_tmp->addWidget(dspinbox4_4);
   hlayout_tmp->addStretch(1000);
   flayout4_2->addRow("Default amplitude", hlayout_tmp);
@@ -952,6 +1013,7 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
     checkbox4_6->setCheckState(Qt::Unchecked);
   }
   hlayout_tmp = new QHBoxLayout;
+  hlayout_tmp->setAlignment(Qt::AlignCenter);
   hlayout_tmp->addWidget(checkbox4_6);
   hlayout_tmp->addStretch(1000);
   flayout4_2->addRow("Use linear interpolation for plotting", hlayout_tmp);
@@ -961,30 +1023,11 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   checkbox4_6->setToolTip("Draw a straight line between samplepoints (smoothing),\n"
                           "this avoids the stairstep effect when zooming in and/or at low samplerates");
 
-  checkbox4_7 = new QCheckBox;
-  checkbox4_7->setTristate(false);
-  checkbox4_7->setToolTip("Enabling this option will automatically update the onsettime field of the annotation-editor\n"
-                          "when scrolling and a cross-hair is active.");
-  if(mainwindow->auto_update_annot_onset)
-  {
-    checkbox4_7->setCheckState(Qt::Checked);
-  }
-  else
-  {
-    checkbox4_7->setCheckState(Qt::Unchecked);
-  }
-  hlayout_tmp = new QHBoxLayout;
-  hlayout_tmp->addWidget(checkbox4_7);
-  hlayout_tmp->addStretch(1000);
-  flayout4_2->addRow("Auto update annotation-editor onsettime", hlayout_tmp);
-  QObject::connect(checkbox4_7, SIGNAL(stateChanged(int)), this, SLOT(checkbox4_7Clicked(int)));
-  flayout4_2->labelForField(hlayout_tmp)->setToolTip("Enabling this option will automatically update the onsettime field of the annotation-editor\n"
-                                                     "when scrolling and a cross-hair is active.");
-
   lineedit4_1 = new QLineEdit;
   lineedit4_1->setMaxLength(31);
   lineedit4_1->setText(mainwindow->ecg_qrs_rpeak_descr);
   hlayout_tmp = new QHBoxLayout;
+  hlayout_tmp->setAlignment(Qt::AlignCenter);
   hlayout_tmp->addWidget(lineedit4_1);
   hlayout_tmp->addStretch(1000);
   flayout4_2->addRow("R-peak description string", hlayout_tmp);
@@ -1003,6 +1046,7 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
     checkbox4_8->setCheckState(Qt::Unchecked);
   }
   hlayout_tmp = new QHBoxLayout;
+  hlayout_tmp->setAlignment(Qt::AlignCenter);
   hlayout_tmp->addWidget(checkbox4_8);
   hlayout_tmp->addStretch(1000);
   flayout4_2->addRow("Add signallabel to R-peak description", hlayout_tmp);
@@ -1011,6 +1055,7 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   QObject::connect(checkbox4_8, SIGNAL(stateChanged(int)), this, SLOT(checkbox4_8Clicked(int)));
 
   hlayout_tmp = new QHBoxLayout;
+  hlayout_tmp->setAlignment(Qt::AlignCenter);
   hlayout_tmp->addLayout(flayout4_1);
   hlayout_tmp->addSpacing(20);
   hlayout_tmp->addStretch(300);
@@ -1038,6 +1083,7 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   textEdit5_1 = new QTextEdit;
   textEdit5_1->setPlainText(font_sz_example_txt);
   hlayout_tmp = new QHBoxLayout;
+  hlayout_tmp->setAlignment(Qt::AlignCenter);
   hlayout_tmp->addWidget(spinbox5_1);
   hlayout_tmp->addWidget(textEdit5_1, 500);
   hlayout_tmp->addStretch(500);
@@ -1050,6 +1096,7 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   textEdit5_2->setFont(*mainwindow->monofont);
   textEdit5_2->setPlainText(font_sz_example_txt);
   hlayout_tmp = new QHBoxLayout;
+  hlayout_tmp->setAlignment(Qt::AlignCenter);
   hlayout_tmp->addWidget(spinbox5_2);
   hlayout_tmp->addWidget(textEdit5_2, 500);
   hlayout_tmp->addStretch(500);
@@ -1063,6 +1110,7 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   ApplyButton5->setEnabled(false);
 
   hlayout_tmp = new QHBoxLayout;
+  hlayout_tmp->setAlignment(Qt::AlignCenter);
   hlayout_tmp->addWidget(ApplyButton5);
   hlayout_tmp->addStretch(500);
   hlayout_tmp->addWidget(DefaultButton5);
@@ -1686,7 +1734,7 @@ void UI_OptionsDialog::checkbox4_6Clicked(int state)
 }
 
 
-void UI_OptionsDialog::checkbox4_7Clicked(int state)
+void UI_OptionsDialog::checkbox7_2Clicked(int state)
 {
   if(state==Qt::Checked)
   {
