@@ -551,7 +551,7 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   QFormLayout *flayout7_1 = new QFormLayout;
   flayout7_1->setSpacing(20);
 
-  flayout7_1->addRow(" ", (QWidget *)NULL);
+  flayout7_1->addRow("User configurable buttons", (QWidget *)NULL);
 
   for(i=0; i<8; i++)
   {
@@ -588,9 +588,15 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
 
   flayout7_1->addRow(" ", (QWidget *)NULL);
 
+  QFrame *hline7_1 = new QFrame;
+  hline7_1->setFrameShape(QFrame::HLine);
+  hline7_1->setFrameShadow(QFrame::Sunken);
+  hline7_1->setLineWidth(2);
+  flayout7_1->addRow(hline7_1);
+
   checkbox7_2 = new QCheckBox;
   checkbox7_2->setTristate(false);
-  checkbox7_2->setToolTip("Enabling this option will automatically update the onsettime field of the annotation-editor\n"
+  checkbox7_2->setToolTip("Enabling this option will automatically update the onsettime field of the annotation editor\n"
                           "when scrolling/navigating and a cross-hair is active.");
   if(mainwindow->auto_update_annot_onset)
   {
@@ -606,15 +612,94 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   hlayout_tmp->addStretch(1000);
   flayout7_1->addRow("Auto update annotation-editor onsettime", hlayout_tmp);
   QObject::connect(checkbox7_2, SIGNAL(stateChanged(int)), this, SLOT(checkbox7_2Clicked(int)));
-  flayout7_1->labelForField(hlayout_tmp)->setToolTip("Enabling this option will automatically update the onsettime field of the annotation-editor\n"
+  flayout7_1->labelForField(hlayout_tmp)->setToolTip("Enabling this option will automatically update the onsettime field of the annotation editor\n"
                                                      "when scrolling/navigating and a cross-hair is active.");
 
   QVBoxLayout *vlayout7_1 = new QVBoxLayout;
   vlayout7_1->addLayout(flayout7_1);
   vlayout7_1->addStretch(1000);
 
+  QFormLayout *flayout7_2 = new QFormLayout;
+  flayout7_2->setSpacing(20);
+
+  flayout7_2->addRow("When a user button is clicked:", (QWidget *)NULL);
+
+  checkbox7_5 = new QCheckBox;
+  checkbox7_5->setTristate(false);
+  checkbox7_5->setToolTip("Enabling this option will automatically update the description field of the annotation editor\n"
+                          "with the name of the user button when that button is clicked.");
+  if(mainwindow->annot_editor_user_button_update_annot_description)
+  {
+    checkbox7_5->setCheckState(Qt::Checked);
+  }
+  else
+  {
+    checkbox7_5->setCheckState(Qt::Unchecked);
+  }
+  hlayout_tmp = new QHBoxLayout;
+  hlayout_tmp->setAlignment(Qt::AlignCenter);
+  hlayout_tmp->addWidget(checkbox7_5);
+  hlayout_tmp->addStretch(1000);
+  flayout7_2->addRow("set annotation editor description", hlayout_tmp);
+  QObject::connect(checkbox7_5, SIGNAL(stateChanged(int)), this, SLOT(checkbox7_5Clicked(int)));
+  flayout7_2->labelForField(hlayout_tmp)->setToolTip("Enabling this option will automatically update the description field of the annotation editor\n"
+                                                     "with the name of the user button when that button is clicked.");
+
+  checkbox7_3 = new QCheckBox;
+  checkbox7_3->setTristate(false);
+  checkbox7_3->setToolTip("Enabling this option will automatically update the onset time field of the annotation editor\n"
+                          "with the current viewtime (file position) when a user button is clicked.");
+  if(mainwindow->annot_editor_user_button_update_annot_onset)
+  {
+    checkbox7_3->setCheckState(Qt::Checked);
+  }
+  else
+  {
+    checkbox7_3->setCheckState(Qt::Unchecked);
+  }
+  hlayout_tmp = new QHBoxLayout;
+  hlayout_tmp->setAlignment(Qt::AlignCenter);
+  hlayout_tmp->addWidget(checkbox7_3);
+  hlayout_tmp->addStretch(1000);
+  flayout7_2->addRow("set annotation editor onsettime", hlayout_tmp);
+  QObject::connect(checkbox7_3, SIGNAL(stateChanged(int)), this, SLOT(checkbox7_3Clicked(int)));
+  flayout7_2->labelForField(hlayout_tmp)->setToolTip("Enabling this option will automatically update the onset time field of the annotation-editor\n"
+                                                     "with the current viewtime (file position) when a user button is clicked.");
+
+  checkbox7_4 = new QCheckBox;
+  checkbox7_4->setTristate(false);
+  checkbox7_4->setToolTip("Enabling this option will automatically update the duration field of the annotation-editor\n"
+                          "with the current pagetime when a user button is clicked.");
+  if(mainwindow->annot_editor_user_button_update_annot_duration)
+  {
+    checkbox7_4->setCheckState(Qt::Checked);
+  }
+  else
+  {
+    checkbox7_4->setCheckState(Qt::Unchecked);
+  }
+  hlayout_tmp = new QHBoxLayout;
+  hlayout_tmp->setAlignment(Qt::AlignCenter);
+  hlayout_tmp->addWidget(checkbox7_4);
+  hlayout_tmp->addStretch(1000);
+  flayout7_2->addRow("set annotation editor duration", hlayout_tmp);
+  QObject::connect(checkbox7_4, SIGNAL(stateChanged(int)), this, SLOT(checkbox7_4Clicked(int)));
+  flayout7_2->labelForField(hlayout_tmp)->setToolTip("Enabling this option will automatically update the duration field of the annotation-editor\n"
+                                                     "with the current pagetime when a user button is clicked.");
+
+  QVBoxLayout *vlayout7_2 = new QVBoxLayout;
+  vlayout7_2->addLayout(flayout7_2);
+  vlayout7_2->addStretch(1000);
+
+  QFrame *vline7_1 = new QFrame;
+  vline7_1->setFrameShape(QFrame::VLine);
+  vline7_1->setFrameShadow(QFrame::Sunken);
+  vline7_1->setLineWidth(2);
+
   QHBoxLayout *hlayout7_1 = new QHBoxLayout;
   hlayout7_1->addLayout(vlayout7_1);
+  hlayout7_1->addWidget(vline7_1);
+  hlayout7_1->addLayout(vlayout7_2);
   hlayout7_1->addStretch(1000);
   tab7->setLayout(hlayout7_1);
 
@@ -1494,8 +1579,7 @@ void UI_OptionsDialog::checkbox1Clicked(int state)
   {
     mainwindow->maincurve->blackwhite_printing = 1;
   }
-
-  if(state==Qt::Unchecked)
+  else
   {
     mainwindow->maincurve->blackwhite_printing = 0;
   }
@@ -1508,8 +1592,7 @@ void UI_OptionsDialog::checkbox2Clicked(int state)
   {
     mainwindow->show_annot_markers = 1;
   }
-
-  if(state==Qt::Unchecked)
+  else
   {
     mainwindow->show_annot_markers = 0;
   }
@@ -1524,8 +1607,7 @@ void UI_OptionsDialog::checkbox2_1Clicked(int state)
   {
     mainwindow->annotations_show_duration = 1;
   }
-
-  if(state==Qt::Unchecked)
+  else
   {
     mainwindow->annotations_show_duration = 0;
   }
@@ -1540,8 +1622,7 @@ void UI_OptionsDialog::checkbox2_2Clicked(int state)
   {
     mainwindow->annotations_duration_background_type = 1;
   }
-
-  if(state==Qt::Unchecked)
+  else
   {
     mainwindow->annotations_duration_background_type = 0;
   }
@@ -1556,8 +1637,7 @@ void UI_OptionsDialog::checkbox3Clicked(int state)
   {
     mainwindow->show_baselines = 1;
   }
-
-  if(state==Qt::Unchecked)
+  else
   {
     mainwindow->show_baselines = 0;
   }
@@ -1572,8 +1652,7 @@ void UI_OptionsDialog::checkbox4Clicked(int state)
   {
     mainwindow->clip_to_pane = 1;
   }
-
-  if(state==Qt::Unchecked)
+  else
   {
     mainwindow->clip_to_pane = 0;
   }
@@ -1588,8 +1667,7 @@ void UI_OptionsDialog::checkbox5Clicked(int state)
   {
     mainwindow->annot_filter->hide_in_list_only = 1;
   }
-
-  if(state==Qt::Unchecked)
+  else
   {
     mainwindow->annot_filter->hide_in_list_only = 0;
   }
@@ -1603,8 +1681,7 @@ void UI_OptionsDialog::checkbox6Clicked(int state)
     mainwindow->maincurve->crosshair_1.has_hor_line = 1;
     mainwindow->maincurve->crosshair_2.has_hor_line = 1;
   }
-
-  if(state==Qt::Unchecked)
+  else
   {
     mainwindow->maincurve->crosshair_1.has_hor_line = 0;
     mainwindow->maincurve->crosshair_2.has_hor_line = 0;
@@ -1620,8 +1697,7 @@ void UI_OptionsDialog::checkbox16Clicked(int state)
   {
     mainwindow->use_diverse_signal_colors = 1;
   }
-
-  if(state==Qt::Unchecked)
+  else
   {
     mainwindow->use_diverse_signal_colors = 0;
   }
@@ -1636,8 +1712,7 @@ void UI_OptionsDialog::checkbox3_1Clicked(int state)
 
     mainwindow->spectrum_colorbar->auto_adjust = 1;
   }
-
-  if(state==Qt::Unchecked)
+  else
   {
     dspinbox3_2->setEnabled(true);
 
@@ -1654,8 +1729,7 @@ void UI_OptionsDialog::checkbox4_1Clicked(int state)
   {
     mainwindow->auto_reload_mtg = 1;
   }
-
-  if(state==Qt::Unchecked)
+  else
   {
     mainwindow->auto_reload_mtg = 0;
   }
@@ -1668,8 +1742,7 @@ void UI_OptionsDialog::checkbox4_2Clicked(int state)
   {
     mainwindow->read_biosemi_status_signal = 1;
   }
-
-  if(state==Qt::Unchecked)
+  else
   {
     mainwindow->read_biosemi_status_signal = 0;
   }
@@ -1682,8 +1755,7 @@ void UI_OptionsDialog::checkbox4_3Clicked(int state)
   {
     mainwindow->read_nk_trigger_signal = 1;
   }
-
-  if(state==Qt::Unchecked)
+  else
   {
     mainwindow->read_nk_trigger_signal = 0;
   }
@@ -1696,8 +1768,7 @@ void UI_OptionsDialog::checkbox4_4Clicked(int state)
   {
     mainwindow->use_threads = 1;
   }
-
-  if(state==Qt::Unchecked)
+  else
   {
     mainwindow->use_threads = 0;
   }
@@ -1710,8 +1781,7 @@ void UI_OptionsDialog::checkbox4_5Clicked(int state)
   {
     mainwindow->check_for_updates = 1;
   }
-
-  if(state==Qt::Unchecked)
+  else
   {
     mainwindow->check_for_updates = 0;
   }
@@ -1724,8 +1794,7 @@ void UI_OptionsDialog::checkbox4_6Clicked(int state)
   {
     mainwindow->linear_interpol = 1;
   }
-
-  if(state==Qt::Unchecked)
+  else
   {
     mainwindow->linear_interpol = 0;
   }
@@ -1740,10 +1809,48 @@ void UI_OptionsDialog::checkbox7_2Clicked(int state)
   {
     mainwindow->auto_update_annot_onset = 1;
   }
-
-  if(state==Qt::Unchecked)
+  else
   {
     mainwindow->auto_update_annot_onset = 0;
+  }
+}
+
+
+void UI_OptionsDialog::checkbox7_3Clicked(int state)
+{
+  if(state==Qt::Checked)
+  {
+    mainwindow->annot_editor_user_button_update_annot_onset = 1;
+  }
+  else
+  {
+    mainwindow->annot_editor_user_button_update_annot_onset = 0;
+  }
+}
+
+
+void UI_OptionsDialog::checkbox7_4Clicked(int state)
+{
+  if(state==Qt::Checked)
+  {
+    mainwindow->annot_editor_user_button_update_annot_duration = 1;
+  }
+  else
+  {
+    mainwindow->annot_editor_user_button_update_annot_duration = 0;
+  }
+}
+
+
+void UI_OptionsDialog::checkbox7_5Clicked(int state)
+{
+  if(state==Qt::Checked)
+  {
+    mainwindow->annot_editor_user_button_update_annot_description = 1;
+  }
+  else
+  {
+    mainwindow->annot_editor_user_button_update_annot_description = 0;
   }
 }
 
@@ -1754,8 +1861,7 @@ void UI_OptionsDialog::checkbox4_8Clicked(int state)
   {
     mainwindow->use_signallabel_in_annot_descr = 1;
   }
-
-  if(state==Qt::Unchecked)
+  else
   {
     mainwindow->use_signallabel_in_annot_descr = 0;
   }

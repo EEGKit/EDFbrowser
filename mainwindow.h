@@ -236,7 +236,10 @@ public:
       hrvdock_max_bpm,
       hrvdock_min_bpm,
       hrvdock_height,
-      annot_edit_user_button_enabled[8];
+      annot_edit_user_button_enabled[8],
+      annot_editor_user_button_update_annot_description,
+      annot_editor_user_button_update_annot_onset,
+      annot_editor_user_button_update_annot_duration;
 
   QColor hrvdock_trace_color;
 

@@ -107,6 +107,7 @@ private:
   QComboBox *posNegTimebox;
 
   void update_description_completer(void);
+  void user_button_clicked(int);
 
 private slots:
 

@@ -5,6 +5,9 @@
  - Export to ASCII (CSV): fixed a bug that caused the program to hang forever when
    exporting a file with an extremely long datarecord duration.
 
+ - Annotation editor: added the possibility to configure a maximum of eight user buttons
+   which can be used to quickly generate annotations e.g. for sleep scoring.
+
 
  version 1.85      August 29, 2021
  --------------

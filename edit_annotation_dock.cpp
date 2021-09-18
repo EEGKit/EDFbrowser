@@ -609,60 +609,67 @@ void UI_AnnotationEditwindow::update_description_completer(void)
 }
 
 
-void UI_AnnotationEditwindow::user_button_0_clicked()
+void UI_AnnotationEditwindow::user_button_clicked(int button)
 {
-  annot_descript_lineEdit->setText(QString::fromUtf8(mainwindow->annot_edit_user_button_name[0]));
+  if((button < 0) || (button > 7))  return;
+
+  if(mainwindow->annot_editor_user_button_update_annot_description)
+  {
+    annot_descript_lineEdit->setText(QString::fromUtf8(mainwindow->annot_edit_user_button_name[button]));
+  }
+
+  if(mainwindow->annot_editor_user_button_update_annot_onset)
+  {
+    annotEditSetOnset(mainwindow->edfheaderlist[mainwindow->sel_viewtime]->viewtime);
+  }
+
+  if(mainwindow->annot_editor_user_button_update_annot_duration)
+  {
+    annotEditSetDuration(mainwindow->pagetime);
+  }
 
   createButtonClicked();
+}
+
+
+void UI_AnnotationEditwindow::user_button_0_clicked()
+{
+  user_button_clicked(0);
 }
 
 void UI_AnnotationEditwindow::user_button_1_clicked()
 {
-  annot_descript_lineEdit->setText(QString::fromUtf8(mainwindow->annot_edit_user_button_name[1]));
-
-  createButtonClicked();
+  user_button_clicked(1);
 }
 
 void UI_AnnotationEditwindow::user_button_2_clicked()
 {
-  annot_descript_lineEdit->setText(QString::fromUtf8(mainwindow->annot_edit_user_button_name[2]));
-
-  createButtonClicked();
+  user_button_clicked(2);
 }
 
 void UI_AnnotationEditwindow::user_button_3_clicked()
 {
-  annot_descript_lineEdit->setText(QString::fromUtf8(mainwindow->annot_edit_user_button_name[3]));
-
-  createButtonClicked();
+  user_button_clicked(3);
 }
 
 void UI_AnnotationEditwindow::user_button_4_clicked()
 {
-  annot_descript_lineEdit->setText(QString::fromUtf8(mainwindow->annot_edit_user_button_name[4]));
-
-  createButtonClicked();
+  user_button_clicked(4);
 }
 
 void UI_AnnotationEditwindow::user_button_5_clicked()
 {
-  annot_descript_lineEdit->setText(QString::fromUtf8(mainwindow->annot_edit_user_button_name[5]));
-
-  createButtonClicked();
+  user_button_clicked(5);
 }
 
 void UI_AnnotationEditwindow::user_button_6_clicked()
 {
-  annot_descript_lineEdit->setText(QString::fromUtf8(mainwindow->annot_edit_user_button_name[6]));
-
-  createButtonClicked();
+  user_button_clicked(6);
 }
 
 void UI_AnnotationEditwindow::user_button_7_clicked()
 {
-  annot_descript_lineEdit->setText(QString::fromUtf8(mainwindow->annot_edit_user_button_name[7]));
-
-  createButtonClicked();
+  user_button_clicked(7);
 }
 
 
