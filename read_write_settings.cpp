@@ -1493,6 +1493,22 @@ void UI_Mainwindow::read_general_settings()
       xml_go_up(xml_hdl);
     }
 
+    if(!(xml_goto_nth_element_inside(xml_hdl, "annot_editor_user_button_jump_to_next_page", 0)))
+    {
+      if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+      {
+        xml_close(xml_hdl);
+        return;
+      }
+
+      if(atoi(result) == 1)
+      {
+        annot_editor_user_button_jump_to_next_page = 1;
+      }
+
+      xml_go_up(xml_hdl);
+    }
+
     xml_go_up(xml_hdl);
   }
 
@@ -2690,6 +2706,7 @@ void UI_Mainwindow::write_settings()
     fprintf(cfgfile, "      <annot_editor_user_button_update_annot_description>%i</annot_editor_user_button_update_annot_description>\n", annot_editor_user_button_update_annot_description);
     fprintf(cfgfile, "      <annot_editor_user_button_update_annot_onset>%i</annot_editor_user_button_update_annot_onset>\n", annot_editor_user_button_update_annot_onset);
     fprintf(cfgfile, "      <annot_editor_user_button_update_annot_duration>%i</annot_editor_user_button_update_annot_duration>\n", annot_editor_user_button_update_annot_duration);
+    fprintf(cfgfile, "      <annot_editor_user_button_jump_to_next_page>%i</annot_editor_user_button_jump_to_next_page>\n", annot_editor_user_button_jump_to_next_page);
     fprintf(cfgfile, "    </annotation_editor>\n");
 
     fprintf(cfgfile, "    <live_stream_update_interval>%i</live_stream_update_interval>\n", live_stream_update_interval);

@@ -687,6 +687,25 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   flayout7_2->labelForField(hlayout_tmp)->setToolTip("Enabling this option will automatically update the duration field of the annotation-editor\n"
                                                      "with the current pagetime when a user button is clicked.");
 
+  checkbox7_6 = new QCheckBox;
+  checkbox7_6->setTristate(false);
+  checkbox7_6->setToolTip("Enabling this option will automatically change the viewtime (file position) and jump to the next page.");
+  if(mainwindow->annot_editor_user_button_jump_to_next_page)
+  {
+    checkbox7_6->setCheckState(Qt::Checked);
+  }
+  else
+  {
+    checkbox7_6->setCheckState(Qt::Unchecked);
+  }
+  hlayout_tmp = new QHBoxLayout;
+  hlayout_tmp->setAlignment(Qt::AlignCenter);
+  hlayout_tmp->addWidget(checkbox7_6);
+  hlayout_tmp->addStretch(1000);
+  flayout7_2->addRow("jump to next page", hlayout_tmp);
+  QObject::connect(checkbox7_6, SIGNAL(stateChanged(int)), this, SLOT(checkbox7_6Clicked(int)));
+  flayout7_2->labelForField(hlayout_tmp)->setToolTip("Enabling this option will automatically change the viewtime (file position) and jump to the next page.");
+
   QVBoxLayout *vlayout7_2 = new QVBoxLayout;
   vlayout7_2->addLayout(flayout7_2);
   vlayout7_2->addStretch(1000);
@@ -1851,6 +1870,19 @@ void UI_OptionsDialog::checkbox7_5Clicked(int state)
   else
   {
     mainwindow->annot_editor_user_button_update_annot_description = 0;
+  }
+}
+
+
+void UI_OptionsDialog::checkbox7_6Clicked(int state)
+{
+  if(state==Qt::Checked)
+  {
+    mainwindow->annot_editor_user_button_jump_to_next_page = 1;
+  }
+  else
+  {
+    mainwindow->annot_editor_user_button_jump_to_next_page = 0;
   }
 }
 

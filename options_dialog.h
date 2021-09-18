@@ -128,7 +128,8 @@ QCheckBox      *checkbox1,
                *checkbox7_2,
                *checkbox7_3,
                *checkbox7_4,
-               *checkbox7_5;
+               *checkbox7_5,
+               *checkbox7_6;
 
 QTableWidget   *colorBarTable;
 
@@ -194,6 +195,7 @@ void checkbox7_2Clicked(int);
 void checkbox7_3Clicked(int);
 void checkbox7_4Clicked(int);
 void checkbox7_5Clicked(int);
+void checkbox7_6Clicked(int);
 void ApplyButtonClicked();
 void colorBarButtonClicked(SpecialButton *);
 void DefaultButton2Clicked();

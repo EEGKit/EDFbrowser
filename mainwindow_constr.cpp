@@ -135,6 +135,8 @@ UI_Mainwindow::UI_Mainwindow()
 
   annot_editor_user_button_update_annot_duration = 0;
 
+  annot_editor_user_button_jump_to_next_page = 0;
+
   use_diverse_signal_colors = 0;
 
   for(i=0; i<8; i++)

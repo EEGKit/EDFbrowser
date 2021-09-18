@@ -239,7 +239,8 @@ public:
       annot_edit_user_button_enabled[8],
       annot_editor_user_button_update_annot_description,
       annot_editor_user_button_update_annot_onset,
-      annot_editor_user_button_update_annot_duration;
+      annot_editor_user_button_update_annot_duration,
+      annot_editor_user_button_jump_to_next_page;
 
   QColor hrvdock_trace_color;
 
@@ -524,6 +525,7 @@ public slots:
   void shift_page_right();
   void shift_page_up();
   void shift_page_down();
+  void next_page();
 
 private slots:
   void open_new_file();
@@ -547,7 +549,6 @@ private slots:
   void former_page();
   void playback_file();
   void stop_playback();
-  void next_page();
   void zoomback();
   void forward();
   void show_splashscreen();

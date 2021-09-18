@@ -629,6 +629,11 @@ void UI_AnnotationEditwindow::user_button_clicked(int button)
   }
 
   createButtonClicked();
+
+  if(mainwindow->annot_editor_user_button_jump_to_next_page)
+  {
+    mainwindow->next_page();
+  }
 }
 
 
