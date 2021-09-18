@@ -2773,6 +2773,23 @@ void UI_OptionsDialog::tab7_settings_changed()
 
     strlcpy(mainwindow->annot_edit_user_button_name[i], lineedit7_1[i]->text().toUtf8().data(), 64);
   }
+
+  if(mainwindow->annot_editor_active)
+  {
+    for(i=0; i<8; i++)
+    {
+      if(checkbox7_1[i]->checkState() == Qt::Checked)
+      {
+        mainwindow->annotationEditDock->user_button[i]->setVisible(true);
+      }
+      else
+      {
+        mainwindow->annotationEditDock->user_button[i]->setVisible(false);
+      }
+
+      mainwindow->annotationEditDock->user_button[i]->setText(lineedit7_1[i]->text());
+    }
+  }
 }
 
 

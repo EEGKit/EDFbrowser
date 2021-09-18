@@ -75,6 +75,8 @@ public:
 
   void set_selected_annotation(struct annotationblock *);
 
+  QPushButton *user_button[8];
+
 private:
 
   int annot_num,
@@ -100,8 +102,7 @@ private:
 
   QPushButton *modifybutton,
               *deletebutton,
-              *createbutton,
-              *user_button[8];
+              *createbutton;
 
   QComboBox *posNegTimebox;
 
