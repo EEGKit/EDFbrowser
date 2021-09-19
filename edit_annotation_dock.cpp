@@ -112,6 +112,7 @@ UI_AnnotationEditwindow::UI_AnnotationEditwindow(struct edfhdrblock *e_hdr, QWid
   {
     user_button[i] = new QPushButton;
     user_button[i]->setText(mainwindow->annot_edit_user_button_name[i]);
+    user_button[i]->setShortcut(QKeySequence(Qt::CTRL + (Qt::Key_1 + i)));
     if(!mainwindow->annot_edit_user_button_enabled[i])
     {
       user_button[i]->setVisible(false);

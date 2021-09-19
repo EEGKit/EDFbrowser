@@ -71,6 +71,7 @@
 #include <QSize>
 #include <QToolTip>
 #include <QKeySequence>
+#include <QKeyEvent>
 #include <QTableWidget>
 #include <QListWidget>
 #include <QListWidgetItem>

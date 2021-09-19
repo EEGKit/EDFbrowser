@@ -706,6 +706,10 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   QObject::connect(checkbox7_6, SIGNAL(stateChanged(int)), this, SLOT(checkbox7_6Clicked(int)));
   flayout7_2->labelForField(hlayout_tmp)->setToolTip("Enabling this option will automatically change the viewtime (file position) and jump to the next page.");
 
+  flayout7_2->addRow("  ", (QWidget *)NULL);
+  flayout7_2->addRow("  ", (QWidget *)NULL);
+  flayout7_2->addRow("Keyboard shortcuts are Ctrl + 1, Ctrl + 2, Ctrl + 3, etc.", (QWidget *)NULL);
+
   QVBoxLayout *vlayout7_2 = new QVBoxLayout;
   vlayout7_2->addLayout(flayout7_2);
   vlayout7_2->addStretch(1000);
