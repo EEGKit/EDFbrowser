@@ -118,7 +118,7 @@ int strip_types_from_label(char *label)
   int i, type, len;
 
   len = strlen(label);
-  if(len<16)
+  if(len<5)
   {
     return 0;
   }
@@ -130,7 +130,7 @@ int strip_types_from_label(char *label)
       break;
     }
   }
-  if(type == 8)
+  if(type == 7)
   {
     return 0;
   }

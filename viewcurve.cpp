@@ -1752,12 +1752,15 @@ void ViewCurve::drawCurve_stage_2(QPainter *painter, int w_width, int w_height, 
 
               if((signalcomps > 1) && (mainwindow->channel_linked_annotations))
               {
-                chp = strstr(annot->description, "@@");
+                strlcpy(str4, annot->description, MAX_ANNOTATION_LEN);
+                chp = strstr(str4, "@@");
                 if(chp != NULL)
                 {
                   if(strlen(chp) > 2)
                   {
                     chp += 2;
+                    strip_types_from_label(chp);
+                    trim_spaces(chp);
 
                     for(k=0; k<signalcomps; k++)
                     {
@@ -2269,12 +2272,15 @@ void ViewCurve::drawCurve_stage_2(QPainter *painter, int w_width, int w_height, 
 
             if((signalcomps > 1) && (mainwindow->channel_linked_annotations))
             {
-              chp = strstr(annot->description, "@@");
+              strlcpy(str4, annot->description, MAX_ANNOTATION_LEN);
+              chp = strstr(str4, "@@");
               if(chp != NULL)
               {
                 if(strlen(chp) > 2)
                 {
                   chp += 2;
+                  strip_types_from_label(chp);
+                  trim_spaces(chp);
 
                   for(k=0; k<signalcomps; k++)
                   {
