@@ -155,7 +155,7 @@ UI_QRS_detector::UI_QRS_detector(QWidget *w_parent, struct signalcompblock *sign
   strlcpy(rpeak_descr, mainwindow->ecg_qrs_rpeak_descr, MAX_ANNOTATION_LEN);
   if(mainwindow->use_signallabel_in_annot_descr)
   {
-    strlcat(rpeak_descr, " ", MAX_ANNOTATION_LEN);
+    strlcat(rpeak_descr, "@@", MAX_ANNOTATION_LEN);
     if(strlen(signalcomp->alias))
     {
       strlcat(rpeak_descr, signalcomp->alias, MAX_ANNOTATION_LEN);
