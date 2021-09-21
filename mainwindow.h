@@ -240,7 +240,8 @@ public:
       annot_editor_user_button_update_annot_description,
       annot_editor_user_button_update_annot_onset,
       annot_editor_user_button_update_annot_duration,
-      annot_editor_user_button_jump_to_next_page;
+      annot_editor_user_button_jump_to_next_page,
+      channel_linked_annotations;
 
   QColor hrvdock_trace_color;
 

@@ -191,6 +191,22 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   hlayout_tmp->addStretch(1000);
   flayout1_2->addRow("Annotation marker", hlayout_tmp);
 
+  checkbox2_3 = new QCheckBox;
+  checkbox2_3->setTristate(false);
+  if(mainwindow->channel_linked_annotations)
+  {
+    checkbox2_3->setCheckState(Qt::Checked);
+  }
+  else
+  {
+    checkbox2_3->setCheckState(Qt::Unchecked);
+  }
+  hlayout_tmp = new QHBoxLayout;
+  hlayout_tmp->setAlignment(Qt::AlignCenter);
+  hlayout_tmp->addWidget(checkbox2_3);
+  hlayout_tmp->addStretch(1000);
+  flayout1_2->addRow("Use signal linked annotations", hlayout_tmp);
+
   checkbox2_1 = new QCheckBox;
   checkbox2_1->setTristate(false);
   if(mainwindow->annotations_show_duration)
@@ -357,6 +373,7 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   QObject::connect(checkbox2,               SIGNAL(stateChanged(int)),        this, SLOT(checkbox2Clicked(int)));
   QObject::connect(checkbox2_1,             SIGNAL(stateChanged(int)),        this, SLOT(checkbox2_1Clicked(int)));
   QObject::connect(checkbox2_2,             SIGNAL(stateChanged(int)),        this, SLOT(checkbox2_2Clicked(int)));
+  QObject::connect(checkbox2_3,             SIGNAL(stateChanged(int)),        this, SLOT(checkbox2_3Clicked(int)));
   QObject::connect(checkbox3,               SIGNAL(stateChanged(int)),        this, SLOT(checkbox3Clicked(int)));
   QObject::connect(checkbox4,               SIGNAL(stateChanged(int)),        this, SLOT(checkbox4Clicked(int)));
   QObject::connect(checkbox5,               SIGNAL(stateChanged(int)),        this, SLOT(checkbox5Clicked(int)));
@@ -1648,6 +1665,21 @@ void UI_OptionsDialog::checkbox2_2Clicked(int state)
   else
   {
     mainwindow->annotations_duration_background_type = 0;
+  }
+
+  mainwindow->maincurve->update();
+}
+
+
+void UI_OptionsDialog::checkbox2_3Clicked(int state)
+{
+  if(state==Qt::Checked)
+  {
+    mainwindow->channel_linked_annotations = 1;
+  }
+  else
+  {
+    mainwindow->channel_linked_annotations = 0;
   }
 
   mainwindow->maincurve->update();

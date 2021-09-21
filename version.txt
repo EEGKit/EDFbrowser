@@ -8,6 +8,8 @@
  - Annotation editor: added the possibility to configure a maximum of eight user buttons
    which can be used to quickly generate annotations e.g. for sleep scoring.
 
+ - Added support for signal linked annotations using "@@" in the description.
+
 
  version 1.85      August 29, 2021
  --------------

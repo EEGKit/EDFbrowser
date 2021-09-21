@@ -1619,7 +1619,7 @@ void ViewCurve::print_to_image(int w_img, int h_img)
 
 void ViewCurve::drawCurve_stage_2(QPainter *painter, int w_width, int w_height, int print_linewidth)
 {
-  int i, j, x_pix=0, x_tmp,
+  int i, j, k, x_pix=0, x_tmp,
       signalcomps,
       baseline,
       m_pagetime,
@@ -1635,7 +1635,8 @@ void ViewCurve::drawCurve_stage_2(QPainter *painter, int w_width, int w_height, 
        string[600]="",
        str2[32]="",
        str3[128]="",
-       str4[1024]="";
+       str4[1024]="",
+       *chp=NULL;
 
   long long time_ppixel,
             ll_elapsed_time,
@@ -1698,6 +1699,8 @@ void ViewCurve::drawCurve_stage_2(QPainter *painter, int w_width, int w_height, 
     signalcomp[i]->sample_pixel_ratio = (double)signalcomp[i]->samples_on_screen / (double)w;
   }
 
+  vertical_distance = h / (signalcomps + 1);
+
   painter->fillRect(0, 0, w, h, backgroundcolor);
 
   if(mainwindow->show_annot_markers)
@@ -1745,26 +1748,70 @@ void ViewCurve::drawCurve_stage_2(QPainter *painter, int w_width, int w_height, 
 
             if((marker_x < w) && (marker_x2 > 0))
             {
-              if(annot->selected_in_dock)
+              chp = NULL;
+
+              if((signalcomps > 1) && (mainwindow->channel_linked_annotations))
               {
-                if(mainwindow->annotations_duration_background_type == 0)
+                chp = strstr(annot->description, "@@");
+                if(chp != NULL)
                 {
-                  painter->fillRect(marker_x, 0, marker_x2, h, annot_duration_color_selected);
-                }
-                else
-                {
-                  painter->fillRect(marker_x, h - 92 + ((j % 3) * 30), marker_x2, 32, annot_duration_color_selected);
+                  if(strlen(chp) > 2)
+                  {
+                    chp += 2;
+
+                    for(k=0; k<signalcomps; k++)
+                    {
+                      if(!strcmp(chp, signalcomp[k]->signallabel))
+                      {
+                        baseline = vertical_distance * (k + 1);
+
+                        if(annot->selected_in_dock)
+                        {
+                          painter->fillRect(marker_x, baseline - (vertical_distance / 2), marker_x2, vertical_distance, annot_duration_color_selected);
+                        }
+                        else
+                        {
+                          painter->fillRect(marker_x, baseline - (vertical_distance / 2), marker_x2, vertical_distance, annot_duration_color);
+                        }
+
+                        break;
+                      }
+                    }
+                    if(k == signalcomps)
+                    {
+                      chp = NULL;
+                    }
+                  }
+                  else
+                  {
+                    chp = NULL;
+                  }
                 }
               }
-              else
+
+              if(chp == NULL)
               {
-                if(mainwindow->annotations_duration_background_type == 0)
+                if(annot->selected_in_dock)
                 {
-                  painter->fillRect(marker_x, 0, marker_x2, h, annot_duration_color);
+                  if(mainwindow->annotations_duration_background_type == 0)
+                  {
+                    painter->fillRect(marker_x, 0, marker_x2, h, annot_duration_color_selected);
+                  }
+                  else
+                  {
+                    painter->fillRect(marker_x, h - 92 + ((j % 3) * 30), marker_x2, 32, annot_duration_color_selected);
+                  }
                 }
                 else
                 {
-                  painter->fillRect(marker_x, h - 92 + ((j % 3) * 30), marker_x2, 32, annot_duration_color);
+                  if(mainwindow->annotations_duration_background_type == 0)
+                  {
+                    painter->fillRect(marker_x, 0, marker_x2, h, annot_duration_color);
+                  }
+                  else
+                  {
+                    painter->fillRect(marker_x, h - 92 + ((j % 3) * 30), marker_x2, 32, annot_duration_color);
+                  }
                 }
               }
             }
@@ -2218,7 +2265,44 @@ void ViewCurve::drawCurve_stage_2(QPainter *painter, int w_width, int w_height, 
 
             marker_x = (int)((((double)w) / mainwindow->pagetime) * l_tmp);
 
-            painter->drawLine(marker_x, 0, marker_x, h);
+            chp = NULL;
+
+            if((signalcomps > 1) && (mainwindow->channel_linked_annotations))
+            {
+              chp = strstr(annot->description, "@@");
+              if(chp != NULL)
+              {
+                if(strlen(chp) > 2)
+                {
+                  chp += 2;
+
+                  for(k=0; k<signalcomps; k++)
+                  {
+                    if(!strcmp(chp, signalcomp[k]->signallabel))
+                    {
+                      baseline = vertical_distance * (k + 1);
+
+                      painter->drawLine(marker_x, baseline + (vertical_distance / 2), marker_x, baseline - (vertical_distance / 2));
+
+                      break;
+                    }
+                  }
+                  if(k == signalcomps)
+                  {
+                    chp = NULL;
+                  }
+                }
+                else
+                {
+                  chp = NULL;
+                }
+              }
+            }
+
+            if(chp == NULL)
+            {
+              painter->drawLine(marker_x, 0, marker_x, h);
+            }
 
             l_tmp = annot->onset - mainwindow->edfheaderlist[i]->starttime_offset;
 

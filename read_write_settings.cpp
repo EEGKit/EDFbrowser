@@ -246,6 +246,18 @@ void UI_Mainwindow::read_color_settings()
     xml_go_up(xml_hdl);
   }
 
+  if(!xml_goto_nth_element_inside(xml_hdl, "channel_linked_annotations", 0))
+  {
+    if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+    {
+      xml_close(xml_hdl);
+      return;
+    }
+    channel_linked_annotations = atoi(result);
+
+    xml_go_up(xml_hdl);
+  }
+
   if(xml_goto_nth_element_inside(xml_hdl, "show_baselines", 0))
   {
     xml_close(xml_hdl);
@@ -2472,6 +2484,9 @@ void UI_Mainwindow::write_settings()
 
     fprintf(cfgfile, "      <show_annot_markers>%i</show_annot_markers>\n",
                     show_annot_markers);
+
+    fprintf(cfgfile, "      <channel_linked_annotations>%i</channel_linked_annotations>\n",
+                    channel_linked_annotations);
 
     fprintf(cfgfile, "      <show_annot_duration>%i</show_annot_duration>\n",
                     annotations_show_duration);
