@@ -360,7 +360,7 @@ void UI_Signalswindow::DisplayCompButtonClicked()
           }
         }
         strlcpy(str2, newsignalcomp->edfhdr->edfparam[j].label, 128);
-        strip_types_from_label(str2);
+        newsignalcomp->signallabel_type_stripped = strip_types_from_label(str2);
         strlcat(newsignalcomp->signallabel, str2, 512);
         remove_trailing_spaces(newsignalcomp->signallabel);
         strlcat(newsignalcomp->signallabel, " ", 512);
@@ -455,7 +455,7 @@ void UI_Signalswindow::DisplayButtonClicked()
     newsignalcomp->sensitivity[0] = newsignalcomp->edfhdr->edfparam[s].bitvalue / ((double)newsignalcomp->voltpercm * mainwindow->y_pixelsizefactor);
 
     strlcpy(newsignalcomp->signallabel, newsignalcomp->edfhdr->edfparam[s].label, 256);
-    strip_types_from_label(newsignalcomp->signallabel);
+    newsignalcomp->signallabel_type_stripped = strip_types_from_label(newsignalcomp->signallabel);
     remove_trailing_spaces(newsignalcomp->signallabel);
 
     newsignalcomp->file_duration = newsignalcomp->edfhdr->long_data_record_duration * newsignalcomp->edfhdr->datarecords;
@@ -817,40 +817,6 @@ void UI_Signalswindow::HelpButtonClicked()
 }
 
 
-void UI_Signalswindow::strip_types_from_label(char *label)
-{
-  int i,
-      len;
-
-
-  len = strlen(label);
-  if(len<16)
-  {
-    return;
-  }
-
-  if((!(strncmp(label, "EEG ", 4)))
-   ||(!(strncmp(label, "ECG ", 4)))
-   ||(!(strncmp(label, "EOG ", 4)))
-   ||(!(strncmp(label, "ERG ", 4)))
-   ||(!(strncmp(label, "EMG ", 4)))
-   ||(!(strncmp(label, "MEG ", 4)))
-   ||(!(strncmp(label, "MCG ", 4))))
-  {
-    if(label[4]!=' ')
-    {
-      for(i=0; i<(len-4); i++)
-      {
-        label[i] = label[i+4];
-      }
-
-      for(; i<len; i++)
-      {
-        label[i] = ' ';
-      }
-    }
-  }
-}
 
 
 

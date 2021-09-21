@@ -5263,42 +5263,6 @@ void ViewCurve::setCrosshair_1_center(void)
 }
 
 
-void ViewCurve::strip_types_from_label(char *label)
-{
-  int i,
-      len;
-
-
-  len = strlen(label);
-  if(len<16)
-  {
-    return;
-  }
-
-  if((!(strncmp(label, "EEG ", 4)))
-   ||(!(strncmp(label, "ECG ", 4)))
-   ||(!(strncmp(label, "EOG ", 4)))
-   ||(!(strncmp(label, "ERG ", 4)))
-   ||(!(strncmp(label, "EMG ", 4)))
-   ||(!(strncmp(label, "MEG ", 4)))
-   ||(!(strncmp(label, "MCG ", 4))))
-  {
-    if(label[4]!=' ')
-    {
-      for(i=0; i<(len-4); i++)
-      {
-        label[i] = label[i+4];
-      }
-
-      for(; i<len; i++)
-      {
-        label[i] = ' ';
-      }
-    }
-  }
-}
-
-
 void ViewCurve::dragEnterEvent(QDragEnterEvent *e)
 {
   if(e->mimeData()->hasUrls())

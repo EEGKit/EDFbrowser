@@ -783,7 +783,7 @@ void UI_LoadMontagewindow::LoadButtonClicked()
         }
       }
       strlcpy(str, newsignalcomp->edfhdr->edfparam[newsignalcomp->edfsignal[signals_read]].label, 128);
-      strip_types_from_label(str);
+      newsignalcomp->signallabel_type_stripped = strip_types_from_label(str);
       strlcat(newsignalcomp->signallabel, str, 512);
       remove_trailing_spaces(newsignalcomp->signallabel);
       strlcat(newsignalcomp->signallabel, " ", 512);
@@ -2324,40 +2324,6 @@ void UI_LoadMontagewindow::LoadButtonClicked()
 }
 
 
-void UI_LoadMontagewindow::strip_types_from_label(char *label)
-{
-  int i,
-      len;
-
-
-  len = strlen(label);
-  if(len<16)
-  {
-    return;
-  }
-
-  if((!(strncmp(label, "EEG ", 4)))
-   ||(!(strncmp(label, "ECG ", 4)))
-   ||(!(strncmp(label, "EOG ", 4)))
-   ||(!(strncmp(label, "ERG ", 4)))
-   ||(!(strncmp(label, "EMG ", 4)))
-   ||(!(strncmp(label, "MEG ", 4)))
-   ||(!(strncmp(label, "MCG ", 4))))
-  {
-    if(label[4]!=' ')
-    {
-      for(i=0; i<(len-4); i++)
-      {
-        label[i] = label[i+4];
-      }
-
-      for(; i<len; i++)
-      {
-        label[i] = ' ';
-      }
-    }
-  }
-}
 
 
 

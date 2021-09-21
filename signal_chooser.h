@@ -44,7 +44,7 @@
 #include "adjustfiltersettings.h"
 #include "ecg_filter.h"
 #include "utils.h"
-
+#include "edf_helper.h"
 
 
 
@@ -78,8 +78,6 @@ QListWidget  *list;
 
 int task,
     *signal_nr;
-
-void strip_types_from_label(char *);
 
 void load_signalcomps(void);
 

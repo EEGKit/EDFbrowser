@@ -41,7 +41,7 @@ extern "C" {
 
 int edfplus_annotation_get_tal_timestamp_digit_cnt(struct edfhdrblock *);
 int edfplus_annotation_get_tal_timestamp_decimal_cnt(struct edfhdrblock *);
-
+int strip_types_from_label(char *);
 
 #ifdef __cplusplus
 } /* extern "C" */

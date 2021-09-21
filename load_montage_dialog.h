@@ -47,6 +47,7 @@
 #include "utils.h"
 #include "spectrum_dock.h"
 #include "plif_ecg_subtract_filter.h"
+#include "edf_helper.h"
 
 #include "third_party/fidlib/fidlib.h"
 
@@ -76,9 +77,6 @@ private:
                *LoadButton;
 
   char mtg_path[MAX_PATH_LENGTH];
-
-  void strip_types_from_label(char *);
-
 
 private slots:
 

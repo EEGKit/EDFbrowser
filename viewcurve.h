@@ -64,6 +64,7 @@
 #include "cdsa_dialog.h"
 #include "run_qrs_detector.h"
 #include "averager_dialog.h"
+#include "edf_helper.h"
 
 #include "third_party/fidlib/fidlib.h"
 
@@ -279,7 +280,6 @@ protected slots:
   void StatisticsButton();
   void ECGdetectButton();
   void signalInvert();
-  void strip_types_from_label(char *);
   void sidemenu_close();
   void cdsa_button();
   void QRSdetectButton();

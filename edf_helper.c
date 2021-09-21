@@ -28,6 +28,16 @@
 
 #include "edf_helper.h"
 
+static const char edf_label_types[7][32]=
+{
+  "EEG             ",
+  "ECG             ",
+  "EOG             ",
+  "ERG             ",
+  "EMG             ",
+  "MEG             ",
+  "MCG             "
+};
 
 
 int edfplus_annotation_get_tal_timestamp_digit_cnt(struct edfhdrblock *hdr)
@@ -102,6 +112,46 @@ int edfplus_annotation_get_tal_timestamp_decimal_cnt(struct edfhdrblock *hdr)
   return timestamp_decimals;
 }
 
+
+int strip_types_from_label(char *label)
+{
+  int i, type, len;
+
+  len = strlen(label);
+  if(len<16)
+  {
+    return 0;
+  }
+
+  for(type=0; type<7; type++)
+  {
+    if(!strncmp(label, edf_label_types[type], 4))
+    {
+      break;
+    }
+  }
+  if(type == 8)
+  {
+    return 0;
+  }
+
+  if(label[4] == ' ')
+  {
+    return 0;
+  }
+
+  for(i=0; i<(len-4); i++)
+  {
+    label[i] = label[i+4];
+  }
+
+  for(; i<len; i++)
+  {
+    label[i] = ' ';
+  }
+
+  return (type + 1);
+}
 
 
 

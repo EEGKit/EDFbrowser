@@ -205,6 +205,7 @@ struct signalcompblock{
         long long oldsmplnr;
         long long file_duration;
         char signallabel[512];
+        int signallabel_type_stripped;
         char alias[17];
         int signallabellen;
         char signallabel_bu[512];

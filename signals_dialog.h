@@ -45,7 +45,7 @@
 #include "special_button.h"
 #include "utils.h"
 #include "cdsa_dialog.h"
-
+#include "edf_helper.h"
 
 
 class UI_Mainwindow;
@@ -98,8 +98,6 @@ private:
   char physdimension[64];
 
   double bitvalue;
-
-  void strip_types_from_label(char *);
 
   void AddSubtractButtonsClicked(int);
 
