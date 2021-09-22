@@ -796,6 +796,8 @@ void UI_LoadMontagewindow::LoadButtonClicked()
       xml_go_up(xml_hdl);
     }
 
+    remove_trailing_spaces(newsignalcomp->signallabel);
+
     if(skip)  continue;
 
     strlcpy(newsignalcomp->physdimension, newsignalcomp->edfhdr->edfparam[newsignalcomp->edfsignal[0]].physdimension, 9);
