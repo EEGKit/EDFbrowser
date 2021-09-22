@@ -790,13 +790,12 @@ void UI_LoadMontagewindow::LoadButtonClicked()
 
       newsignalcomp->file_duration = newsignalcomp->edfhdr->long_data_record_duration * newsignalcomp->edfhdr->datarecords;
 
-      newsignalcomp->signallabellen = strlen(newsignalcomp->signallabel);
-
       xml_go_up(xml_hdl);
       xml_go_up(xml_hdl);
     }
 
     remove_trailing_spaces(newsignalcomp->signallabel);
+    newsignalcomp->signallabellen = strlen(newsignalcomp->signallabel);
 
     if(skip)  continue;
 
