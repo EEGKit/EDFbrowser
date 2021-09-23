@@ -1316,6 +1316,16 @@ int UI_ImportAnnotationswindow::import_from_ascii(void)
       }
     }
 
+    if(line[len-1] == '\r')
+    {
+      line[len-1] = 0;
+
+      if(--len == 0)
+      {
+        continue;
+      }
+    }
+
     onset_is_set = 0;
     descr_is_set = 0;
     duration_is_set = 0;
