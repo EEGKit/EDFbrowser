@@ -540,7 +540,7 @@ void ViewCurve::mousePressEvent(QMouseEvent *press_event)
 
         return;
       }
-      else if((m_y>ruler_y_position)&&(m_y<(ruler_y_position + ((int)(4.0 / mainwindow->y_pixelsizefactor))))&&(m_x>ruler_x_position)&&(m_x<(ruler_x_position + 150 + (w / 5))))
+      else if((m_y>ruler_y_position)&&(m_y<(ruler_y_position + ((int)(4.0 / mainwindow->y_pixelsizefactor))))&&(m_x>ruler_x_position)&&(m_x<(ruler_x_position + ((int)(w / 2.8)))))
       {
         ruler_moving = 1;
       }
