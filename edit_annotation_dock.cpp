@@ -50,7 +50,7 @@ UI_AnnotationEditwindow::UI_AnnotationEditwindow(struct edfhdrblock *e_hdr, QWid
 
   annot_descript_lineEdit = new QLineEdit;
 
-  completer = new QCompleter;
+  completer = new QCompleter(this);
   completer->setCaseSensitivity(Qt::CaseInsensitive);
   completer->setCompletionMode(QCompleter::PopupCompletion);
   annot_descript_lineEdit->setCompleter(completer);
