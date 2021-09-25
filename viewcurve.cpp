@@ -5113,12 +5113,12 @@ inline void ViewCurve::floating_ruler(QPainter *painter, int x_pos, int y_pos, s
     painter->drawText(x_pos - ((w / 60.0) * w_scaling), y_pos + (h / 204.8) + d_tmp2 + (d_tmp * i) + (h_scaling * 3.0 - 3.0), str_hz[i]);
   }
 
-  for(i=1; i<7; i++)
+  for(i=0; i<8; i++)
   {
     painter->drawLine(x_pos, y_pos + (d_tmp * i), x_pos + w_size, y_pos + (d_tmp * i));
   }
-
-  painter->drawRect(x_pos, y_pos, w_size, h_size);
+  painter->drawLine(x_pos + w_size, y_pos, x_pos + w_size, y_pos + h_size);
+  painter->drawLine(x_pos, y_pos, x_pos, y_pos + h_size);
 
   if(floating_ruler_value)
   {
