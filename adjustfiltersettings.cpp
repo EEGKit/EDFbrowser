@@ -47,6 +47,20 @@ model:
 
 */
 
+#define FILTERTYPE_HIGHPASS  (0)
+#define FILTERTYPE_LOWPASS   (1)
+#define FILTERTYPE_NOTCH     (2)
+#define FILTERTYPE_BANDPASS  (3)
+#define FILTERTYPE_BANDSTOP  (4)
+
+#define FILTERMODEL_BUTTERWORTH    (0)
+#define FILTERMODEL_CHEBYSHEV      (1)
+#define FILTERMODEL_BESSEL         (2)
+#define FILTERMODEL_MOVINGAVERAGE  (3)
+
+#define FILTERBRAND_FIDFILTER      (0)
+#define FILTERBRAND_MOVING_AVG     (1)
+
 
 #include "adjustfiltersettings.h"
 
@@ -181,78 +195,80 @@ void AdjustFilterSettings::loadFilterSettings(void)
 
     frequency1 = signalcomp->fidfilter_freq[i];
 
-    if(type == 0)
+    frequency2 = signalcomp->fidfilter_freq2[i];
+
+    if(type == FILTERTYPE_HIGHPASS)
     {
-      if(model == 0)
+      if(model == FILTERMODEL_BUTTERWORTH)
       {
         snprintf(txtbuf, 2048, "HighPass Butterworth");
       }
 
-      if(model == 1)
+      if(model == FILTERMODEL_CHEBYSHEV)
       {
         snprintf(txtbuf, 2048, "HighPass Chebyshev %.1fdB ripple", ripple);
       }
 
-      if(model == 2)
+      if(model == FILTERMODEL_BESSEL)
       {
         snprintf(txtbuf, 2048, "HighPass Bessel");
       }
     }
 
-    if(type == 1)
+    if(type == FILTERTYPE_LOWPASS)
     {
-      if(model == 0)
+      if(model == FILTERMODEL_BUTTERWORTH)
       {
         snprintf(txtbuf, 2048, "LowPass Butterworth");
       }
 
-      if(model == 1)
+      if(model == FILTERMODEL_CHEBYSHEV)
       {
         snprintf(txtbuf, 2048, "LowPass Chebyshev %.1fdB ripple", ripple);
       }
 
-      if(model == 2)
+      if(model == FILTERMODEL_BESSEL)
       {
         snprintf(txtbuf, 2048, "LowPass Bessel");
       }
     }
 
-    if(type == 2)
+    if(type == FILTERTYPE_NOTCH)
     {
       snprintf(txtbuf, 2048, "Notch (resonator)");
     }
 
-    if(type == 3)
+    if(type == FILTERTYPE_BANDPASS)
     {
-      if(model == 0)
+      if(model == FILTERMODEL_BUTTERWORTH)
       {
         snprintf(txtbuf, 2048, "BandPass Butterworth");
       }
 
-      if(model == 1)
+      if(model == FILTERMODEL_CHEBYSHEV)
       {
         snprintf(txtbuf, 2048, "BandPass Chebyshev %.1fdB ripple", ripple);
       }
 
-      if(model == 2)
+      if(model == FILTERMODEL_BESSEL)
       {
         snprintf(txtbuf, 2048, "BandPass Bessel");
       }
     }
 
-    if(type == 4)
+    if(type == FILTERTYPE_BANDSTOP)
     {
-      if(model == 0)
+      if(model == FILTERMODEL_BUTTERWORTH)
       {
         snprintf(txtbuf, 2048, "BandStop Butterworth");
       }
 
-      if(model == 1)
+      if(model == FILTERMODEL_CHEBYSHEV)
       {
         snprintf(txtbuf, 2048, "BandStop Chebyshev %.1fdB ripple", ripple);
       }
 
-      if(model == 2)
+      if(model == FILTERMODEL_BESSEL)
       {
         snprintf(txtbuf, 2048, "BandStop Bessel");
       }
@@ -262,11 +278,18 @@ void AdjustFilterSettings::loadFilterSettings(void)
 
     remove_trailing_zeros(txtbuf);
 
+    if((type == FILTERTYPE_BANDPASS) || (type == FILTERTYPE_BANDSTOP))
+    {
+      snprintf(txtbuf + strlen(txtbuf), 2048, " - %f", frequency2);
+
+      remove_trailing_zeros(txtbuf);
+    }
+
     strlcat(txtbuf, " Hz", 2048);
 
     filterbox->addItem(txtbuf);
 
-    brand[filter_cnt++] = 0;
+    brand[filter_cnt++] = FILTERBRAND_FIDFILTER;
   }
 
   for(i=0; i<signalcomp->ravg_filter_cnt; i++)
@@ -280,19 +303,19 @@ void AdjustFilterSettings::loadFilterSettings(void)
 
     size = signalcomp->ravg_filter_size[i];
 
-    if(type == 0)
+    if(type == FILTERTYPE_HIGHPASS)
     {
       snprintf(txtbuf, 2048, "Highpass Moving Average %i samples", size);
     }
 
-    if(type == 1)
+    if(type == FILTERTYPE_LOWPASS)
     {
       snprintf(txtbuf, 2048, "Lowpass Moving Average %i samples", size);
     }
 
     filterbox->addItem(txtbuf);
 
-    brand[filter_cnt++] = 1;
+    brand[filter_cnt++] = FILTERBRAND_MOVING_AVG;
   }
 
   filterboxchanged(filterbox->currentIndex());
@@ -364,7 +387,7 @@ void AdjustFilterSettings::filterboxchanged(int i)
   QObject::disconnect(freq2box, SIGNAL(valueChanged(double)), this, SLOT(freqbox2valuechanged(double)));
   QObject::disconnect(orderbox, SIGNAL(valueChanged(int)),    this, SLOT(orderboxvaluechanged(int)));
 
-  if(brand[i] == 0)  // fidfilter
+  if(brand[i] == FILTERBRAND_FIDFILTER)
   {
     n = i;
 
@@ -393,7 +416,7 @@ void AdjustFilterSettings::filterboxchanged(int i)
     stepsizebox->addItem("100Hz");
     stepsizebox->setCurrentIndex(2);
 
-    if((type == 3) || (type == 4))
+    if((type == FILTERTYPE_BANDPASS) || (type == FILTERTYPE_BANDSTOP))
     {
       freq2box->setValue(frequency2);
       freq2box->setVisible(true);
@@ -412,7 +435,7 @@ void AdjustFilterSettings::filterboxchanged(int i)
       orderbox->setMaximum(8);
     }
 
-    if(type == 2)
+    if(type == FILTERTYPE_NOTCH)
     {
       orderbox->setPrefix("Q-factor ");
       orderbox->setSuffix("");
@@ -428,7 +451,7 @@ void AdjustFilterSettings::filterboxchanged(int i)
     orderbox->setValue(order);
   }
 
-  if(brand[i] == 1)  // moving average filter
+  if(brand[i] == FILTERBRAND_MOVING_AVG)
   {
     n = i - signalcomp->fidfilter_cnt;
 
@@ -477,7 +500,7 @@ void AdjustFilterSettings::removeButtonClicked()
   QObject::disconnect(freq2box, SIGNAL(valueChanged(double)), this, SLOT(freqbox2valuechanged(double)));
   QObject::disconnect(orderbox, SIGNAL(valueChanged(int)),    this, SLOT(orderboxvaluechanged(int)));
 
-  if(brand[filter_nr] == 0)  // fidfilter
+  if(brand[filter_nr] == FILTERBRAND_FIDFILTER)
   {
     free(signalcomp->fidfilter[filter_nr]);
     fid_run_free(signalcomp->fid_run[filter_nr]);
@@ -494,7 +517,7 @@ void AdjustFilterSettings::removeButtonClicked()
 
     signalcomp->fidfilter_cnt--;
   }
-  else if(brand[filter_nr] == 1)  // moving average filter
+  else if(brand[filter_nr] == FILTERBRAND_MOVING_AVG)
     {
       filter_nr -= signalcomp->fidfilter_cnt;
 
@@ -533,7 +556,7 @@ void AdjustFilterSettings::update_filter()
   QObject::disconnect(freq2box, SIGNAL(valueChanged(double)), this, SLOT(freqbox2valuechanged(double)));
   QObject::disconnect(orderbox, SIGNAL(valueChanged(int)),    this, SLOT(orderboxvaluechanged(int)));
 
-  if(brand[filter_nr] == 0)  // fidfilter
+  if(brand[filter_nr] == FILTERBRAND_FIDFILTER)
   {
     frequency1 = freq1box->value();
     frequency2 = freq2box->value();
@@ -588,78 +611,78 @@ void AdjustFilterSettings::update_filter()
 
     spec_str_1[0] = 0;
 
-    if(type == 0)
+    if(type == FILTERTYPE_HIGHPASS)
     {
-      if(model == 0)
+      if(model == FILTERMODEL_BUTTERWORTH)
       {
         snprintf(spec_str_1, 256, "HpBu%i/%f", order, frequency1);
       }
 
-      if(model == 1)
+      if(model == FILTERMODEL_CHEBYSHEV)
       {
         snprintf(spec_str_1, 256, "HpCh%i/%f/%f", order, ripple, frequency1);
       }
 
-      if(model == 2)
+      if(model == FILTERMODEL_BESSEL)
       {
         snprintf(spec_str_1, 256, "HpBe%i/%f", order, frequency1);
       }
     }
 
-    if(type == 1)
+    if(type == FILTERTYPE_LOWPASS)
     {
-      if(model == 0)
+      if(model == FILTERMODEL_BUTTERWORTH)
       {
         snprintf(spec_str_1, 256, "LpBu%i/%f", order, frequency1);
       }
 
-      if(model == 1)
+      if(model == FILTERMODEL_CHEBYSHEV)
       {
         snprintf(spec_str_1, 256, "LpCh%i/%f/%f", order, ripple, frequency1);
       }
 
-      if(model == 2)
+      if(model == FILTERMODEL_BESSEL)
       {
         snprintf(spec_str_1, 256, "LpBe%i/%f", order, frequency1);
       }
     }
 
-    if(type == 2)
+    if(type == FILTERTYPE_NOTCH)
     {
       snprintf(spec_str_1, 256, "BsRe/%i/%f", order, frequency1);
     }
 
-    if(type == 3)
+    if(type == FILTERTYPE_BANDPASS)
     {
-      if(model == 0)
+      if(model == FILTERMODEL_BUTTERWORTH)
       {
         snprintf(spec_str_1, 256, "BpBu%i/%f-%f", order, frequency1, frequency2);
       }
 
-      if(model == 1)
+      if(model == FILTERMODEL_CHEBYSHEV)
       {
         snprintf(spec_str_1, 256, "BpCh%i/%f/%f-%f", order, ripple, frequency1, frequency2);
       }
 
-      if(model == 2)
+      if(model == FILTERMODEL_BESSEL)
       {
         snprintf(spec_str_1, 256, "BpBe%i/%f-%f", order, frequency1, frequency2);
       }
     }
 
-    if(type == 4)
+    if(type == FILTERTYPE_BANDSTOP)
     {
-      if(model == 0)
+      if(model == FILTERMODEL_BUTTERWORTH)
       {
         snprintf(spec_str_1, 256, "BsBu%i/%f-%f", order, frequency1, frequency2);
       }
 
-      if(model == 1)
+      if(model == FILTERMODEL_CHEBYSHEV)
       {
         snprintf(spec_str_1, 256, "BsCh%i/%f/%f-%f", order, ripple, frequency1, frequency2);
       }
 
-      if(model == 2)
+      if(model == FILTERMODEL_BESSEL)
       {
         snprintf(spec_str_1, 256, "BsBe%i/%f-%f", order, frequency1, frequency2);
       }
@@ -693,7 +716,7 @@ void AdjustFilterSettings::update_filter()
     signalcomp->fidfilter_order[filter_nr] = order;
   }
 
-  if(brand[filter_nr] == 1)  // moving average filter
+  if(brand[filter_nr] == FILTERBRAND_MOVING_AVG)
   {
     filter_nr -= signalcomp->fidfilter_cnt;
 
@@ -730,7 +753,7 @@ void AdjustFilterSettings::stepsizeboxchanged(int index)
     return;
   }
 
-  if(brand[n] == 0)  // fidfilter
+  if(brand[n] == FILTERBRAND_FIDFILTER)
   {
     switch(index)
     {
@@ -752,7 +775,7 @@ void AdjustFilterSettings::stepsizeboxchanged(int index)
     }
   }
 
-  if(brand[n] == 1)  // moving average filter
+  if(brand[n] == FILTERBRAND_MOVING_AVG)
   {
     switch(index)
     {
