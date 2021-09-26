@@ -1151,6 +1151,21 @@ void UI_Mainwindow::read_general_settings()
       xml_go_up(xml_hdl);
     }
 
+    if(!(xml_goto_nth_element_inside(xml_hdl, "ascii_txt_encoding", 0)))
+    {
+      if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+      {
+        xml_close(xml_hdl);
+        return;
+      }
+      import_annotations_var->ascii_txt_encoding = atoi(result);
+      if((import_annotations_var->ascii_txt_encoding < 0) || (import_annotations_var->ascii_txt_encoding > 1))
+      {
+        import_annotations_var->ascii_txt_encoding = 0;
+      }
+      xml_go_up(xml_hdl);
+    }
+
     if(!(xml_goto_nth_element_inside(xml_hdl, "dceventbittime", 0)))
     {
       if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
@@ -2634,6 +2649,8 @@ void UI_Mainwindow::write_settings()
     xml_strlcpy_encode_entity(str, import_annotations_var->separator, 1024);
 
     fprintf(cfgfile, "      <separator>%s</separator>\n", str);
+
+    fprintf(cfgfile, "      <ascii_txt_encoding>%i</ascii_txt_encoding>\n", import_annotations_var->ascii_txt_encoding);
 
     fprintf(cfgfile, "      <dceventbittime>%i</dceventbittime>\n", import_annotations_var->dceventbittime);
 

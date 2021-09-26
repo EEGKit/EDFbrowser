@@ -29,13 +29,13 @@
 #include "import_annotations.h"
 
 
-#define XML_FORMAT      0
-#define ASCIICSV_FORMAT 1
-#define DCEVENT_FORMAT  2
-#define EDFPLUS_FORMAT  3
-#define MITWFDB_FORMAT  4
+#define XML_FORMAT       (0)
+#define ASCIICSV_FORMAT  (1)
+#define DCEVENT_FORMAT   (2)
+#define EDFPLUS_FORMAT   (3)
+#define MITWFDB_FORMAT   (4)
 
-#define TAB_CNT         5
+#define TAB_CNT          (5)
 
 #define NOTQRS  0 /* not-QRS (not a getann/putann code) */
 #define NORMAL  1 /* normal beat */
@@ -118,7 +118,6 @@ UI_ImportAnnotationswindow::UI_ImportAnnotationswindow(QWidget *w_parent)
 {
   int i;
 
-
   mainwindow = (UI_Mainwindow *)w_parent;
 
   if(mainwindow->files_open < 1)
@@ -156,19 +155,7 @@ UI_ImportAnnotationswindow::UI_ImportAnnotationswindow(QWidget *w_parent)
     tab[i] = new QWidget;
   }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
-
-  SeparatorLabel = new QLabel;
-  SeparatorLabel->setText("Column separator");
-
-  OnsetColumnLabel = new QLabel;
-  OnsetColumnLabel->setText("Onset column");
-
-  DatastartLabel = new QLabel;
-  DatastartLabel->setText("Data starts at line");
-
-  OnsetTimeLabel = new QLabel;
-  OnsetTimeLabel->setText("Onset time coding is");
+///////////////////////////////////////////////// ACSII/CSV //////////////////////////////////////////////////
 
   SeparatorLineEdit = new QLineEdit;
   SeparatorLineEdit->setMaxLength(3);
@@ -201,37 +188,39 @@ UI_ImportAnnotationswindow::UI_ImportAnnotationswindow(QWidget *w_parent)
   RelativeTimeComboBox->addItem("yyyy-mm-ddThh:mm:ss");
   RelativeTimeComboBox->addItem("yyyy-mm-ddThh:mm:ss.xxx");
 
-  DescriptionColumnRadioButton = new QRadioButton("Description column");
-  DescriptionColumnRadioButton->setChecked(true);
-  UseManualDescriptionRadioButton = new QRadioButton("Manual description");
+  text_encoding_combobox = new QComboBox;
+  text_encoding_combobox->addItem("UTF-8");
+  text_encoding_combobox->addItem("ISO-8859-1 (Latin1)");
 
-  DurationCheckBox = new QCheckBox(" Duration column", ImportAnnotsDialog);
+  DescriptionColumnRadioButton = new QRadioButton();
+  DescriptionColumnRadioButton->setChecked(true);
+  UseManualDescriptionRadioButton = new QRadioButton();
+
+  DurationCheckBox = new QCheckBox;
   DurationCheckBox->setTristate(false);
   DurationCheckBox->setCheckState(Qt::Unchecked);
 
   QHBoxLayout *asciiSettingsHBoxLayout1 = new QHBoxLayout;
   asciiSettingsHBoxLayout1->addWidget(DescriptionColumnRadioButton);
-  asciiSettingsHBoxLayout1->addWidget(DescriptionColumnSpinBox);
-  asciiSettingsHBoxLayout1->addStretch(1000);
+  asciiSettingsHBoxLayout1->addWidget(DescriptionColumnSpinBox, 10);
 
   QHBoxLayout *asciiSettingsHBoxLayout2 = new QHBoxLayout;
   asciiSettingsHBoxLayout2->addWidget(UseManualDescriptionRadioButton);
-  asciiSettingsHBoxLayout2->addWidget(DescriptionLineEdit);
-  asciiSettingsHBoxLayout2->addStretch(1000);
+  asciiSettingsHBoxLayout2->addWidget(DescriptionLineEdit, 10);
 
   QHBoxLayout *asciiSettingsHBoxLayout3 = new QHBoxLayout;
   asciiSettingsHBoxLayout3->addWidget(DurationCheckBox);
-  asciiSettingsHBoxLayout3->addWidget(DurationColumnSpinBox);
-  asciiSettingsHBoxLayout3->addStretch(1000);
+  asciiSettingsHBoxLayout3->addWidget(DurationColumnSpinBox, 10);
 
   QFormLayout *asciiSettingsflayout = new QFormLayout;
-  asciiSettingsflayout->addRow(SeparatorLabel, SeparatorLineEdit);
-  asciiSettingsflayout->addRow(OnsetColumnLabel, OnsetColumnSpinBox);
-  asciiSettingsflayout->addRow(" ", asciiSettingsHBoxLayout1);
-  asciiSettingsflayout->addRow(" ", asciiSettingsHBoxLayout2);
-  asciiSettingsflayout->addRow(" ", asciiSettingsHBoxLayout3);
-  asciiSettingsflayout->addRow(DatastartLabel, DatastartSpinbox);
-  asciiSettingsflayout->addRow(OnsetTimeLabel, RelativeTimeComboBox);
+  asciiSettingsflayout->addRow("Column separator", SeparatorLineEdit);
+  asciiSettingsflayout->addRow("Onset column", OnsetColumnSpinBox);
+  asciiSettingsflayout->addRow("Duration column", asciiSettingsHBoxLayout3);
+  asciiSettingsflayout->addRow("Description column", asciiSettingsHBoxLayout1);
+  asciiSettingsflayout->addRow("Manual description", asciiSettingsHBoxLayout2);
+  asciiSettingsflayout->addRow("Data starts at line", DatastartSpinbox);
+  asciiSettingsflayout->addRow("Onset time coding is", RelativeTimeComboBox);
+  asciiSettingsflayout->addRow("Text encoding", text_encoding_combobox);
 
   QHBoxLayout *asciiSettingsHBoxLayout20 = new QHBoxLayout;
   asciiSettingsHBoxLayout20->addLayout(asciiSettingsflayout);
@@ -378,6 +367,7 @@ UI_ImportAnnotationswindow::UI_ImportAnnotationswindow(QWidget *w_parent)
   RelativeTimeComboBox->setCurrentIndex(mainwindow->import_annotations_var->onsettimeformat);
   BitTimeSpinbox->setValue(mainwindow->import_annotations_var->dceventbittime);
   DCEventTriggerLevelSpinBox->setValue(mainwindow->import_annotations_var->triggerlevel);
+  text_encoding_combobox->setCurrentIndex(mainwindow->import_annotations_var->ascii_txt_encoding);
 
   if(mainwindow->import_annotations_var->manualdescription == 0)
   {
@@ -1115,7 +1105,8 @@ int UI_ImportAnnotationswindow::import_from_ascii(void)
       ignore_consecutive=0,
       use_duration=0,
       manualdescription,
-      len;
+      len,
+      txt_encoding=0;
 
   char path[MAX_PATH_LENGTH]={""},
        line[4096]={""},
@@ -1139,7 +1130,7 @@ int UI_ImportAnnotationswindow::import_from_ascii(void)
   {
     manualdescription = 1;
 
-    strlcpy(description, DescriptionLineEdit->text().toLatin1().data(), 256);
+    strlcpy(description, DescriptionLineEdit->text().toUtf8().data(), 256);
   }
   else
   {
@@ -1261,6 +1252,9 @@ int UI_ImportAnnotationswindow::import_from_ascii(void)
 
   mainwindow->import_annotations_var->ignoreconsecutive = ignore_consecutive;
 
+  txt_encoding = text_encoding_combobox->currentIndex();
+  mainwindow->import_annotations_var->ascii_txt_encoding = txt_encoding;
+
   strlcpy(path, QFileDialog::getOpenFileName(0, "Open ASCII file", QString::fromLocal8Bit(mainwindow->recent_opendir), "ASCII files (*.txt *.TXT *.csv *.CSV *.tsv *.TSV);;All files (*)").toLocal8Bit().data(), MAX_PATH_LENGTH);
 
   if(!strcmp(path, ""))
@@ -1367,7 +1361,10 @@ int UI_ImportAnnotationswindow::import_from_ascii(void)
 #endif
             strncpy(description, charpntr, max_descr_length);
             description[max_descr_length] = 0;
-            latin1_to_utf8(description, max_descr_length);
+            if(txt_encoding == 1)
+            {
+              latin1_to_utf8(description, max_descr_length);
+            }
             descr_is_set = 1;
           }
           else if(column == duration_column)

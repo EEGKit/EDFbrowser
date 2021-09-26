@@ -70,6 +70,7 @@ struct import_annotations_var_block
   int dceventbittime;
   double triggerlevel;
   int ignoreconsecutive;
+  int ascii_txt_encoding;
 };
 
 
@@ -95,11 +96,7 @@ QTabWidget     *tabholder;
 
 QWidget        *tab[5];
 
-QLabel         *SeparatorLabel,
-               *OnsetColumnLabel,
-               *DatastartLabel,
-               *OnsetTimeLabel,
-               *DCEventSignalLabel,
+QLabel         *DCEventSignalLabel,
                *DCEventBitTimeLabel,
                *DCEventTriggerLevelLabel,
                *SampleTimeLabel,
@@ -119,6 +116,7 @@ QSpinBox       *OnsetColumnSpinBox,
 QDoubleSpinBox *DCEventTriggerLevelSpinBox;
 
 QComboBox      *RelativeTimeComboBox,
+               *text_encoding_combobox,
                *DCEventSignalComboBox;
 
 QRadioButton   *DescriptionColumnRadioButton,
