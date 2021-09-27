@@ -349,11 +349,23 @@
 <h3><a name="Annotations">Annotations</a></h3>
 
 <p>
-  When a file contains annotations, the annotation window will appear.<br>
+  When a file contains annotations (sometimes called events), the annotation window will appear.<br>
   Just click on one of the annotations to jump to that position in the file.<br>
   This window is dockable. You can change the size of the window, but also the position.<br>
   You can make the window floating as well by dragging it with the mouse. After closing<br>
   the annotationwindow, you can make it appear again via Window -&gt; Annotations.<br>
+<br>
+  Een annotation/event has three properties:
+</p>
+<ul>
+  <li>onset time</li>
+  <li>duration (optional)</li>
+  <li>description</li>
+</ul>
+<p>
+  An annotation can be linked to a specific signal. This is done by adding a suffix to the description,<br>
+  for example: spindle@@C3 - A1<br>
+  The string immediately after the "@@" must be one of the signal names.<br>
 <br>
   Annotations can be created, modified or deleted using the <a href="#Annotation_editor">Annotation editor</a><br>
 <br>
