@@ -1209,7 +1209,7 @@ OUT1:
     if(annot_inputfile==NULL)
     {
       snprintf(txt_string, 2048, "Can not open file %s for reading.\n"
-                                 "Annotations can not be included.", filename_x);
+                                 "Annotations cannot be included.", filename_x);
       textEdit1->append(QString::fromLocal8Bit(txt_string));
     }
     else

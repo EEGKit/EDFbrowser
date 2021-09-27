@@ -1545,7 +1545,7 @@ void UI_Mainwindow::open_new_file()
 
   if(annot_editor_active && files_open)
   {
-    QMessageBox::critical(this, "Error", "You can not open multiple files when editing annotations.\n"
+    QMessageBox::critical(this, "Error", "You cannot open multiple files when editing annotations.\n"
                                          "Close the annotation edit window first.");
     cmdlineargument = 0;
     return;
@@ -1553,7 +1553,7 @@ void UI_Mainwindow::open_new_file()
 
   if((files_open > 0) && (live_stream_active))
   {
-    QMessageBox::critical(this, "Error", "You can not open multiple files while a streaming file is open.\n"
+    QMessageBox::critical(this, "Error", "You cannot open multiple files while a streaming file is open.\n"
                                          "Close the streaming file first.");
     return;
   }
@@ -1717,14 +1717,14 @@ void UI_Mainwindow::open_new_file()
     {
       if(edfhdr->edf)
       {
-        QMessageBox::critical(this, "Error", "EDFbrowser can not show EDF+D (discontiguous) files.\n"
+        QMessageBox::critical(this, "Error", "EDFbrowser cannot show EDF+D (discontiguous) files.\n"
                                              "Convert this file to EDF+C first. You can find this converter\n"
                                              "in the Tools menu (EDF+D to EDF+C converter).");
       }
 
       if(edfhdr->bdf)
       {
-        QMessageBox::critical(this, "Error", "EDFbrowser can not show BDF+D (discontiguous) files.\n"
+        QMessageBox::critical(this, "Error", "EDFbrowser cannot show BDF+D (discontiguous) files.\n"
                                              "Convert this file to BDF+C first. You can find this converter\n"
                                              "in the Tools menu (EDF+D to EDF+C converter).");
       }

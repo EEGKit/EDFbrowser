@@ -410,7 +410,7 @@ void UI_AsciiExportwindow::ExportButtonClicked()
   outputfile = fopeno(ascii_path, "wb");
   if(outputfile==NULL)
   {
-    QMessageBox messagewindow(QMessageBox::Critical, "Error", "Error, can not open headerfile for writing.");
+    QMessageBox messagewindow(QMessageBox::Critical, "Error", "Error, cannot open headerfile for writing.");
     messagewindow.exec();
     free(edf_hdr);
     free(edfparamascii);
@@ -453,7 +453,7 @@ void UI_AsciiExportwindow::ExportButtonClicked()
   outputfile = fopeno(ascii_path, "wb");
   if(outputfile==NULL)
   {
-    QMessageBox messagewindow(QMessageBox::Critical, "Error", "Error, can not open signalfile for writing.");
+    QMessageBox messagewindow(QMessageBox::Critical, "Error", "Error, cannot open signalfile for writing.");
     messagewindow.exec();
     free(edf_hdr);
     free(edfparamascii);
@@ -504,7 +504,7 @@ void UI_AsciiExportwindow::ExportButtonClicked()
   annotationfile = fopeno(ascii_path, "wb");
   if(annotationfile==NULL)
   {
-    QMessageBox messagewindow(QMessageBox::Critical, "Error", "Error, can not open annotationfile for writing.");
+    QMessageBox messagewindow(QMessageBox::Critical, "Error", "Error, cannot open annotationfile for writing.");
     messagewindow.exec();
     free(edf_hdr);
     free(edfparamascii);
@@ -526,7 +526,7 @@ void UI_AsciiExportwindow::ExportButtonClicked()
   outputfile = fopeno(ascii_path, "wb");
   if(outputfile==NULL)
   {
-    QMessageBox messagewindow(QMessageBox::Critical, "Error", "Error, can not open datafile for writing.");
+    QMessageBox messagewindow(QMessageBox::Critical, "Error", "Error, cannot open datafile for writing.");
     messagewindow.exec();
     fclose(annotationfile);
     free(edf_hdr);

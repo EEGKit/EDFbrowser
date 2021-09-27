@@ -82,7 +82,7 @@ UI_PLIF_ECG_filter_dialog::UI_PLIF_ECG_filter_dialog(QWidget *w_parent)
       continue;
     }
 
-    if((sf % 50) && (sf % 60))  /* don't list signals that can not be filtered */
+    if((sf % 50) && (sf % 60))  /* don't list signals that cannot be filtered */
     {
       continue;
     }

@@ -1161,14 +1161,14 @@ int UI_ImportAnnotationswindow::import_from_ascii(void)
 
     if(str[0]=='.')
     {
-      QMessageBox messagewindow(QMessageBox::Critical, "Invalid input", "Separator character can not be a dot.");
+      QMessageBox messagewindow(QMessageBox::Critical, "Invalid input", "Separator character cannot be a dot.");
       messagewindow.exec();
       return 1;
     }
 
     if((str[0]>='0')&&(str[0]<='9'))
     {
-      QMessageBox messagewindow(QMessageBox::Critical, "Invalid input", "Separator character can not be a number.");
+      QMessageBox messagewindow(QMessageBox::Critical, "Invalid input", "Separator character cannot be a number.");
       messagewindow.exec();
       return 1;
     }
@@ -1206,21 +1206,21 @@ int UI_ImportAnnotationswindow::import_from_ascii(void)
 
   if((descr_column == onset_column) && (!manualdescription))
   {
-    QMessageBox messagewindow(QMessageBox::Critical, "Invalid input", "Onset and Description can not be in the same column.");
+    QMessageBox messagewindow(QMessageBox::Critical, "Invalid input", "Onset and Description cannot be in the same column.");
     messagewindow.exec();
     return 1;
   }
 
   if((duration_column == onset_column) && use_duration)
   {
-    QMessageBox messagewindow(QMessageBox::Critical, "Invalid input", "Onset and Duration can not be in the same column.");
+    QMessageBox messagewindow(QMessageBox::Critical, "Invalid input", "Onset and Duration cannot be in the same column.");
     messagewindow.exec();
     return 1;
   }
 
   if((descr_column == duration_column) && (!manualdescription) && use_duration)
   {
-    QMessageBox messagewindow(QMessageBox::Critical, "Invalid input", "Duration and Description can not be in the same column.");
+    QMessageBox messagewindow(QMessageBox::Critical, "Invalid input", "Duration and Description cannot be in the same column.");
     messagewindow.exec();
     return 1;
   }
@@ -1627,7 +1627,7 @@ int UI_ImportAnnotationswindow::import_from_dcevent(void)
 
   if(mainwindow->signalcomp[signal_nr]->num_of_signals > 1)
   {
-    QMessageBox messagewindow(QMessageBox::Critical, "Error", "The signal can not be a derivation of multiple signals.");
+    QMessageBox messagewindow(QMessageBox::Critical, "Error", "The signal cannot be a derivation of multiple signals.");
     messagewindow.exec();
     return 1;
   }

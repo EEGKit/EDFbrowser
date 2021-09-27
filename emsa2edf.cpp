@@ -232,7 +232,7 @@ void UI_EMSA2EDFwindow::SelectFileButton()
 
   if(get_string(scratchpad, inputfile, 205, 32)!=8)
   {
-    textEdit1->append("Error, can not read startdate.\n");
+    textEdit1->append("Error, cannot read startdate.\n");
     fclose(inputfile);
     pushButton1->setEnabled(true);
     return;
@@ -264,7 +264,7 @@ void UI_EMSA2EDFwindow::SelectFileButton()
 
   if(get_string(scratchpad, inputfile, 214, 32)!=8)
   {
-    textEdit1->append("Error, can not read starttime.\n");
+    textEdit1->append("Error, cannot read starttime.\n");
     fclose(inputfile);
     pushButton1->setEnabled(true);
     return;
@@ -288,7 +288,7 @@ void UI_EMSA2EDFwindow::SelectFileButton()
   if(atoi(time+6)>59)  error = 1;
   if(error)
   {
-    textEdit1->append("Error, can not read startdate or starttime.\n");
+    textEdit1->append("Error, cannot read startdate or starttime.\n");
     fclose(inputfile);
     pushButton1->setEnabled(true);
     return;
@@ -532,7 +532,7 @@ void UI_EMSA2EDFwindow::SelectFileButton()
       {
         if(get_string(scratchpad, logfile, i * 69, 10)!=8)
         {
-          textEdit1->append("Error, can not read event starttime in .LBK file.\n");
+          textEdit1->append("Error, cannot read event starttime in .LBK file.\n");
           fclose(inputfile);
           fclose(logfile);
           free(logbuf);
@@ -556,7 +556,7 @@ void UI_EMSA2EDFwindow::SelectFileButton()
         if(atoi(scratchpad+6)>59)  error = 1;
         if(error)
         {
-          textEdit1->append("Error, can not read event starttime in .LBK file.\n");
+          textEdit1->append("Error, cannot read event starttime in .LBK file.\n");
           fclose(inputfile);
           fclose(logfile);
           free(logbuf);
@@ -569,7 +569,7 @@ void UI_EMSA2EDFwindow::SelectFileButton()
 
         if(get_string(scratchpad, logfile, i * 69 + 9, 10)!=8)
         {
-          textEdit1->append("Error, can not read event stoptime in .LBK file.\n");
+          textEdit1->append("Error, cannot read event stoptime in .LBK file.\n");
           fclose(inputfile);
           fclose(logfile);
           free(logbuf);
@@ -593,7 +593,7 @@ void UI_EMSA2EDFwindow::SelectFileButton()
         if(atoi(scratchpad+6)>59)  error = 1;
         if(error)
         {
-          textEdit1->append("Error, can not read event stoptime in .LBK file.\n");
+          textEdit1->append("Error, cannot read event stoptime in .LBK file.\n");
           fclose(inputfile);
           fclose(logfile);
           free(logbuf);
@@ -708,7 +708,7 @@ void UI_EMSA2EDFwindow::SelectFileButton()
   outputfile = fopen(path, "wb");
   if(outputfile==NULL)
   {
-    snprintf(txt_string, 2048, "Error, can not open file %s for writing.\n", path);
+    snprintf(txt_string, 2048, "Error, cannot open file %s for writing.\n", path);
     textEdit1->append(QString::fromLocal8Bit(txt_string));
     fclose(inputfile);
     free(logbuf);

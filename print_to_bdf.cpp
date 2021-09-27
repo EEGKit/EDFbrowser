@@ -122,7 +122,7 @@ void print_screen_to_bdf(UI_Mainwindow *mainwindow)
   {
     if(mainwindow->edfheaderlist[i]->discontinuous)
     {
-      QMessageBox messagewindow(QMessageBox::Critical, "Print to BDF", "Sorry, discontinues BDF/EDF files can not be printed to BDF.\n");
+      QMessageBox messagewindow(QMessageBox::Critical, "Print to BDF", "Sorry, discontinues BDF/EDF files cannot be printed to BDF.\n");
       messagewindow.exec();
       return;
     }
@@ -229,7 +229,7 @@ void print_screen_to_bdf(UI_Mainwindow *mainwindow)
 
   if((!integer_sf) && (!datrec_multiple_int))
   {
-    QMessageBox messagewindow(QMessageBox::Critical, "Error", "This combination of files/signals can not be printed to BDF,\n"
+    QMessageBox messagewindow(QMessageBox::Critical, "Error", "This combination of files/signals cannot be printed to BDF,\n"
                                                               "either the datarecordblock duration of the files must be an integer multiple\n"
                                                               "or the samplerates of the signals must have integer values.");
     messagewindow.exec();

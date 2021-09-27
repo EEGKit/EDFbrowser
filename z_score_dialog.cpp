@@ -277,7 +277,7 @@ void UI_ZScoreWindow::addTraceButtonClicked()
   signalcomp = mainwindow->create_signalcomp_copy(original_signalcomp);
   if(signalcomp == NULL)
   {
-    QMessageBox messagewindow(QMessageBox::Critical, "Error", "Internal error: can not create a signalcomp copy.");
+    QMessageBox messagewindow(QMessageBox::Critical, "Error", "Internal error: cannot create a signalcomp copy.");
     messagewindow.exec();
     return;
   }

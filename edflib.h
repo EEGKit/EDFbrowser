@@ -150,8 +150,8 @@ struct edf_param_struct{         /* this structure contains all the relevant EDF
   long long smp_in_file;         /* number of samples of this signal in the file */
   double phys_max;               /* physical maximum, usually the maximum input of the ADC */
   double phys_min;               /* physical minimum, usually the minimum input of the ADC */
-  int    dig_max;                /* digital maximum, usually the maximum output of the ADC, can not not be higher than 32767 for EDF or 8388607 for BDF */
-  int    dig_min;                /* digital minimum, usually the minimum output of the ADC, can not not be lower than -32768 for EDF or -8388608 for BDF */
+  int    dig_max;                /* digital maximum, usually the maximum output of the ADC, cannot not be higher than 32767 for EDF or 8388607 for BDF */
+  int    dig_min;                /* digital minimum, usually the minimum output of the ADC, cannot not be lower than -32768 for EDF or -8388608 for BDF */
   int    smp_in_datarecord;      /* number of samples of this signal in a datarecord, if the datarecord has a duration of one second (default), then it equals the samplerate */
   char   physdimension[9];       /* physical dimension (uV, bpm, mA, etc.), null-terminated string */
   char   prefilter[81];          /* null-terminated string */

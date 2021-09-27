@@ -129,7 +129,7 @@ void UI_EDFDwindow::SelectFileButton()
   inputfile = fopeno(inputpath, "rb");
   if(inputfile==NULL)
   {
-    snprintf(txt_string, 2048, "Error, can not open file %s for reading.\n", inputpath);
+    snprintf(txt_string, 2048, "Error, cannot open file %s for reading.\n", inputpath);
     textEdit1->append(QString::fromLocal8Bit(txt_string));
     pushButton1->setEnabled(true);
     return;
@@ -270,7 +270,7 @@ void UI_EDFDwindow::SelectFileButton()
   outputfile = fopeno(output_path, "w+b");
   if(outputfile==NULL)
   {
-    textEdit1->append("Error, can not open outputfile for writing.\n");
+    textEdit1->append("Error, cannot open outputfile for writing.\n");
     edfplus_annotation_empty_list(&edfhdr->annot_list);
     free(edfhdr->edfparam);
     free(edfhdr);
@@ -490,7 +490,7 @@ void UI_EDFDwindow::SelectFileButton()
       if(outputfile==NULL)
       {
         progress.reset();
-        textEdit1->append("Error, can not open outputfile for writing.\n");
+        textEdit1->append("Error, cannot open outputfile for writing.\n");
         edfplus_annotation_empty_list(&edfhdr->annot_list);
         free(edfhdr->edfparam);
         free(edfhdr);

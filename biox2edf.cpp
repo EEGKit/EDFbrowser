@@ -214,7 +214,7 @@ void UI_BIOX2EDFwindow::SelectFileButton()
 
   if(hdl < 0)
   {
-    textEdit1->append("Error: can not open EDF file for writing\n");
+    textEdit1->append("Error: cannot open EDF file for writing\n");
     fclose(inputfile);
     pushButton1->setEnabled(true);
     return;

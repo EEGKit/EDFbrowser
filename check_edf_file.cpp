@@ -392,7 +392,7 @@ struct edfhdrblock * EDFfileCheck::check_edf_file(FILE *inputfile, char *txt_str
 
   if(edfhdr->edfsignals>MAXSIGNALS)
   {
-    snprintf(txt_string, txt_len, "Error, number of signals in file is %i, can not support more than %i signals.",
+    snprintf(txt_string, txt_len, "Error, number of signals in file is %i, cannot support more than %i signals.",
            edfhdr->edfsignals,
            MAXSIGNALS);
     free(edf_hdr);

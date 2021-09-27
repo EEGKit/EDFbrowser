@@ -196,7 +196,7 @@ void UI_MANSCAN2EDFwindow::SelectFileButton()
 
     if(get_worddatafile(segment_properties, segment_cnt, header_inputfile))
     {
-      textEdit1->append("Error, can not find or process item \"WordDataFile\".\n");
+      textEdit1->append("Error, cannot find or process item \"WordDataFile\".\n");
       fclose(header_inputfile);
       free(segment_properties);
       pushButton1->setEnabled(true);
@@ -205,7 +205,7 @@ void UI_MANSCAN2EDFwindow::SelectFileButton()
 
     if(get_channel_gain(segment_properties, segment_cnt, header_inputfile))
     {
-      textEdit1->append("Error, can not find or process item \"Channel gain\".\n");
+      textEdit1->append("Error, cannot find or process item \"Channel gain\".\n");
       fclose(header_inputfile);
       free(segment_properties);
       pushButton1->setEnabled(true);
@@ -214,7 +214,7 @@ void UI_MANSCAN2EDFwindow::SelectFileButton()
 
     if(get_start_date(segment_properties, segment_cnt, header_inputfile))
     {
-      textEdit1->append("Error, can not find or process item \"Startdate\".\n");
+      textEdit1->append("Error, cannot find or process item \"Startdate\".\n");
       fclose(header_inputfile);
       free(segment_properties);
       pushButton1->setEnabled(true);
@@ -223,7 +223,7 @@ void UI_MANSCAN2EDFwindow::SelectFileButton()
 
     if(get_sample_rate(segment_properties, segment_cnt, header_inputfile))
     {
-      textEdit1->append("Error, can not find or process item \"SampleRate\".\n");
+      textEdit1->append("Error, cannot find or process item \"SampleRate\".\n");
       fclose(header_inputfile);
       free(segment_properties);
       pushButton1->setEnabled(true);
@@ -232,7 +232,7 @@ void UI_MANSCAN2EDFwindow::SelectFileButton()
 
     if(get_filter_settings(segment_properties, segment_cnt, header_inputfile))
     {
-      textEdit1->append("Error, can not find or process item \"Filtersettings\".\n");
+      textEdit1->append("Error, cannot find or process item \"Filtersettings\".\n");
       fclose(header_inputfile);
       free(segment_properties);
       pushButton1->setEnabled(true);
@@ -241,7 +241,7 @@ void UI_MANSCAN2EDFwindow::SelectFileButton()
 
     if(get_recorder_version(segment_properties, segment_cnt, header_inputfile))
     {
-      textEdit1->append("Error, can not find or process item \"Filtersettings\".\n");
+      textEdit1->append("Error, cannot find or process item \"Filtersettings\".\n");
       fclose(header_inputfile);
       free(segment_properties);
       pushButton1->setEnabled(true);
@@ -250,7 +250,7 @@ void UI_MANSCAN2EDFwindow::SelectFileButton()
 
     if(get_starttime_offset(segment_properties, segment_cnt, header_inputfile))
     {
-      textEdit1->append("Error, can not find or process item \"Starttime offset\".\n");
+      textEdit1->append("Error, cannot find or process item \"Starttime offset\".\n");
       fclose(header_inputfile);
       free(segment_properties);
       pushButton1->setEnabled(true);
@@ -259,7 +259,7 @@ void UI_MANSCAN2EDFwindow::SelectFileButton()
 
     if(get_events(segment_properties, segment_cnt, header_inputfile))
     {
-      textEdit1->append("Error, can not find or process item \"Events\".\n");
+      textEdit1->append("Error, cannot find or process item \"Events\".\n");
       fclose(header_inputfile);
       free(segment_properties);
       pushButton1->setEnabled(true);

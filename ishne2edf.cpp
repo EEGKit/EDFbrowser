@@ -151,7 +151,7 @@ struct
 
   if(inputfile == NULL)
   {
-    snprintf(scratchpad, 4096, "Error, can not open file:\n%s\n", path);
+    snprintf(scratchpad, 4096, "Error, cannot open file:\n%s\n", path);
     textEdit1->append(QString::fromLocal8Bit(scratchpad));
     return;
   }
@@ -373,7 +373,7 @@ struct
   edf_hdl = edfopen_file_writeonly(path, EDFLIB_FILETYPE_EDFPLUS, chns);
   if(edf_hdl < 0)
   {
-    textEdit1->append("Error, can not open EDF file for writing\n");
+    textEdit1->append("Error, cannot open EDF file for writing\n");
     goto OUT_EXIT;
   }
 

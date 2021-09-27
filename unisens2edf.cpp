@@ -147,7 +147,7 @@ void UI_UNISENS2EDFwindow::SelectFileButton()
 
   if(xml_hdl == NULL)
   {
-    snprintf(scratchpad, 2048, "Error, can not open file:\n%s\n", path);
+    snprintf(scratchpad, 2048, "Error, cannot open file:\n%s\n", path);
     textEdit1->append(QString::fromLocal8Bit(scratchpad));
     return;
   }
@@ -168,20 +168,20 @@ void UI_UNISENS2EDFwindow::SelectFileButton()
 
   if(strcmp(xml_hdl->elementname[xml_hdl->level], "unisens"))
   {
-    textEdit1->append("Error, can not find root element \"unisens\".\n");
+    textEdit1->append("Error, cannot find root element \"unisens\".\n");
     xml_close(xml_hdl);
     return;
   }
 
   if(xml_get_attribute_of_element(xml_hdl, "timestampStart", str, 255) < 0)
   {
-    textEdit1->append("Error, can not find attribute \"timestampStart\".\n");
+    textEdit1->append("Error, cannot find attribute \"timestampStart\".\n");
     return;
   }
 
   if((strlen(str) < 19) || (strlen(str) > 23) || (str[4] != '-') || (str[7] != '-') || (str[10] != 'T') || (str[13] != ':') || (str[16] != ':'))
   {
-    textEdit1->append("Error, can not find attribute \"timestampStart\".\n");
+    textEdit1->append("Error, cannot find attribute \"timestampStart\".\n");
     return;
   }
 
@@ -224,7 +224,7 @@ void UI_UNISENS2EDFwindow::SelectFileButton()
 
   if(xml_get_attribute_of_element(xml_hdl, "measurementId", str, 255) < 0)
   {
-    textEdit1->append("Error, can not find attribute \"measurementId\".\n");
+    textEdit1->append("Error, cannot find attribute \"measurementId\".\n");
     return;
   }
 
@@ -316,7 +316,7 @@ void UI_UNISENS2EDFwindow::SelectFileButton()
     {
       if(xml_goto_nth_element_inside(xml_hdl, "csvFileFormat", 0))
       {
-        textEdit1->append("Error, can not find element \"csvFileFormat\".\n");
+        textEdit1->append("Error, cannot find element \"csvFileFormat\".\n");
         xml_close(xml_hdl);
         for(i=0; i<file_cnt; i++)  fclose(binfile[i]);
         return;
@@ -324,7 +324,7 @@ void UI_UNISENS2EDFwindow::SelectFileButton()
 
       if(xml_get_attribute_of_element(xml_hdl, "separator", str, 255) < 0)
       {
-        textEdit1->append("Error, can not find attribute \"separator\".\n");
+        textEdit1->append("Error, cannot find attribute \"separator\".\n");
         xml_close(xml_hdl);
         for(i=0; i<file_cnt; i++)  fclose(binfile[i]);
         return;
@@ -372,7 +372,7 @@ void UI_UNISENS2EDFwindow::SelectFileButton()
     {
       if(xml_goto_nth_element_inside(xml_hdl, "binFileFormat", 0))
       {
-        textEdit1->append("Error, can not find element \"binFileFormat\".\n");
+        textEdit1->append("Error, cannot find element \"binFileFormat\".\n");
         xml_close(xml_hdl);
         for(i=0; i<file_cnt; i++)  fclose(binfile[i]);
         return;
@@ -380,7 +380,7 @@ void UI_UNISENS2EDFwindow::SelectFileButton()
 
       if(xml_get_attribute_of_element(xml_hdl, "endianess", str, 255) < 0)
       {
-        textEdit1->append("Error, can not find attribute \"endianess\".\n");
+        textEdit1->append("Error, cannot find attribute \"endianess\".\n");
         xml_close(xml_hdl);
         for(i=0; i<file_cnt; i++)  fclose(binfile[i]);
         return;
@@ -388,7 +388,7 @@ void UI_UNISENS2EDFwindow::SelectFileButton()
 
       if(strlen(str) < 1)
       {
-        textEdit1->append("Error, can not find attribute \"endianess\".\n");
+        textEdit1->append("Error, cannot find attribute \"endianess\".\n");
         xml_close(xml_hdl);
         for(i=0; i<file_cnt; i++)  fclose(binfile[i]);
         return;
@@ -427,7 +427,7 @@ void UI_UNISENS2EDFwindow::SelectFileButton()
 
       if(xml_get_attribute_of_element(xml_hdl, "name", str, 255) < 0)
       {
-        textEdit1->append("Error, can not find attribute \"name\" in element \"channel\".\n");
+        textEdit1->append("Error, cannot find attribute \"name\" in element \"channel\".\n");
         xml_close(xml_hdl);
         for(i=0; i<file_cnt; i++)  fclose(binfile[i]);
         return;
@@ -480,7 +480,7 @@ void UI_UNISENS2EDFwindow::SelectFileButton()
     binfile[file_cnt] = fopeno(binfilepath, "rb");
     if(binfile[file_cnt] == NULL)
     {
-      snprintf(scratchpad, 2048, "Error, can not open file:\n%s\n", binfilepath);
+      snprintf(scratchpad, 2048, "Error, cannot open file:\n%s\n", binfilepath);
       textEdit1->append(QString::fromLocal8Bit(scratchpad));
       xml_close(xml_hdl);
       for(i=0; i<file_cnt; i++)  fclose(binfile[i]);
@@ -558,7 +558,7 @@ void UI_UNISENS2EDFwindow::SelectFileButton()
 
     if(xml_goto_nth_element_inside(xml_hdl, "csvFileFormat", 0))
     {
-      textEdit1->append("Error, can not find element \"csvFileFormat\".\n");
+      textEdit1->append("Error, cannot find element \"csvFileFormat\".\n");
       xml_close(xml_hdl);
       for(i=0; i<file_cnt; i++)  fclose(binfile[i]);
       return;
@@ -566,7 +566,7 @@ void UI_UNISENS2EDFwindow::SelectFileButton()
 
     if(xml_get_attribute_of_element(xml_hdl, "separator", str, 255) < 0)
     {
-      textEdit1->append("Error, can not find attribute \"separator\".\n");
+      textEdit1->append("Error, cannot find attribute \"separator\".\n");
       xml_close(xml_hdl);
       for(i=0; i<file_cnt; i++)  fclose(binfile[i]);
       return;
@@ -620,7 +620,7 @@ void UI_UNISENS2EDFwindow::SelectFileButton()
 
       if(xml_get_attribute_of_element(xml_hdl, "name", str, 255) < 0)
       {
-        textEdit1->append("Error, can not find attribute \"name\" in element \"channel\".\n");
+        textEdit1->append("Error, cannot find attribute \"name\" in element \"channel\".\n");
         xml_close(xml_hdl);
         for(i=0; i<file_cnt; i++)  fclose(binfile[i]);
         return;
@@ -673,7 +673,7 @@ void UI_UNISENS2EDFwindow::SelectFileButton()
     binfile[file_cnt] = fopeno(binfilepath, "rb");
     if(binfile[file_cnt] == NULL)
     {
-      snprintf(scratchpad, 2048, "Error, can not open binary file:\n%s", binfilepath);
+      snprintf(scratchpad, 2048, "Error, cannot open binary file:\n%s", binfilepath);
       textEdit1->append(QString::fromLocal8Bit(scratchpad));
       xml_close(xml_hdl);
       for(i=0; i<file_cnt; i++)  fclose(binfile[i]);
@@ -689,7 +689,7 @@ void UI_UNISENS2EDFwindow::SelectFileButton()
 
   if(file_cnt < 1)
   {
-    textEdit1->append("Error, can not find element \"signalEntry\" or element \"csvFileFormat\".\n");
+    textEdit1->append("Error, cannot find element \"signalEntry\" or element \"csvFileFormat\".\n");
     xml_close(xml_hdl);
     return;
   }
@@ -876,7 +876,7 @@ void UI_UNISENS2EDFwindow::SelectFileButton()
     {
       if(xml_get_attribute_of_element(xml_hdl, "separator", str, 255) < 0)
       {
-        textEdit1->append("Error, can not find attribute \"separator\".\n");
+        textEdit1->append("Error, cannot find attribute \"separator\".\n");
         xml_close(xml_hdl);
         for(i=0; i<file_cnt; i++)  fclose(binfile[i]);
         return;
@@ -979,7 +979,7 @@ void UI_UNISENS2EDFwindow::SelectFileButton()
 
   if(hdl<0)
   {
-    snprintf(scratchpad, 2048, "Error, can not open file %s for writing.\n", outputfilename);
+    snprintf(scratchpad, 2048, "Error, cannot open file %s for writing.\n", outputfilename);
     textEdit1->append(QString::fromLocal8Bit(scratchpad));
     for(i=0; i<file_cnt; i++)  fclose(binfile[i]);
     xml_close(xml_hdl);
@@ -1769,7 +1769,7 @@ int UI_UNISENS2EDFwindow::get_events_from_csv_files(int max_files, int edf_hdl, 
     if(csvfile == NULL)
     {
       progress.reset();
-      snprintf(scratchpad, 2048, "Error, can not open csv file:\n%s\n", evtfilename[k]);
+      snprintf(scratchpad, 2048, "Error, cannot open csv file:\n%s\n", evtfilename[k]);
       textEdit1->append(QString::fromLocal8Bit(scratchpad));
       return 1;
     }
@@ -1909,7 +1909,7 @@ int UI_UNISENS2EDFwindow::count_events_from_csv_files(int max_files, const char 
     csvfile = fopeno(csvfilepath, "rb");
     if(csvfile == NULL)
     {
-      snprintf(scratchpad, 2048, "Error, can not open csv file:\n%s\n", evtfilename[k]);
+      snprintf(scratchpad, 2048, "Error, cannot open csv file:\n%s\n", evtfilename[k]);
       textEdit1->append(QString::fromLocal8Bit(scratchpad));
       return 1;
     }
@@ -1942,7 +1942,7 @@ int UI_UNISENS2EDFwindow::get_signalparameters_from_BIN_attributes(struct xml_ha
 
   if(xml_get_attribute_of_element(xml_hdl, "id", str, 255) < 0)
   {
-    textEdit1->append("Error, can not find attribute \"id\".\n");
+    textEdit1->append("Error, cannot find attribute \"id\".\n");
     return 1;
   }
 
@@ -1992,7 +1992,7 @@ int UI_UNISENS2EDFwindow::get_signalparameters_from_BIN_attributes(struct xml_ha
 
   if(xml_get_attribute_of_element(xml_hdl, "sampleRate", str, 255) < 0)
   {
-    textEdit1->append("Error, can not find attribute \"sampleRate\".\n");
+    textEdit1->append("Error, cannot find attribute \"sampleRate\".\n");
     return 1;
   }
 
@@ -2083,7 +2083,7 @@ int UI_UNISENS2EDFwindow::get_signalparameters_from_BIN_attributes(struct xml_ha
 
   if(xml_get_attribute_of_element(xml_hdl, "dataType", str, 255) < 0)
   {
-    textEdit1->append("Error, can not find attribute \"dataType\".\n");
+    textEdit1->append("Error, cannot find attribute \"dataType\".\n");
     return 1;
   }
 
@@ -2350,7 +2350,7 @@ int UI_UNISENS2EDFwindow::get_signalparameters_from_EVT_attributes(struct xml_ha
 
   if(xml_get_attribute_of_element(xml_hdl, "id", str, 255) < 0)
   {
-    textEdit1->append("Error, can not find attribute \"id\".\n");
+    textEdit1->append("Error, cannot find attribute \"id\".\n");
     return 1;
   }
 
@@ -2364,7 +2364,7 @@ int UI_UNISENS2EDFwindow::get_signalparameters_from_EVT_attributes(struct xml_ha
 
   if(xml_get_attribute_of_element(xml_hdl, "sampleRate", str, 255) < 0)
   {
-    textEdit1->append("Error, can not find attribute \"sampleRate\".\n");
+    textEdit1->append("Error, cannot find attribute \"sampleRate\".\n");
     return 1;
   }
 

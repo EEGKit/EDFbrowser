@@ -236,7 +236,7 @@ void UI_AveragerWindow::startButtonClicked()
 
   if(itemCnt > MAXAVERAGECURVEDIALOGS)
   {
-    snprintf(scratchpad, 1024, "You can not select more than %i signals.", MAXAVERAGECURVEDIALOGS);
+    snprintf(scratchpad, 1024, "You cannot select more than %i signals.", MAXAVERAGECURVEDIALOGS);
     QMessageBox messagewindow(QMessageBox::Critical, "Error", scratchpad);
     messagewindow.exec();
     return;

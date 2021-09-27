@@ -533,7 +533,7 @@ void UI_ReduceSignalsWindow::SelectFileButton()
   if(edfhdr->datarecords > 2147483647LL)
   {
     QMessageBox messagewindow(QMessageBox::Critical, "Failure", "This file contains more than 2147483647 datarecords.\n"
-                                                                "This tool can not handle more than 2147483647 datarecords.");
+                                                                "This tool cannot handle more than 2147483647 datarecords.");
     messagewindow.exec();
 
     inputfile = NULL;

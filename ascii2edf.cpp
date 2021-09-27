@@ -1647,7 +1647,7 @@ int UI_ASCII2EDFapp::check_input(void)
 
     if(str[0]=='.')
     {
-      QMessageBox messagewindow(QMessageBox::Critical, "Invalid input", "Separator character can not be a dot.");
+      QMessageBox messagewindow(QMessageBox::Critical, "Invalid input", "Separator character cannot be a dot.");
       messagewindow.exec();
 
       return 1;
@@ -1655,7 +1655,7 @@ int UI_ASCII2EDFapp::check_input(void)
 
     if((str[0]>47)&&(str[0]<58))
     {
-      QMessageBox messagewindow(QMessageBox::Critical, "Invalid input", "Separator character can not be a number.");
+      QMessageBox messagewindow(QMessageBox::Critical, "Invalid input", "Separator character cannot be a number.");
       messagewindow.exec();
 
       return 1;
@@ -1743,7 +1743,7 @@ int UI_ASCII2EDFapp::check_input(void)
             {
               snprintf(big_str, ASCII_MAX_LINE_LEN,
               "Text in %s field of row %i is not valid.\n"
-              "Last character can not be a dot.",
+              "Last character cannot be a dot.",
               columnname[j], i + 1);
 
               QMessageBox messagewindow(QMessageBox::Critical, "Invalid input", big_str);
@@ -1774,7 +1774,7 @@ int UI_ASCII2EDFapp::check_input(void)
                   {
                     snprintf(big_str, ASCII_MAX_LINE_LEN,
                     "Text in %s field of row %i is not valid.\n"
-                    "First character can not be a dot.",
+                    "First character cannot be a dot.",
                     columnname[j], i + 1);
 
                     QMessageBox messagewindow(QMessageBox::Critical, "Invalid input", big_str);

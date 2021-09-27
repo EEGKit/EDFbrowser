@@ -193,7 +193,7 @@ void UI_ECGExport::Export_RR_intervals()
     buf = blockrd.init_signalcomp(signalcomp, 1, 0, 0, NULL);
     if(buf == NULL)
     {
-      QMessageBox messagewindow(QMessageBox::Critical, "Error", "Error, can not initialize FilteredBlockReadClass.");
+      QMessageBox messagewindow(QMessageBox::Critical, "Error", "Error, cannot initialize FilteredBlockReadClass.");
       messagewindow.exec();
       return;
     }
@@ -360,7 +360,7 @@ void UI_ECGExport::Export_RR_intervals()
     outputfile = fopeno(path, "wb");
     if(outputfile==NULL)
     {
-      QMessageBox messagewindow(QMessageBox::Critical, "Error", "Error, can not open outputfile for writing.");
+      QMessageBox messagewindow(QMessageBox::Critical, "Error", "Error, cannot open outputfile for writing.");
       messagewindow.exec();
       return;
     }

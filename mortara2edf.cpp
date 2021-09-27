@@ -107,7 +107,7 @@ void UI_MortaraEDFwindow::SelectFileButton()
 
   if(xml_hdl == NULL)
   {
-    snprintf(scratchpad, 4096, "Error, can not open file:\n%s\n", path);
+    snprintf(scratchpad, 4096, "Error, cannot open file:\n%s\n", path);
     textEdit1->append(QString::fromLocal8Bit(scratchpad));
     return;
   }
@@ -128,7 +128,7 @@ void UI_MortaraEDFwindow::SelectFileButton()
 
   if(strcmp(xml_hdl->elementname[xml_hdl->level], "ECG"))
   {
-    textEdit1->append("Error, can not find root element \"ECG\"\n");
+    textEdit1->append("Error, cannot find root element \"ECG\"\n");
     goto OUT_EXIT;
   }
 
@@ -146,7 +146,7 @@ void UI_MortaraEDFwindow::SelectFileButton()
 
   if(chan_cnt < 1)
   {
-    textEdit1->append("Error, can not find element \"CHANNEL\"\n");
+    textEdit1->append("Error, cannot find element \"CHANNEL\"\n");
     goto OUT_EXIT;
   }
 
@@ -163,7 +163,7 @@ void UI_MortaraEDFwindow::SelectFileButton()
     err = xml_goto_nth_element_inside(xml_hdl, "CHANNEL", i);
     if(err)
     {
-      snprintf(scratchpad, 4096, "Error, can not find element \"CHANNEL\" number %i\n", i + 1);
+      snprintf(scratchpad, 4096, "Error, cannot find element \"CHANNEL\" number %i\n", i + 1);
       textEdit1->append(scratchpad);
       goto OUT_EXIT;
     }
@@ -171,7 +171,7 @@ void UI_MortaraEDFwindow::SelectFileButton()
     len = xml_get_attribute_of_element(xml_hdl, "OFFSET", scratchpad, 4096);
     if(len < 1)
     {
-      snprintf(scratchpad, 4096, "Error, can not find attribute \"OFFSET\" in channel number %i\n", i + 1);
+      snprintf(scratchpad, 4096, "Error, cannot find attribute \"OFFSET\" in channel number %i\n", i + 1);
       textEdit1->append(scratchpad);
       return;
     }
@@ -195,7 +195,7 @@ void UI_MortaraEDFwindow::SelectFileButton()
     len = xml_get_attribute_of_element(xml_hdl, "BITS", scratchpad, 4096);
     if(len < 1)
     {
-      snprintf(scratchpad, 4096, "Error, can not find attribute \"BITS\" in channel number %i\n", i + 1);
+      snprintf(scratchpad, 4096, "Error, cannot find attribute \"BITS\" in channel number %i\n", i + 1);
       textEdit1->append(scratchpad);
       goto OUT_EXIT;
     }
@@ -222,7 +222,7 @@ void UI_MortaraEDFwindow::SelectFileButton()
     len = xml_get_attribute_of_element(xml_hdl, "FORMAT", chan_format[i], 17);
     if(len < 1)
     {
-      snprintf(scratchpad, 4096, "Error, can not find attribute \"FORMAT\" in channel number %i\n", i + 1);
+      snprintf(scratchpad, 4096, "Error, cannot find attribute \"FORMAT\" in channel number %i\n", i + 1);
       textEdit1->append(scratchpad);
       goto OUT_EXIT;
     }
@@ -237,7 +237,7 @@ void UI_MortaraEDFwindow::SelectFileButton()
     len = xml_get_attribute_of_element(xml_hdl, "UNITS_PER_MV", scratchpad, 4096);
     if(len < 1)
     {
-      snprintf(scratchpad, 4096, "Error, can not find attribute \"UNITS_PER_MV\" in channel number %i\n", i + 1);
+      snprintf(scratchpad, 4096, "Error, cannot find attribute \"UNITS_PER_MV\" in channel number %i\n", i + 1);
       textEdit1->append(scratchpad);
       goto OUT_EXIT;
     }
@@ -252,7 +252,7 @@ void UI_MortaraEDFwindow::SelectFileButton()
     len = xml_get_attribute_of_element(xml_hdl, "DURATION", scratchpad, 4096);
     if(len < 1)
     {
-      snprintf(scratchpad, 4096, "Error, can not find attribute \"DURATION\" in channel number %i\n", i + 1);
+      snprintf(scratchpad, 4096, "Error, cannot find attribute \"DURATION\" in channel number %i\n", i + 1);
       textEdit1->append(scratchpad);
       goto OUT_EXIT;
     }
@@ -276,7 +276,7 @@ void UI_MortaraEDFwindow::SelectFileButton()
     len = xml_get_attribute_of_element(xml_hdl, "SAMPLE_FREQ", scratchpad, 4096);
     if(len < 1)
     {
-      snprintf(scratchpad, 4096, "Error, can not find attribute \"SAMPLE_FREQ\" in channel number %i\n", i + 1);
+      snprintf(scratchpad, 4096, "Error, cannot find attribute \"SAMPLE_FREQ\" in channel number %i\n", i + 1);
       textEdit1->append(scratchpad);
       goto OUT_EXIT;
     }
@@ -300,7 +300,7 @@ void UI_MortaraEDFwindow::SelectFileButton()
     len = xml_get_attribute_of_element(xml_hdl, "NAME", chan_name[i], 17);
     if(len < 1)
     {
-      snprintf(scratchpad, 4096, "Error, can not find attribute \"NAME\" in channel number %i\n", i + 1);
+      snprintf(scratchpad, 4096, "Error, cannot find attribute \"NAME\" in channel number %i\n", i + 1);
       textEdit1->append(scratchpad);
       goto OUT_EXIT;
     }
@@ -309,7 +309,7 @@ void UI_MortaraEDFwindow::SelectFileButton()
     len = xml_get_attribute_of_element(xml_hdl, "ENCODING", scratchpad, 4096);
     if(len < 1)
     {
-      snprintf(scratchpad, 4096, "Error, can not find attribute \"ENCODING\" in channel number %i\n", i + 1);
+      snprintf(scratchpad, 4096, "Error, cannot find attribute \"ENCODING\" in channel number %i\n", i + 1);
       textEdit1->append(scratchpad);
       goto OUT_EXIT;
     }
@@ -347,7 +347,7 @@ void UI_MortaraEDFwindow::SelectFileButton()
     err = xml_goto_nth_element_inside(xml_hdl, "CHANNEL", i);
     if(err)
     {
-      snprintf(scratchpad, 4096, "Error, can not find element \"CHANNEL\" number %i\n", i + 1);
+      snprintf(scratchpad, 4096, "Error, cannot find element \"CHANNEL\" number %i\n", i + 1);
       textEdit1->append(scratchpad);
       goto OUT_EXIT;
     }
@@ -355,7 +355,7 @@ void UI_MortaraEDFwindow::SelectFileButton()
     buf_len = xml_get_attribute_of_element(xml_hdl, "DATA", NULL, 10 * 1000 * 1000);
     if(buf_len < 1)
     {
-      snprintf(scratchpad, 4096, "Error, can not find attribute \"DATA\" in channel number %i\n", i + 1);
+      snprintf(scratchpad, 4096, "Error, cannot find attribute \"DATA\" in channel number %i\n", i + 1);
       textEdit1->append(scratchpad);
       goto OUT_EXIT;
     }
@@ -376,7 +376,7 @@ void UI_MortaraEDFwindow::SelectFileButton()
     len = xml_get_attribute_of_element(xml_hdl, "DATA", chan_data_in[i], buf_len);
     if(len < 1)
     {
-      snprintf(scratchpad, 4096, "Error, can not load channel data in channel number %i\n", i + 1);
+      snprintf(scratchpad, 4096, "Error, cannot load channel data in channel number %i\n", i + 1);
       textEdit1->append(scratchpad);
       goto OUT_EXIT;
     }
@@ -384,7 +384,7 @@ void UI_MortaraEDFwindow::SelectFileButton()
     chan_decoded_len[i] = base64_dec(chan_data_in[i], chan_data_out[i], buf_len);
     if(chan_decoded_len[i] < 1)
     {
-      snprintf(scratchpad, 4096, "Error, can not decode data in channel number %i\n", i + 1);
+      snprintf(scratchpad, 4096, "Error, cannot decode data in channel number %i\n", i + 1);
       textEdit1->append(scratchpad);
       goto OUT_EXIT;
     }
@@ -414,7 +414,7 @@ void UI_MortaraEDFwindow::SelectFileButton()
     len = xml_get_attribute_of_element(xml_hdl, "ACQUISITION_TIME_XML", start_date_time, 64);
     if(len < 19)
     {
-      textEdit1->append("Error, can not find attribute \"ACQUISITION_TIME_XML\"\n");
+      textEdit1->append("Error, cannot find attribute \"ACQUISITION_TIME_XML\"\n");
       goto OUT_EXIT;
     }
     start_date_time[4] = 0;
@@ -549,7 +549,7 @@ void UI_MortaraEDFwindow::SelectFileButton()
   edf_hdl = edfopen_file_writeonly(path, EDFLIB_FILETYPE_EDFPLUS, chan_cnt);
   if(edf_hdl < 0)
   {
-    textEdit1->append("Error, can not open EDF file for writing\n");
+    textEdit1->append("Error, cannot open EDF file for writing\n");
     goto OUT_EXIT;
   }
 

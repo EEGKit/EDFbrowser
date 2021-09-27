@@ -106,7 +106,7 @@ upx edfbrowser (if upx is not recognized as a command, install it using your pac
 
 
 
-Requirements on macOS (warning, I don't have a Mac and I can not support it!)
+Requirements on macOS (warning, I don't have a Mac and I cannot support it!)
 =====================
 
 Development tools from Apple: to get them, run
