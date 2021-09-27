@@ -1365,6 +1365,7 @@ int UI_ImportAnnotationswindow::import_from_ascii(void)
             {
               latin1_to_utf8(description, max_descr_length);
             }
+            str_replace_ctrl_chars(description, '.');
             descr_is_set = 1;
           }
           else if(column == duration_column)

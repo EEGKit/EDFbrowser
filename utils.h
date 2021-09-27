@@ -67,6 +67,9 @@ void remove_extension_from_filename(char *);  /* removes extension including the
 int get_filename_from_path(char *dest, const char *src, int size);  /* size is size of destination, returns length of filename */
 int get_directory_from_path(char *dest, const char *src, int size);  /* size is size of destination, returns length of directory */
 void sanitize_ascii(char *);  /* replaces all non-ascii characters with a dot */
+/* replaces all control chars (decimal values < 32 and decimal value == 127 (DEL)) */
+/* works also with UTF-8 and Latin-1 */
+void str_replace_ctrl_chars(char *, char);
 void latin1_to_ascii(char *, int);
 void latin1_to_utf8(char *, int);
 void utf8_to_latin1(char *);

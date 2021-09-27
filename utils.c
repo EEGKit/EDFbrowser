@@ -821,6 +821,24 @@ int utf8_idx(const char *str, int idx)
 }
 
 
+void str_replace_ctrl_chars(char *str, char c)
+{
+  int i;
+
+  if(str == NULL)  return;
+
+  for(i=0; ; i++)
+  {
+    if(str[i] == 0)  return;
+
+    if((((unsigned char *)str)[i] < 32) || (((unsigned char *)str)[i] == 127))
+    {
+      str[i] = c;
+    }
+  }
+}
+
+
 int antoi(const char *input_str, int len)
 {
   char str[4096];
