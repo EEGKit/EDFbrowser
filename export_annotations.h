@@ -56,8 +56,8 @@ struct export_annotations_var_block
   int separator;
   int format;
   int duration;
+  int txt_encoding;
 };
-
 
 
 class UI_ExportAnnotationswindow : public QObject
@@ -93,7 +93,8 @@ private:
                *fileGroupBox,
                *asciiSettingsGroupBox;
 
-  QComboBox    *separatorBox;
+  QComboBox    *separatorBox,
+               *text_encoding_combobox;
 
   QCheckBox    *durationCheckBox;
 

@@ -1284,6 +1284,23 @@ void UI_Mainwindow::read_general_settings()
       xml_go_up(xml_hdl);
     }
 
+    if(!(xml_goto_nth_element_inside(xml_hdl, "txt_encoding", 0)))
+    {
+      if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+      {
+        xml_close(xml_hdl);
+        return;
+      }
+
+      export_annotations_var->txt_encoding = atoi(result);
+      if((export_annotations_var->txt_encoding < 0) || (export_annotations_var->txt_encoding > 1))
+      {
+        export_annotations_var->txt_encoding = 0;
+      }
+
+      xml_go_up(xml_hdl);
+    }
+
     xml_go_up(xml_hdl);
   }
 
@@ -2673,6 +2690,8 @@ void UI_Mainwindow::write_settings()
     fprintf(cfgfile, "      <format>%i</format>\n", export_annotations_var->format);
 
     fprintf(cfgfile, "      <duration>%i</duration>\n", export_annotations_var->duration);
+
+    fprintf(cfgfile, "      <txt_encoding>%i</txt_encoding>\n", export_annotations_var->txt_encoding);
 
     fprintf(cfgfile, "    </annotations_export_var>\n");
 

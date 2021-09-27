@@ -77,14 +77,15 @@ UI_ExportAnnotationswindow::UI_ExportAnnotationswindow(QWidget *w_parent)
   fileVBoxLayout->addWidget(mergeRadioButton);
   fileGroupBox->setLayout(fileVBoxLayout);
 
-  asciiSettingsGroupBox = new QGroupBox("ASCII settings");
+  asciiSettingsGroupBox = new QGroupBox("ASCII / CSV settings");
 
   separatorBox = new QComboBox;
   separatorBox->addItem("comma");
   separatorBox->addItem("tab");
   separatorBox->addItem("semicolon");
+  separatorBox->addItem("pipe (vertical bar)");
 
-  asciiSecondsRadioButton = new QRadioButton("seconds relative to start of file");
+  asciiSecondsRadioButton = new QRadioButton("Seconds relative to start of file");
   asciiSecondsRadioButton->setChecked(true);
 
   asciiISOtimeRadioButton = new QRadioButton("ISO timestamp hh:mm:ss");
@@ -95,12 +96,17 @@ UI_ExportAnnotationswindow::UI_ExportAnnotationswindow(QWidget *w_parent)
 
   asciiISOtimedateFractionRadioButton = new QRadioButton("ISO datetimestamp yyyy-mm-ddThh:mm:ss.xxx");
 
-  durationCheckBox = new QCheckBox("include event duration");
+  durationCheckBox = new QCheckBox("Include event duration");
   durationCheckBox->setTristate(false);
   durationCheckBox->setCheckState(Qt::Unchecked);
 
+  text_encoding_combobox = new QComboBox;
+  text_encoding_combobox->addItem("UTF-8");
+  text_encoding_combobox->addItem("ISO-8859-1 (Latin1)");
+
   QFormLayout *asciiSettingsflayout = new QFormLayout;
-  asciiSettingsflayout->addRow("separator:", separatorBox);
+  asciiSettingsflayout->addRow("Separator:", separatorBox);
+  asciiSettingsflayout->addRow("Text encoding", text_encoding_combobox);
 
   QVBoxLayout *asciiSettingsVBoxLayout = new QVBoxLayout;
   asciiSettingsVBoxLayout->addLayout(asciiSettingsflayout);
@@ -119,6 +125,8 @@ UI_ExportAnnotationswindow::UI_ExportAnnotationswindow(QWidget *w_parent)
   CloseButton->setText("Close");
 
   separatorBox->setCurrentIndex(mainwindow->export_annotations_var->separator);
+
+  text_encoding_combobox->setCurrentIndex(mainwindow->export_annotations_var->txt_encoding);
 
   switch(mainwindow->export_annotations_var->format)
   {
@@ -230,7 +238,8 @@ void UI_ExportAnnotationswindow::ExportButtonClicked()
       hdl=-1,
       annot_cnt,
       temp,
-      include_duration;
+      include_duration,
+      txt_encoding=0;
 
   char path[MAX_PATH_LENGTH]={""},
        str[1024]={""},
@@ -287,21 +296,28 @@ void UI_ExportAnnotationswindow::ExportButtonClicked()
 
   mainwindow->export_annotations_var->format = csv_format;
 
-  if(separatorBox->currentIndex() == 0)
+  mainwindow->export_annotations_var->separator = separatorBox->currentIndex();
+
+  mainwindow->export_annotations_var->txt_encoding = text_encoding_combobox->currentIndex();
+
+  if(mainwindow->export_annotations_var->separator == 0)
   {
     separator = ',';
-    mainwindow->export_annotations_var->separator = 0;
   }
-  else if(separatorBox->currentIndex() == 1)
+  else if(mainwindow->export_annotations_var->separator == 1)
   {
     separator = '\t';
-    mainwindow->export_annotations_var->separator = 1;
+  }
+  else if(mainwindow->export_annotations_var->separator == 2)
+  {
+    separator = ';';
   }
   else
   {
-    separator = ';';
-    mainwindow->export_annotations_var->separator = 2;
+    separator = '|';
   }
+
+  txt_encoding = text_encoding_combobox->currentIndex();
 
   if(durationCheckBox->checkState() == Qt::Checked)
   {
@@ -453,12 +469,16 @@ void UI_ExportAnnotationswindow::ExportButtonClicked()
         break;
       }
       strlcpy(str, annot->description, 1024);
-      utf8_to_latin1(str);
+      if(txt_encoding)
+      {
+        utf8_to_latin1(str);
+      }
+      str_replace_ctrl_chars(str, '.');
 
       len = strlen(str);
       for(i=0; i<len; i++)
       {
-        if((((unsigned char *)str)[i] < 32) || (((unsigned char *)str)[i] == separator))
+        if(str[i] == separator)
         {
           str[i] = '.';
         }
