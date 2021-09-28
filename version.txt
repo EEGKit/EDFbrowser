@@ -10,6 +10,8 @@
 
  - Added support for signal linked annotations using "@@" in the annotation description.
 
+ - Annotation editor: fixed a bug that caused the negative prefix of the onsettime field inoperable.
+
 
  version 1.85      August 29, 2021
  --------------
