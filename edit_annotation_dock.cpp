@@ -222,11 +222,6 @@ void UI_AnnotationEditwindow::modifyButtonClicked()
 
   annot->onset = annotEditGetOnset();
 
-  if(posNegTimebox->currentIndex() == 1)
-  {
-    annot->onset = -(annot->onset);
-  }
-
   annot->onset += edf_hdr->starttime_offset;
 
   if(dblcmp(duration_spinbox->value(), 0.0) > 0)
@@ -330,11 +325,6 @@ void UI_AnnotationEditwindow::createButtonClicked()
   memset(&annotation, 0, sizeof(struct annotationblock));
 
   annotation.onset = annotEditGetOnset();
-
-  if(posNegTimebox->currentIndex() == 1)
-  {
-    annotation.onset = -(annotation.onset);
-  }
 
   annotation.onset += edf_hdr->starttime_offset;
 
