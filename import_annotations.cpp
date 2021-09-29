@@ -1060,6 +1060,7 @@ int UI_ImportAnnotationswindow::import_from_xml(void)
         latin1_to_utf8(annotation.description, MAX_ANNOTATION_LEN);
       }
       annotation.description[MAX_ANNOTATION_LEN] = 0;
+      trim_spaces(annotation.description);
       strlcpy(annotation.duration, duration, 32);
       annotation.long_duration = edfplus_annotation_get_long_from_number(duration);
       annotation.edfhdr = mainwindow->edfheaderlist[0];
