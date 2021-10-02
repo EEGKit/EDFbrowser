@@ -102,7 +102,7 @@ UI_ExportAnnotationswindow::UI_ExportAnnotationswindow(QWidget *w_parent)
 
   text_encoding_combobox = new QComboBox;
   text_encoding_combobox->addItem("UTF-8");
-  text_encoding_combobox->addItem("ISO-8859-1 (Latin1)");
+  text_encoding_combobox->addItem("ISO-8859-1 (Latin-1)");
 
   QFormLayout *asciiSettingsflayout = new QFormLayout;
   asciiSettingsflayout->addRow("Separator:", separatorBox);

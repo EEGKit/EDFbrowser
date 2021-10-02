@@ -1,5 +1,5 @@
 
- version 1.86      to be decided
+ version 1.86      October 2, 2021
  --------------
 
  - Export to ASCII (CSV): fixed a bug that caused the program to hang forever when
@@ -11,6 +11,8 @@
  - Added support for signal linked annotations using "@@" in the annotation description.
 
  - Annotation editor: fixed a bug that caused the negative prefix of the onsettime field inoperable.
+
+ - Import/Export annotations/events: offer the possibility to select UTF-8 or ISO-8859-1 (Latin-1) for text encoding.
 
 
  version 1.85      August 29, 2021

@@ -190,7 +190,7 @@ UI_ImportAnnotationswindow::UI_ImportAnnotationswindow(QWidget *w_parent)
 
   text_encoding_combobox = new QComboBox;
   text_encoding_combobox->addItem("UTF-8");
-  text_encoding_combobox->addItem("ISO-8859-1 (Latin1)");
+  text_encoding_combobox->addItem("ISO-8859-1 (Latin-1)");
 
   DescriptionColumnRadioButton = new QRadioButton();
   DescriptionColumnRadioButton->setChecked(true);
