@@ -301,6 +301,7 @@ protected:
 signals:
 
   void file_dropped(void);
+  void annot_created_by_rect_draw(void);
 };
 
 

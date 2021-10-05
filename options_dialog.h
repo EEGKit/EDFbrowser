@@ -132,7 +132,8 @@ QCheckBox      *checkbox1,
                *checkbox7_5,
                *checkbox7_6;
 
-QTableWidget   *colorBarTable;
+QTableWidget   *colorBarTable,
+               *annot_sidemenu_table;
 
 QRadioButton   *radiobutton1,
                *radiobutton2,

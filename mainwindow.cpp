@@ -4286,6 +4286,16 @@ void UI_Mainwindow::get_unique_annotations(struct edfhdrblock *hdr)
 }
 
 
+void UI_Mainwindow::create_annot_by_rect_draw()
+{
+  if((!annot_editor_active) || (annotationEditDock == NULL))
+  {
+    return;
+  }
+
+  annotationEditDock->process_annot_by_rect_draw();
+}
+
 
 
 

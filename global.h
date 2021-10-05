@@ -85,6 +85,7 @@
 #define MAXAVERAGECURVEDIALOGS              (32)
 #define MAXZSCOREDIALOGS                    (32)
 #define MAXZOOMHISTORY                      (16)
+#define MAX_ANNOTEDIT_SIDE_MENU_ANNOTS       (8)
 /* 200 bpm x 60 min. x 24 hours x 2 days */
 #define STATISTICS_IVAL_LIST_SZ         (576000)
 
@@ -266,6 +267,9 @@ struct signalcompblock{
         int cdsa_dock[MAXCDSADOCKS];
         int avg_dialog[MAXAVERAGECURVEDIALOGS];
         int zscoredialog[MAXZSCOREDIALOGS];
+        int annot_created_by_rect_draw_active;
+        long long annot_created_by_rect_draw_onset;
+        long long annot_created_by_rect_draw_duration;
       };
 
 struct zoomhistoryblock{

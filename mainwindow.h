@@ -263,7 +263,8 @@ public:
        hypnogram_stage_name[6][32],
        hypnogram_annot_name[6][32],
        ecg_qrs_rpeak_descr[32],
-       annot_edit_user_button_name[8][64];
+       annot_edit_user_button_name[8][64],
+       annot_by_rect_draw_description[MAX_ANNOTEDIT_SIDE_MENU_ANNOTS][32];
 
   double y_pixelsizefactor,
          x_pixelsizefactor,
@@ -642,6 +643,7 @@ private slots:
   void export_filtered_signals();
   void video_player_faster();
   void video_player_slower();
+  void create_annot_by_rect_draw();
 //  void search_pattern();
 
 protected:

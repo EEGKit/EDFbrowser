@@ -1489,6 +1489,22 @@ void UI_Mainwindow::read_general_settings()
       }
     }
 
+    for(i=0; i<MAX_ANNOTEDIT_SIDE_MENU_ANNOTS; i++)
+    {
+      if(!(xml_goto_nth_element_inside(xml_hdl, "annot_by_rect_draw_description", i)))
+      {
+        if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+        {
+          xml_close(xml_hdl);
+          return;
+        }
+
+        strlcpy(annot_by_rect_draw_description[i], result, 32);
+
+        xml_go_up(xml_hdl);
+      }
+    }
+
     if(!(xml_goto_nth_element_inside(xml_hdl, "annot_editor_user_button_update_annot_description", 0)))
     {
       if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
@@ -2758,6 +2774,11 @@ void UI_Mainwindow::write_settings()
     fprintf(cfgfile, "      <annot_editor_user_button_update_annot_onset>%i</annot_editor_user_button_update_annot_onset>\n", annot_editor_user_button_update_annot_onset);
     fprintf(cfgfile, "      <annot_editor_user_button_update_annot_duration>%i</annot_editor_user_button_update_annot_duration>\n", annot_editor_user_button_update_annot_duration);
     fprintf(cfgfile, "      <annot_editor_user_button_jump_to_next_page>%i</annot_editor_user_button_jump_to_next_page>\n", annot_editor_user_button_jump_to_next_page);
+    for(i=0; i<MAX_ANNOTEDIT_SIDE_MENU_ANNOTS; i++)
+    {
+      xml_strlcpy_encode_entity(str, annot_by_rect_draw_description[i], 1024);
+      fprintf(cfgfile, "      <annot_by_rect_draw_description>%s</annot_by_rect_draw_description>\n", str);
+    }
     fprintf(cfgfile, "    </annotation_editor>\n");
 
     fprintf(cfgfile, "    <live_stream_update_interval>%i</live_stream_update_interval>\n", live_stream_update_interval);

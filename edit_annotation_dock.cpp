@@ -150,6 +150,40 @@ UI_AnnotationEditwindow::UI_AnnotationEditwindow(struct edfhdrblock *e_hdr, QWid
 
   dockedit->addWidget(annot_edit_frame);
 
+  annot_by_rect_draw_menu = new QMenu(annot_edit_frame);
+  if(strlen(mainwindow->annot_by_rect_draw_description[0]))
+  {
+    annot_by_rect_draw_menu->addAction(QString::fromUtf8(mainwindow->annot_by_rect_draw_description[0]), this, SLOT(annot_by_rect_draw_side_menu_0_clicked()));
+  }
+  if(strlen(mainwindow->annot_by_rect_draw_description[1]))
+  {
+    annot_by_rect_draw_menu->addAction(QString::fromUtf8(mainwindow->annot_by_rect_draw_description[1]), this, SLOT(annot_by_rect_draw_side_menu_1_clicked()));
+  }
+  if(strlen(mainwindow->annot_by_rect_draw_description[2]))
+  {
+    annot_by_rect_draw_menu->addAction(QString::fromUtf8(mainwindow->annot_by_rect_draw_description[2]), this, SLOT(annot_by_rect_draw_side_menu_2_clicked()));
+  }
+  if(strlen(mainwindow->annot_by_rect_draw_description[3]))
+  {
+    annot_by_rect_draw_menu->addAction(QString::fromUtf8(mainwindow->annot_by_rect_draw_description[3]), this, SLOT(annot_by_rect_draw_side_menu_3_clicked()));
+  }
+  if(strlen(mainwindow->annot_by_rect_draw_description[4]))
+  {
+    annot_by_rect_draw_menu->addAction(QString::fromUtf8(mainwindow->annot_by_rect_draw_description[4]), this, SLOT(annot_by_rect_draw_side_menu_4_clicked()));
+  }
+  if(strlen(mainwindow->annot_by_rect_draw_description[5]))
+  {
+    annot_by_rect_draw_menu->addAction(QString::fromUtf8(mainwindow->annot_by_rect_draw_description[5]), this, SLOT(annot_by_rect_draw_side_menu_5_clicked()));
+  }
+  if(strlen(mainwindow->annot_by_rect_draw_description[6]))
+  {
+    annot_by_rect_draw_menu->addAction(QString::fromUtf8(mainwindow->annot_by_rect_draw_description[6]), this, SLOT(annot_by_rect_draw_side_menu_6_clicked()));
+  }
+  if(strlen(mainwindow->annot_by_rect_draw_description[7]))
+  {
+    annot_by_rect_draw_menu->addAction(QString::fromUtf8(mainwindow->annot_by_rect_draw_description[7]), this, SLOT(annot_by_rect_draw_side_menu_7_clicked()));
+  }
+
   QObject::connect(modifybutton, SIGNAL(clicked()),            this, SLOT(modifyButtonClicked()));
   QObject::connect(deletebutton, SIGNAL(clicked()),            this, SLOT(deleteButtonClicked()));
   QObject::connect(createbutton, SIGNAL(clicked()),            this, SLOT(createButtonClicked()));
@@ -420,10 +454,15 @@ long long UI_AnnotationEditwindow::annotEditGetOnset(void)
 }
 
 
-
 void UI_AnnotationEditwindow::annotEditSetDuration(long long duration)
 {
   duration_spinbox->setValue(((double)duration) / TIME_DIMENSION);
+}
+
+
+void UI_AnnotationEditwindow::annotEditSetDescription(char *descr)
+{
+  annot_descript_lineEdit->setText(descr);
 }
 
 
@@ -627,7 +666,6 @@ void UI_AnnotationEditwindow::user_button_clicked(int button)
   }
 }
 
-
 void UI_AnnotationEditwindow::user_button_0_clicked()
 {
   user_button_clicked(0);
@@ -668,7 +706,87 @@ void UI_AnnotationEditwindow::user_button_7_clicked()
   user_button_clicked(7);
 }
 
+void UI_AnnotationEditwindow::process_annot_by_rect_draw(void)
+{
+  annot_by_rect_draw_menu->exec(QCursor::pos());
+}
 
+void UI_AnnotationEditwindow::annot_by_rect_draw_side_menu_0_clicked()
+{
+  annot_by_rect_draw_side_menu_create(0);
+}
+
+void UI_AnnotationEditwindow::annot_by_rect_draw_side_menu_1_clicked()
+{
+  annot_by_rect_draw_side_menu_create(1);
+}
+
+void UI_AnnotationEditwindow::annot_by_rect_draw_side_menu_2_clicked()
+{
+  annot_by_rect_draw_side_menu_create(2);
+}
+
+void UI_AnnotationEditwindow::annot_by_rect_draw_side_menu_3_clicked()
+{
+  annot_by_rect_draw_side_menu_create(3);
+}
+
+void UI_AnnotationEditwindow::annot_by_rect_draw_side_menu_4_clicked()
+{
+  annot_by_rect_draw_side_menu_create(4);
+}
+
+void UI_AnnotationEditwindow::annot_by_rect_draw_side_menu_5_clicked()
+{
+  annot_by_rect_draw_side_menu_create(5);
+}
+
+void UI_AnnotationEditwindow::annot_by_rect_draw_side_menu_6_clicked()
+{
+  annot_by_rect_draw_side_menu_create(6);
+}
+
+void UI_AnnotationEditwindow::annot_by_rect_draw_side_menu_7_clicked()
+{
+  annot_by_rect_draw_side_menu_create(7);
+}
+
+void UI_AnnotationEditwindow::annot_by_rect_draw_side_menu_create(int n)
+{
+  int i;
+
+  char str[512]="";
+
+  for(i=0; i<mainwindow->signalcomps; i++)
+  {
+    if(mainwindow->signalcomp[i]->annot_created_by_rect_draw_active)
+    {
+      break;
+    }
+  }
+  if(i == mainwindow->signalcomps)
+  {
+    return;
+  }
+
+  mainwindow->signalcomp[i]->annot_created_by_rect_draw_active = 0;
+
+  annotEditSetOnset(mainwindow->signalcomp[i]->annot_created_by_rect_draw_onset);
+
+  annotEditSetDuration(mainwindow->signalcomp[i]->annot_created_by_rect_draw_duration);
+
+  strlcpy(str, mainwindow->annot_by_rect_draw_description[n], 512);
+
+  strlcat(str, "@@", 512);
+
+  strlcat(str, mainwindow->signalcomp[i]->signallabel, 512);
+
+  trim_spaces(str);
+
+  annotEditSetDescription(str);
+
+  createButtonClicked();
+}
 
 
 

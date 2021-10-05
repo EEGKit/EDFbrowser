@@ -153,6 +153,10 @@ UI_Mainwindow::UI_Mainwindow()
   strlcpy(annot_edit_user_button_name[4], "N3", 64);
   strlcpy(annot_edit_user_button_name[5], "N4", 64);
   strlcpy(annot_edit_user_button_name[6], "N5", 64);
+  for(i=0; i<MAX_ANNOTEDIT_SIDE_MENU_ANNOTS; i++)
+  {
+    annot_by_rect_draw_description[i][0] = 0;
+  }
 
   drop_path[0] = 0;
 
@@ -393,6 +397,8 @@ UI_Mainwindow::UI_Mainwindow()
 //  printf("dpix: %i    dpiy: %i\n", dpix, dpiy);
 
   maincurve->setAcceptDrops(true);
+
+  QObject::connect(maincurve, SIGNAL(annot_created_by_rect_draw()), this, SLOT(create_annot_by_rect_draw()));
 
   if(auto_dpi)
   {

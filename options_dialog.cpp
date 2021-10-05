@@ -723,13 +723,34 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   QObject::connect(checkbox7_6, SIGNAL(stateChanged(int)), this, SLOT(checkbox7_6Clicked(int)));
   flayout7_2->labelForField(hlayout_tmp)->setToolTip("Enabling this option will automatically change the viewtime (file position) and jump to the next page.");
 
-  flayout7_2->addRow("  ", (QWidget *)NULL);
-  flayout7_2->addRow("  ", (QWidget *)NULL);
   flayout7_2->addRow("Keyboard shortcuts are Ctrl + 1, Ctrl + 2, Ctrl + 3, etc.", (QWidget *)NULL);
+
+  QFrame *hline7_2 = new QFrame;
+  hline7_2->setFrameShape(QFrame::HLine);
+  hline7_2->setFrameShadow(QFrame::Sunken);
+  hline7_2->setLineWidth(2);
+  flayout7_2->addRow(hline7_2);
+
+  annot_sidemenu_table = new QTableWidget;
+  annot_sidemenu_table->setSelectionMode(QAbstractItemView::NoSelection);
+  annot_sidemenu_table->setColumnCount(1);
+  annot_sidemenu_table->setRowCount(MAX_ANNOTEDIT_SIDE_MENU_ANNOTS);
+  for(i=0; i<MAX_ANNOTEDIT_SIDE_MENU_ANNOTS; i++)
+  {
+    annot_sidemenu_table->setCellWidget(i, 0, new QLineEdit);
+    ((QLineEdit *)annot_sidemenu_table->cellWidget(i, 0))->setMaxLength(16);
+    ((QLineEdit *)annot_sidemenu_table->cellWidget(i, 0))->setText(mainwindow->annot_by_rect_draw_description[i]);
+  }
+  QStringList horizontal_labels;
+  horizontal_labels += "Annotation / Event";
+  annot_sidemenu_table->setHorizontalHeaderLabels(horizontal_labels);
+  annot_sidemenu_table->resizeColumnsToContents();
 
   QVBoxLayout *vlayout7_2 = new QVBoxLayout;
   vlayout7_2->addLayout(flayout7_2);
-  vlayout7_2->addStretch(1000);
+  vlayout7_2->addWidget(annot_sidemenu_table, 1000);
+  annot_sidemenu_table->setToolTip("These are the descriptions of the annotations which will appear\n"
+                                   "when drawing a rectangle and pressing the Ctrl key.");
 
   QFrame *vline7_1 = new QFrame;
   vline7_1->setFrameShape(QFrame::VLine);
@@ -747,6 +768,11 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   {
     QObject::connect(checkbox7_1[i], SIGNAL(stateChanged(int)),   this, SLOT(tab7_settings_changed()));
     QObject::connect(lineedit7_1[i], SIGNAL(textEdited(QString)), this, SLOT(tab7_settings_changed()));
+  }
+
+  for(i=0; i<MAX_ANNOTEDIT_SIDE_MENU_ANNOTS; i++)
+  {
+    QObject::connect((QLineEdit *)annot_sidemenu_table->cellWidget(i, 0), SIGNAL(textChanged(QString)), this, SLOT(tab7_settings_changed()));
   }
 
   tabholder->addTab(tab7, "Annotation editor");
@@ -2948,7 +2974,12 @@ void UI_OptionsDialog::tab7_settings_changed()
     strlcpy(mainwindow->annot_edit_user_button_name[i], lineedit7_1[i]->text().toUtf8().data(), 64);
   }
 
-  if(mainwindow->annot_editor_active)
+  for(i=0; i<MAX_ANNOTEDIT_SIDE_MENU_ANNOTS; i++)
+  {
+    strlcpy(mainwindow->annot_by_rect_draw_description[i], ((QLineEdit *)annot_sidemenu_table->cellWidget(i, 0))->text().toUtf8().data(), 32);
+  }
+
+  if((mainwindow->annot_editor_active) && (mainwindow->annotationEditDock != NULL))
   {
     for(i=0; i<8; i++)
     {
@@ -2962,6 +2993,41 @@ void UI_OptionsDialog::tab7_settings_changed()
       }
 
       mainwindow->annotationEditDock->user_button[i]->setText(lineedit7_1[i]->text());
+    }
+
+    mainwindow->annotationEditDock->annot_by_rect_draw_menu->clear();
+
+    if(strlen(mainwindow->annot_by_rect_draw_description[0]))
+    {
+      mainwindow->annotationEditDock->annot_by_rect_draw_menu->addAction(QString::fromUtf8(mainwindow->annot_by_rect_draw_description[0]), mainwindow->annotationEditDock, SLOT(annot_by_rect_draw_side_menu_0_clicked()));
+    }
+    if(strlen(mainwindow->annot_by_rect_draw_description[1]))
+    {
+      mainwindow->annotationEditDock->annot_by_rect_draw_menu->addAction(QString::fromUtf8(mainwindow->annot_by_rect_draw_description[1]), mainwindow->annotationEditDock, SLOT(annot_by_rect_draw_side_menu_1_clicked()));
+    }
+    if(strlen(mainwindow->annot_by_rect_draw_description[2]))
+    {
+      mainwindow->annotationEditDock->annot_by_rect_draw_menu->addAction(QString::fromUtf8(mainwindow->annot_by_rect_draw_description[2]), mainwindow->annotationEditDock, SLOT(annot_by_rect_draw_side_menu_2_clicked()));
+    }
+    if(strlen(mainwindow->annot_by_rect_draw_description[3]))
+    {
+      mainwindow->annotationEditDock->annot_by_rect_draw_menu->addAction(QString::fromUtf8(mainwindow->annot_by_rect_draw_description[3]), mainwindow->annotationEditDock, SLOT(annot_by_rect_draw_side_menu_3_clicked()));
+    }
+    if(strlen(mainwindow->annot_by_rect_draw_description[4]))
+    {
+      mainwindow->annotationEditDock->annot_by_rect_draw_menu->addAction(QString::fromUtf8(mainwindow->annot_by_rect_draw_description[4]), mainwindow->annotationEditDock, SLOT(annot_by_rect_draw_side_menu_4_clicked()));
+    }
+    if(strlen(mainwindow->annot_by_rect_draw_description[5]))
+    {
+      mainwindow->annotationEditDock->annot_by_rect_draw_menu->addAction(QString::fromUtf8(mainwindow->annot_by_rect_draw_description[5]), mainwindow->annotationEditDock, SLOT(annot_by_rect_draw_side_menu_5_clicked()));
+    }
+    if(strlen(mainwindow->annot_by_rect_draw_description[6]))
+    {
+      mainwindow->annotationEditDock->annot_by_rect_draw_menu->addAction(QString::fromUtf8(mainwindow->annot_by_rect_draw_description[6]), mainwindow->annotationEditDock, SLOT(annot_by_rect_draw_side_menu_6_clicked()));
+    }
+    if(strlen(mainwindow->annot_by_rect_draw_description[7]))
+    {
+      mainwindow->annotationEditDock->annot_by_rect_draw_menu->addAction(QString::fromUtf8(mainwindow->annot_by_rect_draw_description[7]), mainwindow->annotationEditDock, SLOT(annot_by_rect_draw_side_menu_7_clicked()));
     }
   }
 }

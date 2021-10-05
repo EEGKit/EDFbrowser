@@ -69,13 +69,19 @@ public:
 
   void annotEditSetDuration(long long);
 
+  void annotEditSetDescription(char *);
+
   void set_selected_annotation(int);
+
+  void process_annot_by_rect_draw(void);
 
   void set_edf_header(struct edfhdrblock *);
 
   void set_selected_annotation(struct annotationblock *);
 
   QPushButton *user_button[8];
+
+  QMenu *annot_by_rect_draw_menu;
 
 private:
 
@@ -122,6 +128,15 @@ private slots:
   void user_button_5_clicked();
   void user_button_6_clicked();
   void user_button_7_clicked();
+  void annot_by_rect_draw_side_menu_0_clicked();
+  void annot_by_rect_draw_side_menu_1_clicked();
+  void annot_by_rect_draw_side_menu_2_clicked();
+  void annot_by_rect_draw_side_menu_3_clicked();
+  void annot_by_rect_draw_side_menu_4_clicked();
+  void annot_by_rect_draw_side_menu_5_clicked();
+  void annot_by_rect_draw_side_menu_6_clicked();
+  void annot_by_rect_draw_side_menu_7_clicked();
+  void annot_by_rect_draw_side_menu_create(int);
 
   void dockedit_destroyed(QObject *);
 };
