@@ -588,30 +588,33 @@ void ViewCurve::mousePressEvent(QMouseEvent *press_event)
     {
       if((!ruler_moving)&&(!crosshair_1.moving)&&(!crosshair_2.moving))
       {
-        for(i=0; i<active_markers->count; i++)
+        if(QApplication::keyboardModifiers() != Qt::ControlModifier)
         {
-          if(m_x>(active_markers->list[i]->x_pos-(5*w_scaling))&&(m_x<(active_markers->list[i]->x_pos+(5*w_scaling))))
+          for(i=0; i<active_markers->count; i++)
           {
-            active_markers->selected = i;
-
-            active_markers->list[i]->selected = 1;
-
-            if(QApplication::keyboardModifiers() == Qt::ShiftModifier)
+            if(m_x>(active_markers->list[i]->x_pos-(5*w_scaling))&&(m_x<(active_markers->list[i]->x_pos+(5*w_scaling))))
             {
-              edfplus_annotation_cancel_all_selected_in_dock(&((edfhdrblock *)(active_markers->list[i]->edfhdr))->annot_list);
+              active_markers->selected = i;
 
-              active_markers->list[i]->selected_in_dock = 1;
+              active_markers->list[i]->selected = 1;
 
-              mainwindow->annotationEditDock->set_selected_annotation(active_markers->list[i]);
+              if(QApplication::keyboardModifiers() == Qt::ShiftModifier)
+              {
+                edfplus_annotation_cancel_all_selected_in_dock(&((edfhdrblock *)(active_markers->list[i]->edfhdr))->annot_list);
 
-              mainwindow->annotations_dock[mainwindow->get_filenum(active_markers->edf_hdr)]->updateList(1);
+                active_markers->list[i]->selected_in_dock = 1;
+
+                mainwindow->annotationEditDock->set_selected_annotation(active_markers->list[i]);
+
+                mainwindow->annotations_dock[mainwindow->get_filenum(active_markers->edf_hdr)]->updateList(1);
+              }
+              else
+              {
+                annot_marker_moving = 1;
+              }
+
+              break;
             }
-            else
-            {
-              annot_marker_moving = 1;
-            }
-
-            break;
           }
         }
       }
@@ -843,7 +846,7 @@ void ViewCurve::mouseReleaseEvent(QMouseEvent *release_event)
     {
       draw_zoom_rectangle = 0;
 
-      if((m_x>(mouse_press_coordinate_x + 50))&&(m_y > mouse_press_coordinate_y + 50))
+      if((m_x>(mouse_press_coordinate_x + 25))&&(m_y > mouse_press_coordinate_y + 25))
       {
         if(QApplication::keyboardModifiers() == Qt::ControlModifier)
         {
