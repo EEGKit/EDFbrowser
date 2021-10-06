@@ -2972,11 +2972,17 @@ void UI_OptionsDialog::tab7_settings_changed()
     }
 
     strlcpy(mainwindow->annot_edit_user_button_name[i], lineedit7_1[i]->text().toUtf8().data(), 64);
+
+    str_replace_ctrl_chars(mainwindow->annot_edit_user_button_name[i], '!');
+
+    trim_spaces(mainwindow->annot_edit_user_button_name[i]);
   }
 
   for(i=0; i<MAX_ANNOTEDIT_SIDE_MENU_ANNOTS; i++)
   {
     strlcpy(mainwindow->annot_by_rect_draw_description[i], ((QLineEdit *)annot_sidemenu_table->cellWidget(i, 0))->text().toUtf8().data(), 32);
+
+    str_replace_ctrl_chars(mainwindow->annot_by_rect_draw_description[i], '!');
 
     trim_spaces(mainwindow->annot_by_rect_draw_description[i]);
   }
