@@ -4288,7 +4288,21 @@ void UI_Mainwindow::get_unique_annotations(struct edfhdrblock *hdr)
 
 void UI_Mainwindow::create_annot_by_rect_draw()
 {
+  int i;
+
   if((!annot_editor_active) || (annotationEditDock == NULL))
+  {
+    return;
+  }
+
+  for(i=0; i<MAX_ANNOTEDIT_SIDE_MENU_ANNOTS; i++)
+  {
+    if(strlen(annot_by_rect_draw_description[i]))
+    {
+      break;
+    }
+  }
+  if(i == MAX_ANNOTEDIT_SIDE_MENU_ANNOTS)
   {
     return;
   }

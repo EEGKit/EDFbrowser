@@ -2977,6 +2977,8 @@ void UI_OptionsDialog::tab7_settings_changed()
   for(i=0; i<MAX_ANNOTEDIT_SIDE_MENU_ANNOTS; i++)
   {
     strlcpy(mainwindow->annot_by_rect_draw_description[i], ((QLineEdit *)annot_sidemenu_table->cellWidget(i, 0))->text().toUtf8().data(), 32);
+
+    trim_spaces(mainwindow->annot_by_rect_draw_description[i]);
   }
 
   if((mainwindow->annot_editor_active) && (mainwindow->annotationEditDock != NULL))
