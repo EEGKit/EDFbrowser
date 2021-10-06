@@ -1205,6 +1205,25 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
                                                      "e.g.: R-peak V2");
   QObject::connect(checkbox4_8, SIGNAL(stateChanged(int)), this, SLOT(checkbox4_8Clicked(int)));
 
+  checkbox4_9 = new QCheckBox;
+  checkbox4_9->setTristate(false);
+  checkbox4_9->setToolTip("If checked, the ruler will adjust the width in order to show integer numbers for Hz");
+  if(mainwindow->maincurve->floating_ruler_use_var_width)
+  {
+    checkbox4_9->setCheckState(Qt::Checked);
+  }
+  else
+  {
+    checkbox4_9->setCheckState(Qt::Unchecked);
+  }
+  hlayout_tmp = new QHBoxLayout;
+  hlayout_tmp->setAlignment(Qt::AlignCenter);
+  hlayout_tmp->addWidget(checkbox4_9);
+  hlayout_tmp->addStretch(1000);
+  flayout4_2->addRow("Floating ruler use variable width", hlayout_tmp);
+  flayout4_2->labelForField(hlayout_tmp)->setToolTip("If checked, the ruler will adjust the width in order to show integer numbers for Hz");
+  QObject::connect(checkbox4_9, SIGNAL(stateChanged(int)), this, SLOT(checkbox4_9Clicked(int)));
+
   hlayout_tmp = new QHBoxLayout;
   hlayout_tmp->setAlignment(Qt::AlignCenter);
   hlayout_tmp->addLayout(flayout4_1);
@@ -1959,6 +1978,21 @@ void UI_OptionsDialog::checkbox4_8Clicked(int state)
   {
     mainwindow->use_signallabel_in_annot_descr = 0;
   }
+}
+
+
+void UI_OptionsDialog::checkbox4_9Clicked(int state)
+{
+  if(state==Qt::Checked)
+  {
+    mainwindow->maincurve->floating_ruler_use_var_width = 1;
+  }
+  else
+  {
+    mainwindow->maincurve->floating_ruler_use_var_width = 0;
+  }
+
+  mainwindow->maincurve->update();
 }
 
 

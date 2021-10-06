@@ -194,6 +194,23 @@ void UI_Mainwindow::read_color_settings()
 
   xml_go_up(xml_hdl);
 
+  if(!xml_goto_nth_element_inside(xml_hdl, "floating_ruler_use_var_width", 0))
+  {
+    if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+    {
+      xml_close(xml_hdl);
+      return;
+    }
+
+    maincurve->floating_ruler_use_var_width = atoi(result);
+    if((maincurve->floating_ruler_use_var_width < 0) || (maincurve->floating_ruler_use_var_width > 1))
+    {
+      maincurve->floating_ruler_use_var_width = 0;
+    }
+
+    xml_go_up(xml_hdl);
+  }
+
   if(xml_goto_nth_element_inside(xml_hdl, "blackwhite_printing", 0))
   {
     xml_close(xml_hdl);
@@ -2526,6 +2543,9 @@ void UI_Mainwindow::write_settings()
 
     fprintf(cfgfile, "      <floating_ruler_color>%i</floating_ruler_color>\n",
                     maincurve->floating_ruler_color);
+
+    fprintf(cfgfile, "      <floating_ruler_use_var_width>%i</floating_ruler_use_var_width>\n",
+                    maincurve->floating_ruler_use_var_width);
 
     fprintf(cfgfile, "      <blackwhite_printing>%i</blackwhite_printing>\n",
                     maincurve->blackwhite_printing);

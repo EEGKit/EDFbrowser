@@ -152,7 +152,8 @@ public:
       pressed_on_label,
       label_press_y_position,
       cpu_cnt,
-      floating_ruler_value,
+      float_ruler_more,
+      floating_ruler_use_var_width,
       linear_interpol,
       active_marker_context_menu_request_idx;
 

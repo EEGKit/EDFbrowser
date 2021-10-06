@@ -5,6 +5,9 @@
  - Annotation editor: added the option to create quickly a signal-linked annotation by drawing
    a rectangle over the part of the signal of interest.
 
+ - Floating ruler: added an option in Settings -> Options that will automatically adjust the width of
+   the ruler in order to always show integer numbers for "Hz".
+
 
  version 1.86      October 2, 2021
  --------------

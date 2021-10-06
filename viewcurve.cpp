@@ -155,7 +155,8 @@ ViewCurve::ViewCurve(QWidget *w_parent) : QWidget(w_parent)
   printBuf = NULL;
   graphicBufWidth = 0;
   blackwhite_printing = 1;
-  floating_ruler_value = 0;
+  float_ruler_more = 0;
+  floating_ruler_use_var_width = 0;
   linear_interpol = 0;
 
   shift_page_left_shortcut = NULL;
@@ -532,13 +533,13 @@ void ViewCurve::mousePressEvent(QMouseEvent *press_event)
     {
       if((m_y>(ruler_y_position + h_size + 10))&&(m_y<(ruler_y_position  + h_size + 30))&&(m_x>ruler_x_position)&&(m_x<(ruler_x_position + 60)))
       {
-        if(floating_ruler_value)
+        if(float_ruler_more)
         {
-          floating_ruler_value = 0;
+          float_ruler_more = 0;
         }
         else
         {
-          floating_ruler_value = 1;
+          float_ruler_more = 1;
         }
 
         update();
@@ -5007,10 +5008,17 @@ inline void ViewCurve::floating_ruler(QPainter *painter, int x_pos, int y_pos, s
     return;
   }
 
-  if((mainwindow->pagetime / TIME_DIMENSION) < 2LL)
+  if(floating_ruler_use_var_width)
   {
-    h_use_exp = 1;
+    if((mainwindow->pagetime / (TIME_DIMENSION / 10LL)) < 2LL)
+    {
+      h_use_exp = 1;
+    }
   }
+  else if((mainwindow->pagetime / TIME_DIMENSION) < 2LL)
+    {
+      h_use_exp = 1;
+    }
 
   if((mainwindow->pagetime / TIME_DIMENSION) > 60LL)
   {
@@ -5034,13 +5042,30 @@ inline void ViewCurve::floating_ruler(QPainter *painter, int x_pos, int y_pos, s
 
   h_size = 4.0 * painter_pixelsizefactor;
 
-  w_size = (double)w / 10.0;
+  if(floating_ruler_use_var_width)
+  {
+    w_size = pixels_per_second;
+
+    while(w_size > (w / 5))
+    {
+      w_size /= 2;
+    }
+
+    while(w_size < (w / 20))
+    {
+      w_size *= 2;
+    }
+  }
+  else
+  {
+    w_size = (double)w / 10.0;
+  }
 
   d_tmp = h_size / 7.0;
 
   d_tmp2 = h_size / 14.0;
 
-  if(floating_ruler_value)
+  if(float_ruler_more)
   {
     for(i=0; i<7; i++)
     {
@@ -5050,7 +5075,14 @@ inline void ViewCurve::floating_ruler(QPainter *painter, int x_pos, int y_pos, s
       }
       else
       {
-        snprintf(str_hz[i], 15, "%.1f",  (pixels_per_second / w_size) * (2.0 + i));
+        if(floating_ruler_use_var_width)
+        {
+          snprintf(str_hz[i], 15, "%.0f",  (pixels_per_second / w_size) * (2.0 + i));
+        }
+        else
+        {
+          snprintf(str_hz[i], 15, "%.1f",  (pixels_per_second / w_size) * (2.0 + i));
+        }
       }
 
       str_hz[i][15] = 0;
@@ -5099,7 +5131,14 @@ inline void ViewCurve::floating_ruler(QPainter *painter, int x_pos, int y_pos, s
       }
       else
       {
-        snprintf(str_hz[i], 15, "%.1f",  (pixels_per_second / w_size) * (9.0 + i));
+        if(floating_ruler_use_var_width)
+        {
+          snprintf(str_hz[i], 15, "%.0f",  (pixels_per_second / w_size) * (9.0 + i));
+        }
+        else
+        {
+          snprintf(str_hz[i], 15, "%.1f",  (pixels_per_second / w_size) * (9.0 + i));
+        }
       }
 
       str_hz[i][15] = 0;
@@ -5169,7 +5208,7 @@ inline void ViewCurve::floating_ruler(QPainter *painter, int x_pos, int y_pos, s
   painter->drawLine(x_pos + w_size, y_pos, x_pos + w_size, y_pos + h_size);
   painter->drawLine(x_pos, y_pos, x_pos, y_pos + h_size);
 
-  if(floating_ruler_value)
+  if(float_ruler_more)
   {
     for(j=2; j<9; j++)
     {
