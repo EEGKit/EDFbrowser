@@ -2816,7 +2816,10 @@ void ViewCurve::drawCurve_stage_2(QPainter *painter, int w_width, int w_height, 
 
     painter->setPen(*special_pen);
 
-    painter->drawRect(mouse_press_coordinate_x, mouse_press_coordinate_y, mouse_x - mouse_press_coordinate_x, mouse_y - mouse_press_coordinate_y);
+    painter->drawLine(mouse_press_coordinate_x, mouse_press_coordinate_y, mouse_press_coordinate_x, mouse_y);
+    painter->drawLine(mouse_press_coordinate_x, mouse_press_coordinate_y, mouse_x, mouse_press_coordinate_y);
+    painter->drawLine(mouse_x, mouse_y, mouse_press_coordinate_x, mouse_y);
+    painter->drawLine(mouse_x, mouse_y, mouse_x, mouse_press_coordinate_y);
   }
 
   painter->setPen(text_color);
@@ -5182,11 +5185,25 @@ inline void ViewCurve::floating_ruler(QPainter *painter, int x_pos, int y_pos, s
   {
     if(h_use_exp)
     {
-      snprintf(str_s[i], 15, "%.1e",  ((w / 40.0) / pixels_per_second) * (4 - i));
+      if(floating_ruler_use_var_width)
+      {
+        snprintf(str_s[i], 15, "%.1e",  ((w_size / 4.0) / pixels_per_second) * (4 - i));
+      }
+      else
+      {
+        snprintf(str_s[i], 15, "%.1e",  ((w / 40.0) / pixels_per_second) * (4 - i));
+      }
     }
     else
     {
-      snprintf(str_s[i], 15, "%.2f",  ((w / 40.0) / pixels_per_second) * (4 - i));
+      if(floating_ruler_use_var_width)
+      {
+        snprintf(str_s[i], 15, "%.2f",  ((w_size / 4.0) / pixels_per_second) * (4 - i));
+      }
+      else
+      {
+        snprintf(str_s[i], 15, "%.2f",  ((w / 40.0) / pixels_per_second) * (4 - i));
+      }
     }
 
     str_s[i][15] = 0;
