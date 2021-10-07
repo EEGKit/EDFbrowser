@@ -706,7 +706,7 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
 
   checkbox7_6 = new QCheckBox;
   checkbox7_6->setTristate(false);
-  checkbox7_6->setToolTip("Enabling this option will automatically change the viewtime (file position) and jump to the next page.");
+  checkbox7_6->setToolTip("Enabling this option will automatically change the viewtime (file position) and jump to the next page / epoch.");
   if(mainwindow->annot_editor_user_button_jump_to_next_page)
   {
     checkbox7_6->setCheckState(Qt::Checked);
@@ -721,9 +721,47 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   hlayout_tmp->addStretch(1000);
   flayout7_2->addRow("jump to next page", hlayout_tmp);
   QObject::connect(checkbox7_6, SIGNAL(stateChanged(int)), this, SLOT(checkbox7_6Clicked(int)));
-  flayout7_2->labelForField(hlayout_tmp)->setToolTip("Enabling this option will automatically change the viewtime (file position) and jump to the next page.");
+  flayout7_2->labelForField(hlayout_tmp)->setToolTip("Enabling this option will automatically change the viewtime (file position) and jump to the next page / epoch.");
 
   flayout7_2->addRow("Keyboard shortcuts are Ctrl + 1, Ctrl + 2, Ctrl + 3, etc.", (QWidget *)NULL);
+
+  checkbox7_7 = new QCheckBox;
+  checkbox7_7->setTristate(false);
+  checkbox7_7->setToolTip("If enabled, the page will always start at an integer multiple of the page / epoch length.");
+  if(mainwindow->annot_editor_user_button_stay_on_epoch_boundary)
+  {
+    checkbox7_7->setCheckState(Qt::Checked);
+  }
+  else
+  {
+    checkbox7_7->setCheckState(Qt::Unchecked);
+  }
+  if(!mainwindow->annot_editor_user_button_jump_to_next_page)
+  {
+    checkbox7_7->setEnabled(false);
+  }
+  hlayout_tmp = new QHBoxLayout;
+  hlayout_tmp->setAlignment(Qt::AlignCenter);
+  hlayout_tmp->addWidget(checkbox7_7);
+  hlayout_tmp->addStretch(1000);
+  flayout7_2->addRow("Stay on page / epoch boundary", hlayout_tmp);
+  QObject::connect(checkbox7_7, SIGNAL(stateChanged(int)), this, SLOT(checkbox7_7Clicked(int)));
+  flayout7_2->labelForField(hlayout_tmp)->setToolTip("If enabled, the page will always start at an integer multiple of the page / epoch length.");
+
+  spinbox7_1 = new QSpinBox;
+  spinbox7_1->setSuffix(" sec.");
+  spinbox7_1->setRange(1, 300);
+  spinbox7_1->setValue((int)(mainwindow->annot_editor_user_button_epoch_len / TIME_DIMENSION));
+  if(!mainwindow->annot_editor_user_button_jump_to_next_page)
+  {
+    spinbox7_1->setEnabled(false);
+  }
+  hlayout_tmp = new QHBoxLayout;
+  hlayout_tmp->setAlignment(Qt::AlignCenter);
+  hlayout_tmp->addWidget(spinbox7_1);
+  hlayout_tmp->addStretch(1000);
+  flayout7_2->addRow("Page / epoch length", hlayout_tmp);
+  QObject::connect(spinbox7_1, SIGNAL(valueChanged(int)), this, SLOT(spinBox7_1ValueChanged(int)));
 
   QFrame *hline7_2 = new QFrame;
   hline7_2->setFrameShape(QFrame::HLine);
@@ -749,8 +787,8 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   QVBoxLayout *vlayout7_2 = new QVBoxLayout;
   vlayout7_2->addLayout(flayout7_2);
   vlayout7_2->addWidget(annot_sidemenu_table, 1000);
-  annot_sidemenu_table->setToolTip("These are the descriptions of the annotations which will appear\n"
-                                   "when drawing a rectangle and pressing the Ctrl key.");
+  annot_sidemenu_table->setToolTip("These are the descriptions of the annotations which will appear and\n"
+                                   "can be selected when drawing a rectangle while pressing the Ctrl key.");
 
   QFrame *vline7_1 = new QFrame;
   vline7_1->setFrameShape(QFrame::VLine);
@@ -1960,11 +1998,38 @@ void UI_OptionsDialog::checkbox7_6Clicked(int state)
   if(state==Qt::Checked)
   {
     mainwindow->annot_editor_user_button_jump_to_next_page = 1;
+
+    checkbox7_7->setEnabled(true);
+
+    spinbox7_1->setEnabled(true);
   }
   else
   {
     mainwindow->annot_editor_user_button_jump_to_next_page = 0;
+
+    checkbox7_7->setEnabled(false);
+
+    spinbox7_1->setEnabled(false);
   }
+}
+
+
+void UI_OptionsDialog::checkbox7_7Clicked(int state)
+{
+  if(state==Qt::Checked)
+  {
+    mainwindow->annot_editor_user_button_stay_on_epoch_boundary = 1;
+  }
+  else
+  {
+    mainwindow->annot_editor_user_button_stay_on_epoch_boundary = 0;
+  }
+}
+
+
+void UI_OptionsDialog::spinBox7_1ValueChanged(int val)
+{
+  mainwindow->annot_editor_user_button_epoch_len = val * TIME_DIMENSION;
 }
 
 

@@ -10,6 +10,9 @@
 
  - Annotation list: offer the possibility to delete all annotations.
 
+ - Annotation editor: added the possibility to let the viewtime automatically stay on an integer multiple of
+   the page /epoch time when using the user buttons to create annotations.
+
 
  version 1.86      October 2, 2021
  --------------

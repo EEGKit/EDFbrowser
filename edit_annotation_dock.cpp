@@ -643,6 +643,17 @@ void UI_AnnotationEditwindow::user_button_clicked(int button)
 {
   if((button < 0) || (button > 7))  return;
 
+  if(mainwindow->annot_editor_user_button_jump_to_next_page)
+  {
+    if(mainwindow->annot_editor_user_button_stay_on_epoch_boundary)
+    {
+      mainwindow->pagetime = mainwindow->annot_editor_user_button_epoch_len;
+
+      mainwindow->edfheaderlist[mainwindow->sel_viewtime]->viewtime /= mainwindow->annot_editor_user_button_epoch_len;
+      mainwindow->edfheaderlist[mainwindow->sel_viewtime]->viewtime *= mainwindow->annot_editor_user_button_epoch_len;
+    }
+  }
+
   if(mainwindow->annot_editor_user_button_update_annot_description)
   {
     annot_descript_lineEdit->setText(QString::fromUtf8(mainwindow->annot_edit_user_button_name[button]));

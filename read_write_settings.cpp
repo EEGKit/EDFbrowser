@@ -1586,6 +1586,39 @@ void UI_Mainwindow::read_general_settings()
       xml_go_up(xml_hdl);
     }
 
+    if(!(xml_goto_nth_element_inside(xml_hdl, "annot_editor_user_button_stay_on_epoch_boundary", 0)))
+    {
+      if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+      {
+        xml_close(xml_hdl);
+        return;
+      }
+
+      if(atoi(result) == 1)
+      {
+        annot_editor_user_button_stay_on_epoch_boundary = 1;
+      }
+
+      xml_go_up(xml_hdl);
+    }
+
+    if(!(xml_goto_nth_element_inside(xml_hdl, "annot_editor_user_button_epoch_len", 0)))
+    {
+      if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+      {
+        xml_close(xml_hdl);
+        return;
+      }
+
+      annot_editor_user_button_epoch_len = atoll(result);
+      if((annot_editor_user_button_epoch_len < TIME_DIMENSION) || (annot_editor_user_button_epoch_len > (300LL * TIME_DIMENSION)))
+      {
+        annot_editor_user_button_epoch_len = 30LL * TIME_DIMENSION;
+      }
+
+      xml_go_up(xml_hdl);
+    }
+
     xml_go_up(xml_hdl);
   }
 
@@ -2794,6 +2827,12 @@ void UI_Mainwindow::write_settings()
     fprintf(cfgfile, "      <annot_editor_user_button_update_annot_onset>%i</annot_editor_user_button_update_annot_onset>\n", annot_editor_user_button_update_annot_onset);
     fprintf(cfgfile, "      <annot_editor_user_button_update_annot_duration>%i</annot_editor_user_button_update_annot_duration>\n", annot_editor_user_button_update_annot_duration);
     fprintf(cfgfile, "      <annot_editor_user_button_jump_to_next_page>%i</annot_editor_user_button_jump_to_next_page>\n", annot_editor_user_button_jump_to_next_page);
+    fprintf(cfgfile, "      <annot_editor_user_button_stay_on_epoch_boundary>%i</annot_editor_user_button_stay_on_epoch_boundary>\n", annot_editor_user_button_stay_on_epoch_boundary);
+#ifdef Q_OS_WIN32
+    __mingw_fprintf(cfgfile, "      <annot_editor_user_button_epoch_len>%lli</annot_editor_user_button_epoch_len>\n", annot_editor_user_button_epoch_len);
+#else
+    fprintf(cfgfile, "      <annot_editor_user_button_epoch_len>%lli</annot_editor_user_button_epoch_len>\n", annot_editor_user_button_epoch_len);
+#endif
     for(i=0; i<MAX_ANNOTEDIT_SIDE_MENU_ANNOTS; i++)
     {
       xml_strlcpy_encode_entity(str, annot_by_rect_draw_description[i], 1024);

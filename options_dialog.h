@@ -98,7 +98,8 @@ QSpinBox       *spinbox1_1,
                *spinbox4_2,
                *spinbox4_3,
                *spinbox5_1,
-               *spinbox5_2;
+               *spinbox5_2,
+               *spinbox7_1;
 
 QDoubleSpinBox *dspinbox3_2,
                *dspinbox4_4;
@@ -131,7 +132,8 @@ QCheckBox      *checkbox1,
                *checkbox7_3,
                *checkbox7_4,
                *checkbox7_5,
-               *checkbox7_6;
+               *checkbox7_6,
+               *checkbox7_7;
 
 QTableWidget   *colorBarTable,
                *annot_sidemenu_table;
@@ -201,6 +203,7 @@ void checkbox7_3Clicked(int);
 void checkbox7_4Clicked(int);
 void checkbox7_5Clicked(int);
 void checkbox7_6Clicked(int);
+void checkbox7_7Clicked(int);
 void ApplyButtonClicked();
 void colorBarButtonClicked(SpecialButton *);
 void DefaultButton2Clicked();
@@ -230,6 +233,7 @@ void spinBox5_1ValueChanged(int);
 void spinBox5_2ValueChanged(int);
 void ApplyButton5Clicked();
 void DefaultButton5Clicked();
+void spinBox7_1ValueChanged(int);
 void tab7_settings_changed();
 };
 

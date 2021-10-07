@@ -137,6 +137,10 @@ UI_Mainwindow::UI_Mainwindow()
 
   annot_editor_user_button_jump_to_next_page = 0;
 
+  annot_editor_user_button_stay_on_epoch_boundary = 0;
+
+  annot_editor_user_button_epoch_len = 30LL * TIME_DIMENSION;
+
   channel_linked_annotations = 1;
 
   use_diverse_signal_colors = 0;
