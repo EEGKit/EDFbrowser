@@ -112,7 +112,8 @@ private:
           *edit_annotations_act,
           *remove_duplicates_act,
           *rename_all_act,
-          *delete_all_act;
+          *delete_annots_act,
+          *delete_all_annots_act;
 
   QTimer *delayed_list_filter_update_timer;
 
@@ -141,7 +142,8 @@ private slots:
   void show_heart_rate(bool);
   void delayed_list_filter_update();
   void rename_all();
-  void delete_all();
+  void delete_annots();
+  void delete_all_annots();
 };
 
 

@@ -107,7 +107,8 @@ UI_Annotationswindow::UI_Annotationswindow(struct edfhdrblock *e_hdr, QWidget *w
   edit_annotations_act = new QAction("Edit annotations", list);
   remove_duplicates_act = new QAction("Remove duplicates", list);
   rename_all_act = new QAction("Rename", list);
-  delete_all_act = new QAction("Delete", list);
+  delete_annots_act = new QAction("Delete", list);
+  delete_all_annots_act = new QAction("Delete all", list);
 
   list->setContextMenuPolicy(Qt::ActionsContextMenu);
   list->insertAction(NULL, show_between_act);
@@ -127,7 +128,8 @@ UI_Annotationswindow::UI_Annotationswindow(struct edfhdrblock *e_hdr, QWidget *w
   list->insertAction(NULL, edit_annotations_act);
   list->insertAction(NULL, remove_duplicates_act);
   list->insertAction(NULL, rename_all_act);
-  list->insertAction(NULL, delete_all_act);
+  list->insertAction(NULL, delete_annots_act);
+  list->insertAction(NULL, delete_all_annots_act);
 
   QHBoxLayout *h_layout = new QHBoxLayout;
   h_layout->addWidget(checkbox1);
@@ -175,13 +177,15 @@ UI_Annotationswindow::UI_Annotationswindow(struct edfhdrblock *e_hdr, QWidget *w
 
   QObject::connect(rename_all_act,             SIGNAL(triggered(bool)),                this, SLOT(rename_all()));
 
-  QObject::connect(delete_all_act,             SIGNAL(triggered(bool)),                this, SLOT(delete_all()));
+  QObject::connect(delete_annots_act,          SIGNAL(triggered(bool)),                this, SLOT(delete_annots()));
+
+  QObject::connect(delete_all_annots_act,      SIGNAL(triggered(bool)),                this, SLOT(delete_all_annots()));
 
   QObject::connect(delayed_list_filter_update_timer, SIGNAL(timeout()),                this, SLOT(delayed_list_filter_update()));
 }
 
 
-void UI_Annotationswindow::delete_all()
+void UI_Annotationswindow::delete_annots()
 {
   char str[4096]="";
 
@@ -231,6 +235,66 @@ void UI_Annotationswindow::delete_all()
   }
 
   UI_rename_annots_dialog rename_dialog(mainwindow, 1);
+}
+
+
+void UI_Annotationswindow::delete_all_annots()
+{
+  char str[4096]="";
+
+  if(mainwindow->files_open < 1)
+  {
+    return;
+  }
+
+  if(mainwindow->files_open > 1)
+  {
+    QMessageBox::critical(mainwindow, "Error", "Requested action is not permitted when multiple files are opened.");
+    return;
+  }
+
+  if(mainwindow->annot_editor_active)
+  {
+    QMessageBox::critical(mainwindow, "Error", "Close the annotation editor and try again.");
+    return;
+  }
+
+  if(list->count() < 1)
+  {
+    QMessageBox::critical(mainwindow, "Error", "There are no annotations.");
+    return;
+  }
+
+  if(&edf_hdr->annot_list == NULL)
+  {
+    snprintf(str, 4096, "Nullpointer returned: file: %s line %i", __FILE__, __LINE__);
+    QMessageBox messagewindow(QMessageBox::Critical, "Error", str);
+    messagewindow.exec();
+    return;
+  }
+
+  QMessageBox msgBox;
+  msgBox.setText("You are about to delete all annotations.");
+  msgBox.setInformativeText("Do you want to continue?");
+  msgBox.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+  msgBox.setDefaultButton(QMessageBox::No);
+  if(msgBox.exec() == QMessageBox::No)
+  {
+    return;
+  }
+
+  if(mainwindow->annotationlist_backup==NULL)
+  {
+    mainwindow->annotationlist_backup = edfplus_annotation_create_list_copy(&edf_hdr->annot_list);
+  }
+
+  edfplus_annotation_empty_list(&edf_hdr->annot_list);
+
+  mainwindow->annotations_edited = 1;
+
+  mainwindow->annotations_dock[0]->updateList(0);
+
+  mainwindow->save_act->setEnabled(true);
 }
 
 
