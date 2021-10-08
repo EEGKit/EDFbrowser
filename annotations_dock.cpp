@@ -1152,6 +1152,8 @@ void UI_Annotationswindow::updateList(int scroll_to_item_requested)
 
   QApplication::setOverrideCursor(Qt::WaitCursor);
 
+  list->verticalScrollBar()->setRange(0, 1000000);
+
   scroll_val = list->verticalScrollBar()->value();
 
   list->clear();
@@ -1324,6 +1326,8 @@ void UI_Annotationswindow::updateList(int scroll_to_item_requested)
   }
   else
   {
+    list->verticalScrollBar()->setRange(0, 1000000);
+
     list->verticalScrollBar()->setValue(scroll_val);
   }
 

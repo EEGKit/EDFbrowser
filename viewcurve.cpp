@@ -5419,6 +5419,10 @@ void ViewCurve::select_annot(bool)
     {
       active_markers->list[i]->selected_in_dock = 1;
     }
+    else
+    {
+      active_markers->list[i]->selected_in_dock = 0;
+    }
   }
 
   mainwindow->annotations_dock[mainwindow->get_filenum((edfhdrblock *)(active_markers->list[idx]->edfhdr))]->updateList(1);

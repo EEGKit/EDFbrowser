@@ -281,6 +281,10 @@ void UI_AnnotationEditwindow::modifyButtonClicked()
 
   annot->selected = 1;
 
+  edfplus_annotation_cancel_all_selected_in_dock(annot_list);
+
+  annot->selected_in_dock = 1;
+
   mainwindow->annotations_edited = 1;
 
   file_num = mainwindow->get_filenum((struct edfhdrblock *)(annot->edfhdr));
@@ -385,6 +389,12 @@ void UI_AnnotationEditwindow::createButtonClicked()
 
   annotation.modified = 1;
 
+  annotation.selected = 1;
+
+  edfplus_annotation_cancel_all_selected_in_dock(annot_list);
+
+  annotation.selected_in_dock = 1;
+
   edfplus_annotation_add_item(annot_list, annotation);
 
   mainwindow->annotations_edited = 1;
@@ -392,7 +402,7 @@ void UI_AnnotationEditwindow::createButtonClicked()
   file_num = mainwindow->get_filenum((struct edfhdrblock *)(annotation.edfhdr));
   if(file_num >= 0)
   {
-    mainwindow->annotations_dock[file_num]->updateList(0);
+    mainwindow->annotations_dock[file_num]->updateList(1);
   }
 
   update_description_completer();
