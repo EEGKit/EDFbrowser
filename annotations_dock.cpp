@@ -1132,7 +1132,6 @@ void UI_Annotationswindow::updateList(int scroll_to_item_requested)
 {
   int j=0,
       sz=0,
-      jump=0,
       modified=0,
       scroll_val=0,
       selected_in_dock_idx=-1;
@@ -1278,18 +1277,11 @@ void UI_Annotationswindow::updateList(int scroll_to_item_requested)
 
     listitem->setToolTip(string);
 
-    if(annot->selected)
+    if(annot->grabbed)
     {
       selected = j;
 
-      annot->selected = 0;
-
-      if(annot->jump)
-      {
-        jump = 1;
-
-        annot->jump = 0;
-      }
+      annot->grabbed = 0;
     }
   }
 
@@ -1302,13 +1294,6 @@ void UI_Annotationswindow::updateList(int scroll_to_item_requested)
       if(mainwindow->annotationEditDock != NULL)
       {
         mainwindow->annotationEditDock->set_selected_annotation(selected);
-      }
-
-      if(jump)
-      {
-        jump = 0;
-
-        annotation_selected(list->currentItem());
       }
     }
 

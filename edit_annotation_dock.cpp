@@ -279,8 +279,6 @@ void UI_AnnotationEditwindow::modifyButtonClicked()
 
   annot->modified = 1;
 
-  annot->selected = 1;
-
   edfplus_annotation_cancel_all_selected_in_dock(annot_list);
 
   annot->selected_in_dock = 1;
@@ -302,7 +300,7 @@ void UI_AnnotationEditwindow::modifyButtonClicked()
 
 void UI_AnnotationEditwindow::deleteButtonClicked()
 {
-  int sz, file_num;
+  int file_num;
 
   struct annotation_list *annot_list = &(edf_hdr->annot_list);
 
@@ -321,15 +319,6 @@ void UI_AnnotationEditwindow::deleteButtonClicked()
   }
 
   edfplus_annotation_remove_item(annot_list, annot_num);
-
-  sz = edfplus_annotation_size(annot_list);
-
-  if(annot_num < sz)
-  {
-    annot->selected = 1;
-
-    annot->jump = 1;
-  }
 
   modifybutton->setEnabled(false);
 
@@ -388,8 +377,6 @@ void UI_AnnotationEditwindow::createButtonClicked()
   annotation.description[MAX_ANNOTATION_LEN] = 0;
 
   annotation.modified = 1;
-
-  annotation.selected = 1;
 
   edfplus_annotation_cancel_all_selected_in_dock(annot_list);
 

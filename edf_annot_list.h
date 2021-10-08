@@ -50,8 +50,7 @@ struct annotationblock{
         char description[MAX_ANNOTATION_LEN_II + 1];
         int modified;
         int x_pos;
-        int selected;
-        int jump;
+        int grabbed;
         int hided;
         int hided_in_list;
         unsigned int ident;

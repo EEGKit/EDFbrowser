@@ -596,7 +596,7 @@ void ViewCurve::mousePressEvent(QMouseEvent *press_event)
             {
               active_markers->selected = i;
 
-              active_markers->list[i]->selected = 1;
+              active_markers->list[i]->grabbed = 1;
 
               if(QApplication::keyboardModifiers() == Qt::ShiftModifier)
               {
@@ -817,7 +817,7 @@ void ViewCurve::mouseReleaseEvent(QMouseEvent *release_event)
 
       active_markers->list[active_markers->selected]->modified = 1;
 
-      active_markers->list[active_markers->selected]->selected = 1;
+      active_markers->list[active_markers->selected]->grabbed = 1;
 
       edfplus_annotation_cancel_all_selected_in_dock(&((edfhdrblock *)(active_markers->list[active_markers->selected]->edfhdr))->annot_list);
 
@@ -2453,7 +2453,7 @@ void ViewCurve::drawCurve_stage_2(QPainter *painter, int w_width, int w_height, 
 
             if(annot->selected_in_dock)
             {
-              annot_marker_pen->setColor(annot_marker_color);
+              annot_marker_pen->setColor(annot_marker_color);  /* set it back to the normal (not selected) color */
 
               painter->setPen(*annot_marker_pen);
             }
