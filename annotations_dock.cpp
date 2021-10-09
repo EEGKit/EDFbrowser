@@ -1374,6 +1374,11 @@ void UI_Annotationswindow::annotation_selected(QListWidgetItem * item, int cente
 
   if(n >= sz)  return;
 
+  if(mainwindow->annot_onset_at_start_of_page_on_jump)
+  {
+    centered = 0;
+  }
+
   last_pressed_annotation = n;
 
   edfplus_annotation_cancel_all_selected_in_dock(annot_list);

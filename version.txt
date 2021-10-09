@@ -13,6 +13,10 @@
  - Annotation editor: added the possibility to let the viewtime automatically stay on an integer multiple of
    the page /epoch time when using the user buttons to create annotations.
 
+ - Annotation list: when clicked on an annotation in the annotation list, the file position will jump to
+   the onset time of that annotation and the annotation marker will appear either at the start or the middle
+   of the page, depending on a new option that can be found in Settings -> Options -> Other.
+
 
  version 1.86      October 2, 2021
  --------------

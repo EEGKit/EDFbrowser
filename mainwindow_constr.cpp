@@ -97,6 +97,8 @@ UI_Mainwindow::UI_Mainwindow()
 
   annotations_duration_background_type = 0;
 
+  annot_onset_at_start_of_page_on_jump = 0;
+
   auto_reload_mtg = 1;
 
   read_biosemi_status_signal = 1;

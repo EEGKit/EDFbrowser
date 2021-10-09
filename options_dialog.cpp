@@ -1262,6 +1262,31 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   flayout4_2->labelForField(hlayout_tmp)->setToolTip("If checked, the ruler will adjust the width in order to show integer numbers for Hz");
   QObject::connect(checkbox4_9, SIGNAL(stateChanged(int)), this, SLOT(checkbox4_9Clicked(int)));
 
+  checkbox4_10 = new QCheckBox;
+  checkbox4_10->setTristate(false);
+  checkbox4_10->setToolTip("If checked, when clicking on an annotation in the annotation list, the\n"
+                           "file position will be set to the onset time of that annotation\n"
+                           "(the annotation marker will appear at the start of the page).\n"
+                           "If not checked, the annotation marker will appear in the middle of the page.");
+  if(mainwindow->annot_onset_at_start_of_page_on_jump)
+  {
+    checkbox4_10->setCheckState(Qt::Checked);
+  }
+  else
+  {
+    checkbox4_10->setCheckState(Qt::Unchecked);
+  }
+  hlayout_tmp = new QHBoxLayout;
+  hlayout_tmp->setAlignment(Qt::AlignCenter);
+  hlayout_tmp->addWidget(checkbox4_10);
+  hlayout_tmp->addStretch(1000);
+  flayout4_2->addRow("Annotation onset at start of page", hlayout_tmp);
+  flayout4_2->labelForField(hlayout_tmp)->setToolTip("If checked, when clicking on an annotation in the annotation list, the\n"
+                                                     "file position will be set to the onset time of that annotation\n"
+                                                     "(the annotation marker will appear at the start of the page).\n"
+                                                     "If not checked, the annotation marker will appear in the middle of the page.");
+  QObject::connect(checkbox4_10, SIGNAL(stateChanged(int)), this, SLOT(checkbox4_10Clicked(int)));
+
   hlayout_tmp = new QHBoxLayout;
   hlayout_tmp->setAlignment(Qt::AlignCenter);
   hlayout_tmp->addLayout(flayout4_1);
@@ -2058,6 +2083,19 @@ void UI_OptionsDialog::checkbox4_9Clicked(int state)
   }
 
   mainwindow->maincurve->update();
+}
+
+
+void UI_OptionsDialog::checkbox4_10Clicked(int state)
+{
+  if(state==Qt::Checked)
+  {
+    mainwindow->annot_onset_at_start_of_page_on_jump = 1;
+  }
+  else
+  {
+    mainwindow->annot_onset_at_start_of_page_on_jump = 0;
+  }
 }
 
 

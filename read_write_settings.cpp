@@ -2385,6 +2385,23 @@ void UI_Mainwindow::read_general_settings()
     xml_go_up(xml_hdl);
   }
 
+  if(!(xml_goto_nth_element_inside(xml_hdl, "annot_onset_at_start_of_page_on_jump", 0)))
+  {
+    if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+    {
+      xml_close(xml_hdl);
+      return;
+    }
+
+    annot_onset_at_start_of_page_on_jump = atoi(result);
+    if(annot_onset_at_start_of_page_on_jump != 1)
+    {
+      annot_onset_at_start_of_page_on_jump = 0;
+    }
+
+    xml_go_up(xml_hdl);
+  }
+
   if(!(xml_goto_nth_element_inside(xml_hdl, "auto_update_annot_onset", 0)))
   {
     if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
@@ -2925,6 +2942,8 @@ void UI_Mainwindow::write_settings()
     fprintf(cfgfile, "    <default_amplitude>%.10e</default_amplitude>\n", default_amplitude);
 
     fprintf(cfgfile, "    <linear_interpolation>%i</linear_interpolation>\n", linear_interpol);
+
+    fprintf(cfgfile, "    <annot_onset_at_start_of_page_on_jump>%i</annot_onset_at_start_of_page_on_jump>\n", annot_onset_at_start_of_page_on_jump);
 
     fprintf(cfgfile, "    <auto_update_annot_onset>%i</auto_update_annot_onset>\n", auto_update_annot_onset);
 

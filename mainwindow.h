@@ -173,6 +173,7 @@ public:
       annotations_onset_relative,
       annotations_show_duration,
       annotations_duration_background_type,
+      annot_onset_at_start_of_page_on_jump,
       exit_in_progress,
       maxdftblocksize,
       dpix,
