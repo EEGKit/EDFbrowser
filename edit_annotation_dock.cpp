@@ -83,7 +83,7 @@ UI_AnnotationEditwindow::UI_AnnotationEditwindow(struct edfhdrblock *e_hdr, QWid
   duration_spinbox->setDecimals(3);
   duration_spinbox->setSuffix(" sec");
   duration_spinbox->setValue(-1.0);
-  duration_spinbox->setToolTip("Duration of the event (hh:mm:ss:mmm), -1 if not applicable)");
+  duration_spinbox->setToolTip("Duration of the event in seconds, -1 if not applicable)");
 
   modifybutton = new QPushButton;
   modifybutton->setText("Modify");
@@ -120,29 +120,29 @@ UI_AnnotationEditwindow::UI_AnnotationEditwindow(struct edfhdrblock *e_hdr, QWid
   }
 
   QHBoxLayout *hlayout1 = new QHBoxLayout;
-  hlayout1->addStretch(1000);
+  hlayout1->addStretch(10);
   hlayout1->addWidget(descriptionLabel);
   hlayout1->addWidget(annot_descript_lineEdit);
-  hlayout1->addStretch(100);
+  hlayout1->addStretch(1);
   hlayout1->addWidget(onsetLabel);
   hlayout1->addWidget(posNegTimebox);
   hlayout1->addWidget(onset_daySpinbox);
   hlayout1->addWidget(onset_timeEdit);
-  hlayout1->addStretch(100);
+  hlayout1->addStretch(1);
   hlayout1->addWidget(durationLabel);
   hlayout1->addWidget(duration_spinbox);
-  hlayout1->addStretch(100);
+  hlayout1->addStretch(1);
   hlayout1->addWidget(modifybutton);
-  hlayout1->addStretch(100);
+  hlayout1->addStretch(1);
   hlayout1->addWidget(deletebutton);
-  hlayout1->addStretch(100);
+  hlayout1->addStretch(1);
   hlayout1->addWidget(createbutton);
   for(i=0; i<8; i++)
   {
-    hlayout1->addStretch(100);
+    hlayout1->addStretch(1);
     hlayout1->addWidget(user_button[i]);
   }
-  hlayout1->addStretch(1000);
+  hlayout1->addStretch(10);
 
   annot_edit_frame = new QFrame;
 
