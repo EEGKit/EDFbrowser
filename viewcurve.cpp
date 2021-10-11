@@ -862,6 +862,7 @@ void ViewCurve::mouseReleaseEvent(QMouseEvent *release_event)
               {
                 baseline = h / (signalcomps + 1);
                 baseline *= (i + 1);
+                baseline += signalcomp[i]->screen_offset;
 
                 dist2 = baseline - ((mouse_press_coordinate_y + m_y) / 2);
                 if(dist2 < 0)
@@ -1819,7 +1820,7 @@ void ViewCurve::drawCurve_stage_2(QPainter *painter, int w_width, int w_height, 
                     {
                       if(!strcmp(chp, signalcomp[k]->signallabel))
                       {
-                        baseline = vertical_distance * (k + 1);
+                        baseline = (vertical_distance * (k + 1)) + signalcomp[k]->screen_offset;
 
                         if(annot->selected_in_dock)
                         {
@@ -2339,7 +2340,7 @@ void ViewCurve::drawCurve_stage_2(QPainter *painter, int w_width, int w_height, 
                   {
                     if(!strcmp(chp, signalcomp[k]->signallabel))
                     {
-                      baseline = vertical_distance * (k + 1);
+                      baseline = (vertical_distance * (k + 1)) + signalcomp[k]->screen_offset;
 
                       painter->drawLine(marker_x, baseline + (vertical_distance / 2), marker_x, baseline - (vertical_distance / 2));
 
