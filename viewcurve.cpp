@@ -72,6 +72,15 @@ ViewCurve::ViewCurve(QWidget *w_parent) : QWidget(w_parent)
 
   original_sensitivity = (double *)calloc(1, sizeof(double[MAXSIGNALS]));
 
+  mouse_press_coordinate_x = 0;
+  mouse_press_coordinate_y = 0;
+  mouse_release_coordinate_x = 0;
+
+  mouse_x = 0;
+  mouse_y = 0;
+  mouse_old_x = 0;
+  mouse_old_y = 0;
+
 ////////////////////////////////////////////////////////
 
   backgroundcolor.setRed(64);
@@ -505,6 +514,7 @@ void ViewCurve::mousePressEvent(QMouseEvent *press_event)
 
   mouse_press_coordinate_x = m_x;
   mouse_press_coordinate_y = m_y;
+  mouse_release_coordinate_x = m_x;
 
   pressed_on_label = 0;
 
@@ -779,6 +789,8 @@ void ViewCurve::mouseReleaseEvent(QMouseEvent *release_event)
   m_x = release_event->x();
   m_y = release_event->y();
 
+  mouse_release_coordinate_x = m_x;
+
   if(release_event->button()==Qt::LeftButton)
   {
     if(crosshair_1.moving)
@@ -860,9 +872,16 @@ void ViewCurve::mouseReleaseEvent(QMouseEvent *release_event)
 
               for(i=0; i<signalcomps; i++)
               {
-                baseline = h / (signalcomps + 1);
-                baseline *= (i + 1);
-                baseline += signalcomp[i]->screen_offset;
+//                 printf("draw_rectangle_sum_cnt: %i   draw_rectangle_sum_y: %i\n",
+//                        signalcomp[i]->draw_rectangle_sum_cnt, signalcomp[i]->draw_rectangle_sum_y / signalcomp[i]->draw_rectangle_sum_cnt);
+//
+//                 baseline = h / (signalcomps + 1);
+//                 baseline *= (i + 1);
+//                 baseline += signalcomp[i]->screen_offset;
+
+                if(signalcomp[i]->draw_rectangle_sum_cnt < 1)  continue;
+
+                baseline = signalcomp[i]->draw_rectangle_sum_y / signalcomp[i]->draw_rectangle_sum_cnt;
 
                 dist2 = baseline - ((mouse_press_coordinate_y + m_y) / 2);
                 if(dist2 < 0)
@@ -1751,6 +1770,10 @@ void ViewCurve::drawCurve_stage_2(QPainter *painter, int w_width, int w_height, 
   for(i=0; i<signalcomps; i++)
   {
     signalcomp[i]->sample_pixel_ratio = (double)signalcomp[i]->samples_on_screen / (double)w;
+
+    signalcomp[i]->draw_rectangle_sum_y = 0;
+
+    signalcomp[i]->draw_rectangle_sum_cnt = 0;
   }
 
   vertical_distance = h / (signalcomps + 1);
@@ -2557,6 +2580,17 @@ void ViewCurve::drawCurve_stage_2(QPainter *painter, int w_width, int w_height, 
                         graphicBuf[j].graphicLine[i].y1,
                         graphicBuf[j].graphicLine[i].x2,
                         graphicBuf[j].graphicLine[i].y2);
+
+      if(draw_zoom_rectangle && use_move_events)
+      {
+        if((graphicBuf[j].graphicLine[i].x1 >= mouse_press_coordinate_x) &&
+           (graphicBuf[j].graphicLine[i].x1 <= mouse_x))
+        {
+          signalcomp[i]->draw_rectangle_sum_y += graphicBuf[j].graphicLine[i].y1;
+
+          signalcomp[i]->draw_rectangle_sum_cnt++;
+        }
+      }
     }
   }
 

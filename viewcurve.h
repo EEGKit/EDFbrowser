@@ -134,6 +134,7 @@ public:
       signal_nr,
       mouse_press_coordinate_x,
       mouse_press_coordinate_y,
+      mouse_release_coordinate_x,
       draw_zoom_rectangle,
       signal_color,
       floating_ruler_color,

@@ -248,6 +248,8 @@ struct signalcompblock{
         double stat_sum;
         double stat_sum_sqr;
         double stat_sum_rectified;
+        int draw_rectangle_sum_y;
+        int draw_rectangle_sum_cnt;
         int ravg_filter_cnt;
         int ravg_filter_type[MAXFILTERS];
         int ravg_filter_size[MAXFILTERS];
