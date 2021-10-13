@@ -17,6 +17,9 @@
    the onset time of that annotation and the annotation marker will appear either at the start or the middle
    of the page, depending on a new option that can be found in Settings -> Options -> Other.
 
+ - Annotation list: Fixed a bug in the function "Remove duplicates" that potentially caused
+   not to remove all duplicates.
+
 
  version 1.86      October 2, 2021
  --------------
