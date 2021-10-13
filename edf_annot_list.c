@@ -408,6 +408,8 @@ int edfplus_annotation_remove_duplicates(struct annotation_list *list)
       list->idx[j] = list->idx[j+1];
     }
 
+    i--;
+
     dup_cnt++;
   }
 
