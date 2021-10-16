@@ -42,6 +42,8 @@ UI_hypnogram_window::UI_hypnogram_window(QWidget *w_parent, struct edfhdrblock *
 
   myobjectDialog = new QDialog;
 
+  QHBoxLayout *hlayout_tmp=NULL;
+
   myobjectDialog->setMinimumSize(400 * mainwindow->w_scaling, 400 * mainwindow->h_scaling);
   myobjectDialog->setWindowTitle("Hypnogram");
   myobjectDialog->setModal(true);
@@ -129,6 +131,46 @@ UI_hypnogram_window::UI_hypnogram_window(QWidget *w_parent, struct edfhdrblock *
   hlayout2->addLayout(vlayout3);
   hlayout2->addStretch(1000);
 
+  QFormLayout *flayout1 = new QFormLayout;
+  flayout1->setSpacing(20);
+
+  flayout1->addRow(" ", (QWidget *)NULL);
+
+  use_epoch_len_checkbox = new QCheckBox;
+  use_epoch_len_checkbox->setTristate(false);
+//  use_epoch_len_checkbox->setToolTip("");
+  if(mainwindow->hypnogram_use_epoch_len)
+  {
+    use_epoch_len_checkbox->setCheckState(Qt::Checked);
+  }
+  else
+  {
+    use_epoch_len_checkbox->setCheckState(Qt::Unchecked);
+  }
+  hlayout_tmp = new QHBoxLayout;
+  hlayout_tmp->setAlignment(Qt::AlignCenter);
+  hlayout_tmp->addWidget(use_epoch_len_checkbox);
+  hlayout_tmp->addStretch(1000);
+  flayout1->addRow("Use annotations' duration for epoch length", hlayout_tmp);
+//  flayout1->labelForField(hlayout_tmp)->setToolTip("");
+  QObject::connect(use_epoch_len_checkbox, SIGNAL(stateChanged(int)), this, SLOT(use_epoch_len_checkbox_changed(int)));
+
+//   epoch_length_spinbox = new QSpinBox;
+//   epoch_length_spinbox->setSuffix(" sec.");
+//   epoch_length_spinbox->setRange(1, 300);
+//   epoch_length_spinbox->setValue((int)(mainwindow->hypnogram_epoch_len / TIME_DIMENSION));
+//   if(!mainwindow->hypnogram_use_epoch_len)
+//   {
+//     epoch_length_spinbox->setEnabled(false);
+//   }
+//
+//   hlayout_tmp = new QHBoxLayout;
+//   hlayout_tmp->setAlignment(Qt::AlignCenter);
+//   hlayout_tmp->addWidget(epoch_length_spinbox);
+//   hlayout_tmp->addStretch(1000);
+//   flayout1->addRow("Page / epoch length", hlayout_tmp);
+//   QObject::connect(epoch_length_spinbox, SIGNAL(valueChanged(int)), this, SLOT(epoch_length_spinbox_value_changed(int)));
+
   QHBoxLayout *hlayout1 = new QHBoxLayout;
   hlayout1->addWidget(close_button);
   hlayout1->addStretch(1000);
@@ -138,6 +180,7 @@ UI_hypnogram_window::UI_hypnogram_window(QWidget *w_parent, struct edfhdrblock *
 
   QVBoxLayout *vlayout1 = new QVBoxLayout;
   vlayout1->addLayout(hlayout2);
+  vlayout1->addLayout(flayout1);
   vlayout1->addStretch(1000);
   vlayout1->addSpacing(20);
   vlayout1->addLayout(hlayout1);
@@ -149,6 +192,19 @@ UI_hypnogram_window::UI_hypnogram_window(QWidget *w_parent, struct edfhdrblock *
   QObject::connect(start_button,   SIGNAL(clicked()),           this, SLOT(start_button_clicked()));
 
   myobjectDialog->exec();
+}
+
+
+void UI_hypnogram_window::use_epoch_len_checkbox_changed(int state)
+{
+  if(state==Qt::Checked)
+  {
+    mainwindow->hypnogram_use_epoch_len = 1;
+  }
+  else
+  {
+    mainwindow->hypnogram_use_epoch_len = 0;
+  }
 }
 
 

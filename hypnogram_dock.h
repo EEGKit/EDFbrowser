@@ -28,37 +28,7 @@
 #ifndef UI_HYPNOGRAMDOCKFORM_H
 #define UI_HYPNOGRAMDOCKFORM_H
 
-
-#include <QtGlobal>
-#include <QApplication>
-#include <QObject>
-#include <QWidget>
-#include <QFrame>
-#include <QDialog>
-#include <QLabel>
-#include <QLineEdit>
-#include <QDateTimeEdit>
-#include <QPushButton>
-#include <QObject>
-#include <QFileDialog>
-#include <QCheckBox>
-#include <QCursor>
-#include <QDoubleSpinBox>
-#include <QProgressDialog>
-#include <QMessageBox>
-#include <QString>
-#include <QPixmap>
-#include <QTextEdit>
-#include <QSpinBox>
-#include <QComboBox>
-#include <QPainter>
-#include <QPen>
-#include <QColor>
-#include <QDockWidget>
-#include <QGridLayout>
-#include <QRectF>
-#include <QPoint>
-#include <QToolBar>
+#include "qt_headers.h"
 
 #include <stdlib.h>
 #include <stdio.h>

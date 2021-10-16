@@ -1656,6 +1656,23 @@ void UI_Mainwindow::read_general_settings()
       }
     }
 
+    if(!(xml_goto_nth_element_inside(xml_hdl, "hypnogram_use_epoch_len", 0)))
+    {
+      if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+      {
+        xml_close(xml_hdl);
+        return;
+      }
+
+      hypnogram_use_epoch_len = atoi(result);
+      if(hypnogram_use_epoch_len != 1)
+      {
+        hypnogram_use_epoch_len = 0;
+      }
+
+      xml_go_up(xml_hdl);
+    }
+
     xml_go_up(xml_hdl);
   }
 
@@ -2808,6 +2825,7 @@ void UI_Mainwindow::write_settings()
 
       fprintf(cfgfile, "      <annot_name>%s</annot_name>\n", str);
     }
+    fprintf(cfgfile, "      <hypnogram_use_epoch_len>%i</hypnogram_use_epoch_len>\n", hypnogram_use_epoch_len);
     fprintf(cfgfile, "    </hypnogram>\n");
 
     fprintf(cfgfile, "    <ecg_qrs>\n");

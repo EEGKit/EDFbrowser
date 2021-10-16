@@ -316,7 +316,10 @@ void hypnogram_curve_widget::paintEvent(QPaintEvent *)
          pixel_per_sec,
          offset;
 
-  long long annot_duration;
+  long long annot_duration=-1LL,
+            annot_end=0LL,
+            prev_annot_end=0LL,
+            tdiff=0LL;
 
   char str[64];
 
@@ -367,16 +370,44 @@ void hypnogram_curve_widget::paintEvent(QPaintEvent *)
 
         annot_duration = annot->long_duration;
 
+        if(mainwindow->hypnogram_use_epoch_len)
+        {
+          annot_end = annot->onset + annot->long_duration;
+
+          pos_x1 = ((double)(annot_end) * pixel_per_sec) / TIME_DIMENSION;
+
+          painter.drawLine(pos_x1, offset + (j * pixel_per_unit) + 0.5,
+                           pos_x2, offset + (j * pixel_per_unit) + 0.5);
+        }
+        else if(i && (!mainwindow->hypnogram_use_epoch_len))
+          {
+            painter.drawLine(pos_x1, offset + (stage * pixel_per_unit) + 0.5,
+                             pos_x2, offset + (stage * pixel_per_unit) + 0.5);
+
+            pos_x1 = pos_x2;
+          }
+
         if(i)
         {
-          painter.drawLine(pos_x1, offset + (stage * pixel_per_unit) + 0.5,
-                           pos_x2, offset + (stage * pixel_per_unit) + 0.5);
-
           painter.drawLine(pos_x2, offset + (stage * pixel_per_unit) + 0.5,
                            pos_x2, offset + (j * pixel_per_unit) + 0.5);
         }
 
-        pos_x1 = pos_x2;
+        if(mainwindow->hypnogram_use_epoch_len)
+        {
+          tdiff = annot->onset - prev_annot_end;
+
+          if(tdiff)
+          {
+            painter.fillRect((int)(((double)(prev_annot_end) * pixel_per_sec) / TIME_DIMENSION),
+                             0,
+                             (int)(((double)(tdiff) * pixel_per_sec) / TIME_DIMENSION),
+                             h,
+                             QColor(128, 0, 0, 48));
+          }
+
+          prev_annot_end = annot_end;
+        }
 
         stage = j;
 
@@ -385,19 +416,22 @@ void hypnogram_curve_widget::paintEvent(QPaintEvent *)
     }
   }
 
-  if(pos_x1)
+  if(!mainwindow->hypnogram_use_epoch_len)
   {
-    if(annot_duration > 0)
+    if(pos_x1)
     {
-      pos_x2 = (((double)annot_duration * pixel_per_sec) / TIME_DIMENSION) + pos_x1;
+      if(annot_duration > 0)
+      {
+        pos_x2 = (((double)annot_duration * pixel_per_sec) / TIME_DIMENSION) + pos_x1;
 
-      painter.drawLine(pos_x1, offset + (stage * pixel_per_unit) + 0.5,
-                       pos_x2, offset + (stage * pixel_per_unit) + 0.5);
-    }
-    else
-    {
-      painter.drawLine(pos_x1, offset + (stage * pixel_per_unit) + 0.5,
-                       w, offset + (stage * pixel_per_unit) + 0.5);
+        painter.drawLine(pos_x1, offset + (stage * pixel_per_unit) + 0.5,
+                         pos_x2, offset + (stage * pixel_per_unit) + 0.5);
+      }
+      else
+      {
+        painter.drawLine(pos_x1, offset + (stage * pixel_per_unit) + 0.5,
+                         w, offset + (stage * pixel_per_unit) + 0.5);
+      }
     }
   }
 }

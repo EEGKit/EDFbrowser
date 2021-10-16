@@ -243,7 +243,8 @@ public:
       annot_editor_user_button_update_annot_duration,
       annot_editor_user_button_jump_to_next_page,
       annot_editor_user_button_stay_on_epoch_boundary,
-      channel_linked_annotations;
+      channel_linked_annotations,
+      hypnogram_use_epoch_len;
 
 long long annot_editor_user_button_epoch_len;
 

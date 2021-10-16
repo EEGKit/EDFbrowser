@@ -27,7 +27,6 @@
 
 #ifndef UI_HYPNOGRAMFORM_H
 #define UI_HYPNOGRAMFORM_H
-//
 
 #include "qt_headers.h"
 
@@ -82,10 +81,13 @@ private:
                 *start_button,
                 *default_button;
 
+  QCheckBox     *use_epoch_len_checkbox;
+
 private slots:
 
   void start_button_clicked();
   void default_button_clicked();
+  void use_epoch_len_checkbox_changed(int);
 
 };
 

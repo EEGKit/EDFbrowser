@@ -20,6 +20,9 @@
  - Annotation list: Fixed a bug in the function "Remove duplicates" that potentially caused
    not to remove all duplicates.
 
+ - Hypnogram: Added the possibility to use the annotations' duration as the epoch time.
+              Overlapping epochs or gaps will be highlighted.
+
 
  version 1.86      October 2, 2021
  --------------

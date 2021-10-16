@@ -143,6 +143,8 @@ UI_Mainwindow::UI_Mainwindow()
 
   annot_editor_user_button_epoch_len = 30LL * TIME_DIMENSION;
 
+  hypnogram_use_epoch_len = 0;
+
   channel_linked_annotations = 1;
 
   use_diverse_signal_colors = 0;
