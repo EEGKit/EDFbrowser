@@ -1031,14 +1031,14 @@ UI_Mainwindow::UI_Mainwindow()
   faster_Act->setVisible(false);
 //  faster_Act->setToolTip("Faster");
 
-  zoomback_Act = new QAction(QIcon(":/images/zoom-out-symbolic.symbolic.png"), "Zoom Out", this);
+  zoomback_Act = new QAction(QIcon(":/images/zoom-out-symbolic.symbolic.png"), "Timescale x 2", this);
   zoomback_Act->setShortcut(Qt::Key_Backspace);
-  connect(zoomback_Act, SIGNAL(triggered()), this, SLOT(zoomback()));
+  connect(zoomback_Act, SIGNAL(triggered()), this, SLOT(set_page_mult2()));
   navtoolbar->addAction(zoomback_Act);
 
-  zoomforward_Act = new QAction(QIcon(":/images/zoom-in-symbolic.symbolic.png"), "Zoom In", this);
+  zoomforward_Act = new QAction(QIcon(":/images/zoom-in-symbolic.symbolic.png"), "Timescale / 2", this);
   zoomforward_Act->setShortcut(Qt::Key_Insert);
-  connect(zoomforward_Act, SIGNAL(triggered()), this, SLOT(forward()));
+  connect(zoomforward_Act, SIGNAL(triggered()), this, SLOT(set_page_div2()));
   navtoolbar->addAction(zoomforward_Act);
 
   nav_toolbar_label = new QLabel;
