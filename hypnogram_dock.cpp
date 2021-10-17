@@ -310,7 +310,7 @@ void hypnogram_curve_widget::set_params(struct hypnogram_dock_param_struct *parm
 
 void hypnogram_curve_widget::paintEvent(QPaintEvent *)
 {
-  int w, h, i, j, n, pos_x1=0, pos_x2=0, stage=0;
+  int w, h, i, j, n, pos_x1=0, pos_x2=0, stage=0, tmp1, tmp2;
 
   double pixel_per_unit,
          pixel_per_sec,
@@ -318,7 +318,7 @@ void hypnogram_curve_widget::paintEvent(QPaintEvent *)
 
   long long annot_duration=-1LL,
             annot_end=0LL,
-            prev_annot_end=0LL,
+            prev_annot_end=0x7fffffffffffffffLL,
             tdiff=0LL;
 
   char str[64];
@@ -332,18 +332,22 @@ void hypnogram_curve_widget::paintEvent(QPaintEvent *)
 
   QPainter painter(this);
 
-  painter.fillRect(0, 0, w, h, Qt::lightGray);
-
   pixel_per_unit = ((double)h / 6.0);
 
   offset = ((double)h / 12.0);
 
-  painter.fillRect(0, 0, w, pixel_per_unit + 0.5, QColor(255, 255, 217));
-  painter.fillRect(0, pixel_per_unit + 0.5, w, pixel_per_unit + 0.5, QColor(217, 255, 217));
-  painter.fillRect(0, pixel_per_unit * 2.0 + 0.5, w, pixel_per_unit + 0.5, QColor(231, 248, 255));
-  painter.fillRect(0, pixel_per_unit * 3.0 + 0.5, w, pixel_per_unit + 0.5, QColor(213, 237, 255));
-  painter.fillRect(0, pixel_per_unit * 4.0 + 0.5, w, pixel_per_unit + 0.5, QColor(186, 225, 255));
-  painter.fillRect(0, pixel_per_unit * 5.0 + 0.5, w, pixel_per_unit + 0.5, QColor(160, 210, 255));
+  tmp1 = pixel_per_unit + 0.5;
+  painter.fillRect(0,    0, w, tmp1, QColor(255, 255, 217));
+  tmp2 = pixel_per_unit * 2.0 + 0.5;
+  painter.fillRect(0, tmp1, w, tmp2 - tmp1, QColor(217, 255, 217));
+  tmp1 = pixel_per_unit * 3.0 + 0.5;
+  painter.fillRect(0, tmp2, w, tmp1 - tmp2, QColor(231, 248, 255));
+  tmp2 = pixel_per_unit * 4.0 + 0.5;
+  painter.fillRect(0, tmp1, w, tmp2 - tmp1, QColor(213, 237, 255));
+  tmp1 = pixel_per_unit * 5.0 + 0.5;
+  painter.fillRect(0, tmp2, w, tmp1 - tmp2, QColor(186, 225, 255));
+  tmp2 = pixel_per_unit * 6.0 + 0.5;
+  painter.fillRect(0, tmp1, w, tmp2 - tmp1, QColor(160, 210, 255));
 
   painter.setPen(Qt::blue);
 
@@ -395,15 +399,26 @@ void hypnogram_curve_widget::paintEvent(QPaintEvent *)
 
         if(mainwindow->hypnogram_use_epoch_len)
         {
-          tdiff = annot->onset - prev_annot_end;
-
-          if(tdiff)
+          if(prev_annot_end != 0x7fffffffffffffff)
           {
-            painter.fillRect((int)(((double)(prev_annot_end) * pixel_per_sec) / TIME_DIMENSION),
-                             0,
-                             (int)(((double)(tdiff) * pixel_per_sec) / TIME_DIMENSION),
-                             h,
-                             QColor(128, 0, 0, 48));
+            tdiff = annot->onset - prev_annot_end;
+
+            if(tdiff > 0)
+            {
+              painter.fillRect((int)(((double)(prev_annot_end) * pixel_per_sec) / TIME_DIMENSION),
+                               0,
+                               ((int)(((double)(tdiff) * pixel_per_sec) / TIME_DIMENSION)) + 2,
+                               h,
+                               QColor(128, 0, 0, 48));
+            }
+            else if(tdiff < 0)
+              {
+                painter.fillRect((int)(((double)(prev_annot_end) * pixel_per_sec) / TIME_DIMENSION),
+                                 0,
+                                 ((int)(((double)(tdiff) * pixel_per_sec) / TIME_DIMENSION)) - 2,
+                                 h,
+                                 QColor(128, 0, 0, 48));
+              }
           }
 
           prev_annot_end = annot_end;
