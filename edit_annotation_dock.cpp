@@ -624,6 +624,13 @@ void UI_AnnotationEditwindow::update_description_completer(void)
     string_list << edf_hdr->unique_annotations_list[i];
   }
 
+  for(i=0; i<MAX_ANNOTEDIT_SIDE_MENU_ANNOTS; i++)
+  {
+    if(mainwindow->annot_by_rect_draw_description[i][0] == 0)  break;
+
+    string_list << mainwindow->annot_by_rect_draw_description[i];
+  }
+
   model = (QStringListModel *)(completer->model());
   if(model == NULL)
   {
