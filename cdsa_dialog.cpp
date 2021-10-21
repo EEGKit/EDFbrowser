@@ -42,6 +42,8 @@ UI_cdsa_window::UI_cdsa_window(QWidget *w_parent, struct signalcompblock *signal
 
   cdsa_instance_nr = numb;
 
+  export_data = 0;
+
   sf = signalcomp->edfhdr->edfparam[signalcomp->edfsignal[0]].sf_int;
   if(!sf)
   {
@@ -85,7 +87,7 @@ UI_cdsa_window::UI_cdsa_window(QWidget *w_parent, struct signalcompblock *signal
   overlap_combobox->addItem("67 %");
   overlap_combobox->addItem("75 %");
   overlap_combobox->addItem("80 %");
-  overlap_combobox->setCurrentIndex(mainwindow->cdsa_overlap -1);
+  overlap_combobox->setCurrentIndex(mainwindow->cdsa_overlap - 1);
   overlap_combobox->setToolTip("Percentage of an FFT block that will overlap the next FFT block");
 
   windowfunc_combobox = new QComboBox;
@@ -184,6 +186,10 @@ UI_cdsa_window::UI_cdsa_window(QWidget *w_parent, struct signalcompblock *signal
     pwr_voltage_checkbox->setEnabled(false);
   }
 
+  export_data_checkbox = new QCheckBox;
+  export_data_checkbox->setTristate(false);
+  export_data_checkbox->setToolTip("Export the data generated for the CDSA to file.");
+
   close_button = new QPushButton;
   close_button->setText("Close");
 
@@ -205,6 +211,8 @@ UI_cdsa_window::UI_cdsa_window(QWidget *w_parent, struct signalcompblock *signal
   flayout->addRow("Max. level", max_voltage_spinbox);
   flayout->addRow("Logarithmic", log_checkbox);
   flayout->addRow("Power", pwr_voltage_checkbox);
+  flayout->addRow("Export data", export_data_checkbox);
+  flayout->labelForField(export_data_checkbox)->setToolTip("Export the data generated for the CDSA to a file.");
 
   QHBoxLayout *hlayout2 = new QHBoxLayout;
   hlayout2->addLayout(flayout, 1000);
@@ -228,15 +236,15 @@ UI_cdsa_window::UI_cdsa_window(QWidget *w_parent, struct signalcompblock *signal
 
   if(sf >= 30)
   {
-    QObject::connect(default_button,       SIGNAL(clicked()),            this, SLOT(default_button_clicked()));
-    QObject::connect(start_button,         SIGNAL(clicked()),            this, SLOT(start_button_clicked()));
-    QObject::connect(segmentlen_spinbox,   SIGNAL(valueChanged(int)),    this, SLOT(segmentlen_spinbox_changed(int)));
-    QObject::connect(blocklen_spinbox,     SIGNAL(valueChanged(int)),    this, SLOT(blocklen_spinbox_changed(int)));
-    QObject::connect(min_hz_spinbox,       SIGNAL(valueChanged(int)),    this, SLOT(min_hz_spinbox_changed(int)));
-    QObject::connect(max_hz_spinbox,       SIGNAL(valueChanged(int)),    this, SLOT(max_hz_spinbox_changed(int)));
-    QObject::connect(min_pwr_spinbox,      SIGNAL(valueChanged(int)),    this, SLOT(min_pwr_spinbox_changed(int)));
-    QObject::connect(max_pwr_spinbox,      SIGNAL(valueChanged(int)),    this, SLOT(max_pwr_spinbox_changed(int)));
-    QObject::connect(log_checkbox,         SIGNAL(stateChanged(int)),    this, SLOT(log_checkbox_changed(int)));
+    QObject::connect(default_button,     SIGNAL(clicked()),         this, SLOT(default_button_clicked()));
+    QObject::connect(start_button,       SIGNAL(clicked()),         this, SLOT(start_button_clicked()));
+    QObject::connect(segmentlen_spinbox, SIGNAL(valueChanged(int)), this, SLOT(segmentlen_spinbox_changed(int)));
+    QObject::connect(blocklen_spinbox,   SIGNAL(valueChanged(int)), this, SLOT(blocklen_spinbox_changed(int)));
+    QObject::connect(min_hz_spinbox,     SIGNAL(valueChanged(int)), this, SLOT(min_hz_spinbox_changed(int)));
+    QObject::connect(max_hz_spinbox,     SIGNAL(valueChanged(int)), this, SLOT(max_hz_spinbox_changed(int)));
+    QObject::connect(min_pwr_spinbox,    SIGNAL(valueChanged(int)), this, SLOT(min_pwr_spinbox_changed(int)));
+    QObject::connect(max_pwr_spinbox,    SIGNAL(valueChanged(int)), this, SLOT(max_pwr_spinbox_changed(int)));
+    QObject::connect(log_checkbox,       SIGNAL(stateChanged(int)), this, SLOT(log_checkbox_changed(int)));
   }
 
   myobjectDialog->exec();
@@ -364,6 +372,7 @@ void UI_cdsa_window::default_button_clicked()
   max_pwr_spinbox->setEnabled(true);
   min_pwr_spinbox->setEnabled(true);
   max_voltage_spinbox->setEnabled(false);
+  export_data_checkbox->setCheckState(Qt::Unchecked);
 
   mainwindow->cdsa_segmentlen = 30;
   mainwindow->cdsa_blocklen = 2;
@@ -383,7 +392,7 @@ void UI_cdsa_window::default_button_clicked()
 
 void UI_cdsa_window::start_button_clicked()
 {
-  int i, j, w, h, h_min, h_max, err,
+  int i, j, w, h, h_min, h_max, err, len,
       smpls_in_segment,
       segments_in_recording,
       segmentlen,
@@ -405,13 +414,21 @@ void UI_cdsa_window::start_button_clicked()
          *smplbuf=NULL,
          log_minimum_offset=0;
 
-  char str[1024]={""};
+  char str[1024]={""},
+       path[MAX_PATH_LENGTH]={""};
 
   struct fft_wrap_settings_struct *dft;
 
   QPixmap *pxm=NULL;
 
   struct cdsa_dock_param_struct dock_param;
+
+  FILE *dat_f=NULL;
+
+  if(export_data_checkbox->checkState() == Qt::Checked)
+  {
+    export_data = 1;
+  }
 
   for(i=0; i<256; i++)
   {
@@ -559,6 +576,102 @@ void UI_cdsa_window::start_button_clicked()
 
   ret_err = 0;
 
+  if(export_data)
+  {
+    path[0] = 0;
+    if(mainwindow->recent_savedir[0]!=0)
+    {
+      strlcpy(path, mainwindow->recent_savedir, MAX_PATH_LENGTH);
+      strlcat(path, "/", MAX_PATH_LENGTH);
+    }
+    len = strlen(path);
+    get_filename_from_path(path + len, signalcomp->edfhdr->filename, MAX_PATH_LENGTH - len);
+    remove_extension_from_filename(path);
+    strlcat(path, "_", MAX_PATH_LENGTH);
+    strlcpy(str, signalcomp->signallabel, 1024);
+    trim_spaces(str);
+    strlcat(path, str, MAX_PATH_LENGTH);
+    strlcat(path, "_data.txt", MAX_PATH_LENGTH);
+
+    strlcpy(path, QFileDialog::getSaveFileName(0, "Export data", QString::fromLocal8Bit(path), "Text/CSV files (*.txt *.TXT *.csv *.CSV)").toLocal8Bit().data(), MAX_PATH_LENGTH);
+    if(!strcmp(path, ""))
+    {
+      return;
+    }
+
+    get_directory_from_path(mainwindow->recent_savedir, path, MAX_PATH_LENGTH);
+
+    dat_f = fopen(path, "wb");
+    if(dat_f == NULL)
+    {
+      QMessageBox::critical(myobjectDialog, "Error", "Cannot create the output file for writing.", QMessageBox::Close);
+      return;
+    }
+
+    fprintf(dat_f,
+            "Signal:         %s\n"
+            "Segments:       %i\n"
+            "Segment length: %i sec.\n"
+            "Block length:   %i sec.\n"
+            "Overlap:        %s\n"
+            "Window:         %s\n"
+            "Min. freq.:     %i Hz\n"
+            "Max. freq.:     %i Hz\n",
+            signalcomp->signallabel,
+            segments_in_recording,
+            segmentlen,
+            blocklen,
+            overlap_combobox->currentText().toLatin1().data(),
+            windowfunc_combobox->currentText().toLatin1().data(),
+            min_hz_spinbox->value(),
+            max_hz_spinbox->value());
+
+    if(power_density)
+    {
+      fprintf(dat_f, "Power:          yes\n");
+    }
+    else
+    {
+      fprintf(dat_f, "Power:          no\n");
+    }
+
+    if(log_density)
+    {
+      fprintf(dat_f, "Logarithmic:    yes\n");
+    }
+    else
+    {
+      fprintf(dat_f, "Logarithmic:    no\n");
+    }
+
+    if(log_density)
+    {
+      fprintf(dat_f, "Unit:           dB%s\n", signalcomp->physdimension);
+    }
+    else
+    {
+      fprintf(dat_f, "Unit:           %s\n", signalcomp->physdimension);
+    }
+
+    if(log_density)
+    {
+      fprintf(dat_f,
+              "Max. level:     %i dB%s\n"
+              "Min. level:     %i dB%s\n",
+              max_pwr_spinbox->value(),
+              signalcomp->physdimension,
+              min_pwr_spinbox->value(),
+              signalcomp->physdimension);
+    }
+
+    fprintf(dat_f, "seconds,");
+    for(i=h_min; i<h_max; i++)
+    {
+      fprintf(dat_f, "%0.3f Hz,", i / 2.0);
+    }
+    fprintf(dat_f, "\n");
+  }
+
   smplbuf = fbr.init_signalcomp(signalcomp, smpls_in_segment, 0, 1, &ret_err);
   if(smplbuf == NULL)
   {
@@ -572,6 +685,11 @@ void UI_cdsa_window::start_button_clicked()
     {
       QMessageBox::critical(myobjectDialog, "Error", "Internal error (-1)", QMessageBox::Close);
     }
+    if(dat_f)
+    {
+      fclose(dat_f);
+      dat_f = NULL;
+    }
     return;
   }
 
@@ -584,6 +702,11 @@ void UI_cdsa_window::start_button_clicked()
   if(dft == NULL)
   {
     QMessageBox::critical(myobjectDialog, "Error", "Internal error (-2)", QMessageBox::Close);
+    if(dat_f)
+    {
+      fclose(dat_f);
+      dat_f = NULL;
+    }
     return;
   }
 
@@ -603,21 +726,36 @@ void UI_cdsa_window::start_button_clicked()
       progress.reset();
       free_fft_wrap(dft);
       delete pxm;
+      if(dat_f)
+      {
+        fclose(dat_f);
+        dat_f = NULL;
+      }
       return;
     }
 
     err = fbr.process_signalcomp(i * smpls_in_segment);
     if(err)
     {
-      snprintf(str, 1024, "Internal error (-3)  fbr() error: %i", err);
+      snprintf(str, 1024, "Internal error (-3)  fbr() error: %i file: %s line %i", err, __FILE__, __LINE__);
       progress.reset();
       QMessageBox::critical(myobjectDialog, "Error", str, QMessageBox::Close);
+      if(dat_f)
+      {
+        fclose(dat_f);
+        dat_f = NULL;
+      }
       return;
     }
 
     fft_wrap_run(dft);
 
     dft->buf_out[0] /= 2.0;  // DC!
+
+    if(dat_f)
+    {
+      fprintf(dat_f, "%i,", i * segmentlen);
+    }
 
     for(j=0; j<h; j++)
     {
@@ -626,19 +764,30 @@ void UI_cdsa_window::start_button_clicked()
         if(log_density)
         {
           d_tmp = dft->buf_out[j + h_min] / dft->dft_sz;
-
           if(d_tmp < 1E-13)
           {
-            rgb_idx = (log10(1E-13) - log_minimum_offset) * v_scale;
+            d_tmp = 1E-13;
           }
-          else
+
+          d_tmp = log10(d_tmp);
+
+          rgb_idx = (d_tmp - log_minimum_offset) * v_scale;
+
+          if(dat_f)
           {
-            rgb_idx = (log10(d_tmp) - log_minimum_offset) * v_scale;
+            fprintf(dat_f, "%e,", d_tmp);
           }
         }
         else
         {
-          rgb_idx = (dft->buf_out[j + h_min] / dft->dft_sz) * v_scale;
+          d_tmp = dft->buf_out[j + h_min] / dft->dft_sz;
+
+          rgb_idx = d_tmp * v_scale;
+
+          if(dat_f)
+          {
+            fprintf(dat_f, "%e,", d_tmp);
+          }
         }
       }
       else
@@ -646,19 +795,30 @@ void UI_cdsa_window::start_button_clicked()
         if(log_density)
         {
           d_tmp = sqrt(dft->buf_out[j + h_min] / dft->dft_sz);
-
           if(d_tmp < 1E-13)
           {
-            rgb_idx = (log10(1E-13) - log_minimum_offset) * v_scale;
+            d_tmp = 1E-13;
           }
-          else
+
+          d_tmp = log10(d_tmp);
+
+          rgb_idx = (d_tmp - log_minimum_offset) * v_scale;
+
+          if(dat_f)
           {
-            rgb_idx = (log10(d_tmp) - log_minimum_offset) * v_scale;
+            fprintf(dat_f, "%e,", d_tmp);
           }
         }
         else
         {
-          rgb_idx = sqrt(dft->buf_out[j + h_min] / dft->dft_sz) * v_scale;
+          d_tmp = sqrt(dft->buf_out[j + h_min] / dft->dft_sz);
+
+          rgb_idx = d_tmp * v_scale;
+
+          if(dat_f)
+          {
+            fprintf(dat_f, "%e,", d_tmp);
+          }
         }
       }
 
@@ -669,6 +829,11 @@ void UI_cdsa_window::start_button_clicked()
       painter.setPen(QColor(rgb_map[rgb_idx][0], rgb_map[rgb_idx][1], rgb_map[rgb_idx][2]));
 
       painter.drawPoint(i, (h - 1) - j);
+    }
+
+    if(dat_f)
+    {
+      fputc('\n', dat_f);
     }
   }
 
@@ -711,6 +876,12 @@ void UI_cdsa_window::start_button_clicked()
   signalcomp->cdsa_dock[cdsa_instance_nr] = cdsa_instance_nr + 1;
 
   pxm = NULL;
+
+  if(dat_f)
+  {
+    fclose(dat_f);
+    dat_f = NULL;
+  }
 
   myobjectDialog->close();
 }

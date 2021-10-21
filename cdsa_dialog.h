@@ -58,7 +58,7 @@ public:
 
 private:
 
-  int sf, cdsa_instance_nr;
+  int sf, cdsa_instance_nr, export_data;
 
   struct signalcompblock *signalcomp;
 
@@ -79,7 +79,8 @@ private:
                 *windowfunc_combobox;
 
   QCheckBox     *log_checkbox,
-                *pwr_voltage_checkbox;
+                *pwr_voltage_checkbox,
+                *export_data_checkbox;
 
   QPushButton   *close_button,
                 *start_button,

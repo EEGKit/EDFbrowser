@@ -23,6 +23,8 @@
  - Hypnogram: Added the possibility to use the annotations' duration as the epoch time.
               Overlapping epochs or gaps will be highlighted.
 
+ - Color Density Spectral Array: added the possibility to export the data.
+
 
  version 1.86      October 2, 2021
  --------------
