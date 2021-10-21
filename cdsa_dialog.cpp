@@ -429,6 +429,10 @@ void UI_cdsa_window::start_button_clicked()
   {
     export_data = 1;
   }
+  else
+  {
+    export_data = 0;
+  }
 
   for(i=0; i<256; i++)
   {
