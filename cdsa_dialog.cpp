@@ -657,17 +657,6 @@ void UI_cdsa_window::start_button_clicked()
       fprintf(dat_f, "Unit:           %s\n", signalcomp->physdimension);
     }
 
-    if(log_density)
-    {
-      fprintf(dat_f,
-              "Max. level:     %i dB%s\n"
-              "Min. level:     %i dB%s\n",
-              max_pwr_spinbox->value(),
-              signalcomp->physdimension,
-              min_pwr_spinbox->value(),
-              signalcomp->physdimension);
-    }
-
     fprintf(dat_f, "seconds,");
     for(i=h_min; i<h_max; i++)
     {
@@ -765,9 +754,10 @@ void UI_cdsa_window::start_button_clicked()
     {
       if(power_density)
       {
+        d_tmp = dft->buf_out[j + h_min] / dft->dft_sz;
+
         if(log_density)
         {
-          d_tmp = dft->buf_out[j + h_min] / dft->dft_sz;
           if(d_tmp < 1E-13)
           {
             d_tmp = 1E-13;
@@ -779,13 +769,11 @@ void UI_cdsa_window::start_button_clicked()
 
           if(dat_f)
           {
-            fprintf(dat_f, "%e,", d_tmp);
+            fprintf(dat_f, "%.1f,", d_tmp * 10);
           }
         }
         else
         {
-          d_tmp = dft->buf_out[j + h_min] / dft->dft_sz;
-
           rgb_idx = d_tmp * v_scale;
 
           if(dat_f)
@@ -796,9 +784,10 @@ void UI_cdsa_window::start_button_clicked()
       }
       else
       {
+        d_tmp = sqrt(dft->buf_out[j + h_min] / dft->dft_sz);
+
         if(log_density)
         {
-          d_tmp = sqrt(dft->buf_out[j + h_min] / dft->dft_sz);
           if(d_tmp < 1E-13)
           {
             d_tmp = 1E-13;
@@ -810,13 +799,11 @@ void UI_cdsa_window::start_button_clicked()
 
           if(dat_f)
           {
-            fprintf(dat_f, "%e,", d_tmp);
+            fprintf(dat_f, "%.1f,", d_tmp * 20);
           }
         }
         else
         {
-          d_tmp = sqrt(dft->buf_out[j + h_min] / dft->dft_sz);
-
           rgb_idx = d_tmp * v_scale;
 
           if(dat_f)
