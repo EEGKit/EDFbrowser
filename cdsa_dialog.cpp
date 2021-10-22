@@ -79,7 +79,7 @@ UI_cdsa_window::UI_cdsa_window(QWidget *w_parent, struct signalcompblock *signal
   blocklen_spinbox->setMinimum(1);
   blocklen_spinbox->setMaximum(10);
   blocklen_spinbox->setValue(mainwindow->cdsa_blocklen);
-  blocklen_spinbox->setToolTip("FFT block length in seconds, affects the FFT resolution");
+  blocklen_spinbox->setToolTip("FFT block size in seconds, FFT resolution in Herz is the inverse of this value");
 
   overlap_combobox = new QComboBox;
   overlap_combobox->addItem(" 0 %");
@@ -201,16 +201,27 @@ UI_cdsa_window::UI_cdsa_window(QWidget *w_parent, struct signalcompblock *signal
 
   flayout = new QFormLayout;
   flayout->addRow("Segment length", segmentlen_spinbox);
+  flayout->labelForField(segmentlen_spinbox)->setToolTip("Time resolution of the CDSA");
   flayout->addRow("Block length", blocklen_spinbox);
+  flayout->labelForField(blocklen_spinbox)->setToolTip("FFT block size in seconds, FFT resolution in Herz is the inverse of this value");
   flayout->addRow("Overlap", overlap_combobox);
+  flayout->labelForField(overlap_combobox)->setToolTip("Percentage of an FFT block that will overlap the next FFT block");
   flayout->addRow("Window", windowfunc_combobox);
+  flayout->labelForField(windowfunc_combobox)->setToolTip("Smoothing (taper) function that will be applied before the FFT");
   flayout->addRow("Min. freq.", min_hz_spinbox);
+  flayout->labelForField(min_hz_spinbox)->setToolTip("Lowest frequency output (bin) of the FFT that will be used to display the CDSA");
   flayout->addRow("Max. freq.", max_hz_spinbox);
+  flayout->labelForField(max_hz_spinbox)->setToolTip("Highest frequency output (bin) of the FFT that will be used to display the CDSA");
   flayout->addRow("Max. level", max_pwr_spinbox);
+  flayout->labelForField(max_pwr_spinbox)->setToolTip("The highest level that can be displayed (white). Higher levels will clip to white");
   flayout->addRow("Min. level", min_pwr_spinbox);
+  flayout->labelForField(min_pwr_spinbox)->setToolTip("The lowest level that can be displayed (black). Lower levels will clip to black");
   flayout->addRow("Max. level", max_voltage_spinbox);
+  flayout->labelForField(max_voltage_spinbox)->setToolTip("The highest level that can be displayed (white). Higher levels will clip to white");
   flayout->addRow("Logarithmic", log_checkbox);
+  flayout->labelForField(log_checkbox)->setToolTip("Use the base-10 logarithm of the output of the FFT (can be used to increase the dynamic range)");
   flayout->addRow("Power", pwr_voltage_checkbox);
+  flayout->labelForField(pwr_voltage_checkbox)->setToolTip("Display power instead of voltage");
   flayout->addRow("Export data", export_data_checkbox);
   flayout->labelForField(export_data_checkbox)->setToolTip("Export the data generated for the CDSA to a file.");
 
