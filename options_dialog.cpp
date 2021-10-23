@@ -1341,8 +1341,11 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   flayout5_1->addRow("Monofont size", hlayout_tmp);
 
   DefaultButton5 = new QPushButton;
+#if QT_VERSION >= 0x050200
   DefaultButton5->setText("System default");
-
+#else
+  DefaultButton5->setText("Default");
+#endif
   ApplyButton5 = new QPushButton;
   ApplyButton5->setText("Apply");
   ApplyButton5->setEnabled(false);
