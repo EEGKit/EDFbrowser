@@ -453,6 +453,8 @@ void UI_FreqSpectrumWindow::dftsz_value_changed(int new_val)
 
   if(dftblocksize == new_val)  return;
 
+  mainwindow->spectrum_blocksize_userdefined = new_val;
+
   dftblocksize = new_val;
 
   busy = 1;
@@ -748,6 +750,13 @@ void UI_FreqSpectrumWindow::sliderMoved(int)
   {
     if(mainwindow->spectrum_vlog)
     {
+//       printf("maxvalue_sqrt_vlog:        %f\n"
+//              "flywheel_value:            %i\n"
+//              "amplitudeSlider->value():  %i\n"
+//              "minvalue_sqrt_vlog:        %f\n"
+//              "log_minslider->value():    %i\n",
+//              maxvalue_sqrt_vlog, flywheel_value, amplitudeSlider->value(), minvalue_sqrt_vlog, log_minslider->value());
+
       curve1->drawCurve(buf5 + startstep, stopstep - startstep, (maxvalue_sqrt_vlog * ((double)flywheel_value / 1000.0) * (double)amplitudeSlider->value()) / 1000.0, minvalue_sqrt_vlog * (double)log_minslider->value() / 1000.0);
     }
     else
@@ -1063,8 +1072,8 @@ void UI_FreqSpectrumWindow::run()
 
   maxvalue = 0.000001;
   maxvalue_sqrt = 0.000001;
-  maxvalue_vlog = 0.000001;
-  maxvalue_sqrt_vlog = 0.000001;
+  maxvalue_vlog = -50;
+  maxvalue_sqrt_vlog = -50;
   minvalue_vlog = 0.0;
   minvalue_sqrt_vlog = 0.0;
 
@@ -1157,6 +1166,11 @@ void UI_FreqSpectrumWindow::run()
 
   if(minvalue_sqrt_vlog < SPECT_LOG_MINIMUM_LOG)
     minvalue_sqrt_vlog = SPECT_LOG_MINIMUM_LOG;
+
+  if((maxvalue_sqrt_vlog < 2) && (maxvalue_sqrt_vlog > -2))
+  {
+    maxvalue_sqrt_vlog = 2;
+  }
 
 #ifdef CHECK_POWERSPECTRUM
   power1 /= samples;

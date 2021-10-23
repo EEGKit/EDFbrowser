@@ -281,7 +281,7 @@ UI_Mainwindow::UI_Mainwindow()
 
   spectrumdock_vlog = 0;
 
-  spectrum_window = 0;
+  spectrumdock_window = 0;
 
   spectrumdock_blocksize_predefined = 0;
 
@@ -290,8 +290,6 @@ UI_Mainwindow::UI_Mainwindow()
   spectrumdock_overlap = 0;
 
   spectrumdock_colorbars = 0;
-
-  spectrumdock_window = 0;
 
   cdsa_segmentlen = 30;
   cdsa_blocklen = 2;

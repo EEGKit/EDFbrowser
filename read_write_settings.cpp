@@ -1964,6 +1964,74 @@ void UI_Mainwindow::read_general_settings()
     xml_go_up(xml_hdl);
   }
 
+  if(!(xml_goto_nth_element_inside(xml_hdl, "spectrum_window", 0)))
+  {
+    if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+    {
+      xml_close(xml_hdl);
+      return;
+    }
+
+    spectrum_window = atoi(result);
+    if((spectrum_window < 0) || (spectrum_window > 12))
+    {
+      spectrum_window = 0;
+    }
+
+    xml_go_up(xml_hdl);
+  }
+
+  if(!(xml_goto_nth_element_inside(xml_hdl, "spectrum_blocksize_predefined", 0)))
+  {
+    if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+    {
+      xml_close(xml_hdl);
+      return;
+    }
+
+    spectrum_blocksize_predefined = atoi(result);
+    if((spectrum_blocksize_predefined < 0) || (spectrum_blocksize_predefined > 23))
+    {
+      spectrum_blocksize_predefined = 0;
+    }
+
+    xml_go_up(xml_hdl);
+  }
+
+  if(!(xml_goto_nth_element_inside(xml_hdl, "spectrum_blocksize_userdefined", 0)))
+  {
+    if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+    {
+      xml_close(xml_hdl);
+      return;
+    }
+
+    spectrum_blocksize_userdefined = atoi(result);
+    if((spectrum_blocksize_userdefined < 10) || (spectrum_blocksize_userdefined > 1000))
+    {
+      spectrum_blocksize_userdefined = 200;
+    }
+
+    xml_go_up(xml_hdl);
+  }
+
+  if(!(xml_goto_nth_element_inside(xml_hdl, "spectrum_overlap", 0)))
+  {
+    if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+    {
+      xml_close(xml_hdl);
+      return;
+    }
+
+    spectrum_overlap = atoi(result);
+    if((spectrum_overlap < 0) || (spectrum_overlap > 4))
+    {
+      spectrum_overlap = 0;
+    }
+
+    xml_go_up(xml_hdl);
+  }
+
   if(!(xml_goto_nth_element_inside(xml_hdl, "spectrumdock_colorbars", 0)))
   {
     if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
@@ -2894,6 +2962,14 @@ void UI_Mainwindow::write_settings()
     fprintf(cfgfile, "    <spectrum_sqrt>%i</spectrum_sqrt>\n", spectrum_sqrt);
 
     fprintf(cfgfile, "    <spectrum_vlog>%i</spectrum_vlog>\n", spectrum_vlog);
+
+    fprintf(cfgfile, "    <spectrum_window>%i</spectrum_window>\n", spectrum_window);
+
+    fprintf(cfgfile, "    <spectrum_blocksize_predefined>%i</spectrum_blocksize_predefined>\n", spectrum_blocksize_predefined);
+
+    fprintf(cfgfile, "    <spectrum_blocksize_userdefined>%i</spectrum_blocksize_userdefined>\n", spectrum_blocksize_userdefined);
+
+    fprintf(cfgfile, "    <spectrum_overlap>%i</spectrum_overlap>\n", spectrum_overlap);
 
     fprintf(cfgfile, "    <spectrumdock_sqrt>%i</spectrumdock_sqrt>\n", spectrumdock_sqrt);
 
