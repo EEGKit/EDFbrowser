@@ -300,6 +300,7 @@ UI_FreqSpectrumWindow::UI_FreqSpectrumWindow(struct signalcompblock *signal_comp
   dftsz_spinbox = new QSpinBox;
   dftsz_spinbox->setMinimum(10);
   dftsz_spinbox->setSingleStep(2);
+  dftsz_spinbox->setPrefix("Blocksize: ");
   dftsz_spinbox->setSuffix(" smpls");
   if(mainwindow->spectrum_blocksize_predefined)
   {
