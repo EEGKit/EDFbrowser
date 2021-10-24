@@ -231,8 +231,6 @@ UI_Mainwindow::UI_Mainwindow()
   spectrum_colorbar->auto_adjust = 1;
   spectrum_colorbar->max_colorbar_value = 10.0;
 
-  maxdftblocksize = 1000;
-
   import_annotations_var = (import_annotations_var_block *)calloc(1, sizeof(struct import_annotations_var_block));
   strlcpy(import_annotations_var->separator, "tab", 4);
   import_annotations_var->format = 1;
@@ -274,8 +272,6 @@ UI_Mainwindow::UI_Mainwindow()
   spectrum_blocksize_userdefined = 200;
 
   spectrum_overlap = 0;
-
-  spectrumdock_bw = 0;
 
   spectrumdock_sqrt = 0;
 

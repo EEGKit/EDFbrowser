@@ -76,7 +76,7 @@ UI_FreqSpectrumWindow::UI_FreqSpectrumWindow(struct signalcompblock *signal_comp
 
   signalcomp = signal_comp;
 
-  dftblocksize = mainwindow->maxdftblocksize;
+  dftblocksize = 200;
 
   window_type = 0;
 
@@ -1239,7 +1239,7 @@ void UI_FreqSpectrumWindow::update_curve()
       dftsz_spinbox->setMaximum(1000);
     }
 
-    dftsz_box->setEnabled(false);
+//    dftsz_box->setEnabled(false);
   }
 
   malloc_err = 0;

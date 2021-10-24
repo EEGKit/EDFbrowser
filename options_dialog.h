@@ -93,7 +93,6 @@ SpecialButton  *BgColorButton,
 QSpinBox       *spinbox1_1,
                *spinbox2_1,
                *spinbox2_2,
-               *spinbox3_1,
                *spinbox4_1,
                *spinbox4_2,
                *spinbox4_3,
@@ -214,7 +213,6 @@ void ApplyButton2Clicked();
 void radioButtonToggled(bool);
 void spinBox1_1ValueChanged(int);
 void spinBoxValueChanged(double);
-void spinBox3_1ValueChanged(int);
 void dspinBox3_2ValueChanged(double);
 void labelEdited(const QString  &);
 void calibrate_checkbox_stateChanged(int);

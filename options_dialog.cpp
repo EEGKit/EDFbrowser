@@ -898,18 +898,6 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   QFormLayout *flayout3_1 = new QFormLayout;
   flayout3_1->setSpacing(20);
 
-  spinbox3_1 = new QSpinBox;
-  spinbox3_1->setSuffix(" samples");
-  spinbox3_1->setMinimum(10);
-  spinbox3_1->setMaximum(1000);
-  spinbox3_1->setSingleStep(2);
-  spinbox3_1->setValue(mainwindow->maxdftblocksize);
-  hlayout_tmp = new QHBoxLayout;
-  hlayout_tmp->setAlignment(Qt::AlignCenter);
-  hlayout_tmp->addWidget(spinbox3_1);
-  hlayout_tmp->addStretch(1000);
-  flayout3_1->addRow("FFT blocksize:", hlayout_tmp);
-
   dspinbox3_2 = new QDoubleSpinBox;
   dspinbox3_2->setMinimum(0.0001);
   dspinbox3_2->setMaximum(100000.0);
@@ -994,7 +982,6 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   QObject::connect(radiobutton1,   SIGNAL(toggled(bool)),        this, SLOT(radioButtonToggled(bool)));
   QObject::connect(radiobutton2,   SIGNAL(toggled(bool)),        this, SLOT(radioButtonToggled(bool)));
   QObject::connect(radiobutton3,   SIGNAL(toggled(bool)),        this, SLOT(radioButtonToggled(bool)));
-  QObject::connect(spinbox3_1,     SIGNAL(valueChanged(int)),    this, SLOT(spinBox3_1ValueChanged(int)));
   QObject::connect(dspinbox3_2,    SIGNAL(valueChanged(double)), this, SLOT(dspinBox3_2ValueChanged(double)));
   QObject::connect(ApplyButton2,   SIGNAL(clicked()),            this, SLOT(ApplyButton2Clicked()));
   QObject::connect(DefaultButton2, SIGNAL(clicked()),            this, SLOT(DefaultButton2Clicked()));
@@ -1501,12 +1488,6 @@ void UI_OptionsDialog::labelEdited(const QString  &)
 }
 
 
-void UI_OptionsDialog::spinBox3_1ValueChanged(int)
-{
-  ApplyButton2->setEnabled(true);
-}
-
-
 void UI_OptionsDialog::dspinBox3_2ValueChanged(double)
 {
   ApplyButton2->setEnabled(true);
@@ -1588,12 +1569,6 @@ void UI_OptionsDialog::ApplyButton2Clicked()
       {
         mainwindow->spectrum_colorbar->method = 2;
       }
-
-  mainwindow->maxdftblocksize = spinbox3_1->value();
-  if(mainwindow->maxdftblocksize & 1)
-  {
-    mainwindow->maxdftblocksize--;
-  }
 
   mainwindow->spectrum_colorbar->max_colorbar_value = dspinbox3_2->value();
 
@@ -1706,8 +1681,6 @@ void UI_OptionsDialog::DefaultButton2Clicked()
     ((SpecialButton *)(colorBarTable->cellWidget(i, 2)))->setGlobalColor(Qt::white);
     ((QLineEdit *)(colorBarTable->cellWidget(i, 3)))->clear();
   }
-
-  spinbox3_1->setValue(1000);
 
   radiobutton1->setChecked(true);
 

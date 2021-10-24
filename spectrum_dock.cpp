@@ -73,7 +73,7 @@ UI_SpectrumDockWindow::UI_SpectrumDockWindow(QWidget *w_parent)
 
   init_maxvalue = 1;
 
-  dftblocksize = mainwindow->maxdftblocksize;
+  dftblocksize = 200;
 
   if(dftblocksize > 1000)
   {
@@ -237,14 +237,6 @@ UI_SpectrumDockWindow::UI_SpectrumDockWindow(QWidget *w_parent)
 
   overlap = mainwindow->spectrumdock_overlap + 1;
 
-  dftsz_spinbox = new QSpinBox;
-  dftsz_spinbox->setMinimum(10);
-  dftsz_spinbox->setMaximum(1000);
-  dftsz_spinbox->setSingleStep(2);
-  dftsz_spinbox->setPrefix("Blocksize: ");
-  dftsz_spinbox->setSuffix(" smpls");
-  dftsz_spinbox->setValue(dftblocksize);
-
   dftsz_box = new QComboBox;
   dftsz_box->addItem("Blocksize: user defined");
   dftsz_box->addItem("Blocksize: 1000 smpls");
@@ -256,6 +248,31 @@ UI_SpectrumDockWindow::UI_SpectrumDockWindow(QWidget *w_parent)
   dftsz_box->addItem("Blocksize: 10000 smpls");
   dftsz_box->addItem("Blocksize: 16384 smpls");
   dftsz_box->addItem("Blocksize: 32768 smpls");
+  dftsz_box->setCurrentIndex(mainwindow->spectrumdock_blocksize_predefined);
+
+  dftsz_spinbox = new QSpinBox;
+  dftsz_spinbox->setMinimum(10);
+  dftsz_spinbox->setSingleStep(2);
+  dftsz_spinbox->setPrefix("Blocksize: ");
+  dftsz_spinbox->setSuffix(" smpls");
+  if(mainwindow->spectrumdock_blocksize_predefined)
+  {
+    dftsz_spinbox->setMaximum(10000000);
+
+    dftsz_spinbox->setValue(dftsz_range[mainwindow->spectrumdock_blocksize_predefined]);
+
+    dftblocksize = dftsz_range[mainwindow->spectrumdock_blocksize_predefined];
+
+    dftsz_spinbox->setEnabled(false);
+  }
+  else
+  {
+    dftsz_spinbox->setMaximum(1000);
+
+    dftsz_spinbox->setValue(mainwindow->spectrumdock_blocksize_userdefined);
+
+    dftblocksize = mainwindow->spectrumdock_blocksize_userdefined;
+  }
 
   vlayout3 = new QVBoxLayout;
   vlayout3->addStretch(100);
@@ -377,6 +394,8 @@ void UI_SpectrumDockWindow::dftsz_value_changed(int new_val)
 
   if(dftblocksize == new_val)  return;
 
+  mainwindow->spectrumdock_blocksize_userdefined = new_val;
+
   dftblocksize = new_val;
 
   init_maxvalue = 1;
@@ -387,7 +406,7 @@ void UI_SpectrumDockWindow::dftsz_value_changed(int new_val)
 
 void UI_SpectrumDockWindow::dftsz_box_changed(int idx)
 {
-  mainwindow->spectrum_blocksize_predefined = idx;
+  mainwindow->spectrumdock_blocksize_predefined = idx;
 
   if(idx)
   {
@@ -1362,8 +1381,8 @@ void UI_SpectrumDockWindow::update_curve()
   {
     maxvalue = 0.000001;
     maxvalue_sqrt = 0.000001;
-    maxvalue_vlog = 0.000001;
-    maxvalue_sqrt_vlog = 0.000001;
+    maxvalue_vlog = -50;
+    maxvalue_sqrt_vlog = -50;
     minvalue_vlog = 0.0;
     minvalue_sqrt_vlog = 0.0;
   }
@@ -1457,6 +1476,11 @@ void UI_SpectrumDockWindow::update_curve()
 
     if(minvalue_sqrt_vlog < SPECT_LOG_MINIMUM_LOG)
       minvalue_sqrt_vlog = SPECT_LOG_MINIMUM_LOG;
+  }
+
+  if((maxvalue_sqrt_vlog < 2) && (maxvalue_sqrt_vlog > -2))
+  {
+    maxvalue_sqrt_vlog = 2;
   }
 
   if(buf1 != NULL)

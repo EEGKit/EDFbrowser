@@ -578,7 +578,6 @@ void UI_Mainwindow::read_recent_file_settings()
 }
 
 
-
 void UI_Mainwindow::read_general_settings()
 {
   int i;
@@ -995,7 +994,7 @@ void UI_Mainwindow::read_general_settings()
 
     if(!(xml_goto_nth_element_inside(xml_hdl, "label", 0)))
     {
-    if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+      if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
       {
         xml_close(xml_hdl);
         return;
@@ -1022,32 +1021,9 @@ void UI_Mainwindow::read_general_settings()
 
       xml_go_up(xml_hdl);
     }
+
+    xml_go_up(xml_hdl);
   }
-
-  xml_go_up(xml_hdl);
-
-  if(!(xml_goto_nth_element_inside(xml_hdl, "maxdftblocksize", 0)))
-  {
-    if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
-    {
-      xml_close(xml_hdl);
-      return;
-    }
-
-    maxdftblocksize = atoi(result);
-
-    if(maxdftblocksize > 1000)
-    {
-      maxdftblocksize = 1000;
-    }
-
-    if(maxdftblocksize < 10)
-    {
-      maxdftblocksize = 256;
-    }
-  }
-
-  xml_go_up(xml_hdl);
 
   if(!(xml_goto_nth_element_inside(xml_hdl, "annotations_import_var", 0)))
   {
@@ -1944,26 +1920,6 @@ void UI_Mainwindow::read_general_settings()
     xml_go_up(xml_hdl);
   }
 
-  if(!(xml_goto_nth_element_inside(xml_hdl, "spectrumdock_sqrt", 0)))
-  {
-    if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
-    {
-      xml_close(xml_hdl);
-      return;
-    }
-
-    if(atoi(result) == 1)
-    {
-      spectrumdock_sqrt = 1;
-    }
-    else
-    {
-      spectrumdock_sqrt = 0;
-    }
-
-    xml_go_up(xml_hdl);
-  }
-
   if(!(xml_goto_nth_element_inside(xml_hdl, "spectrum_window", 0)))
   {
     if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
@@ -2032,7 +1988,7 @@ void UI_Mainwindow::read_general_settings()
     xml_go_up(xml_hdl);
   }
 
-  if(!(xml_goto_nth_element_inside(xml_hdl, "spectrumdock_colorbars", 0)))
+  if(!(xml_goto_nth_element_inside(xml_hdl, "spectrumdock_sqrt", 0)))
   {
     if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
     {
@@ -2042,11 +1998,11 @@ void UI_Mainwindow::read_general_settings()
 
     if(atoi(result) == 1)
     {
-      spectrumdock_colorbars = 1;
+      spectrumdock_sqrt = 1;
     }
     else
     {
-      spectrumdock_colorbars = 0;
+      spectrumdock_sqrt = 0;
     }
 
     xml_go_up(xml_hdl);
@@ -2067,6 +2023,94 @@ void UI_Mainwindow::read_general_settings()
     else
     {
       spectrumdock_vlog = 0;
+    }
+
+    xml_go_up(xml_hdl);
+  }
+
+  if(!(xml_goto_nth_element_inside(xml_hdl, "spectrumdock_window", 0)))
+  {
+    if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+    {
+      xml_close(xml_hdl);
+      return;
+    }
+
+    spectrumdock_window = atoi(result);
+    if((spectrumdock_window < 0) || (spectrumdock_window > 12))
+    {
+      spectrumdock_window = 0;
+    }
+
+    xml_go_up(xml_hdl);
+  }
+
+  if(!(xml_goto_nth_element_inside(xml_hdl, "spectrumdock_blocksize_predefined", 0)))
+  {
+    if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+    {
+      xml_close(xml_hdl);
+      return;
+    }
+
+    spectrumdock_blocksize_predefined = atoi(result);
+    if((spectrumdock_blocksize_predefined < 0) || (spectrumdock_blocksize_predefined > 23))
+    {
+      spectrumdock_blocksize_predefined = 0;
+    }
+
+    xml_go_up(xml_hdl);
+  }
+
+  if(!(xml_goto_nth_element_inside(xml_hdl, "spectrumdock_blocksize_userdefined", 0)))
+  {
+    if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+    {
+      xml_close(xml_hdl);
+      return;
+    }
+
+    spectrumdock_blocksize_userdefined = atoi(result);
+    if((spectrumdock_blocksize_userdefined < 10) || (spectrumdock_blocksize_userdefined > 1000))
+    {
+      spectrumdock_blocksize_userdefined = 200;
+    }
+
+    xml_go_up(xml_hdl);
+  }
+
+  if(!(xml_goto_nth_element_inside(xml_hdl, "spectrumdock_overlap", 0)))
+  {
+    if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+    {
+      xml_close(xml_hdl);
+      return;
+    }
+
+    spectrumdock_overlap = atoi(result);
+    if((spectrumdock_overlap < 0) || (spectrumdock_overlap > 4))
+    {
+      spectrumdock_overlap = 0;
+    }
+
+    xml_go_up(xml_hdl);
+  }
+
+  if(!(xml_goto_nth_element_inside(xml_hdl, "spectrumdock_colorbars", 0)))
+  {
+    if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+    {
+      xml_close(xml_hdl);
+      return;
+    }
+
+    if(atoi(result) == 1)
+    {
+      spectrumdock_colorbars = 1;
+    }
+    else
+    {
+      spectrumdock_colorbars = 0;
     }
 
     xml_go_up(xml_hdl);
@@ -2522,6 +2566,8 @@ void UI_Mainwindow::read_general_settings()
   }
 
   xml_close(xml_hdl);
+
+//  printf("Read all general settings.\n");
 }
 
 
@@ -2816,8 +2862,6 @@ void UI_Mainwindow::write_settings()
 
     fprintf(cfgfile, "    </spectrummarkerblock>\n");
 
-    fprintf(cfgfile, "    <maxdftblocksize>%i</maxdftblocksize>\n", maxdftblocksize);
-
     fprintf(cfgfile, "    <annotations_import_var>\n");
 
     fprintf(cfgfile, "      <format>%i</format>\n", import_annotations_var->format);
@@ -2973,9 +3017,17 @@ void UI_Mainwindow::write_settings()
 
     fprintf(cfgfile, "    <spectrumdock_sqrt>%i</spectrumdock_sqrt>\n", spectrumdock_sqrt);
 
-    fprintf(cfgfile, "    <spectrumdock_colorbars>%i</spectrumdock_colorbars>\n", spectrumdock_colorbars);
-
     fprintf(cfgfile, "    <spectrumdock_vlog>%i</spectrumdock_vlog>\n", spectrumdock_vlog);
+
+    fprintf(cfgfile, "    <spectrumdock_window>%i</spectrumdock_window>\n", spectrumdock_window);
+
+    fprintf(cfgfile, "    <spectrumdock_blocksize_predefined>%i</spectrumdock_blocksize_predefined>\n", spectrumdock_blocksize_predefined);
+
+    fprintf(cfgfile, "    <spectrumdock_blocksize_userdefined>%i</spectrumdock_blocksize_userdefined>\n", spectrumdock_blocksize_userdefined);
+
+    fprintf(cfgfile, "    <spectrumdock_overlap>%i</spectrumdock_overlap>\n", spectrumdock_overlap);
+
+    fprintf(cfgfile, "    <spectrumdock_colorbars>%i</spectrumdock_colorbars>\n", spectrumdock_colorbars);
 
     fprintf(cfgfile, "    <z_score_var.crossoverfreq>%.10e</z_score_var.crossoverfreq>\n", z_score_var.crossoverfreq);
 
