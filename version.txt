@@ -25,6 +25,13 @@
 
  - Color Density Spectral Array: added the possibility to export the data.
 
+ - Indicate when there's no file opened.
+
+ - Indicate when no signals have been added to the screen.
+
+ - Show the file position indicator and the page time indicator also when no signals
+   have been added to the screen (but a file has been opened).
+
 
  version 1.86      October 2, 2021
  --------------
