@@ -2546,6 +2546,23 @@ void ViewCurve::drawCurve_stage_2(QPainter *painter, int w_width, int w_height, 
 
   if((viewbuf==NULL)||(graphicBuf==NULL)||(screensamples==NULL))
   {
+    if(!printing)
+    {
+      painter->setPen(text_color);
+
+      painter->drawText(8, h - 4, mainwindow->viewtime_string);
+      painter->drawText(w - strlen(mainwindow->pagetime_string) * font_pixel_width, h - 4, mainwindow->pagetime_string);
+
+      if(!mainwindow->files_open)
+      {
+        painter->drawText(w / 2, h / 2, "NO FILE OPENED");
+      }
+      else if(!signalcomps)
+        {
+          painter->drawText(w / 2, h / 2, "NO SIGNALS ADDED");
+        }
+    }
+
     return;
   }
 

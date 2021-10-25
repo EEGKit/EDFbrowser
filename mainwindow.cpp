@@ -1872,6 +1872,11 @@ void UI_Mainwindow::open_new_file()
     else
     {
       UI_Signalswindow signalwindow(this);
+
+      if(!signalcomps)
+      {
+        setup_viewbuf();
+      }
     }
   }
 
@@ -2670,6 +2675,10 @@ void UI_Mainwindow::close_all_files()
   timescale_doubler = 10;
 
   amplitude_doubler = 10;
+
+  viewtime_string[0] = 0;
+
+  pagetime_string[0] = 0;
 
   for(i=0; i<MAXZOOMHISTORY; i++)
   {

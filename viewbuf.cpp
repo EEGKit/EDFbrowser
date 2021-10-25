@@ -764,7 +764,7 @@ void UI_Mainwindow::setup_viewbuf()
     signalcomp[i]->sample_stop += signalcomp[i]->sample_start;
   }
 
-  if(signalcomps && (!signal_averaging_active))
+  if(files_open && (!signal_averaging_active))
   {
     viewtime_string[0] = 0;
 
