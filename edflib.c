@@ -42,7 +42,7 @@
 #include "edflib.h"
 
 
-#define EDFLIB_VERSION  (119)
+#define EDFLIB_VERSION  (120)
 #define EDFLIB_MAXFILES  (64)
 
 
@@ -985,6 +985,15 @@ int edfread_physical_samples(int handle, int edfsignal, int n, double *buf)
       }
       var.four[1] = tmp;
 
+      if(var.two_signed[0] > hdr->edfparam[channel].dig_max)
+      {
+        var.two_signed[0] = hdr->edfparam[channel].dig_max;
+      }
+      else if(var.two_signed[0] < hdr->edfparam[channel].dig_min)
+        {
+          var.two_signed[0] = hdr->edfparam[channel].dig_min;
+        }
+
       buf[i] = phys_bitvalue * (phys_offset + (double)var.two_signed[0]);
 
       sample_pntr++;
@@ -1020,6 +1029,15 @@ int edfread_physical_samples(int handle, int edfsignal, int n, double *buf)
       {
         var.four[3] = 0x00;
       }
+
+      if(var.one_signed > hdr->edfparam[channel].dig_max)
+      {
+        var.one_signed = hdr->edfparam[channel].dig_max;
+      }
+      else if(var.one_signed < hdr->edfparam[channel].dig_min)
+        {
+          var.one_signed = hdr->edfparam[channel].dig_min;
+        }
 
       buf[i] = phys_bitvalue * (phys_offset + (double)var.one_signed);
 
@@ -1165,6 +1183,15 @@ int edfread_digital_samples(int handle, int edfsignal, int n, int *buf)
       }
       var.four[1] = tmp;
 
+      if(var.two_signed[0] > hdr->edfparam[channel].dig_max)
+      {
+        var.two_signed[0] = hdr->edfparam[channel].dig_max;
+      }
+      else if(var.two_signed[0] < hdr->edfparam[channel].dig_min)
+        {
+          var.two_signed[0] = hdr->edfparam[channel].dig_min;
+        }
+
       buf[i] = var.two_signed[0];
 
       sample_pntr++;
@@ -1200,6 +1227,15 @@ int edfread_digital_samples(int handle, int edfsignal, int n, int *buf)
       {
         var.four[3] = 0x00;
       }
+
+      if(var.one_signed > hdr->edfparam[channel].dig_max)
+      {
+        var.one_signed = hdr->edfparam[channel].dig_max;
+      }
+      else if(var.one_signed < hdr->edfparam[channel].dig_min)
+        {
+          var.one_signed = hdr->edfparam[channel].dig_min;
+        }
 
       buf[i] = var.one_signed;
 

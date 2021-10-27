@@ -1271,7 +1271,9 @@ UI_Mainwindow::UI_Mainwindow()
     messagewindow.exec();
   }
 
-  if(edflib_version() != 119)
+  update_checker = NULL;
+
+  if(edflib_version() != 120)
   {
     cmdlineargument = 0;
 
@@ -1284,8 +1286,6 @@ UI_Mainwindow::UI_Mainwindow()
 
     return;
   }
-
-  update_checker = NULL;
 
   if(check_for_updates)
   {
