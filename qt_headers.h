@@ -17,6 +17,7 @@
 #include <QApplication>
 #include <QStyle>
 #include <QStyleFactory>
+#include <QEvent>
 #include <QEventLoop>
 #include <QMouseEvent>
 #include <QPainter>

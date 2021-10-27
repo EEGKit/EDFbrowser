@@ -242,7 +242,9 @@ public:
       annot_editor_user_button_jump_to_next_page,
       annot_editor_user_button_stay_on_epoch_boundary,
       channel_linked_annotations,
-      hypnogram_use_epoch_len;
+      hypnogram_use_epoch_len,
+      dig_min_max_overflow,
+      dig_min_max_overflow_warning_showed;
 
 long long annot_editor_user_button_epoch_len;
 
@@ -368,6 +370,8 @@ long long annot_editor_user_button_epoch_len;
                *sel_viewtime_act_group;
 
   QLabel       *nav_toolbar_label;
+
+  QTimer       *dig_min_max_overflow_timer;
 
 signals:
      void file_position_changed(long long);
@@ -531,6 +535,7 @@ public slots:
   void shift_page_up();
   void shift_page_down();
   void next_page();
+  void dig_min_max_overflow_timer_func();
 
 private slots:
   void open_new_file();

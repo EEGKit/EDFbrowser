@@ -2706,6 +2706,10 @@ void UI_Mainwindow::close_all_files()
 
   annotations_edited = 0;
 
+  dig_min_max_overflow = 0;
+
+  dig_min_max_overflow_warning_showed = 0;
+
   setWindowTitle(PROGRAM_NAME);
 
   close_filemenu->clear();
@@ -4320,6 +4324,19 @@ void UI_Mainwindow::create_annot_by_rect_draw()
 }
 
 
+void UI_Mainwindow::dig_min_max_overflow_timer_func()
+{
+  if(dig_min_max_overflow && (!dig_min_max_overflow_warning_showed))
+  {
+    dig_min_max_overflow_warning_showed = 1;
+
+    QMessageBox::warning(this, "Warning",
+                        "Detected some samples that have a value higher than the maximum specified in the EDF header and/or samples that have a value lower than the minimum specified in the EDF header.\n"
+                        "Please check your EDF file using: Tools -> Check EDF/BDF compatibility\n"
+                        "You can continue browsing this EDF file but all samples outside the maximum - minimum range will be clipped."
+    );
+  }
+}
 
 
 

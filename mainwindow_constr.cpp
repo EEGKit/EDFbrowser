@@ -149,6 +149,10 @@ UI_Mainwindow::UI_Mainwindow()
 
   use_diverse_signal_colors = 0;
 
+  dig_min_max_overflow = 0;
+
+  dig_min_max_overflow_warning_showed = 0;
+
   for(i=0; i<8; i++)
   {
     annot_edit_user_button_enabled[i] = 0;
@@ -427,6 +431,10 @@ UI_Mainwindow::UI_Mainwindow()
   playback_realtime_timer = new QTimer;
   playback_realtime_timer->setInterval(20);
   QObject::connect(playback_realtime_timer, SIGNAL(timeout()), this, SLOT(playback_realtime_timer_func()));
+
+  dig_min_max_overflow_timer = new QTimer;
+  dig_min_max_overflow_timer->setSingleShot(true);
+  QObject::connect(dig_min_max_overflow_timer, SIGNAL(timeout()), this, SLOT(dig_min_max_overflow_timer_func()));
 
 #if QT_VERSION >= 0x050000
   live_stream_timer->setTimerType(Qt::PreciseTimer);

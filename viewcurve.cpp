@@ -1205,12 +1205,17 @@ void ViewCurve::mouseMoveEvent(QMouseEvent *move_event)
 
 void ViewCurve::paintEvent(QPaintEvent *)
 {
-    QPainter paint(this);
+  QPainter paint(this);
 #if QT_VERSION >= 0x050000
-    paint.setRenderHint(QPainter::Qt4CompatiblePainting, true);
+  paint.setRenderHint(QPainter::Qt4CompatiblePainting, true);
 #endif
 
-    drawCurve_stage_2(&paint);
+  drawCurve_stage_2(&paint);
+
+  if(mainwindow->dig_min_max_overflow && (!mainwindow->dig_min_max_overflow_warning_showed))
+  {
+    mainwindow->dig_min_max_overflow_timer->start(20);
+  }
 }
 
 
@@ -2897,6 +2902,7 @@ void ViewCurve::drawCurve_stage_2(QPainter *painter, int w_width, int w_height, 
 void ViewCurve::drawCurve_stage_1(QPainter *painter, int w_width, int w_height, int print_linewidth)
 {
   int i, j, k, n, x1, y1, x2, y2,
+      tmp,
       signalcomps,
       baseline,
       value,
@@ -3088,17 +3094,45 @@ void ViewCurve::drawCurve_stage_1(QPainter *painter, int w_width, int w_height, 
               var.four[3] = 0x00;
             }
 
+            if(var.one_signed > signalcomp[i]->edfhdr->edfparam[signalcomp[i]->edfsignal[j]].dig_max)
+            {
+              var.one_signed = signalcomp[i]->edfhdr->edfparam[signalcomp[i]->edfsignal[j]].dig_max;
+
+              mainwindow->dig_min_max_overflow = 1;
+            }
+            else if(var.one_signed < signalcomp[i]->edfhdr->edfparam[signalcomp[i]->edfsignal[j]].dig_min)
+              {
+                var.one_signed = signalcomp[i]->edfhdr->edfparam[signalcomp[i]->edfsignal[j]].dig_min;
+
+                mainwindow->dig_min_max_overflow = 1;
+              }
+
             f_tmp = var.one_signed;
           }
 
           if(signalcomp[i]->edfhdr->edf)
           {
-            f_tmp = *(((short *)(
+            tmp = *(((short *)(
               viewbuf
               + signalcomp[i]->viewbufoffset
               + (signalcomp[i]->edfhdr->recordsize * (s2 / signalcomp[i]->edfhdr->edfparam[signalcomp[i]->edfsignal[j]].smp_per_record))
               + signalcomp[i]->edfhdr->edfparam[signalcomp[i]->edfsignal[j]].buf_offset))
               + (s2 % signalcomp[i]->edfhdr->edfparam[signalcomp[i]->edfsignal[j]].smp_per_record));
+
+            if(tmp > signalcomp[i]->edfhdr->edfparam[signalcomp[i]->edfsignal[j]].dig_max)
+            {
+              tmp = signalcomp[i]->edfhdr->edfparam[signalcomp[i]->edfsignal[j]].dig_max;
+
+              mainwindow->dig_min_max_overflow = 1;
+            }
+            else if(tmp < signalcomp[i]->edfhdr->edfparam[signalcomp[i]->edfsignal[j]].dig_min)
+              {
+                tmp = signalcomp[i]->edfhdr->edfparam[signalcomp[i]->edfsignal[j]].dig_min;
+
+                mainwindow->dig_min_max_overflow = 1;
+              }
+
+            f_tmp = tmp;
           }
 
           f_tmp += signalcomp[i]->edfhdr->edfparam[signalcomp[i]->edfsignal[j]].offset;
@@ -3510,6 +3544,7 @@ void drawCurve_stage_1_thread::init_vars(UI_Mainwindow *mainwindow_a, struct sig
 void drawCurve_stage_1_thread::run()
 {
   int j, k, n, x1, y1, x2, y2,
+      tmp,
       baseline,
       value,
       minimum,
@@ -3596,17 +3631,45 @@ void drawCurve_stage_1_thread::run()
             var.four[3] = 0x00;
           }
 
+          if(var.one_signed > signalcomp->edfhdr->edfparam[signalcomp->edfsignal[j]].dig_max)
+          {
+            var.one_signed = signalcomp->edfhdr->edfparam[signalcomp->edfsignal[j]].dig_max;
+
+            mainwindow->dig_min_max_overflow = 1;
+          }
+          else if(var.one_signed < signalcomp->edfhdr->edfparam[signalcomp->edfsignal[j]].dig_min)
+            {
+              var.one_signed = signalcomp->edfhdr->edfparam[signalcomp->edfsignal[j]].dig_min;
+
+              mainwindow->dig_min_max_overflow = 1;
+            }
+
           f_tmp = var.one_signed;
         }
 
         if(signalcomp->edfhdr->edf)
         {
-          f_tmp = *(((short *)(
+          tmp = *(((short *)(
             viewbuf
             + signalcomp->viewbufoffset
             + (signalcomp->edfhdr->recordsize * (s2 / signalcomp->edfhdr->edfparam[signalcomp->edfsignal[j]].smp_per_record))
             + signalcomp->edfhdr->edfparam[signalcomp->edfsignal[j]].buf_offset))
             + (s2 % signalcomp->edfhdr->edfparam[signalcomp->edfsignal[j]].smp_per_record));
+
+          if(tmp > signalcomp->edfhdr->edfparam[signalcomp->edfsignal[j]].dig_max)
+          {
+            tmp = signalcomp->edfhdr->edfparam[signalcomp->edfsignal[j]].dig_max;
+
+            mainwindow->dig_min_max_overflow = 1;
+          }
+          else if(tmp < signalcomp->edfhdr->edfparam[signalcomp->edfsignal[j]].dig_min)
+            {
+              tmp = signalcomp->edfhdr->edfparam[signalcomp->edfsignal[j]].dig_min;
+
+              mainwindow->dig_min_max_overflow = 1;
+            }
+
+          f_tmp = tmp;
         }
 
         f_tmp += signalcomp->edfhdr->edfparam[signalcomp->edfsignal[j]].offset;

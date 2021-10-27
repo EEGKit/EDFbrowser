@@ -32,6 +32,10 @@
  - Show the file position indicator and the page time indicator also when no signals
    have been added to the screen (but a file has been opened).
 
+ - Show a warning when detecting samples that are outside the minimum - maximum range as specified in the EDF header.
+   Clip the affected samples using the limits as specified in the EDF header.
+
+
 
  version 1.86      October 2, 2021
  --------------
