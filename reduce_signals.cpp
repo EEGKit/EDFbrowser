@@ -1168,8 +1168,19 @@ void UI_ReduceSignalsWindow::StartConversion()
 
           for(j=0; j<smplrt; j++)
           {
-            fputc(readbuf[edfhdr->edfparam[signalslist[i]].buf_offset + (j * 2)], outputfile);
-            if(fputc(readbuf[edfhdr->edfparam[signalslist[i]].buf_offset + (j * 2) + 1], outputfile)==EOF)
+            val = *(((signed short *)(readbuf + edfhdr->edfparam[signalslist[i]].buf_offset)) + j);
+
+            if(val > edfhdr->edfparam[signalslist[i]].dig_max)
+            {
+              val = edfhdr->edfparam[signalslist[i]].dig_max;
+            }
+            else if(val < edfhdr->edfparam[signalslist[i]].dig_min)
+              {
+                val = edfhdr->edfparam[signalslist[i]].dig_min;
+              }
+
+            fputc(val & 0xff, outputfile);
+            if(fputc(val >> 8, outputfile)==EOF)
             {
               progress.reset();
               showpopupmessage("Error", "Write error (4).");
@@ -1229,9 +1240,30 @@ void UI_ReduceSignalsWindow::StartConversion()
 
           for(j=0; j<smplrt; j++)
           {
-            fputc(readbuf[edfhdr->edfparam[signalslist[i]].buf_offset + (j * 3)], outputfile);
-            fputc(readbuf[edfhdr->edfparam[signalslist[i]].buf_offset + (j * 3) + 1], outputfile);
-            if(fputc(readbuf[edfhdr->edfparam[signalslist[i]].buf_offset + (j * 3) + 2], outputfile)==EOF)
+            var.two[0] = *((unsigned short *)(readbuf + edfhdr->edfparam[signalslist[i]].buf_offset + (j * 3)));
+            var.four[2] = *((unsigned char *)(readbuf + edfhdr->edfparam[signalslist[i]].buf_offset + (j * 3) + 2));
+
+            if(var.four[2]&0x80)
+            {
+              var.four[3] = 0xff;
+            }
+            else
+            {
+              var.four[3] = 0x00;
+            }
+
+            if(var.one_signed > edfhdr->edfparam[signalslist[i]].dig_max)
+            {
+              var.one_signed = edfhdr->edfparam[signalslist[i]].dig_max;
+            }
+            else if(var.one_signed < edfhdr->edfparam[signalslist[i]].dig_min)
+              {
+                var.one_signed = edfhdr->edfparam[signalslist[i]].dig_min;
+              }
+
+            fputc(var.four[0], outputfile);
+            fputc(var.four[1], outputfile);
+            if(fputc(var.four[2], outputfile)==EOF)
             {
               progress.reset();
               showpopupmessage("Error", "Write error (4).");
