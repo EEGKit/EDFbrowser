@@ -1189,6 +1189,15 @@ void UI_ReduceSignalsWindow::StartConversion()
             {
               val = *(((signed short *)(readbuf + edfhdr->edfparam[signalslist[i]].buf_offset)) + (dividerlist[i] * j) + k);
 
+              if(val > edfhdr->edfparam[signalslist[i]].dig_max)
+              {
+                val = edfhdr->edfparam[signalslist[i]].dig_max;
+              }
+              else if(val < edfhdr->edfparam[signalslist[i]].dig_min)
+                {
+                  val = edfhdr->edfparam[signalslist[i]].dig_min;
+                }
+
               for(n=0; n<aa_filter_order; n++)
               {
                 val = run_ravg_filter(val, filterlist[i][n]);
@@ -1251,6 +1260,15 @@ void UI_ReduceSignalsWindow::StartConversion()
               {
                 var.four[3] = 0x00;
               }
+
+              if(var.one_signed > edfhdr->edfparam[signalslist[i]].dig_max)
+              {
+                var.one_signed = edfhdr->edfparam[signalslist[i]].dig_max;
+              }
+              else if(var.one_signed < edfhdr->edfparam[signalslist[i]].dig_min)
+                {
+                  var.one_signed = edfhdr->edfparam[signalslist[i]].dig_min;
+                }
 
               for(n=0; n<aa_filter_order; n++)
               {

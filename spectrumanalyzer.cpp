@@ -814,7 +814,7 @@ void UI_FreqSpectrumWindow::sliderMoved(int)
 
 void UI_FreqSpectrumWindow::run()
 {
-  int i, j, k;
+  int i, j, k, tmp;
 
   unsigned long long s, s2;
 
@@ -880,17 +880,37 @@ void UI_FreqSpectrumWindow::run()
             var.four[3] = 0x00;
           }
 
+          if(var.one_signed > signalcomp->edfhdr->edfparam[signalcomp->edfsignal[j]].dig_max)
+          {
+            var.one_signed = signalcomp->edfhdr->edfparam[signalcomp->edfsignal[j]].dig_max;
+          }
+          else if(var.one_signed < signalcomp->edfhdr->edfparam[signalcomp->edfsignal[j]].dig_min)
+            {
+              var.one_signed = signalcomp->edfhdr->edfparam[signalcomp->edfsignal[j]].dig_min;
+            }
+
           f_tmp = var.one_signed;
         }
 
         if(signalcomp->edfhdr->edf)
         {
-          f_tmp = *(((short *)(
+          tmp = *(((short *)(
             viewbuf
             + signalcomp->viewbufoffset
             + (signalcomp->edfhdr->recordsize * (s2 / signalcomp->edfhdr->edfparam[signalcomp->edfsignal[j]].smp_per_record))
             + signalcomp->edfhdr->edfparam[signalcomp->edfsignal[j]].buf_offset))
             + (s2 % signalcomp->edfhdr->edfparam[signalcomp->edfsignal[j]].smp_per_record));
+
+          if(tmp > signalcomp->edfhdr->edfparam[signalcomp->edfsignal[j]].dig_max)
+          {
+            tmp = signalcomp->edfhdr->edfparam[signalcomp->edfsignal[j]].dig_max;
+          }
+          else if(tmp < signalcomp->edfhdr->edfparam[signalcomp->edfsignal[j]].dig_min)
+            {
+              tmp = signalcomp->edfhdr->edfparam[signalcomp->edfsignal[j]].dig_min;
+            }
+
+          f_tmp = tmp;
         }
 
         f_tmp += signalcomp->edfhdr->edfparam[signalcomp->edfsignal[j]].offset;

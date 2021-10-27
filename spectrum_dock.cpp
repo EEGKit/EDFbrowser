@@ -1040,7 +1040,7 @@ void UI_SpectrumDockWindow::clear()
 
 void UI_SpectrumDockWindow::update_curve()
 {
-  int i, j, k, n,
+  int i, j, k, n, tmp,
       fft_inputbufsize=0;
 //      fft_outputbufsize;
 
@@ -1164,17 +1164,37 @@ void UI_SpectrumDockWindow::update_curve()
           var.four[3] = 0x00;
         }
 
+        if(var.one_signed > signalcomp->edfhdr->edfparam[signalcomp->edfsignal[j]].dig_max)
+        {
+          var.one_signed = signalcomp->edfhdr->edfparam[signalcomp->edfsignal[j]].dig_max;
+        }
+        else if(var.one_signed < signalcomp->edfhdr->edfparam[signalcomp->edfsignal[j]].dig_min)
+          {
+            var.one_signed = signalcomp->edfhdr->edfparam[signalcomp->edfsignal[j]].dig_min;
+          }
+
         f_tmp = var.one_signed;
       }
 
       if(signalcomp->edfhdr->edf)
       {
-        f_tmp = *(((short *)(
+        tmp = *(((short *)(
           viewbuf
           + signalcomp->viewbufoffset
           + (signalcomp->edfhdr->recordsize * (s2 / signalcomp->edfhdr->edfparam[signalcomp->edfsignal[j]].smp_per_record))
           + signalcomp->edfhdr->edfparam[signalcomp->edfsignal[j]].buf_offset))
           + (s2 % signalcomp->edfhdr->edfparam[signalcomp->edfsignal[j]].smp_per_record));
+
+        if(tmp > signalcomp->edfhdr->edfparam[signalcomp->edfsignal[j]].dig_max)
+        {
+          tmp = signalcomp->edfhdr->edfparam[signalcomp->edfsignal[j]].dig_max;
+        }
+        else if(tmp < signalcomp->edfhdr->edfparam[signalcomp->edfsignal[j]].dig_min)
+          {
+            tmp = signalcomp->edfhdr->edfparam[signalcomp->edfsignal[j]].dig_min;
+          }
+
+        f_tmp = tmp;
       }
 
       f_tmp += signalcomp->edfhdr->edfparam[signalcomp->edfsignal[j]].offset;

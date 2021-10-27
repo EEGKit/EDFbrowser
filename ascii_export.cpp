@@ -90,6 +90,7 @@ UI_AsciiExportwindow::UI_AsciiExportwindow(QWidget *w_parent)
 void UI_AsciiExportwindow::ExportButtonClicked()
 {
   int i, j, k, m, p, r, n,
+      tmp,
       edfsignals,
       datarecords,
       datarecordswritten,
@@ -862,11 +863,31 @@ void UI_AsciiExportwindow::ExportButtonClicked()
               var.four[3] = 0x00;
             }
 
+            if(var.one_signed > edfparamascii[j].dig_max)
+            {
+              var.one_signed = edfparamascii[j].dig_max;
+            }
+            else if(var.one_signed < edfparamascii[j].dig_min)
+              {
+                var.one_signed = edfparamascii[j].dig_min;
+              }
+
             value_tmp = ((double)var.one_signed + edfparamascii[j].offset) * edfparamascii[j].sense;
           }
           else
           {
-            value_tmp = ((double)(*(((signed short *)cnv_buf) + edfparamascii[j].buf_offset + edfparamascii[j].smp_written)) + edfparamascii[j].offset) * edfparamascii[j].sense;
+            tmp = *(((signed short *)cnv_buf) + edfparamascii[j].buf_offset + edfparamascii[j].smp_written);
+
+            if(tmp > edfparamascii[j].dig_max)
+            {
+              tmp = edfparamascii[j].dig_max;
+            }
+            else if(tmp < edfparamascii[j].dig_min)
+              {
+                tmp = edfparamascii[j].dig_min;
+              }
+
+            value_tmp = ((double)tmp + edfparamascii[j].offset) * edfparamascii[j].sense;
           }
           fprintf(outputfile, ",%f", value_tmp);
           edfparamascii[j].smp_written++;

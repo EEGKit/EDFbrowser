@@ -31,7 +31,7 @@
 
 void print_screen_to_bdf(UI_Mainwindow *mainwindow)
 {
-  int i, j, k, p, r, hf,
+  int i, j, k, p, r, hf, tmp,
       n=0,
       records,
       records_written,
@@ -1034,17 +1034,37 @@ void print_screen_to_bdf(UI_Mainwindow *mainwindow)
                   var.four[3] = 0x00;
                 }
 
+                if(var.one_signed > signalcomp[i]->edfhdr->edfparam[signalcomp[i]->edfsignal[j]].dig_max)
+                {
+                  var.one_signed = signalcomp[i]->edfhdr->edfparam[signalcomp[i]->edfsignal[j]].dig_max;
+                }
+                else if(var.one_signed < signalcomp[i]->edfhdr->edfparam[signalcomp[i]->edfsignal[j]].dig_min)
+                  {
+                    var.one_signed = signalcomp[i]->edfhdr->edfparam[signalcomp[i]->edfsignal[j]].dig_min;
+                  }
+
                 f_tmp = var.one_signed;
               }
 
               if(signalcomp[i]->edfhdr->edf)
               {
-                f_tmp = *(((short *)(
+                tmp = *(((short *)(
                   viewbuf
                   + signalcomp[i]->viewbufoffset
                   + (signalcomp[i]->edfhdr->recordsize * (s2 / signalcomp[i]->edfhdr->edfparam[signalcomp[i]->edfsignal[j]].smp_per_record))
                   + signalcomp[i]->edfhdr->edfparam[signalcomp[i]->edfsignal[j]].buf_offset))
                   + (s2 % signalcomp[i]->edfhdr->edfparam[signalcomp[i]->edfsignal[j]].smp_per_record));
+
+                if(tmp > signalcomp[i]->edfhdr->edfparam[signalcomp[i]->edfsignal[j]].dig_max)
+                {
+                  tmp = signalcomp[i]->edfhdr->edfparam[signalcomp[i]->edfsignal[j]].dig_max;
+                }
+                else if(tmp < signalcomp[i]->edfhdr->edfparam[signalcomp[i]->edfsignal[j]].dig_min)
+                  {
+                    tmp = signalcomp[i]->edfhdr->edfparam[signalcomp[i]->edfsignal[j]].dig_min;
+                  }
+
+                f_tmp = tmp;
               }
 
               f_tmp += signalcomp[i]->edfhdr->edfparam[signalcomp[i]->edfsignal[j]].offset;

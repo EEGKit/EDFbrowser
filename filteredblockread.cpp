@@ -213,7 +213,7 @@ FilteredBlockReadClass::~FilteredBlockReadClass()
 
 int FilteredBlockReadClass::process_signalcomp(int datarecord_or_sample_start)
 {
-  int j, k, datarecord_start;
+  int j, k, datarecord_start, tmp;
 
   long long s, s_end, sample_start, s_off=0;
 
@@ -357,16 +357,36 @@ int FilteredBlockReadClass::process_signalcomp(int datarecord_or_sample_start)
           var.four[3] = 0x00;
         }
 
+        if(var.one_signed > signalcomp->edfhdr->edfparam[signalcomp->edfsignal[j]].dig_max)
+        {
+          var.one_signed = signalcomp->edfhdr->edfparam[signalcomp->edfsignal[j]].dig_max;
+        }
+        else if(var.one_signed < signalcomp->edfhdr->edfparam[signalcomp->edfsignal[j]].dig_min)
+          {
+            var.one_signed = signalcomp->edfhdr->edfparam[signalcomp->edfsignal[j]].dig_min;
+          }
+
         f_tmp = var.one_signed;
       }
 
       if(signalcomp->edfhdr->edf)
       {
-        f_tmp = *(((short *)(
+        tmp = *(((short *)(
           readbuf
           + (signalcomp->edfhdr->recordsize * (s / samples_per_datrec))
           + signalcomp->edfhdr->edfparam[signalcomp->edfsignal[j]].buf_offset))
           + (s % samples_per_datrec));
+
+          if(tmp > signalcomp->edfhdr->edfparam[signalcomp->edfsignal[j]].dig_max)
+          {
+            tmp = signalcomp->edfhdr->edfparam[signalcomp->edfsignal[j]].dig_max;
+          }
+          else if(tmp < signalcomp->edfhdr->edfparam[signalcomp->edfsignal[j]].dig_min)
+            {
+              tmp = signalcomp->edfhdr->edfparam[signalcomp->edfsignal[j]].dig_min;
+            }
+
+          f_tmp = tmp;
       }
 
       f_tmp += signalcomp->edfhdr->edfparam[signalcomp->edfsignal[j]].offset;
