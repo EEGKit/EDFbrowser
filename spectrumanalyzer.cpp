@@ -749,7 +749,7 @@ void UI_FreqSpectrumWindow::sliderMoved(int)
 
   if(mainwindow->spectrum_sqrt)
   {
-    if(mainwindow->spectrum_vlog)
+    if(mainwindow->spectrum_vlog)  /* amplitude & log both checked */
     {
 //       printf("maxvalue_sqrt_vlog:        %f\n"
 //              "flywheel_value:            %i\n"
@@ -760,18 +760,18 @@ void UI_FreqSpectrumWindow::sliderMoved(int)
 
       curve1->drawCurve(buf5 + startstep, stopstep - startstep, (maxvalue_sqrt_vlog * ((double)flywheel_value / 1000.0) * (double)amplitudeSlider->value()) / 1000.0, minvalue_sqrt_vlog * (double)log_minslider->value() / 1000.0);
     }
-    else
+    else  /* only amplitude checked */
     {
       curve1->drawCurve(buf3 + startstep, stopstep - startstep, (maxvalue_sqrt * ((double)flywheel_value / 1000.0) * (double)amplitudeSlider->value()) / 1000.0, 0.0);
     }
   }
   else
   {
-    if(mainwindow->spectrum_vlog)
+    if(mainwindow->spectrum_vlog)  /* only log checked (power spectral density) */
     {
       curve1->drawCurve(buf4 + startstep, stopstep - startstep, (maxvalue_vlog * ((double)flywheel_value / 1000.0) * (double)amplitudeSlider->value()) / 1000.0, minvalue_vlog * (double)log_minslider->value() / 1000.0);
     }
-    else
+    else  /* amplitude & log both not checked (power spectral density) */
     {
       curve1->drawCurve(buf2 + startstep, stopstep - startstep, (maxvalue * ((double)flywheel_value / 1000.0) * (double)amplitudeSlider->value()) / 1000.0, 0.0);
     }
@@ -1122,13 +1122,13 @@ void UI_FreqSpectrumWindow::run()
 
   for(i=0; i<fft_data->sz_out; i++)
   {
-    buf2[i] = fft_data->buf_out[i] / samplefreq;
+    buf2[i] = fft_data->buf_out[i] / samplefreq;  /* amplitude & log both not checked (power spectral density) */
 
 #ifdef CHECK_POWERSPECTRUM
     power2 += buf2[i];
 #endif
 
-    buf3[i] = sqrt(buf2[i] * freqstep);
+    buf3[i] = sqrt(buf2[i] * freqstep);  /* only amplitude checked */
 
     if(buf2[i] <= SPECT_LOG_MINIMUM)
     {
@@ -1136,7 +1136,7 @@ void UI_FreqSpectrumWindow::run()
     }
     else
     {
-      buf4[i] = log10(buf2[i]);
+      buf4[i] = log10(buf2[i]);  /* only log checked (power spectral density) */
     }
 
     if(buf3[i] <= SPECT_LOG_MINIMUM)
@@ -1145,7 +1145,7 @@ void UI_FreqSpectrumWindow::run()
     }
     else
     {
-      buf5[i] = log10(buf3[i]);
+      buf5[i] = log10(buf3[i]);  /* amplitude & log both checked */
     }
 
     if(i)  // don't use the dc-bin for the autogain of the screen
