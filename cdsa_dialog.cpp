@@ -671,7 +671,7 @@ void UI_cdsa_window::start_button_clicked()
     fprintf(dat_f, "seconds,");
     for(i=h_min; i<h_max; i++)
     {
-      fprintf(dat_f, "%0.3f Hz,", i / 2.0);
+      fprintf(dat_f, "%0.3f Hz,", (double)i / (double)blocklen);
     }
     fprintf(dat_f, "\n");
   }
