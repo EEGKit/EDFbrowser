@@ -1364,6 +1364,8 @@ struct edfhdrblock * EDFfileCheck::check_edf_file(FILE *inputfile, char *txt_str
       p += i + 1;
     }
 
+    edfhdr->plus_gender_offset = p;
+
     if(edfhdr->patient[p]=='M')
     {
       strlcpy(edfhdr->plus_gender, "Male", 16);
@@ -1384,6 +1386,8 @@ struct edfhdrblock * EDFfileCheck::check_edf_file(FILE *inputfile, char *txt_str
       }
     }
     p += i + 1;
+
+    edfhdr->plus_birthdate_offset = p;
 
     if(edfhdr->patient[p]=='X')
     {
@@ -1409,6 +1413,8 @@ struct edfhdrblock * EDFfileCheck::check_edf_file(FILE *inputfile, char *txt_str
       p += i + 1;
     }
 
+    edfhdr->plus_patient_name_offset = p;
+
     for(i=0; i<(80-p);i++)
     {
       if(edfhdr->patient[i+p]==' ')
@@ -1420,6 +1426,8 @@ struct edfhdrblock * EDFfileCheck::check_edf_file(FILE *inputfile, char *txt_str
     }
     edfhdr->plus_patient_name[i] = 0;
     p += i + 1;
+
+    edfhdr->plus_patient_additional_offset = p;
 
     for(i=0; i<(80-p);i++)
     {
@@ -1437,6 +1445,9 @@ struct edfhdrblock * EDFfileCheck::check_edf_file(FILE *inputfile, char *txt_str
     strncpy(scratchpad, edf_hdr + 88, 80);
     scratchpad[80] = 0;
     if(strncmp(scratchpad, "Startdate ", 10))  error = 1;
+
+    edfhdr->plus_startdate_offset = p;
+
     if(scratchpad[10]=='X')
     {
       if(scratchpad[11]!=' ')  error = 1;
@@ -1580,6 +1591,8 @@ struct edfhdrblock * EDFfileCheck::check_edf_file(FILE *inputfile, char *txt_str
     edfhdr->plus_startdate[11] = 0;
     p += i + 1;
 
+    edfhdr->plus_admincode_offset = p;
+
     if(edfhdr->recording[p]=='X')
     {
       edfhdr->plus_admincode[0] = 0;
@@ -1599,6 +1612,8 @@ struct edfhdrblock * EDFfileCheck::check_edf_file(FILE *inputfile, char *txt_str
       edfhdr->plus_admincode[i] = 0;
       p += i + 1;
     }
+
+    edfhdr->plus_technician_offset = p;
 
     if(edfhdr->recording[p]=='X')
     {
@@ -1620,6 +1635,8 @@ struct edfhdrblock * EDFfileCheck::check_edf_file(FILE *inputfile, char *txt_str
       p += i + 1;
     }
 
+    edfhdr->plus_equipment_offset = p;
+
     if(edfhdr->recording[p]=='X')
     {
       edfhdr->plus_equipment[0] = 0;
@@ -1639,6 +1656,8 @@ struct edfhdrblock * EDFfileCheck::check_edf_file(FILE *inputfile, char *txt_str
       edfhdr->plus_equipment[i] = 0;
       p += i + 1;
     }
+
+    edfhdr->plus_recording_additional_offset = p;
 
     for(i=0; i<(80-p);i++)
     {

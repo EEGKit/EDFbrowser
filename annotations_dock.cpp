@@ -1134,7 +1134,8 @@ void UI_Annotationswindow::updateList(int scroll_to_item_requested)
       sz=0,
       modified=0,
       scroll_val=0,
-      selected_in_dock_idx=-1;
+      selected_in_dock_idx=-1,
+      len=0;
 
   char str[MAX_ANNOTATION_LEN + 32]="",
        str2[1024]="";
@@ -1245,7 +1246,7 @@ void UI_Annotationswindow::updateList(int scroll_to_item_requested)
 
     if((annot->onset - edf_hdr->starttime_offset) < 0LL)
     {
-      snprintf(str, (MAX_ANNOTATION_LEN + 32) / 2, "onset: -%i:%02i:%02i.%04i",
+      len = snprintf(str, (MAX_ANNOTATION_LEN + 32) / 2, "onset: -%i:%02i:%02i.%04i",
               (int)((-(annot->onset - edf_hdr->starttime_offset) / TIME_DIMENSION)/ 3600),
               (int)(((-(annot->onset - edf_hdr->starttime_offset) / TIME_DIMENSION) % 3600) / 60),
               (int)((-(annot->onset - edf_hdr->starttime_offset) / TIME_DIMENSION) % 60),
@@ -1253,7 +1254,7 @@ void UI_Annotationswindow::updateList(int scroll_to_item_requested)
     }
     else
     {
-      snprintf(str, (MAX_ANNOTATION_LEN + 32) / 2, "onset: %2i:%02i:%02i.%04i",
+      len = snprintf(str, (MAX_ANNOTATION_LEN + 32) / 2, "onset: %2i:%02i:%02i.%04i",
               (int)(((annot->onset - edf_hdr->starttime_offset) / TIME_DIMENSION)/ 3600),
               (int)((((annot->onset - edf_hdr->starttime_offset) / TIME_DIMENSION) % 3600) / 60),
               (int)(((annot->onset - edf_hdr->starttime_offset) / TIME_DIMENSION) % 60),
@@ -1262,20 +1263,26 @@ void UI_Annotationswindow::updateList(int scroll_to_item_requested)
 
     if(annot->duration[0]!=0)
     {
-      snprintf(str + strlen(str), (MAX_ANNOTATION_LEN + 32) / 2, "\nduration: %s",annot->duration);
+      len += snprintf(str + len, MAX_ANNOTATION_LEN + 32 - len, "\nduration: %s",annot->duration);
+
+      remove_trailing_zeros(str);
     }
 
-    str[MAX_ANNOTATION_LEN + 31] = 0;
+    strlcat(str, "\n", MAX_ANNOTATION_LEN + 32);
 
-    remove_trailing_zeros(str);
+    strlcat(str, annot->description, MAX_ANNOTATION_LEN + 32);
 
-    strlcat(str, "\n\n", MAX_ANNOTATION_LEN + 32);
+    if(mainwindow->edf_debug && (!mainwindow->annot_editor_active) && (!mainwindow->annotations_edited))
+    {
+      len = strlen(str);
+#ifdef Q_OS_WIN32
+      __mingw_snprintf(str + len, MAX_ANNOTATION_LEN + 32 - len, "\ndatarecord: %i\nfile offset: 0x%02llx", annot->datrec, annot->file_offset);
+#else
+      snprintf(str + len, MAX_ANNOTATION_LEN + 32 - len, "\ndatarecord: %i\nfile offset: 0x%02llx", annot->datrec, annot->file_offset);
+#endif
+    }
 
-    string = QString::fromLatin1(str);
-
-    string.append(QString::fromUtf8(annot->description));
-
-    listitem->setToolTip(string);
+    listitem->setToolTip(QString::fromUtf8(str));
 
     if(annot->grabbed)
     {

@@ -1920,6 +1920,8 @@
   <li><a href="#FAQ_14">Which operatingsystems are supported?</a></li>
   <li><a href="#FAQ_15">Which license is used for the program?</a></li>
   <li><a href="#FAQ_16">I think I found a bug. Where do I report it?</a></li>
+  <li><a href="#FAQ_17">Why is EDFbrowser so strict about formatting and refuses to open files that are not completely EDF compliant?</a></li>
+  <li><a href="#FAQ_18">Why can't EDFbrowser accept extended-ASCII characters in the EDF header?</a></li>
 </ul>
 </div>
 
@@ -2051,7 +2053,35 @@
   Q.  I think I found a bug. Where do I report it?<br>
 <br>
   A.  First check if you are using the latest version of EDFbrowser.<br>
-  If the bug persists, send an email to <a href="mailto:teuniz@protonmail.com">teuniz@protonmail.com</a>
+  If the bug persists, send an email to <a href="mailto:teuniz@protonmail.com">teuniz@protonmail.com</a><br>
+<br>
+<br>
+<a name="FAQ_17"></a>
+  Q.  Why is EDFbrowser so strict about formatting and refuses to open files that are not completely EDF compliant?<br>
+<br>
+  A.  EDFbrowser has a policy to not accept non-compliant files. This is done in order to make people aware of it and<br>
+      to push them to contact the producer of the software that created the non-compliant file and file a bugreport there.<br>
+      It's the opinion of the author of EDFbrowser that problems with non-compliant files should be solved at the producer,<br>
+      not at the viewer.<br>
+      In practice, if EDFbrowser should allow minor formatting errors, nobody will file a bugreport because of reasons like:<br>
+      "Yes, I'll file a bug report later when I have time..."<br>
+      "Why should I file a bugreport if there's already a solution at hand? Time is money!"<br>
+      <br>
+      EDFbrowser offers a tool that can repair minor errors in non-compliant files: the <a href="#Header_editor">header editor</a>.<br>
+      Simply open the file in the <a href="#Header_editor">header editor</a> and press "Save". That's all.<br>
+      In case you have a whole bunch of non-compliant files, you are out of luck. You'll have to fix them one by one.<br>
+      Direct your complains to the producer of your non-compliant files.<br>
+<br>
+<br>
+<a name="FAQ_18"></a>
+  Q.  Why can't EDFbrowser accept extended-ASCII characters in the EDF header?<br>
+<br>
+  A.  Officially, there doesn't exist a so-called "extended" ASCII set. The ASCII character set is a 7-bit only character set and<br>
+      and does not have any characters like for example with accents.<br>
+      Unofficially, there exists many extended character sets. So, which one should be chosen? And why that particular one and not another one?<br>
+      Also, there's no method in EDF to indicate which extended ASCII set is in use. So, a character that looks fine when opened using a computer<br>
+      with a certain country setting (localization setting), can look wrong when opened using a computer with a different country setting.<br>
+      There's no way to guarantee that the information is correct when using extended ASCII.<br>
 </p>
 
 <p><br></p>

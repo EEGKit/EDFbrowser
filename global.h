@@ -151,6 +151,16 @@ struct edfhdrblock{
         char      plus_technician[81];
         char      plus_equipment[81];
         char      plus_recording_additional[81];
+        int       plus_patientcode_offset;
+        int       plus_gender_offset;
+        int       plus_birthdate_offset;
+        int       plus_patient_name_offset;
+        int       plus_patient_additional_offset;
+        int       plus_startdate_offset;
+        int       plus_admincode_offset;
+        int       plus_technician_offset;
+        int       plus_equipment_offset;
+        int       plus_recording_additional_offset;
         long long l_starttime;
         long long utc_starttime;
         char      reserved[45];

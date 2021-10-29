@@ -35,6 +35,9 @@
  - Show a warning when detecting samples that are outside the minimum - maximum range as specified in the EDF header.
    Clip the affected samples using the limits as specified in the EDF header.
 
+ - Added a "EDF file debug" mode which will show the file offsets of the various header fields in File -> Info and
+   also for annotations in the annotations list, both using "tooltips". This mode can be enabled in Settings -> Options -> Other -> Show EDF debug info.
+
 
 
  version 1.86      October 2, 2021

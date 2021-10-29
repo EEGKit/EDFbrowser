@@ -817,6 +817,23 @@ void UI_Mainwindow::read_general_settings()
     xml_go_up(xml_hdl);
   }
 
+  if(!(xml_goto_nth_element_inside(xml_hdl, "edf_debug", 0)))
+  {
+    if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+    {
+      xml_close(xml_hdl);
+      return;
+    }
+
+    edf_debug = atoi(result);
+    if((edf_debug < 0) || (edf_debug > 1))
+    {
+      edf_debug = 0;
+    }
+
+    xml_go_up(xml_hdl);
+  }
+
   if(!(xml_goto_nth_element_inside(xml_hdl, "spectrummarkerblock", 0)))
   {
     if(xml_goto_nth_element_inside(xml_hdl, "items", 0))
@@ -2762,6 +2779,9 @@ void UI_Mainwindow::write_settings()
 
     fprintf(cfgfile, "    <use_threads>%i</use_threads>\n",
                     use_threads);
+
+    fprintf(cfgfile, "    <edf_debug>%i</edf_debug>\n",
+                    edf_debug);
 
 #ifdef Q_OS_WIN32
     __mingw_fprintf(cfgfile, "    <maxfilesize_to_readin_annotations>%lli</maxfilesize_to_readin_annotations>\n",

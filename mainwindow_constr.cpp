@@ -153,6 +153,8 @@ UI_Mainwindow::UI_Mainwindow()
 
   dig_min_max_overflow_warning_showed = 0;
 
+  edf_debug = 0;
+
   for(i=0; i<8; i++)
   {
     annot_edit_user_button_enabled[i] = 0;

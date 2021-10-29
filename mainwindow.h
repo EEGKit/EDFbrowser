@@ -244,7 +244,8 @@ public:
       channel_linked_annotations,
       hypnogram_use_epoch_len,
       dig_min_max_overflow,
-      dig_min_max_overflow_warning_showed;
+      dig_min_max_overflow_warning_showed,
+      edf_debug;
 
 long long annot_editor_user_button_epoch_len;
 

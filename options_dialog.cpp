@@ -1126,6 +1126,25 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   flayout4_1->labelForField(hlayout_tmp)->setToolTip("Use all available CPU cores to render the signal waveforms on the screen");
   checkbox4_4->setToolTip("Use all available CPU cores to render the signal waveforms on the screen");
 
+  checkbox4_11 = new QCheckBox;
+  checkbox4_11->setTristate(false);
+  if(mainwindow->edf_debug)
+  {
+    checkbox4_11->setCheckState(Qt::Checked);
+  }
+  else
+  {
+    checkbox4_11->setCheckState(Qt::Unchecked);
+  }
+  hlayout_tmp = new QHBoxLayout;
+  hlayout_tmp->setAlignment(Qt::AlignCenter);
+  hlayout_tmp->addWidget(checkbox4_11);
+  hlayout_tmp->addStretch(1000);
+  flayout4_1->addRow("Show EDF debug info", hlayout_tmp);
+  QObject::connect(checkbox4_11, SIGNAL(stateChanged(int)), this, SLOT(checkbox4_11Clicked(int)));
+  flayout4_1->labelForField(hlayout_tmp)->setToolTip("Show the file offset of objects like header fields, annotations, etc.");
+  checkbox4_11->setToolTip("Show the file offset of objects like header fields, annotations, etc.");
+
   QFormLayout *flayout4_2 = new QFormLayout;
   flayout4_2->setSpacing(20);
 
@@ -1915,6 +1934,19 @@ void UI_OptionsDialog::checkbox4_4Clicked(int state)
   else
   {
     mainwindow->use_threads = 0;
+  }
+}
+
+
+void UI_OptionsDialog::checkbox4_11Clicked(int state)
+{
+  if(state==Qt::Checked)
+  {
+    mainwindow->edf_debug = 1;
+  }
+  else
+  {
+    mainwindow->edf_debug = 0;
   }
 }
 

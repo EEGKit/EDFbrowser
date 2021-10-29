@@ -47,6 +47,8 @@ struct annotationblock{
         long long onset;
         char duration[16];
         long long long_duration;
+        long long file_offset;
+        int datrec;
         char description[MAX_ANNOTATION_LEN_II + 1];
         int modified;
         int x_pos;

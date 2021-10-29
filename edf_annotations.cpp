@@ -61,7 +61,8 @@ int EDF_annotations::get_annotations(struct edfhdrblock *edf_hdr, int read_nk_tr
       nk_triggers_channel=0,
       nk_triggers_cnt=0,
       sf,
-      progress_steps;
+      progress_steps,
+      annot_offset=0;
 
   unsigned short nk_triggerfields=0,
                  nk_old_triggerfields=0;
@@ -298,6 +299,7 @@ int EDF_annotations::get_annotations(struct edfhdrblock *edf_hdr, int read_nk_tr
       scratchpad[0] = 0;
       annots_in_tal = 0;
       annots_in_record = 0;
+      annot_offset = 0;
 
       p = edfparam[annot_ch[r]].buf_offset;
       max = edfparam[annot_ch[r]].smp_per_record * samplesize;
@@ -395,6 +397,7 @@ int EDF_annotations::get_annotations(struct edfhdrblock *edf_hdr, int read_nk_tr
             duration_start = 0;
             scratchpad[0] = 0;
             annots_in_tal = 0;
+            annot_offset = k + 1;
           }
           zero++;
           continue;
@@ -440,6 +443,10 @@ int EDF_annotations::get_annotations(struct edfhdrblock *edf_hdr, int read_nk_tr
 
                   annotblock.long_duration = get_long_time(duration_in_txt);
                 }
+
+                annotblock.file_offset = (long long)edf_hdr->hdrsize + ((long long)i * (long long)recordsize) + (long long)p + (long long)annot_offset;
+
+                annotblock.datrec = i;
 
                 if(edfplus_annotation_add_item(&edf_hdr->annot_list, annotblock))
                 {

@@ -198,22 +198,66 @@ void UI_EDFhdrwindow::show_params(int row)
     stackwidget->setCurrentIndex(0);
 
     line_edit1->setText(mainwindow->edfheaderlist[row]->plus_patientcode);
+    if(mainwindow->edf_debug)  line_edit1->setToolTip("0x08");
     line_edit2->setText(mainwindow->edfheaderlist[row]->plus_gender);
+    if(mainwindow->edf_debug)
+    {
+      snprintf(str, 512, "0x%02x", 0x08 + mainwindow->edfheaderlist[row]->plus_gender_offset);
+      line_edit2->setToolTip(str);
+    }
     line_edit6->setText(mainwindow->edfheaderlist[row]->plus_birthdate);
+    if(mainwindow->edf_debug)
+    {
+      snprintf(str, 512, "0x%02x", 0x08 + mainwindow->edfheaderlist[row]->plus_birthdate_offset);
+      line_edit6->setToolTip(str);
+    }
     line_edit7->setText(mainwindow->edfheaderlist[row]->plus_patient_name);
+    if(mainwindow->edf_debug)
+    {
+      snprintf(str, 512, "0x%02x", 0x08 + mainwindow->edfheaderlist[row]->plus_patient_name_offset);
+      line_edit7->setToolTip(str);
+    }
     line_edit8->setText(mainwindow->edfheaderlist[row]->plus_patient_additional);
+    if(mainwindow->edf_debug)
+    {
+      snprintf(str, 512, "0x%02x", 0x08 + mainwindow->edfheaderlist[row]->plus_patient_additional_offset);
+      line_edit8->setToolTip(str);
+    }
     line_edit9->setText(mainwindow->edfheaderlist[row]->plus_startdate);
+    if(mainwindow->edf_debug)  line_edit9->setToolTip("0x62");
     line_edit10->setText(mainwindow->edfheaderlist[row]->plus_admincode);
+    if(mainwindow->edf_debug)
+    {
+      snprintf(str, 512, "0x%02x", 0x08 + mainwindow->edfheaderlist[row]->plus_admincode_offset);
+      line_edit10->setToolTip(str);
+    }
     line_edit11->setText(mainwindow->edfheaderlist[row]->plus_technician);
+    if(mainwindow->edf_debug)
+    {
+      snprintf(str, 512, "0x%02x", 0x08 + mainwindow->edfheaderlist[row]->plus_technician_offset);
+      line_edit11->setToolTip(str);
+    }
     line_edit12->setText(mainwindow->edfheaderlist[row]->plus_equipment);
+    if(mainwindow->edf_debug)
+    {
+      snprintf(str, 512, "0x%02x", 0x08 + mainwindow->edfheaderlist[row]->plus_equipment_offset);
+      line_edit12->setToolTip(str);
+    }
     line_edit13->setText(mainwindow->edfheaderlist[row]->plus_recording_additional);
+    if(mainwindow->edf_debug)
+    {
+      snprintf(str, 512, "0x%02x", 0x08 + mainwindow->edfheaderlist[row]->plus_recording_additional_offset);
+      line_edit13->setToolTip(str);
+    }
   }
   else // old EDF
   {
     stackwidget->setCurrentIndex(1);
 
     line_edit1a->setText(mainwindow->edfheaderlist[row]->patient);
+    if(mainwindow->edf_debug)  line_edit1a->setToolTip("0x08");
     line_edit2a->setText(mainwindow->edfheaderlist[row]->recording);
+    if(mainwindow->edf_debug)  line_edit2a->setToolTip("0x58");
   }
 
   utc_to_date_time(mainwindow->edfheaderlist[row]->utc_starttime, &date_time);
@@ -242,7 +286,9 @@ void UI_EDFhdrwindow::show_params(int row)
   }
 
   line_edit3->setText(str);
+  if(mainwindow->edf_debug)  line_edit3->setToolTip("0xa8");
   line_edit3a->setText(str);
+  if(mainwindow->edf_debug)  line_edit3a->setToolTip("0xa8");
 
   file_duration = mainwindow->edfheaderlist[row]->long_data_record_duration * mainwindow->edfheaderlist[row]->datarecords;
 
@@ -268,14 +314,18 @@ void UI_EDFhdrwindow::show_params(int row)
   line_edit4a->setText(str);
 
   line_edit5->setText(mainwindow->edfheaderlist[row]->reserved);
+  if(mainwindow->edf_debug)  line_edit5->setToolTip("0xc0");
   line_edit5a->setText(mainwindow->edfheaderlist[row]->reserved);
+  if(mainwindow->edf_debug)  line_edit5a->setToolTip("0xc0");
 
   snprintf(str,  512, "%.12f", mainwindow->edfheaderlist[row]->data_record_duration);
 
   remove_trailing_zeros(str);
 
   line_edit20->setText(str);
+  if(mainwindow->edf_debug)  line_edit20->setToolTip("0xf4");
   line_edit20a->setText(str);
+  if(mainwindow->edf_debug)  line_edit20a->setToolTip("0xf4");
 
 #ifdef Q_OS_WIN32
   __mingw_snprintf(str,  512, "%lli", mainwindow->edfheaderlist[row]->datarecords);
@@ -284,10 +334,14 @@ void UI_EDFhdrwindow::show_params(int row)
 #endif
 
   line_edit22->setText(str);
+  if(mainwindow->edf_debug)  line_edit22->setToolTip("0xec");
   line_edit22a->setText(str);
+  if(mainwindow->edf_debug)  line_edit22a->setToolTip("0xec");
 
   line_edit21->setText(mainwindow->edfheaderlist[row]->version);
+  if(mainwindow->edf_debug)  line_edit21->setToolTip("0x00");
   line_edit21a->setText(mainwindow->edfheaderlist[row]->version);
+  if(mainwindow->edf_debug)  line_edit21a->setToolTip("0x00");
 
   signal_cnt = mainwindow->edfheaderlist[row]->edfsignals;
 
@@ -314,6 +368,11 @@ void UI_EDFhdrwindow::show_params(int row)
     ql = new QLineEdit(mainwindow->edfheaderlist[row]->edfparam[i].label);
     ql->setReadOnly(true);
     ql->setCursorPosition(0);
+    if(mainwindow->edf_debug)
+    {
+      snprintf(str, 512, "0x%02x", 256 + (i * 16));
+      ql->setToolTip(str);
+    }
     signallist->setCellWidget(i, 0, ql);
     convert_to_metric_suffix(str, mainwindow->edfheaderlist[row]->edfparam[i].sf_f, 3, 512);
     strlcat(str, "Hz", 512);
@@ -327,39 +386,79 @@ void UI_EDFhdrwindow::show_params(int row)
     ql = new QLineEdit(str);
     ql->setReadOnly(true);
     ql->setCursorPosition(0);
+    if(mainwindow->edf_debug)
+    {
+      snprintf(str, 512, "0x%02x", 256 + (signal_cnt * 112) + (i * 8));
+      ql->setToolTip(str);
+    }
     signallist->setCellWidget(i, 2, ql);
     snprintf(str, 512, "%+f", mainwindow->edfheaderlist[row]->edfparam[i].phys_min);
     remove_trailing_zeros(str);
     ql = new QLineEdit(str);
     ql->setReadOnly(true);
     ql->setCursorPosition(0);
+    if(mainwindow->edf_debug)
+    {
+      snprintf(str, 512, "0x%02x", 256 + (signal_cnt * 104) + (i * 8));
+      ql->setToolTip(str);
+    }
     signallist->setCellWidget(i, 3, ql);
     ql = new QLineEdit(mainwindow->edfheaderlist[row]->edfparam[i].physdimension);
     ql->setReadOnly(true);
     ql->setCursorPosition(0);
+    if(mainwindow->edf_debug)
+    {
+      snprintf(str, 512, "0x%02x", 256 + (signal_cnt * 96) + (i * 8));
+      ql->setToolTip(str);
+    }
     signallist->setCellWidget(i, 4, ql);
     snprintf(str, 512, "%+i", mainwindow->edfheaderlist[row]->edfparam[i].dig_max);
     ql = new QLineEdit(str);
     ql->setReadOnly(true);
     ql->setCursorPosition(0);
+    if(mainwindow->edf_debug)
+    {
+      snprintf(str, 512, "0x%02x", 256 + (signal_cnt * 128) + (i * 8));
+      ql->setToolTip(str);
+    }
     signallist->setCellWidget(i, 5, ql);
     snprintf(str, 512, "%+i", mainwindow->edfheaderlist[row]->edfparam[i].dig_min);
     ql = new QLineEdit(str);
     ql->setReadOnly(true);
     ql->setCursorPosition(0);
+    if(mainwindow->edf_debug)
+    {
+      snprintf(str, 512, "0x%02x", 256 + (signal_cnt * 120) + (i * 8));
+      ql->setToolTip(str);
+    }
     signallist->setCellWidget(i, 6, ql);
     snprintf(str, 512, "%i", mainwindow->edfheaderlist[row]->edfparam[i].smp_per_record);
     ql = new QLineEdit(str);
     ql->setReadOnly(true);
     ql->setCursorPosition(0);
+    if(mainwindow->edf_debug)
+    {
+      snprintf(str, 512, "0x%02x", 256 + (signal_cnt * 216) + (i * 8));
+      ql->setToolTip(str);
+    }
     signallist->setCellWidget(i, 7, ql);
     ql = new QLineEdit(mainwindow->edfheaderlist[row]->edfparam[i].prefilter);
     ql->setReadOnly(true);
     ql->setCursorPosition(0);
+    if(mainwindow->edf_debug)
+    {
+      snprintf(str, 512, "0x%02x", 256 + (signal_cnt * 136) + (i * 80));
+      ql->setToolTip(str);
+    }
     signallist->setCellWidget(i, 8, ql);
     ql = new QLineEdit(mainwindow->edfheaderlist[row]->edfparam[i].transducer);
     ql->setReadOnly(true);
     ql->setCursorPosition(0);
+    if(mainwindow->edf_debug)
+    {
+      snprintf(str, 512, "0x%02x", 256 + (signal_cnt * 16) + (i * 80));
+      ql->setToolTip(str);
+    }
     signallist->setCellWidget(i, 9, ql);
   }
 
