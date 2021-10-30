@@ -228,25 +228,25 @@ void UI_EDFhdrwindow::show_params(int row)
     line_edit10->setText(mainwindow->edfheaderlist[row]->plus_admincode);
     if(mainwindow->edf_debug)
     {
-      snprintf(str, 512, "0x%02x", 0x08 + mainwindow->edfheaderlist[row]->plus_admincode_offset);
+      snprintf(str, 512, "0x%02x", 0x58 + mainwindow->edfheaderlist[row]->plus_admincode_offset);
       line_edit10->setToolTip(str);
     }
     line_edit11->setText(mainwindow->edfheaderlist[row]->plus_technician);
     if(mainwindow->edf_debug)
     {
-      snprintf(str, 512, "0x%02x", 0x08 + mainwindow->edfheaderlist[row]->plus_technician_offset);
+      snprintf(str, 512, "0x%02x", 0x58 + mainwindow->edfheaderlist[row]->plus_technician_offset);
       line_edit11->setToolTip(str);
     }
     line_edit12->setText(mainwindow->edfheaderlist[row]->plus_equipment);
     if(mainwindow->edf_debug)
     {
-      snprintf(str, 512, "0x%02x", 0x08 + mainwindow->edfheaderlist[row]->plus_equipment_offset);
+      snprintf(str, 512, "0x%02x", 0x58 + mainwindow->edfheaderlist[row]->plus_equipment_offset);
       line_edit12->setToolTip(str);
     }
     line_edit13->setText(mainwindow->edfheaderlist[row]->plus_recording_additional);
     if(mainwindow->edf_debug)
     {
-      snprintf(str, 512, "0x%02x", 0x08 + mainwindow->edfheaderlist[row]->plus_recording_additional_offset);
+      snprintf(str, 512, "0x%02x", 0x58 + mainwindow->edfheaderlist[row]->plus_recording_additional_offset);
       line_edit13->setToolTip(str);
     }
   }

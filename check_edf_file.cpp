@@ -1446,7 +1446,7 @@ struct edfhdrblock * EDFfileCheck::check_edf_file(FILE *inputfile, char *txt_str
     scratchpad[80] = 0;
     if(strncmp(scratchpad, "Startdate ", 10))  error = 1;
 
-    edfhdr->plus_startdate_offset = p;
+    edfhdr->plus_startdate_offset = 10;
 
     if(scratchpad[10]=='X')
     {
