@@ -1,5 +1,5 @@
 
- version 1.87      to be defined
+ version 1.87      October 30, 2021
  --------------
 
  - Annotation editor: added the option to create quickly a signal-linked annotation by drawing
