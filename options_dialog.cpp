@@ -253,23 +253,6 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   hlayout_tmp->addStretch(1000);
   flayout1_2->addRow("Show only at screen bottom", hlayout_tmp);
 
-  checkbox5 = new QCheckBox;
-  checkbox5->setTristate(false);
-  checkbox5->setToolTip("Annotation filter affects the annotationlist only, not the annotation markers in the signal window");
-  if(mainwindow->annot_filter->hide_in_list_only)
-  {
-    checkbox5->setCheckState(Qt::Checked);
-  }
-  else
-  {
-    checkbox5->setCheckState(Qt::Unchecked);
-  }
-  hlayout_tmp = new QHBoxLayout;
-  hlayout_tmp->setAlignment(Qt::AlignCenter);
-  hlayout_tmp->addWidget(checkbox5);
-  hlayout_tmp->addStretch(1000);
-  flayout1_2->addRow("Annotations: filter list only", hlayout_tmp);
-
   checkbox1 = new QCheckBox;
   checkbox1->setTristate(false);
   if(mainwindow->maincurve->blackwhite_printing)
@@ -376,7 +359,6 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   QObject::connect(checkbox2_3,             SIGNAL(stateChanged(int)),        this, SLOT(checkbox2_3Clicked(int)));
   QObject::connect(checkbox3,               SIGNAL(stateChanged(int)),        this, SLOT(checkbox3Clicked(int)));
   QObject::connect(checkbox4,               SIGNAL(stateChanged(int)),        this, SLOT(checkbox4Clicked(int)));
-  QObject::connect(checkbox5,               SIGNAL(stateChanged(int)),        this, SLOT(checkbox5Clicked(int)));
   QObject::connect(checkbox16,              SIGNAL(stateChanged(int)),        this, SLOT(checkbox16Clicked(int)));
   QObject::connect(saveColorSchemaButton,   SIGNAL(clicked()),                this, SLOT(saveColorSchemaButtonClicked()));
   QObject::connect(loadColorSchemaButton,   SIGNAL(clicked()),                this, SLOT(loadColorSchemaButtonClicked()));
@@ -1298,6 +1280,25 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
                                                      "If not checked, the annotation marker will appear in the middle of the page.");
   QObject::connect(checkbox4_10, SIGNAL(stateChanged(int)), this, SLOT(checkbox4_10Clicked(int)));
 
+  checkbox4_12 = new QCheckBox;
+  checkbox4_12->setTristate(false);
+  checkbox4_12->setToolTip("Annotation filter affects the annotationlist only, not the annotation markers in the signal window");
+  if(mainwindow->annot_filter->hide_in_list_only)
+  {
+    checkbox4_12->setCheckState(Qt::Checked);
+  }
+  else
+  {
+    checkbox4_12->setCheckState(Qt::Unchecked);
+  }
+  hlayout_tmp = new QHBoxLayout;
+  hlayout_tmp->setAlignment(Qt::AlignCenter);
+  hlayout_tmp->addWidget(checkbox4_12);
+  hlayout_tmp->addStretch(1000);
+  flayout4_2->addRow("Annotations: filter list only", hlayout_tmp);
+  flayout4_2->labelForField(hlayout_tmp)->setToolTip("Annotation filter affects the annotationlist only, not the annotation markers in the signal window");
+  QObject::connect(checkbox4_12, SIGNAL(stateChanged(int)), this, SLOT(checkbox4_12Clicked(int)));
+
   hlayout_tmp = new QHBoxLayout;
   hlayout_tmp->setAlignment(Qt::AlignCenter);
   hlayout_tmp->addLayout(flayout4_1);
@@ -1824,7 +1825,7 @@ void UI_OptionsDialog::checkbox4Clicked(int state)
 }
 
 
-void UI_OptionsDialog::checkbox5Clicked(int state)
+void UI_OptionsDialog::checkbox4_12Clicked(int state)
 {
   if(state==Qt::Checked)
   {
