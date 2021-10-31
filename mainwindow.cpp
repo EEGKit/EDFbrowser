@@ -45,6 +45,7 @@ UI_Mainwindow::~UI_Mainwindow()
   delete video_poll_timer;
   delete playback_realtime_time;
   delete playback_realtime_timer;
+  delete dig_min_max_overflow_timer;
   delete update_checker;
   free(toolbar_stats.ival);
 }

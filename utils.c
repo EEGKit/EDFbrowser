@@ -513,7 +513,11 @@ void sanitize_ascii(char *s)
 
 void latin1_to_ascii(char *str, int len)
 {
+  /* ISO 8859-1 except for characters 0x80 to 0x9f which are taken from the extension CP-1252 */
+
   int i, value;
+
+  const char conv_table[]=".E.,F\".++^.S<E.Z..`\'\"\".--~.s>e.zY.i....|....<...-....\'u.....>...?AAAAAAECEEEEIIIIDNOOOOOxOUUUUYtsaaaaaaeceeeeiiiidnooooo:0uuuuyty";
 
   for(i=0; i<len; i++)
   {
@@ -524,200 +528,14 @@ void latin1_to_ascii(char *str, int len)
       continue;
     }
 
-    switch(value)
+    if(value < 32)
     {
-      case 128 : str[i] = 'E';  break;
+      str[i] = '.';
 
-      case 130 : str[i] = ',';  break;
-
-      case 131 : str[i] = 'F';  break;
-
-      case 132 : str[i] = '\"';  break;
-
-      case 133 : str[i] = '.';  break;
-
-      case 134 : str[i] = '+';  break;
-
-      case 135 : str[i] = '+';  break;
-
-      case 136 : str[i] = '^';  break;
-
-      case 137 : str[i] = 'm';  break;
-
-      case 138 : str[i] = 'S';  break;
-
-      case 139 : str[i] = '<';  break;
-
-      case 140 : str[i] = 'E';  break;
-
-      case 142 : str[i] = 'Z';  break;
-
-      case 145 : str[i] = '`';  break;
-
-      case 146 : str[i] = '\'';  break;
-
-      case 147 : str[i] = '\"';  break;
-
-      case 148 : str[i] = '\"';  break;
-
-      case 149 : str[i] = '.';  break;
-
-      case 150 : str[i] = '-';  break;
-
-      case 151 : str[i] = '-';  break;
-
-      case 152 : str[i] = '~';  break;
-
-      case 154 : str[i] = 's';  break;
-
-      case 155 : str[i] = '>';  break;
-
-      case 156 : str[i] = 'e';  break;
-
-      case 158 : str[i] = 'z';  break;
-
-      case 159 : str[i] = 'Y';  break;
-
-      case 171 : str[i] = '<';  break;
-
-      case 180 : str[i] = '\'';  break;
-
-      case 181 : str[i] = 'u';  break;
-
-      case 187 : str[i] = '>';  break;
-
-      case 191 : str[i] = '\?';  break;
-
-      case 192 : str[i] = 'A';  break;
-
-      case 193 : str[i] = 'A';  break;
-
-      case 194 : str[i] = 'A';  break;
-
-      case 195 : str[i] = 'A';  break;
-
-      case 196 : str[i] = 'A';  break;
-
-      case 197 : str[i] = 'A';  break;
-
-      case 198 : str[i] = 'E';  break;
-
-      case 199 : str[i] = 'C';  break;
-
-      case 200 : str[i] = 'E';  break;
-
-      case 201 : str[i] = 'E';  break;
-
-      case 202 : str[i] = 'E';  break;
-
-      case 203 : str[i] = 'E';  break;
-
-      case 204 : str[i] = 'I';  break;
-
-      case 205 : str[i] = 'I';  break;
-
-      case 206 : str[i] = 'I';  break;
-
-      case 207 : str[i] = 'I';  break;
-
-      case 208 : str[i] = 'D';  break;
-
-      case 209 : str[i] = 'N';  break;
-
-      case 210 : str[i] = 'O';  break;
-
-      case 211 : str[i] = 'O';  break;
-
-      case 212 : str[i] = 'O';  break;
-
-      case 213 : str[i] = 'O';  break;
-
-      case 214 : str[i] = 'O';  break;
-
-      case 215 : str[i] = 'x';  break;
-
-      case 216 : str[i] = 'O';  break;
-
-      case 217 : str[i] = 'U';  break;
-
-      case 218 : str[i] = 'U';  break;
-
-      case 219 : str[i] = 'U';  break;
-
-      case 220 : str[i] = 'U';  break;
-
-      case 221 : str[i] = 'Y';  break;
-
-      case 222 : str[i] = 'I';  break;
-
-      case 223 : str[i] = 's';  break;
-
-      case 224 : str[i] = 'a';  break;
-
-      case 225 : str[i] = 'a';  break;
-
-      case 226 : str[i] = 'a';  break;
-
-      case 227 : str[i] = 'a';  break;
-
-      case 228 : str[i] = 'a';  break;
-
-      case 229 : str[i] = 'a';  break;
-
-      case 230 : str[i] = 'e';  break;
-
-      case 231 : str[i] = 'c';  break;
-
-      case 232 : str[i] = 'e';  break;
-
-      case 233 : str[i] = 'e';  break;
-
-      case 234 : str[i] = 'e';  break;
-
-      case 235 : str[i] = 'e';  break;
-
-      case 236 : str[i] = 'i';  break;
-
-      case 237 : str[i] = 'i';  break;
-
-      case 238 : str[i] = 'i';  break;
-
-      case 239 : str[i] = 'i';  break;
-
-      case 240 : str[i] = 'd';  break;
-
-      case 241 : str[i] = 'n';  break;
-
-      case 242 : str[i] = 'o';  break;
-
-      case 243 : str[i] = 'o';  break;
-
-      case 244 : str[i] = 'o';  break;
-
-      case 245 : str[i] = 'o';  break;
-
-      case 246 : str[i] = 'o';  break;
-
-      case 247 : str[i] = '-';  break;
-
-      case 248 : str[i] = '0';  break;
-
-      case 249 : str[i] = 'u';  break;
-
-      case 250 : str[i] = 'u';  break;
-
-      case 251 : str[i] = 'u';  break;
-
-      case 252 : str[i] = 'u';  break;
-
-      case 253 : str[i] = 'y';  break;
-
-      case 254 : str[i] = 't';  break;
-
-      case 255 : str[i] = 'y';  break;
-
-      default  : str[i] = ' ';  break;
+      continue;
     }
+
+    str[i] = conv_table[value - 127];
   }
 }
 
