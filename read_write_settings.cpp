@@ -1754,6 +1754,13 @@ void UI_Mainwindow::read_general_settings()
     xml_go_up(xml_hdl);
   }
 
+  if(!(xml_goto_nth_element_inside(xml_hdl, "annotlistdock", 0)))
+  {
+    get_rgbcolor_settings(xml_hdl, "annot_list_edited_txt_color", 0, &annot_list_edited_txt_color);
+
+    xml_go_up(xml_hdl);
+  }
+
   if(!(xml_goto_nth_element_inside(xml_hdl, "live_stream_update_interval", 0)))
   {
     if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
@@ -2979,6 +2986,17 @@ void UI_Mainwindow::write_settings()
                             hrvdock_trace_color.green(),
                             hrvdock_trace_color.blue());
     fprintf(cfgfile, "    </hrvdock>\n");
+
+    fprintf(cfgfile, "    <annotlistdock>\n");
+    fprintf(cfgfile, "      <annot_list_edited_txt_color>\n"
+                     "        <red>%i</red>\n"
+                     "        <green>%i</green>\n"
+                     "        <blue>%i</blue>\n"
+                     "      </annot_list_edited_txt_color>\n",
+                            annot_list_edited_txt_color.red(),
+                            annot_list_edited_txt_color.green(),
+                            annot_list_edited_txt_color.blue());
+    fprintf(cfgfile, "    </annotlistdock>\n");
 
     fprintf(cfgfile, "    <annotation_editor>\n");
     for(i=0; i<8; i++)

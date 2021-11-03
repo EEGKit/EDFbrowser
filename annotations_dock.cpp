@@ -1239,7 +1239,7 @@ void UI_Annotationswindow::updateList(int scroll_to_item_requested)
 
     if(annot->modified==1)
     {
-      listitem->setForeground(Qt::red);
+      listitem->setForeground(mainwindow->annot_list_edited_txt_color);
 
       modified = 1;
     }

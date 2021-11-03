@@ -249,7 +249,8 @@ public:
 
 long long annot_editor_user_button_epoch_len;
 
-  QColor hrvdock_trace_color;
+  QColor hrvdock_trace_color,
+         annot_list_edited_txt_color;
 
   unsigned long long pagetime,
                      maxfilesize_to_readin_annotations,

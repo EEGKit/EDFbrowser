@@ -352,6 +352,8 @@ UI_Mainwindow::UI_Mainwindow()
   annot_filter->hide_other = 1;
   annot_filter->hide_in_list_only = 1;
 
+  annot_list_edited_txt_color = QColor(Qt::red);
+
   vlc_sock = NULL;
 
   font_size = myfont->pointSize();

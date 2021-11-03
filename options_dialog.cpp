@@ -285,6 +285,14 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   hlayout_tmp->addStretch(1000);
   flayout1_2->addRow("Clip signals to pane", hlayout_tmp);
 
+  annotlistdock_edited_txt_color_button = new SpecialButton;
+  annotlistdock_edited_txt_color_button->setColor(mainwindow->annot_list_edited_txt_color);
+  hlayout_tmp = new QHBoxLayout;
+  hlayout_tmp->setAlignment(Qt::AlignCenter);
+  hlayout_tmp->addWidget(annotlistdock_edited_txt_color_button);
+  hlayout_tmp->addStretch(1000);
+  flayout1_2->addRow("Annotations list edited text color", hlayout_tmp);
+
   colorSchema_Dark_Button = new QPushButton;
   colorSchema_Dark_Button->setText("\"Dark\"");
 
@@ -359,6 +367,7 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   QObject::connect(checkbox2_3,             SIGNAL(stateChanged(int)),        this, SLOT(checkbox2_3Clicked(int)));
   QObject::connect(checkbox3,               SIGNAL(stateChanged(int)),        this, SLOT(checkbox3Clicked(int)));
   QObject::connect(checkbox4,               SIGNAL(stateChanged(int)),        this, SLOT(checkbox4Clicked(int)));
+  QObject::connect(annotlistdock_edited_txt_color_button, SIGNAL(clicked(SpecialButton *)), this, SLOT(annotlistdock_edited_txt_color_button_clicked(SpecialButton *)));
   QObject::connect(checkbox16,              SIGNAL(stateChanged(int)),        this, SLOT(checkbox16Clicked(int)));
   QObject::connect(saveColorSchemaButton,   SIGNAL(clicked()),                this, SLOT(saveColorSchemaButtonClicked()));
   QObject::connect(loadColorSchemaButton,   SIGNAL(clicked()),                this, SLOT(loadColorSchemaButtonClicked()));
@@ -2386,6 +2395,31 @@ void UI_OptionsDialog::AnnotDurationSelectedButtonClicked(SpecialButton *)
     AnnotDurationSelectedButton->setColor(mainwindow->maincurve->annot_duration_color_selected);
 
     mainwindow->maincurve->update();
+  }
+}
+
+
+void UI_OptionsDialog::annotlistdock_edited_txt_color_button_clicked(SpecialButton *)
+{
+  int i;
+
+  QColor temp;
+
+  temp = QColorDialog::getColor(mainwindow->annot_list_edited_txt_color, tab1, "Select Color");
+
+  if(temp.isValid())
+  {
+    mainwindow->annot_list_edited_txt_color = temp;
+
+    annotlistdock_edited_txt_color_button->setColor(mainwindow->annot_list_edited_txt_color);
+
+    for(i=0; i<MAXFILES; i++)
+    {
+      if(mainwindow->annotations_dock[i] != NULL)
+      {
+        mainwindow->annotations_dock[i]->updateList(0);
+      }
+    }
   }
 }
 

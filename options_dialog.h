@@ -88,7 +88,8 @@ SpecialButton  *BgColorButton,
                *AnnotDurationButton,
                *AnnotDurationSelectedButton,
                *slabel2_1,
-               *slabel2_3;
+               *slabel2_3,
+               *annotlistdock_edited_txt_color_button;
 
 QSpinBox       *spinbox1_1,
                *spinbox2_1,
@@ -187,6 +188,7 @@ void checkbox2_2Clicked(int);
 void checkbox2_3Clicked(int);
 void checkbox3Clicked(int);
 void checkbox4Clicked(int);
+void annotlistdock_edited_txt_color_button_clicked(SpecialButton *);
 void checkbox6Clicked(int);
 void checkbox16Clicked(int);
 void checkbox3_1Clicked(int);
