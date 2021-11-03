@@ -858,7 +858,7 @@ void ViewCurve::mouseReleaseEvent(QMouseEvent *release_event)
     {
       draw_zoom_rectangle = 0;
 
-      if((m_x>(mouse_press_coordinate_x + 25))&&(m_y > mouse_press_coordinate_y + 25))
+      if((m_x >= (mouse_press_coordinate_x + 15)) && (m_y >= (mouse_press_coordinate_y + 15)))
       {
         if(QApplication::keyboardModifiers() == Qt::ControlModifier)
         {
@@ -909,54 +909,58 @@ void ViewCurve::mouseReleaseEvent(QMouseEvent *release_event)
 
           update();
         }
-        else
-        {
-          for(i=0; i<mainwindow->files_open; i++)
+        else if((m_x >= (mouse_press_coordinate_x + 25)) && (m_y >= (mouse_press_coordinate_y + 25)))
           {
-            mainwindow->zoomhistory->viewtime[mainwindow->zoomhistory->pntr][i] = mainwindow->edfheaderlist[i]->viewtime;
-          }
-          mainwindow->zoomhistory->pagetime[mainwindow->zoomhistory->pntr] = mainwindow->pagetime;
-          for(i=0; i<signalcomps; i++)
-          {
-            mainwindow->zoomhistory->voltpercm[mainwindow->zoomhistory->pntr][i] = signalcomp[i]->voltpercm;
-            mainwindow->zoomhistory->screen_offset[mainwindow->zoomhistory->pntr][i] = signalcomp[i]->screen_offset;
-
-            for(j=0; j<signalcomp[i]->num_of_signals; j++)
+            for(i=0; i<mainwindow->files_open; i++)
             {
-              mainwindow->zoomhistory->sensitivity[mainwindow->zoomhistory->pntr][i][j] = signalcomp[i]->sensitivity[j];
+              mainwindow->zoomhistory->viewtime[mainwindow->zoomhistory->pntr][i] = mainwindow->edfheaderlist[i]->viewtime;
             }
-          }
-          mainwindow->zoomhistory->pntr++;
-          mainwindow->zoomhistory->pntr %= MAXZOOMHISTORY;
-
-          for(i=0; i<mainwindow->files_open; i++)
-          {
-            mainwindow->edfheaderlist[i]->viewtime += (long long)(((double)mainwindow->pagetime / (double)w) * (double)mouse_press_coordinate_x);
-          }
-          mainwindow->pagetime = (long long)((double)mainwindow->pagetime / ((double)w / (double)(m_x - mouse_press_coordinate_x)));
-          if(mainwindow->pagetime<1)  mainwindow->pagetime = 1;
-
-          zoomfactor = (double)h / (double)(m_y - mouse_press_coordinate_y);
-
-          for(i=0; i<signalcomps; i++)
-          {
-            mainwindow->signalcomp[i]->screen_offset = mainwindow->signalcomp[i]->screen_offset * zoomfactor;
-            mainwindow->signalcomp[i]->screen_offset += (((double)h * (zoomfactor - 1.0) * (double)(i + 1)) / (double)(signalcomps + 1));
-            mainwindow->signalcomp[i]->screen_offset -= ((double)mouse_press_coordinate_y * zoomfactor);
-
-            mainwindow->signalcomp[i]->voltpercm = mainwindow->signalcomp[i]->voltpercm / ((double)h / (double)(m_y - mouse_press_coordinate_y));
-
-            for(j=0; j<mainwindow->signalcomp[i]->num_of_signals; j++)
+            mainwindow->zoomhistory->pagetime[mainwindow->zoomhistory->pntr] = mainwindow->pagetime;
+            for(i=0; i<signalcomps; i++)
             {
-              mainwindow->signalcomp[i]->sensitivity[j] =  mainwindow->signalcomp[i]->sensitivity[j] * ((double)h / (double)(m_y - mouse_press_coordinate_y));
+              mainwindow->zoomhistory->voltpercm[mainwindow->zoomhistory->pntr][i] = signalcomp[i]->voltpercm;
+              mainwindow->zoomhistory->screen_offset[mainwindow->zoomhistory->pntr][i] = signalcomp[i]->screen_offset;
+
+              for(j=0; j<signalcomp[i]->num_of_signals; j++)
+              {
+                mainwindow->zoomhistory->sensitivity[mainwindow->zoomhistory->pntr][i][j] = signalcomp[i]->sensitivity[j];
+              }
             }
+            mainwindow->zoomhistory->pntr++;
+            mainwindow->zoomhistory->pntr %= MAXZOOMHISTORY;
+
+            for(i=0; i<mainwindow->files_open; i++)
+            {
+              mainwindow->edfheaderlist[i]->viewtime += (long long)(((double)mainwindow->pagetime / (double)w) * (double)mouse_press_coordinate_x);
+            }
+            mainwindow->pagetime = (long long)((double)mainwindow->pagetime / ((double)w / (double)(m_x - mouse_press_coordinate_x)));
+            if(mainwindow->pagetime<1)  mainwindow->pagetime = 1;
+
+            zoomfactor = (double)h / (double)(m_y - mouse_press_coordinate_y);
+
+            for(i=0; i<signalcomps; i++)
+            {
+              mainwindow->signalcomp[i]->screen_offset = mainwindow->signalcomp[i]->screen_offset * zoomfactor;
+              mainwindow->signalcomp[i]->screen_offset += (((double)h * (zoomfactor - 1.0) * (double)(i + 1)) / (double)(signalcomps + 1));
+              mainwindow->signalcomp[i]->screen_offset -= ((double)mouse_press_coordinate_y * zoomfactor);
+
+              mainwindow->signalcomp[i]->voltpercm = mainwindow->signalcomp[i]->voltpercm / ((double)h / (double)(m_y - mouse_press_coordinate_y));
+
+              for(j=0; j<mainwindow->signalcomp[i]->num_of_signals; j++)
+              {
+                mainwindow->signalcomp[i]->sensitivity[j] =  mainwindow->signalcomp[i]->sensitivity[j] * ((double)h / (double)(m_y - mouse_press_coordinate_y));
+              }
+            }
+
+            mainwindow->zoomhistory->history_size_tail++;
+            mainwindow->zoomhistory->history_size_front = 0;
+
+            mainwindow->setup_viewbuf();
           }
-
-          mainwindow->zoomhistory->history_size_tail++;
-          mainwindow->zoomhistory->history_size_front = 0;
-
-          mainwindow->setup_viewbuf();
-        }
+          else
+          {
+            update();
+          }
       }
       else
       {
