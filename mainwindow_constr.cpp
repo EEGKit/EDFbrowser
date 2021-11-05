@@ -352,7 +352,9 @@ UI_Mainwindow::UI_Mainwindow()
   annot_filter->hide_other = 1;
   annot_filter->hide_in_list_only = 1;
 
-  annot_list_edited_txt_color = QColor(Qt::red);
+  annot_list_edited_txt_color.setRed(0);
+  annot_list_edited_txt_color.setGreen(255);
+  annot_list_edited_txt_color.setBlue(170);
 
   vlc_sock = NULL;
 

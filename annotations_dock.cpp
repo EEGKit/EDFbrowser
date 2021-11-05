@@ -1237,11 +1237,17 @@ void UI_Annotationswindow::updateList(int scroll_to_item_requested)
 
     listitem->setData(Qt::UserRole, QVariant(j));
 
+    listitem->setBackground(mainwindow->maincurve->backgroundcolor);
+
     if(annot->modified==1)
     {
       listitem->setForeground(mainwindow->annot_list_edited_txt_color);
 
       modified = 1;
+    }
+    else
+    {
+      listitem->setForeground(mainwindow->maincurve->text_color);
     }
 
     if((annot->onset - edf_hdr->starttime_offset) < 0LL)

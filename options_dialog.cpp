@@ -2855,10 +2855,11 @@ void UI_OptionsDialog::update_interface(void)
 
   for(i=0; i<mainwindow->files_open; i++)
   {
-    if(mainwindow->annotations_dock[i])
+    if(mainwindow->annotations_dock[i] != NULL)
     {
       mainwindow->annotations_dock[i]->list->setPalette(palette);
       mainwindow->annotations_dock[i]->list->update();
+      mainwindow->annotations_dock[i]->updateList(0);
     }
   }
 
@@ -2940,6 +2941,8 @@ void UI_OptionsDialog::loadColorSchema_NK()
 
   mainwindow->maincurve->crosshair_2.color = Qt::blue;
 
+  mainwindow->annot_list_edited_txt_color = Qt::red;
+
   mainwindow->clip_to_pane = 0;
 
   mainwindow->use_diverse_signal_colors = 0;
@@ -3000,6 +3003,10 @@ void UI_OptionsDialog::loadColorSchema_Dark()
 
   mainwindow->maincurve->floating_ruler_color = Qt::cyan;
 
+  mainwindow->annot_list_edited_txt_color.setRed(0);
+  mainwindow->annot_list_edited_txt_color.setGreen(255);
+  mainwindow->annot_list_edited_txt_color.setBlue(170);
+
   mainwindow->maincurve->blackwhite_printing = 1;
 
   mainwindow->clip_to_pane = 0;
@@ -3037,6 +3044,8 @@ void UI_OptionsDialog::loadColorSchema_blue_gray()
   mainwindow->show_annot_markers = 1;
 
   mainwindow->maincurve->annot_marker_selected_color = Qt::yellow;
+
+  mainwindow->annot_list_edited_txt_color = Qt::red;
 
   mainwindow->maincurve->annot_duration_color.setRed(0);
   mainwindow->maincurve->annot_duration_color.setGreen(127);
