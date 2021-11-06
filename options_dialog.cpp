@@ -1403,7 +1403,10 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
 
   optionsdialog->setLayout(mainLayout);
 
-  QObject::connect(CloseButton, SIGNAL(clicked()), optionsdialog, SLOT(close()));
+  tabholder->setCurrentIndex(mainwindow->options_dialog_idx);
+
+  QObject::connect(tabholder,   SIGNAL(currentChanged(int)), this,          SLOT(tabholder_idx_changed(int)));
+  QObject::connect(CloseButton, SIGNAL(clicked()),           optionsdialog, SLOT(close()));
 
   optionsdialog->exec();
 }
@@ -3145,6 +3148,12 @@ void UI_OptionsDialog::DefaultButton5Clicked()
   spinbox5_1->setValue(mainwindow->sys_font_size);
 
   spinbox5_2->setValue(mainwindow->sys_monofont_size);
+}
+
+
+void UI_OptionsDialog::tabholder_idx_changed(int idx)
+{
+  mainwindow->options_dialog_idx = idx;
 }
 
 

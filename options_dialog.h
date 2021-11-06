@@ -239,6 +239,8 @@ void ApplyButton5Clicked();
 void DefaultButton5Clicked();
 void spinBox7_1ValueChanged(int);
 void tab7_settings_changed();
+void tabholder_idx_changed(int);
+
 };
 
 
