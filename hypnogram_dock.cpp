@@ -403,7 +403,7 @@ void hypnogram_curve_widget::paintEvent(QPaintEvent *)
           {
             tdiff = annot->onset - prev_annot_end;
 
-            if(tdiff > 0)
+            if(tdiff > mainwindow->hypnogram_epoch_len_threshold)
             {
               painter.fillRect((int)(((double)(prev_annot_end) * pixel_per_sec) / TIME_DIMENSION),
                                0,
@@ -411,7 +411,7 @@ void hypnogram_curve_widget::paintEvent(QPaintEvent *)
                                h,
                                QColor(128, 0, 0, 48));
             }
-            else if(tdiff < 0)
+            else if(tdiff < -mainwindow->hypnogram_epoch_len_threshold)
               {
                 painter.fillRect((int)(((double)(prev_annot_end) * pixel_per_sec) / TIME_DIMENSION),
                                  0,

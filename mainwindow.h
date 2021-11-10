@@ -248,7 +248,8 @@ public:
       options_dialog_idx,
       edf_debug;
 
-long long annot_editor_user_button_epoch_len;
+long long annot_editor_user_button_epoch_len,
+          hypnogram_epoch_len_threshold;
 
   QColor hrvdock_trace_color,
          annot_list_edited_txt_color;

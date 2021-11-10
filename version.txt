@@ -1,9 +1,15 @@
 
+ version 1.89      to be defined
+ --------------
+
+ - Hypnogram: highlight gaps / overlaps: use a threshold of 0.1 sec. so that very small gaps / overlaps
+   will not be highlighted.
+
+
  version 1.88      November 2, 2021
  --------------
 
  - Fixed a bug introduced in version 1.87 that caused the zoom-in and zoom-out (backspace key) functions to stop working correctly.
-
 
 
  version 1.87      October 30, 2021
