@@ -93,7 +93,7 @@ void UI_Mainwindow::start_stop_video()
 //     return;
 //   }
 
-  strlcpy(videopath, QFileDialog::getOpenFileName(this, "Select media file", QString::fromLocal8Bit(recent_opendir),
+  strlcpy(videopath, QFileDialog::getOpenFileName(this, "Select media file", QString::fromLocal8Bit(recent_video_opendir),
                                                  "Video files (*.mkv *.mp4 *.mpg *.mpeg *.avi *.webm *.ogv *.ogg *.wmv *.mov *.m4v);;Audio files (*.wav *.ogg *.flac *.mp3 *.aac *.m4a *.wma);;All files (*)").toLocal8Bit().data(), MAX_PATH_LENGTH);
 
   if(!strcmp(videopath, ""))
@@ -101,7 +101,7 @@ void UI_Mainwindow::start_stop_video()
     return;
   }
 
-  get_directory_from_path(recent_opendir, videopath, MAX_PATH_LENGTH);
+  get_directory_from_path(recent_video_opendir, videopath, MAX_PATH_LENGTH);
 
   video_player->utc_starttime = parse_date_time_stamp(videopath);
 

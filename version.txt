@@ -5,6 +5,8 @@
  - Hypnogram: highlight gaps / overlaps: use a threshold of 0.1 sec. so that very small gaps / overlaps
    will not be highlighted.
 
+ - Videoplayer: remember the path for the recent video file independently from the recent EDF file.
+
 
  version 1.88      November 2, 2021
  --------------

@@ -187,6 +187,7 @@ UI_Mainwindow::UI_Mainwindow()
   recent_montagedir[0] = 0;
   recent_savedir[0] = 0;
   recent_opendir[0] = 0;
+  recent_video_opendir[0] = 0;
   recent_colordir[0] = 0;
   cfg_app_version[0] = 0;
 
@@ -1130,6 +1131,7 @@ UI_Mainwindow::UI_Mainwindow()
   recent_montagedir[0] = 0;
   recent_savedir[0] = 0;
   recent_opendir[0] = 0;
+  recent_video_opendir[0] = 0;
   montagepath[0] = 0;
   option_str[0] = 0;
 

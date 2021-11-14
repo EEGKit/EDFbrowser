@@ -437,9 +437,7 @@ void UI_Mainwindow::read_recent_file_settings()
       return;
     }
 
-    strncpy(recent_montagedir, result, MAX_PATH_LENGTH);
-    recent_montagedir[MAX_PATH_LENGTH - 1] = 0;
-
+    strlcpy(recent_montagedir, result, MAX_PATH_LENGTH);
     xml_go_up(xml_hdl);
   }
 
@@ -451,9 +449,7 @@ void UI_Mainwindow::read_recent_file_settings()
       return;
     }
 
-    strncpy(recent_savedir, result, MAX_PATH_LENGTH);
-    recent_savedir[MAX_PATH_LENGTH - 1] = 0;
-
+    strlcpy(recent_savedir, result, MAX_PATH_LENGTH);
     xml_go_up(xml_hdl);
   }
 
@@ -465,9 +461,19 @@ void UI_Mainwindow::read_recent_file_settings()
       return;
     }
 
-    strncpy(recent_opendir, result, MAX_PATH_LENGTH);
-    recent_opendir[MAX_PATH_LENGTH - 1] = 0;
+    strlcpy(recent_opendir, result, MAX_PATH_LENGTH);
+    xml_go_up(xml_hdl);
+  }
 
+  if(!(xml_goto_nth_element_inside(xml_hdl, "recent_video_opendir", 0)))
+  {
+    if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+    {
+      xml_close(xml_hdl);
+      return;
+    }
+
+    strlcpy(recent_video_opendir, result, MAX_PATH_LENGTH);
     xml_go_up(xml_hdl);
   }
 
@@ -491,8 +497,7 @@ void UI_Mainwindow::read_recent_file_settings()
     }
     if(result[0] != 0)
     {
-      strncpy(&recent_file_path[0][0], result, MAX_PATH_LENGTH);
-      recent_file_path[0][MAX_PATH_LENGTH - 1] = 0;
+      strlcpy(&recent_file_path[0][0], result, MAX_PATH_LENGTH);
       act = new QAction(QString::fromLocal8Bit(&recent_file_path[0][0]), recent_filesmenu);
       act->setData(QVariant(0));
       recent_filesmenu->addAction(act);
@@ -529,8 +534,7 @@ void UI_Mainwindow::read_recent_file_settings()
       xml_close(xml_hdl);
       return;
     }
-    strncpy(&recent_file_mtg_path[0][0], result, MAX_PATH_LENGTH);
-    recent_file_mtg_path[0][MAX_PATH_LENGTH - 1] = 0;
+    strlcpy(&recent_file_mtg_path[0][0], result, MAX_PATH_LENGTH);
     for(i=1; i<MAX_RECENTFILES; i++)
     {
       if(xml_goto_next_element_with_same_name(xml_hdl))
@@ -555,8 +559,7 @@ void UI_Mainwindow::read_recent_file_settings()
       xml_close(xml_hdl);
       return;
     }
-    strncpy(&predefined_mtg_path[0][0], result, MAX_PATH_LENGTH);
-    predefined_mtg_path[0][MAX_PATH_LENGTH - 1] = 0;
+    strlcpy(&predefined_mtg_path[0][0], result, MAX_PATH_LENGTH);
 
     for(i=1; i < MAXPREDEFINEDMONTAGES; i++)
     {
@@ -621,8 +624,7 @@ void UI_Mainwindow::read_general_settings()
       return;
     }
 
-    strncpy(cfg_app_version, result, 16);
-    cfg_app_version[16] = 0;
+    strlcpy(cfg_app_version, result, 17);
 
     xml_go_up(xml_hdl);
   }
@@ -2842,6 +2844,12 @@ void UI_Mainwindow::write_settings()
     xml_fwrite_encode_entity(cfgfile, recent_opendir);
 
     fprintf(cfgfile, "</recent_opendir>\n");
+
+    fprintf(cfgfile, "    <recent_video_opendir>");
+
+    xml_fwrite_encode_entity(cfgfile, recent_video_opendir);
+
+    fprintf(cfgfile, "</recent_video_opendir>\n");
 
     fprintf(cfgfile, "    <recent_colordir>");
 
