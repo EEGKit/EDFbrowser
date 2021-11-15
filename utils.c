@@ -2335,7 +2335,16 @@ int t_lcm(int a, int b)
 }
 
 
-
+void ascii_toupper(char *p)
+{
+  for(; *p; p++)
+  {
+    if((*p >= 'a') && (*p <= 'z'))
+    {
+      *p -= 32;
+    }
+  }
+}
 
 
 

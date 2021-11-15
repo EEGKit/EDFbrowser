@@ -81,16 +81,56 @@ void UI_Mainwindow::rc_host_sock_disconnected_handler()
 
 void UI_Mainwindow::rc_host_sock_rxdata_handler()
 {
-  int n=1;
+  int n, len;
 
-  char rx_buf[512]="";
+  long long ltmp;
 
-  while(n)
+  char cmd_str[512]="",
+       response_str[512]="";
+
+  for(n=1; n>0; )
   {
-    n = rc_host_sock->readLine(rx_buf, 511);
-    if(n)
+    n = rc_host_sock->readLine(cmd_str, 511);
+    if(n < 1)  break;
+
+    if(cmd_str[n-1] == '\n')
     {
-      printf("rc host server rx: %s\n", rx_buf);
+      if(--n < 1)  break;
+      cmd_str[n] = 0;
+    }
+
+    if(cmd_str[n-1] == '\r')
+    {
+      if(--n < 1)  break;
+      cmd_str[n] = 0;
+    }
+
+    ascii_toupper(cmd_str);
+
+    if(!strcmp(cmd_str, "CLOSE_ALL_FILES"))
+    {
+      close_all_files();
+      continue;
+    }
+
+    if(!strcmp(cmd_str, "TIMESCALE?"))
+    {
+#ifdef Q_OS_WIN32
+      len = _mingw_snprintf(response_str, 512, "%llu.%llu\n", pagetime / TIME_DIMENSION, pagetime % TIME_DIMENSION);
+#else
+      len = snprintf(response_str, 512, "%llu.%llu\n", pagetime / TIME_DIMENSION, pagetime % TIME_DIMENSION);
+#endif
+      rc_host_sock->write(response_str, len);
+      continue;
+    }
+    if((!strncmp(cmd_str, "TIMESCALE ", 10)) && (strlen(cmd_str) > 10))
+    {
+      if(is_number(cmd_str + 10))  continue;
+      ltmp = atoll_x(cmd_str + 10, TIME_DIMENSION);
+      if((ltmp <= 100LL) || (ltmp >= (3600LL * TIME_DIMENSION)))  continue;
+      pagetime = ltmp;
+      setup_viewbuf();
+      continue;
     }
   }
 }

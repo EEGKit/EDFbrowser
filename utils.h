@@ -70,6 +70,7 @@ void sanitize_ascii(char *);  /* replaces all non-ascii characters with a dot */
 /* replaces all control chars (decimal values < 32 and decimal value == 127 (DEL)) */
 /* works also with UTF-8 and Latin-1 */
 void str_replace_ctrl_chars(char *, char);
+void ascii_toupper(char *);
 void latin1_to_ascii(char *, int);
 void latin1_to_utf8(char *, int);
 void utf8_to_latin1(char *);
