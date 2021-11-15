@@ -48,7 +48,70 @@ UI_Mainwindow::~UI_Mainwindow()
   delete dig_min_max_overflow_timer;
   delete update_checker;
   free(toolbar_stats.ival);
+  delete rc_host_server;
 }
+
+
+void UI_Mainwindow::rc_host_server_new_connection()
+{
+  printf("rc host server: new connection\n");
+
+  if(rc_host_sock == NULL)
+  {
+    rc_host_sock = rc_host_server->nextPendingConnection();
+
+    if(rc_host_sock != NULL)
+    {
+      printf("setup rc host socket\n");
+
+      QObject::connect(rc_host_sock, SIGNAL(disconnected()), this, SLOT(rc_host_sock_disconnected_handler()));
+      QObject::connect(rc_host_sock, SIGNAL(readyRead()),    this, SLOT(rc_host_sock_rxdata_handler()));
+    }
+  }
+}
+
+
+void UI_Mainwindow::rc_host_sock_disconnected_handler()
+{
+  printf("rc host socket disconnected\n");
+
+  rc_host_sock = NULL;
+}
+
+
+void UI_Mainwindow::rc_host_sock_rxdata_handler()
+{
+  int n=1;
+
+  char rx_buf[512]="";
+
+  while(n)
+  {
+    n = rc_host_sock->readLine(rx_buf, 511);
+    if(n)
+    {
+      printf("rc host server rx: %s\n", rx_buf);
+    }
+  }
+}
+
+// file
+//   list
+//   open
+//   close
+//   close all
+//
+// signal
+//   list
+//   remove
+//   add
+//
+// pagetime
+//
+// file_position
+//
+// quit
+
 
 
 void UI_Mainwindow::exit_program()

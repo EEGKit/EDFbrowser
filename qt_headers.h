@@ -120,6 +120,7 @@
 #include <QDesktopWidget>
 #include <QPainterPath>
 #include <QShortcut>
+#include <QTcpServer>
 
 #if QT_VERSION >= 0x050200
 #include <QFontDatabase>

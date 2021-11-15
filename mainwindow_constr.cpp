@@ -298,6 +298,12 @@ UI_Mainwindow::UI_Mainwindow()
 
   spectrumdock_colorbars = 0;
 
+  rc_host_server_port = 0;
+
+  rc_host_server = NULL;
+
+  rc_host_sock = NULL;
+
   cdsa_segmentlen = 30;
   cdsa_blocklen = 2;
   cdsa_overlap = 5;
@@ -1302,6 +1308,34 @@ UI_Mainwindow::UI_Mainwindow()
   if(check_for_updates)
   {
     update_checker = new Check_for_updates;
+  }
+
+  if(cmdlineoption)
+  {
+    if((!strncmp(option_str, "--rc-host-port=", 15)) && (strlen(option_str) > 18))
+    {
+      rc_host_server_port = atoi(option_str + 15);
+
+      if((rc_host_server_port < 1024) || (rc_host_server_port > 65535))
+      {
+        rc_host_server_port = 0;
+      }
+      else
+      {
+        rc_host_server = new QTcpServer;
+        rc_host_server->setMaxPendingConnections(1);
+        if(rc_host_server->listen(QHostAddress::Any, rc_host_server_port) == true)
+        {
+          printf("rc host server listening at port %i\n", rc_host_server_port);
+
+          QObject::connect(rc_host_server, SIGNAL(newConnection()), this, SLOT(rc_host_server_new_connection()));
+        }
+        else
+        {
+          printf("rc host server failed at port %i, port is occupied by another process?\n", rc_host_server_port);
+        }
+      }
+    }
   }
 
   if(cmdlineargument)

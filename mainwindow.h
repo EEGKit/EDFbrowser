@@ -246,7 +246,8 @@ public:
       dig_min_max_overflow,
       dig_min_max_overflow_warning_showed,
       options_dialog_idx,
-      edf_debug;
+      edf_debug,
+      rc_host_server_port;
 
 long long annot_editor_user_button_epoch_len,
           hypnogram_epoch_len_threshold;
@@ -377,6 +378,10 @@ long long annot_editor_user_button_epoch_len,
   QLabel       *nav_toolbar_label;
 
   QTimer       *dig_min_max_overflow_timer;
+
+  QTcpServer   *rc_host_server;
+
+  QTcpSocket   *rc_host_sock;
 
 signals:
      void file_position_changed(long long);
@@ -657,6 +662,9 @@ private slots:
   void video_player_faster();
   void video_player_slower();
   void create_annot_by_rect_draw();
+  void rc_host_server_new_connection();
+  void rc_host_sock_rxdata_handler();
+  void rc_host_sock_disconnected_handler();
 //  void search_pattern();
 
 protected:
