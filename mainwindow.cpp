@@ -81,7 +81,7 @@ void UI_Mainwindow::rc_host_sock_disconnected_handler()
 
 void UI_Mainwindow::rc_host_sock_rxdata_handler()
 {
-  int n, len;
+  int i, n, len;
 
   long long ltmp;
 
@@ -129,6 +129,55 @@ void UI_Mainwindow::rc_host_sock_rxdata_handler()
       ltmp = atoll_x(cmd_str + 10, TIME_DIMENSION);
       if((ltmp <= 100LL) || (ltmp >= (3600LL * TIME_DIMENSION)))  continue;
       pagetime = ltmp;
+      setup_viewbuf();
+      continue;
+    }
+    if((!strncmp(cmd_str, "VIEWTIME ", 9)) && (strlen(cmd_str) > 9))
+    {
+      if(is_number(cmd_str + 9))  continue;
+      if(!files_open)  continue;
+      ltmp = atoll_x(cmd_str + 9, TIME_DIMENSION);
+      if((ltmp <= (-30LL * TIME_DIMENSION)) || (ltmp >= (3600LL * 24LL * 7LL * TIME_DIMENSION)))  continue;
+
+      if(viewtime_sync==VIEWTIME_SYNCED_OFFSET)
+      {
+        for(i=0; i<files_open; i++)
+        {
+          edfheaderlist[i]->viewtime = ltmp;
+        }
+      }
+
+      if(viewtime_sync==VIEWTIME_UNSYNCED)
+      {
+        edfheaderlist[sel_viewtime]->viewtime = ltmp;
+      }
+
+      if(viewtime_sync==VIEWTIME_SYNCED_ABSOLUT)
+      {
+        edfheaderlist[sel_viewtime]->viewtime = ltmp;
+
+        for(i=0; i<files_open; i++)
+        {
+          if(i!=sel_viewtime)
+          {
+            edfheaderlist[i]->viewtime = edfheaderlist[sel_viewtime]->viewtime - ((edfheaderlist[i]->utc_starttime - edfheaderlist[sel_viewtime]->utc_starttime) * TIME_DIMENSION);
+          }
+        }
+      }
+
+      if(viewtime_sync==VIEWTIME_USER_DEF_SYNCED)
+      {
+        for(i=0; i<files_open; i++)
+        {
+          if(i!=sel_viewtime)
+          {
+            edfheaderlist[i]->viewtime -= (edfheaderlist[sel_viewtime]->viewtime - ltmp);
+          }
+        }
+
+        edfheaderlist[sel_viewtime]->viewtime = ltmp;
+      }
+
       setup_viewbuf();
       continue;
     }
