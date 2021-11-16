@@ -286,8 +286,6 @@ void UI_JumpMenuDialog::absolutetime_changed(const QTime &time_2)
 
 void UI_JumpMenuDialog::jumpbutton_pressed()
 {
-  int i;
-
   long long milliseconds;
 
   if(!mainwindow->files_open)  return;
@@ -299,46 +297,7 @@ void UI_JumpMenuDialog::jumpbutton_pressed()
 
   milliseconds += ((long long)daybox1->value() * 86400000LL);
 
-  if(mainwindow->viewtime_sync==VIEWTIME_SYNCED_OFFSET)
-  {
-    for(i=0; i<mainwindow->files_open; i++)
-    {
-      mainwindow->edfheaderlist[i]->viewtime = milliseconds * (TIME_DIMENSION / 1000);
-    }
-  }
-
-  if(mainwindow->viewtime_sync==VIEWTIME_UNSYNCED)
-  {
-    mainwindow->edfheaderlist[mainwindow->sel_viewtime]->viewtime = milliseconds * (TIME_DIMENSION / 1000);
-  }
-
-  if(mainwindow->viewtime_sync==VIEWTIME_SYNCED_ABSOLUT)
-  {
-    mainwindow->edfheaderlist[mainwindow->sel_viewtime]->viewtime = milliseconds * (TIME_DIMENSION / 1000);
-
-    for(i=0; i<mainwindow->files_open; i++)
-    {
-      if(i!=mainwindow->sel_viewtime)
-      {
-        mainwindow->edfheaderlist[i]->viewtime = mainwindow->edfheaderlist[mainwindow->sel_viewtime]->viewtime - ((mainwindow->edfheaderlist[i]->utc_starttime - mainwindow->edfheaderlist[mainwindow->sel_viewtime]->utc_starttime) * TIME_DIMENSION);
-      }
-    }
-  }
-
-  if(mainwindow->viewtime_sync==VIEWTIME_USER_DEF_SYNCED)
-  {
-    for(i=0; i<mainwindow->files_open; i++)
-    {
-      if(i!=mainwindow->sel_viewtime)
-      {
-        mainwindow->edfheaderlist[i]->viewtime -= (mainwindow->edfheaderlist[mainwindow->sel_viewtime]->viewtime - milliseconds * (TIME_DIMENSION / 1000));
-      }
-    }
-
-    mainwindow->edfheaderlist[mainwindow->sel_viewtime]->viewtime = milliseconds * (TIME_DIMENSION / 1000);
-  }
-
-  mainwindow->setup_viewbuf();
+  mainwindow->set_viewtime(milliseconds * (TIME_DIMENSION / 1000LL));
 
   jump_dialog->close();
 }

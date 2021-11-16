@@ -546,6 +546,7 @@ public slots:
   void shift_page_down();
   void next_page();
   void dig_min_max_overflow_timer_func();
+  void set_viewtime(long long);
 
 private slots:
   void open_new_file();

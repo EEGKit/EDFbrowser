@@ -81,7 +81,7 @@ void UI_Mainwindow::rc_host_sock_disconnected_handler()
 
 void UI_Mainwindow::rc_host_sock_rxdata_handler()
 {
-  int i, n, len;
+  int n, len;
 
   long long ltmp;
 
@@ -164,47 +164,7 @@ void UI_Mainwindow::rc_host_sock_rxdata_handler()
       if(!files_open)  continue;
       ltmp = atoll_x(cmd_str + 9, TIME_DIMENSION);
       if((ltmp <= (-30LL * TIME_DIMENSION)) || (ltmp >= (3600LL * 24LL * 7LL * TIME_DIMENSION)))  continue;
-
-      if(viewtime_sync==VIEWTIME_SYNCED_OFFSET)
-      {
-        for(i=0; i<files_open; i++)
-        {
-          edfheaderlist[i]->viewtime = ltmp;
-        }
-      }
-
-      if(viewtime_sync==VIEWTIME_UNSYNCED)
-      {
-        edfheaderlist[sel_viewtime]->viewtime = ltmp;
-      }
-
-      if(viewtime_sync==VIEWTIME_SYNCED_ABSOLUT)
-      {
-        edfheaderlist[sel_viewtime]->viewtime = ltmp;
-
-        for(i=0; i<files_open; i++)
-        {
-          if(i!=sel_viewtime)
-          {
-            edfheaderlist[i]->viewtime = edfheaderlist[sel_viewtime]->viewtime - ((edfheaderlist[i]->utc_starttime - edfheaderlist[sel_viewtime]->utc_starttime) * TIME_DIMENSION);
-          }
-        }
-      }
-
-      if(viewtime_sync==VIEWTIME_USER_DEF_SYNCED)
-      {
-        for(i=0; i<files_open; i++)
-        {
-          if(i!=sel_viewtime)
-          {
-            edfheaderlist[i]->viewtime -= (edfheaderlist[sel_viewtime]->viewtime - ltmp);
-          }
-        }
-
-        edfheaderlist[sel_viewtime]->viewtime = ltmp;
-      }
-
-      setup_viewbuf();
+      set_viewtime(ltmp);
       continue;
     }
   }
@@ -553,10 +513,7 @@ void UI_Mainwindow::save_file()
 
 void UI_Mainwindow::slider_moved(int value)
 {
-  int i;
-
-  long long new_viewtime,
-            tmp;
+  long long new_viewtime, tmp;
 
   if(!signalcomps)  return;
 
@@ -648,46 +605,7 @@ void UI_Mainwindow::slider_moved(int value)
     video_player_seek((int)((new_viewtime + (pagetime / 2LL)) / TIME_DIMENSION));
   }
 
-  if(viewtime_sync==VIEWTIME_SYNCED_OFFSET)
-  {
-    for(i=0; i<files_open; i++)
-    {
-      edfheaderlist[i]->viewtime = new_viewtime;
-    }
-  }
-
-  if(viewtime_sync==VIEWTIME_UNSYNCED)
-  {
-    edfheaderlist[sel_viewtime]->viewtime = new_viewtime;
-  }
-
-  if(viewtime_sync==VIEWTIME_SYNCED_ABSOLUT)
-  {
-    edfheaderlist[sel_viewtime]->viewtime = new_viewtime;
-
-    for(i=0; i<files_open; i++)
-    {
-      if(i!=sel_viewtime)
-      {
-        edfheaderlist[i]->viewtime = edfheaderlist[sel_viewtime]->viewtime - ((edfheaderlist[i]->utc_starttime - edfheaderlist[sel_viewtime]->utc_starttime) * TIME_DIMENSION);
-      }
-    }
-  }
-
-  if(viewtime_sync==VIEWTIME_USER_DEF_SYNCED)
-  {
-    for(i=0; i<files_open; i++)
-    {
-      if(i!=sel_viewtime)
-      {
-        edfheaderlist[i]->viewtime -= (edfheaderlist[sel_viewtime]->viewtime - new_viewtime);
-      }
-    }
-
-    edfheaderlist[sel_viewtime]->viewtime = new_viewtime;
-  }
-
-  setup_viewbuf();
+  set_viewtime(new_viewtime);
 }
 
 
@@ -714,7 +632,6 @@ void UI_Mainwindow::set_timesync_reference(QAction *action)
 void UI_Mainwindow::set_timesync(QAction *)
 {
   int i;
-
 
   if(no_timesync_act->isChecked())
   {
@@ -934,8 +851,6 @@ void UI_Mainwindow::jump_to_dialog()
 
 void UI_Mainwindow::jump_to_start()
 {
-  int i;
-
   if(!files_open)  return;
 
   if(video_player->status == VIDEO_STATUS_PLAYING)
@@ -950,108 +865,35 @@ void UI_Mainwindow::jump_to_start()
     video_player_seek((int)((pagetime / 2LL) / TIME_DIMENSION));
   }
 
-  if(viewtime_sync==VIEWTIME_SYNCED_OFFSET)
-  {
-    for(i=0; i<files_open; i++)
-    {
-      edfheaderlist[i]->viewtime = 0;
-    }
-  }
-
-  if(viewtime_sync==VIEWTIME_UNSYNCED)
-  {
-    edfheaderlist[sel_viewtime]->viewtime = 0;
-  }
-
-  if(viewtime_sync==VIEWTIME_SYNCED_ABSOLUT)
-  {
-    edfheaderlist[sel_viewtime]->viewtime = 0;
-
-    for(i=0; i<files_open; i++)
-    {
-      if(i!=sel_viewtime)
-      {
-        edfheaderlist[i]->viewtime = ((edfheaderlist[sel_viewtime]->utc_starttime - edfheaderlist[i]->utc_starttime) * TIME_DIMENSION) + edfheaderlist[sel_viewtime]->starttime_offset - edfheaderlist[i]->starttime_offset;
-      }
-    }
-  }
-
-  if(viewtime_sync==VIEWTIME_USER_DEF_SYNCED)
-  {
-    for(i=0; i<files_open; i++)
-    {
-      if(i!=sel_viewtime)
-      {
-        edfheaderlist[i]->viewtime -= edfheaderlist[sel_viewtime]->viewtime;
-      }
-    }
-
-    edfheaderlist[sel_viewtime]->viewtime = 0;
-  }
-
-  setup_viewbuf();
+  set_viewtime(0LL);
 }
 
 
 void UI_Mainwindow::jump_to_time_millisec(long long milliseconds)
 {
-  int i;
-
   if(!files_open)  return;
 
-  if(viewtime_sync==VIEWTIME_SYNCED_OFFSET)
-  {
-    for(i=0; i<files_open; i++)
-    {
-      edfheaderlist[i]->viewtime = milliseconds * (TIME_DIMENSION / 1000);
-    }
-  }
-
-  if(viewtime_sync==VIEWTIME_UNSYNCED)
-  {
-    edfheaderlist[sel_viewtime]->viewtime = milliseconds * (TIME_DIMENSION / 1000);
-  }
-
-  if(viewtime_sync==VIEWTIME_SYNCED_ABSOLUT)
-  {
-    edfheaderlist[sel_viewtime]->viewtime = milliseconds * (TIME_DIMENSION / 1000);
-
-    for(i=0; i<files_open; i++)
-    {
-      if(i!=sel_viewtime)
-      {
-        edfheaderlist[i]->viewtime = edfheaderlist[sel_viewtime]->viewtime - ((edfheaderlist[i]->utc_starttime - edfheaderlist[sel_viewtime]->utc_starttime) * TIME_DIMENSION);
-      }
-    }
-  }
-
-  if(viewtime_sync==VIEWTIME_USER_DEF_SYNCED)
-  {
-    for(i=0; i<files_open; i++)
-    {
-      if(i!=sel_viewtime)
-      {
-        edfheaderlist[i]->viewtime -= (edfheaderlist[sel_viewtime]->viewtime - milliseconds * (TIME_DIMENSION / 1000));
-      }
-    }
-
-    edfheaderlist[sel_viewtime]->viewtime = milliseconds * (TIME_DIMENSION / 1000);
-  }
-
-  setup_viewbuf();
+  set_viewtime(milliseconds * (TIME_DIMENSION / 1000));
 }
 
 
 void UI_Mainwindow::jump_to_end()
 {
-  int i;
-
   long long new_viewtime;
-
 
   if(!files_open)  return;
 
   new_viewtime = edfheaderlist[sel_viewtime]->datarecords * edfheaderlist[sel_viewtime]->long_data_record_duration - pagetime;
+
+  set_viewtime(new_viewtime);
+}
+
+
+void UI_Mainwindow::set_viewtime(long long new_viewtime)
+{
+  int i;
+
+  if(!files_open)  return;
 
   if(viewtime_sync==VIEWTIME_SYNCED_OFFSET)
   {
@@ -1074,7 +916,7 @@ void UI_Mainwindow::jump_to_end()
     {
       if(i!=sel_viewtime)
       {
-        edfheaderlist[i]->viewtime = edfheaderlist[sel_viewtime]->viewtime + edfheaderlist[sel_viewtime]->starttime_offset - ((edfheaderlist[i]->utc_starttime - edfheaderlist[sel_viewtime]->utc_starttime) * TIME_DIMENSION) - edfheaderlist[i]->starttime_offset;
+        edfheaderlist[i]->viewtime = edfheaderlist[sel_viewtime]->viewtime - ((edfheaderlist[i]->utc_starttime - edfheaderlist[sel_viewtime]->utc_starttime) * TIME_DIMENSION);
       }
     }
   }

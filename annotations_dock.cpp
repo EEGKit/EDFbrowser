@@ -1373,9 +1373,7 @@ void UI_Annotationswindow::annotation_pressed(QListWidgetItem *item)
 
 void UI_Annotationswindow::annotation_selected(QListWidgetItem * item, int centered)
 {
-  int i=0, n, sz;
-
-  long long temp;
+  int n, sz;
 
   struct annotationblock *annot;
 
@@ -1420,56 +1418,22 @@ void UI_Annotationswindow::annotation_selected(QListWidgetItem * item, int cente
     mainwindow->video_player_seek((int)((annot->onset - edf_hdr->starttime_offset) / TIME_DIMENSION));
   }
 
-  if(mainwindow->viewtime_sync==VIEWTIME_SYNCED_OFFSET)
+  if(mainwindow->annot_editor_active)
   {
-    for(i=0; i<mainwindow->files_open; i++)
+    if(mainwindow->annotationEditDock != NULL)
     {
-      mainwindow->edfheaderlist[i]->viewtime = annot->onset;
-
-      if(centered)
-      {
-        mainwindow->edfheaderlist[i]->viewtime -= (mainwindow->pagetime / 2);
-      }
-
-      mainwindow->edfheaderlist[i]->viewtime -= edf_hdr->starttime_offset;
+      mainwindow->maincurve->setCrosshair_1_center();
     }
   }
 
-  if(mainwindow->viewtime_sync==VIEWTIME_UNSYNCED)
+  if(centered)
   {
-    edf_hdr->viewtime = annot->onset;
-
-    if(centered)
-    {
-      edf_hdr->viewtime -= (mainwindow->pagetime / 2);
-    }
-
-    edf_hdr->viewtime -= edf_hdr->starttime_offset;
+    mainwindow->set_viewtime(annot->onset - (mainwindow->pagetime / 2));
   }
-
-  if((mainwindow->viewtime_sync==VIEWTIME_SYNCED_ABSOLUT)||(mainwindow->viewtime_sync==VIEWTIME_USER_DEF_SYNCED))
+  else
   {
-    temp = annot->onset - edf_hdr->viewtime;
-
-    temp -= edf_hdr->starttime_offset;
-
-    if(centered)
-    {
-      temp -= (mainwindow->pagetime / 2);
-    }
-
-    for(i=0; i<mainwindow->files_open; i++)
-    {
-      mainwindow->edfheaderlist[i]->viewtime += temp;
-    }
+    mainwindow->set_viewtime(annot->onset);
   }
-
-  if(mainwindow->annotationEditDock != NULL)
-  {
-    mainwindow->maincurve->setCrosshair_1_center();
-  }
-
-  mainwindow->setup_viewbuf();
 }
 
 
