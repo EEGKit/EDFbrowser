@@ -81,12 +81,15 @@ void UI_Mainwindow::rc_host_sock_disconnected_handler()
 
 void UI_Mainwindow::rc_host_sock_rxdata_handler()
 {
-  int n, len;
+  int i, n, len;
 
   long long ltmp;
 
   char cmd_str[512]="",
-       response_str[512]="";
+       response_str[512]="",
+       str[512]="";
+
+  struct signalcompblock *newsignalcomp=NULL;
 
   for(n=1; n>0; )
   {
@@ -136,11 +139,69 @@ void UI_Mainwindow::rc_host_sock_rxdata_handler()
     }
     if((!strncmp(cmd_str, "MONTAGE:LOAD ", 13)) && (strlen(cmd_str) > 13))
     {
-      if(files_open >= MAXFILES)  continue;
-
+      if(!files_open)  continue;
+      if(signalcomps >= MAXSIGNALS)  continue;
       strlcpy(montagepath, cmd_str + 13, MAX_PATH_LENGTH);
       UI_LoadMontagewindow load_mtg(this, montagepath);
       montagepath[0] = 0;
+      continue;
+    }
+    if((!strncmp(cmd_str, "SIGNAL:ADD:LABEL ", 17)) && (strlen(cmd_str) > 17))
+    {
+      if(!files_open)  continue;
+      if(signalcomps >= MAXSIGNALS)  continue;
+      strlcpy(response_str, cmd_str + 17, 512);
+      trim_spaces(response_str);
+
+      for(i=0; i<edfheaderlist[0]->edfsignals; i++)
+      {
+        strlcpy(str, edfheaderlist[0]->edfparam[i].label, 512);
+        if((!strncmp(str, "EDF Annotations ", 16)) || (!strncmp(str, "BDF Annotations ", 16)))
+        {
+          continue;
+        }
+
+        trim_spaces(str);
+        if(!strcmp(str, response_str))
+        {
+          newsignalcomp = (struct signalcompblock *)calloc(1, sizeof(struct signalcompblock));
+          if(newsignalcomp==NULL)  return;
+          newsignalcomp->uid = uid_seq++;
+          newsignalcomp->num_of_signals = 1;
+          newsignalcomp->edfhdr = edfheaderlist[0];
+          newsignalcomp->file_duration = newsignalcomp->edfhdr->long_data_record_duration * newsignalcomp->edfhdr->datarecords;
+          newsignalcomp->voltpercm = default_amplitude;
+          newsignalcomp->color = maincurve->signal_color;
+          newsignalcomp->hasruler = 0;
+          newsignalcomp->polarity = 1;
+
+          newsignalcomp->edfsignal[0] = i;
+          newsignalcomp->factor[0] = 1;
+          if(newsignalcomp->edfhdr->edfparam[i].bitvalue < 0.0)
+          {
+            newsignalcomp->voltpercm = default_amplitude * -1;
+          }
+          newsignalcomp->sensitivity[0] = newsignalcomp->edfhdr->edfparam[i].bitvalue / ((double)newsignalcomp->voltpercm * y_pixelsizefactor);
+
+          strlcpy(newsignalcomp->signallabel, newsignalcomp->edfhdr->edfparam[i].label, 256);
+          newsignalcomp->signallabel_type_stripped = strip_types_from_label(newsignalcomp->signallabel);
+          remove_trailing_spaces(newsignalcomp->signallabel);
+
+          newsignalcomp->file_duration = newsignalcomp->edfhdr->long_data_record_duration * newsignalcomp->edfhdr->datarecords;
+
+          newsignalcomp->signallabellen = strlen(newsignalcomp->signallabel);
+
+          strlcpy(newsignalcomp->physdimension, newsignalcomp->edfhdr->edfparam[i].physdimension, 9);
+          remove_trailing_spaces(newsignalcomp->physdimension);
+
+          signalcomp[signalcomps] = newsignalcomp;
+          signalcomps++;
+
+          setup_viewbuf();
+
+          break;
+        }
+      }
       continue;
     }
     if(!strcmp(cmd_str, "SIGNAL:REMOVE:ALL"))
