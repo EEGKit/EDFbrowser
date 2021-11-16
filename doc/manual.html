@@ -81,6 +81,7 @@
   <li><a href="#Print_to_BDF">Print to BDF(+)</a></li>
   <li><a href="#Unify_resolution">Unify resolution</a></li>
   <li><a href="#Commandline_options">Commandline options</a></li>
+  <li><a href="#Remote_control">Remote control</a></li>
   <li><a href="#FAQ">FAQ</a></li>
 </ul>
 </div>
@@ -1869,7 +1870,7 @@
 <h3><a name="Commandline_options">Commandline options</a></h3>
 
 <p>
-  edfbrowser [[--stream] datafile.edf [mymontage.mtg]]<br>
+  edfbrowser [[--stream][--rc-host-port=&lt;portnumber&gt;] datafile.edf [mymontage.mtg]]<br>
 <br>
   It is possible to start the program from the commandline:<br>
 <br>
@@ -1895,6 +1896,89 @@
 <br>
   this will start the program with the streaming file myfile.edf opened and using the montage mymontage.mtg.
 </p>
+
+<p><br></p>
+
+<h3><a name="Remote_control">Remote control</a></h3>
+
+<p>
+  Start EDFbrowser with the option --rc-host-port=&lt;portnumber&gt;. Portnumber is the TCP port and must be free and between 1024 and 65535.<br>
+  Every command/query must end with a newline character.<br>
+  The decimal separator (if any) must be a dot.<br>
+  Commands are case sensitive.<br>
+</p>
+
+<div>
+<!--<table style="vertical-align:top; display:inline-table; empty-cells: hide; margin-left: 75px; border-collapse: collapse;">-->
+<table>
+  <tbody>
+    <tr>
+      <th>command</th>
+      <th>description</th>
+    </tr>
+    <tr>
+      <td>*IDN?</td>
+      <td>Identity query, shows the program name and version</td>
+    </tr>
+    <tr>
+      <td>QUIT</td>
+      <td>Closes the program</td>
+    </tr>
+    <tr>
+      <td>FILE:OPEN &lt;path&gt;</td>
+      <td>Opens a file</td>
+    </tr>
+    <tr>
+      <td>FILE:CLOSE:ALL</td>
+      <td>Closes all open files</td>
+    </tr>
+    <tr>
+      <td>MONTAGE:LOAD &lt;path&gt;</td>
+      <td>Loads a montage file</td>
+    </tr>
+    <tr>
+      <td>SIGNAL:REMOVE:ALL</td>
+      <td>Removes all signals from the screen</td>
+    </tr>
+    <tr>
+      <td>TIMESCALE?</td>
+      <td>Shows the timescale in seconds</td>
+    </tr>
+    <tr>
+      <td>TIMESCALE &lt;seconds&gt;</td>
+      <td>Sets the timescale</td>
+    </tr>
+    <tr>
+      <td>VIEWTIME?</td>
+      <td>Shows the viewtime in seconds</td>
+    </tr>
+    <tr>
+      <td>VIEWTIME &lt;seconds&gt;</td>
+      <td>Sets the viewtime</td>
+    </tr>
+    <tr>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+</div>
 
 <p><br></p>
 

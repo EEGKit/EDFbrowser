@@ -134,6 +134,20 @@ void UI_Mainwindow::rc_host_sock_rxdata_handler()
       open_new_file();
       continue;
     }
+    if((!strncmp(cmd_str, "MONTAGE:LOAD ", 13)) && (strlen(cmd_str) > 13))
+    {
+      if(files_open >= MAXFILES)  continue;
+
+      strlcpy(montagepath, cmd_str + 13, MAX_PATH_LENGTH);
+      UI_LoadMontagewindow load_mtg(this, montagepath);
+      montagepath[0] = 0;
+      continue;
+    }
+    if(!strcmp(cmd_str, "SIGNAL:REMOVE:ALL"))
+    {
+      remove_all_signals();
+      continue;
+    }
     if(!strcmp(cmd_str, "TIMESCALE?"))
     {
 #ifdef Q_OS_WIN32
@@ -181,16 +195,6 @@ void UI_Mainwindow::rc_host_sock_rxdata_handler()
   }
 }
 
-// file
-//   list
-//   open
-//   close
-//   close all
-//
-// signal
-//   list
-//   remove
-//   add
 
 void UI_Mainwindow::exit_program()
 {
@@ -1908,6 +1912,8 @@ void UI_Mainwindow::open_new_file()
   }
 
   cmdlineargument = 0;
+
+  montagepath[0] = 0;
 
   drop_path[0] = 0;
 
