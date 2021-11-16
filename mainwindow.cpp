@@ -107,12 +107,22 @@ void UI_Mainwindow::rc_host_sock_rxdata_handler()
 
     ascii_toupper(cmd_str);
 
+    if(!strcmp(cmd_str, "*IDN?"))
+    {
+      len = snprintf(response_str, 512, PROGRAM_NAME "," PROGRAM_VERSION "," THIS_APP_BITS_W "\n");
+      rc_host_sock->write(response_str, len);
+      continue;
+    }
+    if(!strcmp(cmd_str, "QUIT"))
+    {
+      exit_program();
+      continue;
+    }
     if(!strcmp(cmd_str, "CLOSE_ALL_FILES"))
     {
       close_all_files();
       continue;
     }
-
     if(!strcmp(cmd_str, "TIMESCALE?"))
     {
 #ifdef Q_OS_WIN32
@@ -130,6 +140,22 @@ void UI_Mainwindow::rc_host_sock_rxdata_handler()
       if((ltmp <= 100LL) || (ltmp >= (3600LL * TIME_DIMENSION)))  continue;
       pagetime = ltmp;
       setup_viewbuf();
+      continue;
+    }
+    if(!strcmp(cmd_str, "VIEWTIME?"))
+    {
+      if(!files_open)
+      {
+        len = snprintf(response_str, 512, "0\n");
+        rc_host_sock->write(response_str, len);
+        continue;
+      }
+#ifdef Q_OS_WIN32
+      len = _mingw_snprintf(response_str, 512, "%lli.%lli\n", edfheaderlist[sel_viewtime]->viewtime / TIME_DIMENSION, edfheaderlist[sel_viewtime]->viewtime % TIME_DIMENSION);
+#else
+      len = snprintf(response_str, 512, "%lli.%lli\n", edfheaderlist[sel_viewtime]->viewtime / TIME_DIMENSION, edfheaderlist[sel_viewtime]->viewtime % TIME_DIMENSION);
+#endif
+      rc_host_sock->write(response_str, len);
       continue;
     }
     if((!strncmp(cmd_str, "VIEWTIME ", 9)) && (strlen(cmd_str) > 9))
@@ -200,8 +226,6 @@ void UI_Mainwindow::rc_host_sock_rxdata_handler()
 // file_position
 //
 // quit
-
-
 
 void UI_Mainwindow::exit_program()
 {
