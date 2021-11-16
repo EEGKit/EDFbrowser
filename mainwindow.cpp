@@ -105,7 +105,7 @@ void UI_Mainwindow::rc_host_sock_rxdata_handler()
       cmd_str[n] = 0;
     }
 
-    ascii_toupper(cmd_str);
+//    ascii_toupper(cmd_str);
 
     if(!strcmp(cmd_str, "*IDN?"))
     {
@@ -118,9 +118,20 @@ void UI_Mainwindow::rc_host_sock_rxdata_handler()
       exit_program();
       continue;
     }
-    if(!strcmp(cmd_str, "CLOSE_ALL_FILES"))
+    if(!strcmp(cmd_str, "FILE:CLOSE:ALL"))
     {
       close_all_files();
+      continue;
+    }
+    if((!strncmp(cmd_str, "FILE:OPEN ", 10)) && (strlen(cmd_str) > 10))
+    {
+      if(files_open >= MAXFILES)  continue;
+      if(annot_editor_active && files_open)  continue;
+      if((files_open > 0) && (live_stream_active))  continue;
+
+      strlcpy(drop_path, cmd_str + 10, MAX_PATH_LENGTH);
+      rc_file_open_requested = 1;
+      open_new_file();
       continue;
     }
     if(!strcmp(cmd_str, "TIMESCALE?"))
@@ -180,12 +191,6 @@ void UI_Mainwindow::rc_host_sock_rxdata_handler()
 //   list
 //   remove
 //   add
-//
-// pagetime
-//
-// file_position
-//
-// quit
 
 void UI_Mainwindow::exit_program()
 {
@@ -1855,51 +1860,58 @@ void UI_Mainwindow::open_new_file()
     files_open++;
   }
 
-  if((montagepath[0]!=0)&&(cmdlineargument==2))
+  if(!rc_file_open_requested)
   {
-    UI_LoadMontagewindow load_mtg(this, montagepath);
-    strlcpy(&recent_file_mtg_path[0][0], montagepath, MAX_PATH_LENGTH);
-  }
-  else
-  {
-    if((recent_file_mtg_path[0][0] != 0) && (files_open == 1) && auto_reload_mtg)
+    if((montagepath[0]!=0)&&(cmdlineargument==2))
     {
-      QMessageBox messagewindow;
-      messagewindow.setText("Load last used montage?");
-      messagewindow.setInformativeText(QString::fromLocal8Bit(&recent_file_mtg_path[0][0]));
-      messagewindow.setIcon(QMessageBox::Question);
-      messagewindow.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-      messagewindow.setDefaultButton(QMessageBox::Yes);
-      button_nr = messagewindow.exec();
-
-      if(button_nr == QMessageBox::No)
-      {
-        recent_file_mtg_path[0][0] = 0;
-
-        UI_Signalswindow signalwindow(this);
-      }
-      else
-      {
-        UI_LoadMontagewindow load_mtg(this, &recent_file_mtg_path[0][0]);
-
-        if(recent_file_mtg_path[0][0] == 0)
-        {
-          UI_Signalswindow signalwindow(this);
-        }
-      }
+      UI_LoadMontagewindow load_mtg(this, montagepath);
+      strlcpy(&recent_file_mtg_path[0][0], montagepath, MAX_PATH_LENGTH);
     }
     else
     {
-      UI_Signalswindow signalwindow(this);
-
-      if(!signalcomps)
+      if((recent_file_mtg_path[0][0] != 0) && (files_open == 1) && auto_reload_mtg)
       {
-        setup_viewbuf();
+        QMessageBox messagewindow;
+        messagewindow.setText("Load last used montage?");
+        messagewindow.setInformativeText(QString::fromLocal8Bit(&recent_file_mtg_path[0][0]));
+        messagewindow.setIcon(QMessageBox::Question);
+        messagewindow.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+        messagewindow.setDefaultButton(QMessageBox::Yes);
+        button_nr = messagewindow.exec();
+
+        if(button_nr == QMessageBox::No)
+        {
+          recent_file_mtg_path[0][0] = 0;
+
+          UI_Signalswindow signalwindow(this);
+        }
+        else
+        {
+          UI_LoadMontagewindow load_mtg(this, &recent_file_mtg_path[0][0]);
+
+          if(recent_file_mtg_path[0][0] == 0)
+          {
+            UI_Signalswindow signalwindow(this);
+          }
+        }
+      }
+      else
+      {
+        UI_Signalswindow signalwindow(this);
+
+        if(!signalcomps)
+        {
+          setup_viewbuf();
+        }
       }
     }
   }
 
   cmdlineargument = 0;
+
+  drop_path[0] = 0;
+
+  rc_file_open_requested = 0;
 
   close_filemenu->addAction(QString::fromLocal8Bit(path));
 }

@@ -300,6 +300,8 @@ UI_Mainwindow::UI_Mainwindow()
 
   rc_host_server_port = 0;
 
+  rc_file_open_requested = 0;
+
   rc_host_server = NULL;
 
   rc_host_sock = NULL;

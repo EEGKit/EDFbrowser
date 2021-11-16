@@ -247,7 +247,8 @@ public:
       dig_min_max_overflow_warning_showed,
       options_dialog_idx,
       edf_debug,
-      rc_host_server_port;
+      rc_host_server_port,
+      rc_file_open_requested;
 
 long long annot_editor_user_button_epoch_len,
           hypnogram_epoch_len_threshold;
