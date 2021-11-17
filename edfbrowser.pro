@@ -154,6 +154,7 @@ HEADERS += third_party/kiss_fft/kiss_fftr.h
 SOURCES += main.cpp
 SOURCES += mainwindow_constr.cpp
 SOURCES += mainwindow.cpp
+SOURCES += rc_host.cpp
 SOURCES += viewbuf.cpp
 SOURCES += videoplayer.cpp
 SOURCES += read_write_settings.cpp
