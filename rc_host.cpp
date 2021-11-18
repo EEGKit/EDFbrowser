@@ -416,6 +416,7 @@ int UI_Mainwindow::process_rc_cmd_signal(const char cmds_parsed[CMD_MAX_SUB_CMDS
     else if((n_sub_cmds == 3) && !strcmp(cmds_parsed[2], "LABEL") && strlen(cmd_args))
       {
         strlcpy(str1, cmd_args, 512);
+        strip_types_from_label(str1);
         trim_spaces(str1);
 
         for(i=0; i<signalcomps; i++)
