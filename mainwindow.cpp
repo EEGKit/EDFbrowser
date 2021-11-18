@@ -4232,6 +4232,193 @@ void UI_Mainwindow::dig_min_max_overflow_timer_func()
 }
 
 
+void UI_Mainwindow::remove_signalcomp(int signal_nr)
+{
+  int i, j, p;
+
+  if((signal_nr < 0) || (signal_nr >= signalcomps))
+  {
+    return;
+  }
+
+  for(i=0; i<MAXSPECTRUMDOCKS; i++)
+  {
+    if(spectrumdock[i]->signalcomp == signalcomp[signal_nr])
+    {
+      spectrumdock[i]->clear();
+      spectrumdock[i]->dock->hide();
+    }
+  }
+
+  for(i=0; i<MAXSPECTRUMDIALOGS; i++)
+  {
+    p = signalcomp[signal_nr]->spectr_dialog[i];
+
+    if(p != 0)
+    {
+      delete spectrumdialog[p - 1];
+
+      spectrumdialog[p - 1] = NULL;
+    }
+  }
+
+  for(i=0; i<MAXCDSADOCKS; i++)
+  {
+    p = signalcomp[signal_nr]->cdsa_dock[i];
+
+    if(p != 0)
+    {
+      delete cdsa_dock[p - 1];
+
+      cdsa_dock[p - 1] = NULL;
+    }
+  }
+
+  for(i=0; i<MAXAVERAGECURVEDIALOGS; i++)
+  {
+    p = signalcomp[signal_nr]->avg_dialog[i];
+
+    if(p != 0)
+    {
+      delete averagecurvedialog[p - 1];
+
+      averagecurvedialog[p - 1] = NULL;
+    }
+  }
+
+  for(i=0; i<MAXZSCOREDIALOGS; i++)
+  {
+    p = signalcomp[signal_nr]->zscoredialog[i];
+
+    if(p != 0)
+    {
+      delete zscoredialog[p - 1];
+
+      zscoredialog[p - 1] = NULL;
+    }
+  }
+
+  if(signalcomp[signal_nr]->hascursor2)
+  {
+    maincurve->crosshair_2.active = 0;
+    maincurve->crosshair_2.moving = 0;
+  }
+
+  if(signalcomp[signal_nr]->hascursor1)
+  {
+    maincurve->crosshair_1.active = 0;
+    maincurve->crosshair_2.active = 0;
+    maincurve->crosshair_1.moving = 0;
+    maincurve->crosshair_2.moving = 0;
+
+    for(i=0; i<signalcomps; i++)
+    {
+      signalcomp[i]->hascursor2 = 0;
+    }
+  }
+
+  if(signalcomp[signal_nr]->hasruler)
+  {
+    maincurve->ruler_active = 0;
+    maincurve->ruler_moving = 0;
+  }
+
+  for(j=0; j<signalcomp[signal_nr]->filter_cnt; j++)
+  {
+    free(signalcomp[signal_nr]->filter[j]);
+  }
+
+  signalcomp[signal_nr]->filter_cnt = 0;
+
+  if(signalcomp[signal_nr]->plif_ecg_filter)
+  {
+    plif_free_subtract_filter(signalcomp[signal_nr]->plif_ecg_filter);
+
+    signalcomp[signal_nr]->plif_ecg_filter = NULL;
+  }
+
+  if(signalcomp[signal_nr]->plif_ecg_filter_sav)
+  {
+    plif_free_subtract_filter(signalcomp[signal_nr]->plif_ecg_filter_sav);
+
+    signalcomp[signal_nr]->plif_ecg_filter_sav = NULL;
+  }
+
+  if(signalcomp[signal_nr]->spike_filter)
+  {
+    free_spike_filter(signalcomp[signal_nr]->spike_filter);
+
+    signalcomp[signal_nr]->spike_filter = NULL;
+  }
+
+  for(j=0; j<signalcomp[signal_nr]->ravg_filter_cnt; j++)
+  {
+    free_ravg_filter(signalcomp[signal_nr]->ravg_filter[j]);
+  }
+
+  signalcomp[signal_nr]->ravg_filter_cnt = 0;
+
+  if(signalcomp[signal_nr]->fir_filter != NULL)
+  {
+    free_fir_filter(signalcomp[signal_nr]->fir_filter);
+
+    signalcomp[signal_nr]->fir_filter = NULL;
+  }
+
+  if(signalcomp[signal_nr]->ecg_filter != NULL)
+  {
+    free_ecg_filter(signalcomp[signal_nr]->ecg_filter);
+
+    signalcomp[signal_nr]->ecg_filter = NULL;
+
+    strlcpy(signalcomp[signal_nr]->signallabel, signalcomp[signal_nr]->signallabel_bu, 512);
+    signalcomp[signal_nr]->signallabellen = signalcomp[signal_nr]->signallabellen_bu;
+    strlcpy(signalcomp[signal_nr]->physdimension, signalcomp[signal_nr]->physdimension_bu, 32);
+  }
+
+  if(signalcomp[signal_nr]->zratio_filter != NULL)
+  {
+    free_zratio_filter(signalcomp[signal_nr]->zratio_filter);
+
+    signalcomp[signal_nr]->zratio_filter = NULL;
+
+    strlcpy(signalcomp[signal_nr]->signallabel, signalcomp[signal_nr]->signallabel_bu, 512);
+    signalcomp[signal_nr]->signallabellen = signalcomp[signal_nr]->signallabellen_bu;
+    strlcpy(signalcomp[signal_nr]->physdimension, signalcomp[signal_nr]->physdimension_bu, 9);
+  }
+
+  for(j=0; j<signalcomp[signal_nr]->fidfilter_cnt; j++)
+  {
+    free(signalcomp[signal_nr]->fidfilter[j]);
+    fid_run_free(signalcomp[signal_nr]->fid_run[j]);
+    fid_run_freebuf(signalcomp[signal_nr]->fidbuf[j]);
+    fid_run_freebuf(signalcomp[signal_nr]->fidbuf2[j]);
+  }
+
+  signalcomp[signal_nr]->fidfilter_cnt = 0;
+
+  free(signalcomp[signal_nr]);
+
+  signalcomp[signal_nr] = NULL;
+
+  for(i=signal_nr; i<signalcomps - 1; i++)
+  {
+    signalcomp[i] = signalcomp[i + 1];
+  }
+
+  signalcomps--;
+
+  if(!signalcomps)
+  {
+    free(viewbuf);
+    viewbuf = NULL;
+
+    slidertoolbar->setEnabled(false);
+    positionslider->blockSignals(true);
+  }
+}
+
+
 
 
 

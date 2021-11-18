@@ -364,6 +364,8 @@ long long annot_editor_user_button_epoch_len,
 
   void enable_hrv_stats_toolbar(const char *, struct annotation_list *, struct signalcompblock *);
 
+  void remove_signalcomp(int);
+
 #ifdef Q_OS_WIN32
   QString specialFolder(int);
 #endif
