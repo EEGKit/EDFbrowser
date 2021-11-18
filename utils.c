@@ -1281,7 +1281,7 @@ int is_integer_number(char *str)
 
 
 
-int is_number(char *str)
+int is_number(const char *str)
 {
   int i=0, len, hasspace=0, hassign=0, digit=0, hasdot=0, hasexp=0;
 

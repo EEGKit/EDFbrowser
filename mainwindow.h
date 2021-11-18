@@ -152,6 +152,11 @@ class UI_hypnogram_dock;
 class UI_hrv_dock;
 
 
+#define CMD_PARSE_STR_LEN    (64)
+
+#define CMD_MAX_SUB_CMDS      (8)
+
+
 class UI_Mainwindow : public QMainWindow
 {
   Q_OBJECT
@@ -535,6 +540,12 @@ private:
   long long check_edf_file_datarecords(struct edfhdrblock *);
   void mpr_write(const char *);
   int mpr_read(char *, int);
+  int parse_rc_command(const char *, char [CMD_MAX_SUB_CMDS][CMD_PARSE_STR_LEN], char *, int);
+  int process_rc_cmd_file(const char [CMD_MAX_SUB_CMDS][CMD_PARSE_STR_LEN], const char *, int);
+  int process_rc_cmd_montage(const char [CMD_MAX_SUB_CMDS][CMD_PARSE_STR_LEN], const char *, int);
+  int process_rc_cmd_signal(const char [CMD_MAX_SUB_CMDS][CMD_PARSE_STR_LEN], const char *, int);
+  int process_rc_cmd_timescale(const char [CMD_MAX_SUB_CMDS][CMD_PARSE_STR_LEN], const char *, int);
+  int process_rc_cmd_viewtime(const char [CMD_MAX_SUB_CMDS][CMD_PARSE_STR_LEN], const char *, int);
 
 public slots:
   void remove_all_signals();
