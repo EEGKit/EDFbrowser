@@ -102,6 +102,17 @@ void UI_Mainwindow::rc_host_sock_rxdata_handler()
       continue;
     }
 
+    if((n_sub_cmds == 1) && !strlen(cmd_args) && !strcmp(cmds_parsed[0], "LIST"))
+    {
+      len = snprintf(tx_msg_str, 512, "*IDN?\n" "QUIT\n" "FILE:OPEN <path>\n" "FILE:CLOSE:ALL\n" "MONTAGE:LOAD <path>\n"
+                                      "SIGNAL:ADD:LABEL <label>\n" "SIGNAL:AMPLITUDE:ALL <units>\n" "SIGNAL:AMPLITUDE:FIT:ALL\n"
+                                      "SIGNAL:OFFSET:ADJUST:ALL\n" "SIGNAL:OFFSET:ZERO:ALL\n"
+                                      "SIGNAL:REMOVE:LABEL <label>\n" "SIGNAL:REMOVE:ALL\n"
+                                      "TIMESCALE?\n" "TIMESCALE <seconds>\n" "VIEWTIME?\n" "VIEWTIME <seconds>\n");
+      rc_host_sock->write(tx_msg_str, len);
+      continue;
+    }
+
     if((n_sub_cmds == 1) && !strlen(cmd_args) && !strcmp(cmds_parsed[0], "*IDN?"))
     {
       len = snprintf(tx_msg_str, 512, PROGRAM_NAME "," PROGRAM_VERSION "," THIS_APP_BITS_W "\n");
@@ -327,10 +338,13 @@ int UI_Mainwindow::process_rc_cmd_montage(const char cmds_parsed[CMD_MAX_SUB_CMD
 
 int UI_Mainwindow::process_rc_cmd_signal(const char cmds_parsed[CMD_MAX_SUB_CMDS][CMD_PARSE_STR_LEN], const char *cmd_args, int n_sub_cmds)
 {
-  int i;
+  int i, j;
 
   char str1[512]="",
        str2[512]="";
+
+  double value2=100,
+         original_value=100;
 
   struct signalcompblock *newsignalcomp=NULL;
 
@@ -437,6 +451,64 @@ int UI_Mainwindow::process_rc_cmd_signal(const char cmds_parsed[CMD_MAX_SUB_CMDS
       {
         return -4;
       }
+  }
+
+  if(!strcmp(cmds_parsed[1], "AMPLITUDE"))
+  {
+    if((n_sub_cmds == 3) && !strcmp(cmds_parsed[2], "ALL") && strlen(cmd_args))
+    {
+      if(!signalcomps)  return 0;
+
+      if(is_number(cmd_args))  return 0;
+
+      value2 = atof(cmd_args);
+
+      if((value2 > 1000000.001) || (value2 < 0.0000000999))  return -5;
+
+      for(i=0; i<signalcomps; i++)
+      {
+        if(signalcomp[i]->edfhdr->edfparam[signalcomp[i]->edfsignal[0]].bitvalue < 0.0)
+        {
+          value2 *= -1.0;
+        }
+
+        for(j=0; j<signalcomp[i]->num_of_signals; j++)
+        {
+          signalcomp[i]->sensitivity[j] = (signalcomp[i]->edfhdr->edfparam[signalcomp[i]->edfsignal[j]].bitvalue / value2) / y_pixelsizefactor;
+        }
+
+        original_value = signalcomp[i]->voltpercm;
+
+        signalcomp[i]->voltpercm = value2;
+
+        signalcomp[i]->screen_offset *= (original_value / value2);
+      }
+
+      maincurve->drawCurve_stage_1();
+
+      return 0;
+    }
+
+    if((n_sub_cmds == 4) && !strcmp(cmds_parsed[2], "FIT") && !strcmp(cmds_parsed[3], "ALL") && !strlen(cmd_args))
+    {
+      fit_signals_to_pane();
+      return 0;
+    }
+  }
+
+  if(!strcmp(cmds_parsed[1], "OFFSET"))
+  {
+    if((n_sub_cmds == 4) && !strcmp(cmds_parsed[2], "ADJUST") && !strcmp(cmds_parsed[3], "ALL") && !strlen(cmd_args))
+    {
+      fit_signals_dc_offset();
+      return 0;
+    }
+
+    if((n_sub_cmds == 4) && !strcmp(cmds_parsed[2], "ZERO") && !strcmp(cmds_parsed[3], "ALL") && !strlen(cmd_args))
+    {
+      set_dc_offset_to_zero();
+      return 0;
+    }
   }
 
   return 0;
