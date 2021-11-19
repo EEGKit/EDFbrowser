@@ -59,7 +59,7 @@ void UI_Mainwindow::rc_host_sock_disconnected_handler()
 
 void UI_Mainwindow::rc_host_sock_rxdata_handler()
 {
-  int n, len, n_sub_cmds;
+  int n, len, n_sub_cmds, err;
 
   char rx_msg_str[512]="",
        tx_msg_str[512]="",
@@ -105,9 +105,9 @@ void UI_Mainwindow::rc_host_sock_rxdata_handler()
     if((n_sub_cmds == 1) && !strlen(cmd_args) && !strcmp(cmds_parsed[0], "LIST"))
     {
       len = snprintf(tx_msg_str, 512, "*IDN?\n" "QUIT\n" "FILE:OPEN <path>\n" "FILE:CLOSE:ALL\n" "MONTAGE:LOAD <path>\n"
-                                      "SIGNAL:ADD:LABEL <label>\n" "SIGNAL:AMPLITUDE:ALL <units>\n" "SIGNAL:AMPLITUDE:FIT:ALL\n"
-                                      "SIGNAL:AMPLITUDE:FIT:LABEL <label>\n" "SIGNAL:OFFSET:ADJUST:ALL\n" "SIGNAL:OFFSET:ZERO:ALL\n"
-                                      "SIGNAL:REMOVE:LABEL <label>\n" "SIGNAL:REMOVE:ALL\n"
+                                      "SIGNAL:ADD:LABEL <label>\n" "SIGNAL:AMPLITUDE:ALL <units>\n" "SIGNAL:AMPLITUDE:LABEL <label> <units>\n"
+                                      "SIGNAL:AMPLITUDE:FIT:ALL\n" "SIGNAL:AMPLITUDE:FIT:LABEL <label>\n" "SIGNAL:OFFSET:ADJUST:ALL\n"
+                                      "SIGNAL:OFFSET:ZERO:ALL\n" "SIGNAL:REMOVE:LABEL <label>\n" "SIGNAL:REMOVE:ALL\n"
                                       "TIMESCALE?\n" "TIMESCALE <seconds>\n" "VIEWTIME?\n" "VIEWTIME <seconds>\n");
       rc_host_sock->write(tx_msg_str, len);
       continue;
@@ -128,31 +128,35 @@ void UI_Mainwindow::rc_host_sock_rxdata_handler()
 
     if(!strcmp(cmds_parsed[0], "FILE"))
     {
-      process_rc_cmd_file(cmds_parsed, cmd_args, n_sub_cmds);
+      err = process_rc_cmd_file(cmds_parsed, cmd_args, n_sub_cmds);
       continue;
     }
 
     if(!strcmp(cmds_parsed[0], "MONTAGE"))
     {
-      process_rc_cmd_montage(cmds_parsed, cmd_args, n_sub_cmds);
+      err = process_rc_cmd_montage(cmds_parsed, cmd_args, n_sub_cmds);
       continue;
     }
 
     if(!strcmp(cmds_parsed[0], "SIGNAL"))
     {
-      process_rc_cmd_signal(cmds_parsed, cmd_args, n_sub_cmds);
+      err = process_rc_cmd_signal(cmds_parsed, cmd_args, n_sub_cmds);
+      if(err)
+      {
+        printf("process_rc_cmd_signal() returns: %i\n", err);
+      }
       continue;
     }
 
     if(!strcmp(cmds_parsed[0], "TIMESCALE") || !strcmp(cmds_parsed[0], "TIMESCALE?"))
     {
-      process_rc_cmd_timescale(cmds_parsed, cmd_args, n_sub_cmds);
+      err = process_rc_cmd_timescale(cmds_parsed, cmd_args, n_sub_cmds);
       continue;
     }
 
     if(!strcmp(cmds_parsed[0], "VIEWTIME") || !strcmp(cmds_parsed[0], "VIEWTIME?"))
     {
-      process_rc_cmd_viewtime(cmds_parsed, cmd_args, n_sub_cmds);
+      err = process_rc_cmd_viewtime(cmds_parsed, cmd_args, n_sub_cmds);
       continue;
     }
   }
@@ -338,10 +342,11 @@ int UI_Mainwindow::process_rc_cmd_montage(const char cmds_parsed[CMD_MAX_SUB_CMD
 
 int UI_Mainwindow::process_rc_cmd_signal(const char cmds_parsed[CMD_MAX_SUB_CMDS][CMD_PARSE_STR_LEN], const char *cmd_args, int n_sub_cmds)
 {
-  int i, j, n;
+  int i, j, n, len;
 
   char str1[512]="",
-       str2[512]="";
+       str2[512]="",
+       *ptr=NULL;
 
   double value2=100,
          original_value=100;
@@ -453,11 +458,11 @@ int UI_Mainwindow::process_rc_cmd_signal(const char cmds_parsed[CMD_MAX_SUB_CMDS
     {
       if(!signalcomps)  return 0;
 
-      if(is_number(cmd_args))  return 0;
+      if(is_number(cmd_args))  return -6;
 
       value2 = atof(cmd_args);
 
-      if((value2 > 1000000.001) || (value2 < 0.0000000999))  return -6;
+      if((value2 > 1000000.001) || (value2 < 0.0000000999))  return -7;
 
       for(i=0; i<signalcomps; i++)
       {
@@ -477,6 +482,59 @@ int UI_Mainwindow::process_rc_cmd_signal(const char cmds_parsed[CMD_MAX_SUB_CMDS
 
         signalcomp[i]->screen_offset *= (original_value / value2);
       }
+
+      maincurve->drawCurve_stage_1();
+
+      return 0;
+    }
+
+    if((n_sub_cmds == 3) && !strcmp(cmds_parsed[2], "LABEL") && (strlen(cmd_args) > 2))
+    {
+      strlcpy(str1, cmd_args, 512);
+
+      len = strlen(str1);
+
+      for(i=0, ptr=NULL; i<len; i++)
+      {
+        if(str1[i] == ' ')
+        {
+          ptr = &str1[i];
+        }
+      }
+
+      if(ptr == NULL)  return -8;
+
+      *ptr = 0;
+
+      ptr++;
+
+      if(!strlen(ptr))  return -9;
+
+      if(is_number(ptr))  return -10;
+
+      if(!strlen(str1))  return -11;
+
+      value2 = atof(ptr);
+      if((value2 > 1000000.001) || (value2 < 0.0000000999))  return -12;
+
+      n = get_signalcomp_number(str1);
+      if(n < 0)  return 0;
+
+      if(signalcomp[n]->edfhdr->edfparam[signalcomp[n]->edfsignal[0]].bitvalue < 0.0)
+      {
+        value2 *= -1.0;
+      }
+
+      for(j=0; j<signalcomp[n]->num_of_signals; j++)
+      {
+        signalcomp[n]->sensitivity[j] = (signalcomp[n]->edfhdr->edfparam[signalcomp[n]->edfsignal[j]].bitvalue / value2) / y_pixelsizefactor;
+      }
+
+      original_value = signalcomp[n]->voltpercm;
+
+      signalcomp[n]->voltpercm = value2;
+
+      signalcomp[n]->screen_offset *= (original_value / value2);
 
       maincurve->drawCurve_stage_1();
 
