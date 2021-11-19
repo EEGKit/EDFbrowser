@@ -359,7 +359,7 @@ int UI_Mainwindow::process_rc_cmd_montage(const char cmds_parsed[CMD_MAX_SUB_CMD
 
 int UI_Mainwindow::process_rc_cmd_signal(const char cmds_parsed[CMD_MAX_SUB_CMDS][CMD_PARSE_STR_LEN], const char *cmd_args, int n_sub_cmds)
 {
-  int i, j, n, len;
+  int i, j, n, len, ival;
 
   char str1[512]="",
        str2[512]="",
@@ -629,18 +629,54 @@ int UI_Mainwindow::process_rc_cmd_signal(const char cmds_parsed[CMD_MAX_SUB_CMDS
       if(is_integer_number(cmd_args))  return -16;
 
       n = atoi(cmd_args);
-      if((n < 0) || (n > 1))  return -17;
+      if((n < 0) || (n > 2))  return -17;
 
-      //FIXME  TODO
+      signalcomp_invert(n);
+
+      return 0;
+    }
+
+    if((n_sub_cmds == 3) && !strcmp(cmds_parsed[2], "LABEL") && (strlen(cmd_args) > 2))
+    {
+      strlcpy(str1, cmd_args, 512);
+
+      len = strlen(str1);
+
+      for(i=0, ptr=NULL; i<len; i++)
+      {
+        if(str1[i] == ' ')
+        {
+          ptr = &str1[i];
+        }
+      }
+
+      if(ptr == NULL)  return -18;
+
+      *ptr = 0;
+
+      ptr++;
+
+      if(!strlen(ptr))  return -19;
+
+      if(is_integer_number(ptr))  return -20;
+
+      if(!strlen(str1))  return -21;
+
+      ival = atoi(ptr);
+      if((ival < 0) || (ival > 2))  return -22;
+
+      n = get_signalcomp_number(str1);
+      if(n < 0)  return 0;
+
+      signalcomp_invert(ival, n);
 
       return 0;
     }
     else
     {
-      return -18;
+      return -23;
     }
   }
-
 
   return 0;
 }

@@ -4218,16 +4218,12 @@ void ViewCurve::signalInvert()
 {
   sidemenu->close();
 
-  if(signal_nr >= mainwindow->signalcomps)
+  if((signal_nr < 0) || (signal_nr >= mainwindow->signalcomps))
   {
     return;
   }
 
-  mainwindow->signalcomp[signal_nr]->polarity *= -1;
-
-  mainwindow->signalcomp[signal_nr]->screen_offset *= -1;
-
-  mainwindow->setup_viewbuf();
+  mainwindow->signalcomp_invert(2, signal_nr);
 }
 
 
