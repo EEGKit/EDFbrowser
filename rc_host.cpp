@@ -104,11 +104,28 @@ void UI_Mainwindow::rc_host_sock_rxdata_handler()
 
     if((n_sub_cmds == 1) && !strlen(cmd_args) && !strcmp(cmds_parsed[0], "LIST"))
     {
-      len = snprintf(tx_msg_str, 512, "*IDN?\n" "QUIT\n" "FILE:OPEN <path>\n" "FILE:CLOSE:ALL\n" "MONTAGE:LOAD <path>\n"
-                                      "SIGNAL:ADD:LABEL <label>\n" "SIGNAL:AMPLITUDE:ALL <units>\n" "SIGNAL:AMPLITUDE:LABEL <label> <units>\n"
-                                      "SIGNAL:AMPLITUDE:FIT:ALL\n" "SIGNAL:AMPLITUDE:FIT:LABEL <label>\n" "SIGNAL:OFFSET:ADJUST:ALL\n"
-                                      "SIGNAL:OFFSET:ZERO:ALL\n" "SIGNAL:REMOVE:LABEL <label>\n" "SIGNAL:REMOVE:ALL\n"
-                                      "TIMESCALE?\n" "TIMESCALE <seconds>\n" "VIEWTIME?\n" "VIEWTIME <seconds>\n");
+      len = snprintf(tx_msg_str, 512,
+              "*IDN?\n"
+              "QUIT\n"
+              "FILE:OPEN <path>\n"
+              "FILE:CLOSE:ALL\n"
+              "MONTAGE:LOAD <path>\n"
+              "SIGNAL:ADD:LABEL <label>\n"
+              "SIGNAL:AMPLITUDE:ALL <units>\n"
+              "SIGNAL:AMPLITUDE:LABEL <label> <units>\n"
+              "SIGNAL:AMPLITUDE:FIT:ALL\n"
+              "SIGNAL:AMPLITUDE:FIT:LABEL <label>\n"
+              "SIGNAL:OFFSET:ADJUST:ALL\n"
+              "SIGNAL:OFFSET:ADJUST:LABEL <label>\n"
+              "SIGNAL:OFFSET:ZERO:ALL\n"
+              "SIGNAL:OFFSET:ZERO:LABEL <label>\n"
+              "SIGNAL:REMOVE:LABEL <label>\n"
+              "SIGNAL:REMOVE:ALL\n"
+              "TIMESCALE?\n"
+              "TIMESCALE <seconds>\n"
+              "VIEWTIME?\n"
+              "VIEWTIME <seconds>\n");
+
       rc_host_sock->write(tx_msg_str, len);
       continue;
     }
