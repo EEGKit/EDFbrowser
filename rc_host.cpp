@@ -119,6 +119,8 @@ void UI_Mainwindow::rc_host_sock_rxdata_handler()
               "SIGNAL:OFFSET:ADJUST:LABEL <label>\n"
               "SIGNAL:OFFSET:ZERO:ALL\n"
               "SIGNAL:OFFSET:ZERO:LABEL <label>\n"
+              "SIGNAL:INVERT:ALL <value>\n"
+              "SIGNAL:INVERT:LABEL <label> <value>\n"
               "SIGNAL:REMOVE:LABEL <label>\n"
               "SIGNAL:REMOVE:ALL\n"
               "TIMESCALE?\n"
