@@ -106,7 +106,7 @@ void UI_Mainwindow::rc_host_sock_rxdata_handler()
     {
       len = snprintf(tx_msg_str, 512, "*IDN?\n" "QUIT\n" "FILE:OPEN <path>\n" "FILE:CLOSE:ALL\n" "MONTAGE:LOAD <path>\n"
                                       "SIGNAL:ADD:LABEL <label>\n" "SIGNAL:AMPLITUDE:ALL <units>\n" "SIGNAL:AMPLITUDE:FIT:ALL\n"
-                                      "SIGNAL:OFFSET:ADJUST:ALL\n" "SIGNAL:OFFSET:ZERO:ALL\n"
+                                      "SIGNAL:AMPLITUDE:FIT:LABEL <label>\n" "SIGNAL:OFFSET:ADJUST:ALL\n" "SIGNAL:OFFSET:ZERO:ALL\n"
                                       "SIGNAL:REMOVE:LABEL <label>\n" "SIGNAL:REMOVE:ALL\n"
                                       "TIMESCALE?\n" "TIMESCALE <seconds>\n" "VIEWTIME?\n" "VIEWTIME <seconds>\n");
       rc_host_sock->write(tx_msg_str, len);
@@ -338,7 +338,7 @@ int UI_Mainwindow::process_rc_cmd_montage(const char cmds_parsed[CMD_MAX_SUB_CMD
 
 int UI_Mainwindow::process_rc_cmd_signal(const char cmds_parsed[CMD_MAX_SUB_CMDS][CMD_PARSE_STR_LEN], const char *cmd_args, int n_sub_cmds)
 {
-  int i, j;
+  int i, j, n;
 
   char str1[512]="",
        str2[512]="";
@@ -429,27 +429,21 @@ int UI_Mainwindow::process_rc_cmd_signal(const char cmds_parsed[CMD_MAX_SUB_CMDS
     }
     else if((n_sub_cmds == 3) && !strcmp(cmds_parsed[2], "LABEL") && strlen(cmd_args))
       {
-        strlcpy(str1, cmd_args, 512);
-        strip_types_from_label(str1);
-        trim_spaces(str1);
-
-        for(i=0; i<signalcomps; i++)
+        i = get_signalcomp_number(cmd_args);
+        if(i >= 0)
         {
-          strlcpy(str2, signalcomp[i]->signallabel, 512);
-          trim_spaces(str2);
-          if(!strcmp(str2, str1))
-          {
-            remove_signalcomp(i);
-            setup_viewbuf();
-            break;
-          }
+          remove_signalcomp(i);
+          setup_viewbuf();
+          return 0;
         }
-
-        return 0;
+        else
+        {
+          return -4;
+        }
       }
       else
       {
-        return -4;
+        return -5;
       }
   }
 
@@ -463,7 +457,7 @@ int UI_Mainwindow::process_rc_cmd_signal(const char cmds_parsed[CMD_MAX_SUB_CMDS
 
       value2 = atof(cmd_args);
 
-      if((value2 > 1000000.001) || (value2 < 0.0000000999))  return -5;
+      if((value2 > 1000000.001) || (value2 < 0.0000000999))  return -6;
 
       for(i=0; i<signalcomps; i++)
       {
@@ -493,6 +487,20 @@ int UI_Mainwindow::process_rc_cmd_signal(const char cmds_parsed[CMD_MAX_SUB_CMDS
     {
       fit_signals_to_pane();
       return 0;
+    }
+
+    if((n_sub_cmds == 4) && !strcmp(cmds_parsed[2], "FIT") && !strcmp(cmds_parsed[3], "LABEL") && strlen(cmd_args))
+    {
+      n = get_signalcomp_number(cmd_args);
+      if(n >= 0)
+      {
+        fit_signals_to_pane(n);
+        return 0;
+      }
+      else
+      {
+        return -7;
+      }
     }
   }
 

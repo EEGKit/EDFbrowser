@@ -4562,42 +4562,12 @@ void ViewCurve::Z_scoringButton()
 
 void ViewCurve::FittopaneButton()
 {
-  int j,
-      pane_size,
-      signalcomps;
-
-  struct signalcompblock **signalcomp;
-
-
-  signalcomps = mainwindow->signalcomps;
-  signalcomp = mainwindow->signalcomp;
-
-  if(signal_nr >= mainwindow->signalcomps)
+  if((signal_nr < 0) || (signal_nr >= mainwindow->signalcomps))
   {
     return;
   }
 
-  pane_size = (int)(((double)height() * 0.95) / signalcomps);
-
-  for(j=0; j<signalcomp[signal_nr]->num_of_signals; j++)
-  {
-    if(signalcomp[signal_nr]->max_dig_value!=signalcomp[signal_nr]->min_dig_value)
-    {
-      signalcomp[signal_nr]->sensitivity[j] = (double)pane_size / (double)(signalcomp[signal_nr]->max_dig_value - signalcomp[signal_nr]->min_dig_value);
-    }
-    else
-    {
-      signalcomp[signal_nr]->sensitivity[j] = pane_size;
-    }
-
-    signalcomp[signal_nr]->voltpercm =
-     signalcomp[signal_nr]->edfhdr->edfparam[signalcomp[signal_nr]->edfsignal[0]].bitvalue
-     / (signalcomp[signal_nr]->sensitivity[0] * mainwindow->y_pixelsizefactor);
-
-    signalcomp[signal_nr]->screen_offset = ((signalcomp[signal_nr]->max_dig_value + signalcomp[signal_nr]->min_dig_value) / 2.0) * signalcomp[signal_nr]->sensitivity[0];
-  }
-
-  drawCurve_stage_1();
+  mainwindow->fit_signals_to_pane(signal_nr);
 
   sidemenu->close();
 }

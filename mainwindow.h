@@ -366,6 +366,8 @@ long long annot_editor_user_button_epoch_len,
 
   void remove_signalcomp(int);
 
+  int get_signalcomp_number(const char *);
+
 #ifdef Q_OS_WIN32
   QString specialFolder(int);
 #endif
@@ -561,6 +563,7 @@ public slots:
   void next_page();
   void dig_min_max_overflow_timer_func();
   void set_viewtime(long long);
+  void fit_signals_to_pane(int n=-1);
 
 private slots:
   void open_new_file();
@@ -579,7 +582,6 @@ private slots:
   void set_amplitude(QAction *);
   void set_amplitude_div2();
   void set_amplitude_mult2();
-  void fit_signals_to_pane();
   void fit_signals_dc_offset();
   void former_page();
   void playback_file();

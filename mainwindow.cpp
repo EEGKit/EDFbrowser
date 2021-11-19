@@ -3074,7 +3074,7 @@ void UI_Mainwindow::set_display_time_whole_rec()
 }
 
 
-void UI_Mainwindow::fit_signals_to_pane()
+void UI_Mainwindow::fit_signals_to_pane(int n)
 {
   int i, j,
       pane_size;
@@ -3085,6 +3085,11 @@ void UI_Mainwindow::fit_signals_to_pane()
 
   for(i=0; i<signalcomps; i++)
   {
+    if((n >= 0) && (n != i))
+    {
+      continue;
+    }
+
     for(j=0; j<signalcomp[i]->num_of_signals; j++)
     {
       if(signalcomp[i]->max_dig_value!=signalcomp[i]->min_dig_value)
@@ -4419,7 +4424,29 @@ void UI_Mainwindow::remove_signalcomp(int signal_nr)
 }
 
 
+int UI_Mainwindow::get_signalcomp_number(const char *label)
+{
+  int i;
 
+  char str1[512]="",
+       str2[512]="";
+
+  strlcpy(str1, label, 512);
+  strip_types_from_label(str1);
+  trim_spaces(str1);
+
+  for(i=0; i<signalcomps; i++)
+  {
+    strlcpy(str2, signalcomp[i]->signallabel, 512);
+    trim_spaces(str2);
+    if(!strcmp(str2, str1))
+    {
+      return i;
+    }
+  }
+
+  return -1;
+}
 
 
 
