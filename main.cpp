@@ -99,9 +99,13 @@ int main(int argc, char *argv[])
 
   qApp->setStyleSheet("QMessageBox { messagebox-text-interaction-flags: 5; }");
 
-  class UI_Mainwindow MainWindow;
+  UI_Mainwindow *MainWindow = new UI_Mainwindow;
 
-  return app.exec();
+  int ret = app.exec();
+
+  delete MainWindow;
+
+  return ret;
 }
 
 

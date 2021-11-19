@@ -30,112 +30,6 @@
 
 
 
-int UI_Mainwindow::parse_rc_command(const char *cmd_str, char cmd_parsed_str[CMD_MAX_SUB_CMDS][CMD_PARSE_STR_LEN], char *arg_n_str, int arg_n_len)
-{
-  int i, j, k,
-      last_char_colon=0;
-
-  cmd_parsed_str[0][0] = 0;
-
-  arg_n_str[0] = 0;
-
-  for(j=0; j<CMD_MAX_SUB_CMDS; j++)
-  {
-    cmd_parsed_str[j][0] = 0;
-  }
-
-  for(i=0, j=0, k=0; i<511; i++)
-  {
-    if(j >= CMD_MAX_SUB_CMDS)
-    {
-      return -2;
-    }
-
-    if(k >= (CMD_PARSE_STR_LEN - 1))
-    {
-      cmd_parsed_str[j][CMD_PARSE_STR_LEN - 1] = 0;
-
-      return -3;
-    }
-
-    cmd_parsed_str[j][k] = cmd_str[i];
-
-    if(cmd_parsed_str[j][k] == 0)
-    {
-      if(!k)
-      {
-        return -4;
-      }
-      else
-      {
-        if(cmd_parsed_str[j][k-1] == ':')
-        {
-          return -5;
-        }
-      }
-
-      ascii_toupper(cmd_parsed_str[j++]);
-
-      return j;
-    }
-
-    if(cmd_parsed_str[j][k] == ':')
-    {
-      if(last_char_colon || !k)
-      {
-        cmd_parsed_str[j][0] = 0;
-
-        return -6;
-      }
-
-      last_char_colon++;
-
-      cmd_parsed_str[j][k] = 0;
-
-      ascii_toupper(cmd_parsed_str[j++]);
-
-      if(j >= CMD_MAX_SUB_CMDS)
-      {
-        return -5;
-      }
-
-      k = 0;
-
-      continue;
-    }
-    else
-    {
-      last_char_colon = 0;
-    }
-
-    if(cmd_parsed_str[j][k] == ' ')
-    {
-      cmd_parsed_str[j][k] = 0;
-
-      if(!k)
-      {
-        return -6;
-      }
-
-      if(cmd_parsed_str[j][k-1] == ':')
-      {
-        return -7;
-      }
-
-      ascii_toupper(cmd_parsed_str[j++]);
-
-      strlcpy(arg_n_str, cmd_str + i + 1, arg_n_len);
-
-      return j;
-    }
-
-    k++;
-  }
-
-  return -1;
-}
-
-
 void UI_Mainwindow::rc_host_server_new_connection()
 {
   printf("rc host server: new connection\n");
@@ -251,6 +145,112 @@ void UI_Mainwindow::rc_host_sock_rxdata_handler()
       continue;
     }
   }
+}
+
+
+int UI_Mainwindow::parse_rc_command(const char *cmd_str, char cmd_parsed_str[CMD_MAX_SUB_CMDS][CMD_PARSE_STR_LEN], char *arg_n_str, int arg_n_len)
+{
+  int i, j, k,
+      last_char_colon=0;
+
+  cmd_parsed_str[0][0] = 0;
+
+  arg_n_str[0] = 0;
+
+  for(j=0; j<CMD_MAX_SUB_CMDS; j++)
+  {
+    cmd_parsed_str[j][0] = 0;
+  }
+
+  for(i=0, j=0, k=0; i<511; i++)
+  {
+    if(j >= CMD_MAX_SUB_CMDS)
+    {
+      return -2;
+    }
+
+    if(k >= (CMD_PARSE_STR_LEN - 1))
+    {
+      cmd_parsed_str[j][CMD_PARSE_STR_LEN - 1] = 0;
+
+      return -3;
+    }
+
+    cmd_parsed_str[j][k] = cmd_str[i];
+
+    if(cmd_parsed_str[j][k] == 0)
+    {
+      if(!k)
+      {
+        return -4;
+      }
+      else
+      {
+        if(cmd_parsed_str[j][k-1] == ':')
+        {
+          return -5;
+        }
+      }
+
+      ascii_toupper(cmd_parsed_str[j++]);
+
+      return j;
+    }
+
+    if(cmd_parsed_str[j][k] == ':')
+    {
+      if(last_char_colon || !k)
+      {
+        cmd_parsed_str[j][0] = 0;
+
+        return -6;
+      }
+
+      last_char_colon++;
+
+      cmd_parsed_str[j][k] = 0;
+
+      ascii_toupper(cmd_parsed_str[j++]);
+
+      if(j >= CMD_MAX_SUB_CMDS)
+      {
+        return -5;
+      }
+
+      k = 0;
+
+      continue;
+    }
+    else
+    {
+      last_char_colon = 0;
+    }
+
+    if(cmd_parsed_str[j][k] == ' ')
+    {
+      cmd_parsed_str[j][k] = 0;
+
+      if(!k)
+      {
+        return -6;
+      }
+
+      if(cmd_parsed_str[j][k-1] == ':')
+      {
+        return -7;
+      }
+
+      ascii_toupper(cmd_parsed_str[j++]);
+
+      strlcpy(arg_n_str, cmd_str + i + 1, arg_n_len);
+
+      return j;
+    }
+
+    k++;
+  }
+
+  return -1;
 }
 
 
