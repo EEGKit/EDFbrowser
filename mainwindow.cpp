@@ -3113,7 +3113,7 @@ void UI_Mainwindow::fit_signals_to_pane(int n)
 }
 
 
-void UI_Mainwindow::fit_signals_dc_offset()
+void UI_Mainwindow::fit_signals_dc_offset(int n)
 {
   int i;
 
@@ -3121,6 +3121,11 @@ void UI_Mainwindow::fit_signals_dc_offset()
 
   for(i=0; i<signalcomps; i++)
   {
+    if((n >= 0) && (n != i))
+    {
+      continue;
+    }
+
     signalcomp[i]->screen_offset = ((signalcomp[i]->max_dig_value + signalcomp[i]->min_dig_value) / 2.0) * signalcomp[i]->sensitivity[0] * signalcomp[i]->polarity;
   }
 
@@ -3713,7 +3718,7 @@ void UI_Mainwindow::print_to_bdf()
 }
 
 
-void UI_Mainwindow::set_dc_offset_to_zero()
+void UI_Mainwindow::set_dc_offset_to_zero(int n)
 {
   int i;
 
@@ -3724,6 +3729,11 @@ void UI_Mainwindow::set_dc_offset_to_zero()
 
   for(i=0; i<signalcomps; i++)
   {
+    if((n >= 0) && (n != i))
+    {
+      continue;
+    }
+
     signalcomp[i]->screen_offset = 0.0;
   }
 

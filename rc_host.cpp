@@ -557,7 +557,7 @@ int UI_Mainwindow::process_rc_cmd_signal(const char cmds_parsed[CMD_MAX_SUB_CMDS
       }
       else
       {
-        return -7;
+        return -13;
       }
     }
   }
@@ -570,10 +570,38 @@ int UI_Mainwindow::process_rc_cmd_signal(const char cmds_parsed[CMD_MAX_SUB_CMDS
       return 0;
     }
 
+    if((n_sub_cmds == 4) && !strcmp(cmds_parsed[2], "ADJUST") && !strcmp(cmds_parsed[3], "LABEL") && strlen(cmd_args))
+    {
+      n = get_signalcomp_number(cmd_args);
+      if(n >= 0)
+      {
+        fit_signals_dc_offset(n);
+        return 0;
+      }
+      else
+      {
+        return -14;
+      }
+    }
+
     if((n_sub_cmds == 4) && !strcmp(cmds_parsed[2], "ZERO") && !strcmp(cmds_parsed[3], "ALL") && !strlen(cmd_args))
     {
       set_dc_offset_to_zero();
       return 0;
+    }
+
+    if((n_sub_cmds == 4) && !strcmp(cmds_parsed[2], "ZERO") && !strcmp(cmds_parsed[3], "LABEL") && strlen(cmd_args))
+    {
+      n = get_signalcomp_number(cmd_args);
+      if(n >= 0)
+      {
+        set_dc_offset_to_zero(n);
+        return 0;
+      }
+      else
+      {
+        return -15;
+      }
     }
   }
 

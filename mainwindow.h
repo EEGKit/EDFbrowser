@@ -564,6 +564,8 @@ public slots:
   void dig_min_max_overflow_timer_func();
   void set_viewtime(long long);
   void fit_signals_to_pane(int n=-1);
+  void fit_signals_dc_offset(int n=-1);
+  void set_dc_offset_to_zero(int n=-1);
 
 private slots:
   void open_new_file();
@@ -582,7 +584,6 @@ private slots:
   void set_amplitude(QAction *);
   void set_amplitude_div2();
   void set_amplitude_mult2();
-  void fit_signals_dc_offset();
   void former_page();
   void playback_file();
   void stop_playback();
@@ -639,7 +640,6 @@ private slots:
   void slider_moved(int);
   void convert_emsa_to_edf();
   void bdf2edf_converter();
-  void set_dc_offset_to_zero();
   void annotation_editor();
   void save_file();
   void unisens2edf_converter();

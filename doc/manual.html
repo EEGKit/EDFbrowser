@@ -1956,11 +1956,11 @@
   </tr>
   <tr class="border">
     <td class="border">SIGNAL:AMPLITUDE:ALL &lt;units&gt;</td>
-    <td class="border">Sets the amplitude for all signals</td>
+    <td class="border">Sets the amplitude for all signals (expressed in units/cm)</td>
   </tr>
   <tr class="border">
     <td class="border">SIGNAL:AMPLITUDE:LABEL &lt;label&gt; &lt;units&gt;</td>
-    <td class="border">Sets the amplitude for signal label e.g. SIGNAL:AMPLITUDE:LABEL F3 100</td>
+    <td class="border">Sets the amplitude for signal label (expressed in units/cm) e.g. SIGNAL:AMPLITUDE:LABEL F3 100</td>
   </tr>
   <tr class="border">
     <td class="border">SIGNAL:AMPLITUDE:FIT:ALL</td>
@@ -1975,8 +1975,16 @@
     <td class="border">Adjusts the DC-offset for all signals automatically</td>
   </tr>
   <tr class="border">
+    <td class="border">SIGNAL:OFFSET:ADJUST:LABEL &lt;label&gt;</td>
+    <td class="border">Adjusts the DC-offset for signal label automatically</td>
+  </tr>
+  <tr class="border">
     <td class="border">SIGNAL:OFFSET:ZERO:ALL</td>
     <td class="border">Sets the DC-offset for all signals to zero</td>
+  </tr>
+  <tr class="border">
+    <td class="border">SIGNAL:OFFSET:ZERO:LABEL &lt;label&gt;</td>
+    <td class="border">Sets the DC-offset for signal label to zero</td>
   </tr>
   <tr class="border">
     <td class="border">SIGNAL:REMOVE:LABEL &lt;label&gt;</td>
