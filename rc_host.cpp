@@ -622,6 +622,26 @@ int UI_Mainwindow::process_rc_cmd_signal(const char cmds_parsed[CMD_MAX_SUB_CMDS
     }
   }
 
+  if(!strcmp(cmds_parsed[1], "INVERT"))
+  {
+    if((n_sub_cmds == 3) && !strcmp(cmds_parsed[2], "ALL") && strlen(cmd_args))
+    {
+      if(is_integer_number(cmd_args))  return -16;
+
+      n = atoi(cmd_args);
+      if((n < 0) || (n > 1))  return -17;
+
+      //FIXME  TODO
+
+      return 0;
+    }
+    else
+    {
+      return -18;
+    }
+  }
+
+
   return 0;
 }
 

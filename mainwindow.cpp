@@ -4458,8 +4458,43 @@ int UI_Mainwindow::get_signalcomp_number(const char *label)
   return -1;
 }
 
+/* inv: 0 - not inverted
+ * inv: 1 - inverted
+ * inv: 2 - toggle
+ *
+ * n: default: -1: apply to all signals
+ * n: >= 0: apply one signal only
+ */
+void UI_Mainwindow::signalcomp_invert(int inv, int n)
+{
+  int i;
 
+  for(i=0; i<signalcomps; i++)
+  {
+    if((n >= 0) && (n != i))  continue;
 
+    if((inv == 0) && (signalcomp[i]->polarity == -1))  /* not inverted */
+    {
+      signalcomp[i]->polarity *= -1;
+
+      signalcomp[i]->screen_offset *= -1;
+    }
+    else if((inv == 1) && (signalcomp[i]->polarity == 1))  /* inverted */
+      {
+        signalcomp[i]->polarity *= -1;
+
+        signalcomp[i]->screen_offset *= -1;
+      }
+      else if(inv == 2)  /* toggle */
+      {
+        signalcomp[i]->polarity *= -1;
+
+        signalcomp[i]->screen_offset *= -1;
+      }
+  }
+
+  setup_viewbuf();
+}
 
 
 

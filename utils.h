@@ -102,7 +102,7 @@ int fprint_int_number_nonlocalized(FILE *, int, int, int);
 int fprint_ll_number_nonlocalized(FILE *, long long, int, int);
 
 /* returns 1 in case the string is not a number */
-int is_integer_number(char *);
+int is_integer_number(const char *);
 int is_number(const char *);
 
 int round_125_cat(double);  /* returns 10, 20 or 50, depending on the value */

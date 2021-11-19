@@ -566,6 +566,7 @@ public slots:
   void fit_signals_to_pane(int n=-1);
   void fit_signals_dc_offset(int n=-1);
   void set_dc_offset_to_zero(int n=-1);
+  void signalcomp_invert(int, int n=-1);
 
 private slots:
   void open_new_file();
