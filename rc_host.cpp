@@ -700,7 +700,7 @@ int UI_Mainwindow::process_rc_cmd_timescale(const char cmds_parsed[CMD_MAX_SUB_C
   if((n_sub_cmds == 1) && !strcmp(cmds_parsed[0], "TIMESCALE?") && !strlen(cmd_args))
   {
 #ifdef Q_OS_WIN32
-    len = _mingw_snprintf(tx_msg_str, 512, "%llu.%llu\n", pagetime / TIME_DIMENSION, pagetime % TIME_DIMENSION);
+    len = __mingw_snprintf(tx_msg_str, 512, "%llu.%llu\n", pagetime / TIME_DIMENSION, pagetime % TIME_DIMENSION);
 #else
     len = snprintf(tx_msg_str, 512, "%llu.%llu\n", pagetime / TIME_DIMENSION, pagetime % TIME_DIMENSION);
 #endif
@@ -747,7 +747,7 @@ int UI_Mainwindow::process_rc_cmd_viewtime(const char cmds_parsed[CMD_MAX_SUB_CM
       return 0;
     }
 #ifdef Q_OS_WIN32
-    len = _mingw_snprintf(tx_msg_str, 512, "%lli.%lli\n", edfheaderlist[sel_viewtime]->viewtime / TIME_DIMENSION, edfheaderlist[sel_viewtime]->viewtime % TIME_DIMENSION);
+    len = __mingw_snprintf(tx_msg_str, 512, "%lli.%lli\n", edfheaderlist[sel_viewtime]->viewtime / TIME_DIMENSION, edfheaderlist[sel_viewtime]->viewtime % TIME_DIMENSION);
 #else
     len = snprintf(tx_msg_str, 512, "%lli.%lli\n", edfheaderlist[sel_viewtime]->viewtime / TIME_DIMENSION, edfheaderlist[sel_viewtime]->viewtime % TIME_DIMENSION);
 #endif
