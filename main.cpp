@@ -1,6 +1,8 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <limits.h>
+#include <stdint.h>
 
 #include <QApplication>
 #include <QObject>
@@ -22,6 +24,16 @@ int main(int argc, char *argv[])
 #error "Wrong compiler or platform!"
 #endif
 
+#if CHAR_BIT != 8
+#error "unsupported char size"
+#endif
+
+  union
+  {
+    char four[4];
+    int one;
+  } byte_order_test_var;
+
   /* avoid surprises! */
   if((sizeof(char)      != 1) ||
      (sizeof(short)     != 2) ||
@@ -29,6 +41,17 @@ int main(int argc, char *argv[])
      (sizeof(long long) != 8) ||
      (sizeof(float)     != 4) ||
      (sizeof(double)    != 8))
+  {
+    fprintf(stderr, "Wrong compiler or platform!\n");
+    return EXIT_FAILURE;
+  }
+
+  /* check endianness! */
+  byte_order_test_var.one = 0x03020100;
+  if((byte_order_test_var.four[0] != 0) ||
+     (byte_order_test_var.four[1] != 1) ||
+     (byte_order_test_var.four[2] != 2) ||
+     (byte_order_test_var.four[3] != 3))
   {
     fprintf(stderr, "Wrong compiler or platform!\n");
     return EXIT_FAILURE;
