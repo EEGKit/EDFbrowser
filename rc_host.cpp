@@ -61,27 +61,52 @@ void UI_Mainwindow::rc_host_sock_rxdata_handler()
 {
   int n, len, n_sub_cmds, err;
 
-  char rx_msg_str[512]="",
-       tx_msg_str[512]="",
+  static int rx_idx=0;
+
+  char tx_msg_str[512]="",
        cmd_args[512]="",
        cmds_parsed[CMD_MAX_SUB_CMDS][CMD_PARSE_STR_LEN]={"","","","","","","",""};
 
+  static char rx_msg_str[512];
+
+  static QTcpSocket *sock=NULL;
+
+  if(rc_host_sock != sock)
+  {
+    sock = rc_host_sock;
+
+    rx_idx = 0;
+  }
+
   for(n=1; n>0; )
   {
-    n = rc_host_sock->readLine(rx_msg_str, 511);
+    n = rc_host_sock->read(rx_msg_str + rx_idx, 1);
     if(n < 1)  break;
 
-    if(rx_msg_str[n-1] == '\n')
+    if(rx_msg_str[rx_idx] != '\n')
     {
-      if(--n < 1)  break;
-      rx_msg_str[n] = 0;
+      rx_idx++;
+      rx_idx %= 512;
+
+      continue;
     }
 
-    if(rx_msg_str[n-1] == '\r')
+    rx_msg_str[rx_idx] = 0;
+
+    if(rx_idx > 0)
     {
-      if(--n < 1)  break;
-      rx_msg_str[n] = 0;
+      if(rx_msg_str[rx_idx-1] == '\r')
+      {
+        rx_msg_str[--rx_idx] = 0;
+      }
     }
+
+    if(rx_idx == 0)
+    {
+      continue;
+    }
+
+    rx_idx = 0;
 
     n_sub_cmds = parse_rc_command(rx_msg_str, cmds_parsed, cmd_args, 512);
 
