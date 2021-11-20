@@ -108,6 +108,8 @@ void UI_Mainwindow::rc_host_sock_rxdata_handler()
 
     rx_idx = 0;
 
+    trim_spaces(rx_msg_str);
+
     n_sub_cmds = parse_rc_command(rx_msg_str, cmds_parsed, cmd_args, 512);
 
 /*****************************************************************************/
