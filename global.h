@@ -104,6 +104,8 @@
 #define VIDEO_STATUS_PAUSED      (17)
 #define VIDEO_STATUS_ENDED       (18)
 
+#define RC_ERR_QUEUE_SZ          (16)
+
 #include "filter.h"
 #include "third_party/fidlib/fidlib.h"
 #include "ravg_filter.h"

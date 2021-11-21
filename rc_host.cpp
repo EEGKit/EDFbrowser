@@ -43,7 +43,7 @@ void UI_Mainwindow::rc_host_server_new_connection()
       printf("setup rc host socket\n");
 
       QObject::connect(rc_host_sock, SIGNAL(disconnected()), this, SLOT(rc_host_sock_disconnected_handler()));
-      QObject::connect(rc_host_sock, SIGNAL(readyRead()),    this, SLOT(rc_host_sock_rxdata_handler()));
+      QObject::connect(rc_host_sock, SIGNAL(readyRead()),    this, SLOT(rc_host_sock_rxdata_handler()), Qt::QueuedConnection);
     }
   }
 }
@@ -59,15 +59,15 @@ void UI_Mainwindow::rc_host_sock_disconnected_handler()
 
 void UI_Mainwindow::rc_host_sock_rxdata_handler()
 {
-  int n, len, n_sub_cmds, err;
+  int i, n, len, n_sub_cmds, err;
 
   static int rx_idx=0;
 
-  char tx_msg_str[512]="",
-       cmd_args[512]="",
+  char tx_msg_str[1024]="",
+       cmd_args[1024]="",
        cmds_parsed[CMD_MAX_SUB_CMDS][CMD_PARSE_STR_LEN]={"","","","","","","",""};
 
-  static char rx_msg_str[512];
+  static char rx_msg_str[1024];
 
   static QTcpSocket *sock=NULL;
 
@@ -81,12 +81,17 @@ void UI_Mainwindow::rc_host_sock_rxdata_handler()
   for(n=1; n>0; )
   {
     n = rc_host_sock->read(rx_msg_str + rx_idx, 1);
-    if(n < 1)  break;
+    if(n < 1)
+    {
+      rc_cmd_in_progress = 0;
+
+      break;
+    }
 
     if(rx_msg_str[rx_idx] != '\n')
     {
       rx_idx++;
-      rx_idx %= 512;
+      rx_idx %= 1024;
 
       continue;
     }
@@ -110,7 +115,7 @@ void UI_Mainwindow::rc_host_sock_rxdata_handler()
 
     trim_spaces(rx_msg_str);
 
-    n_sub_cmds = parse_rc_command(rx_msg_str, cmds_parsed, cmd_args, 512);
+    n_sub_cmds = parse_rc_command(rx_msg_str, cmds_parsed, cmd_args, 1024);
 
 /*****************************************************************************/
 //     int i;
@@ -126,14 +131,45 @@ void UI_Mainwindow::rc_host_sock_rxdata_handler()
 
     if(n_sub_cmds < 1)
     {
+      register_rc_err(201);
       continue;
     }
 
-    if((n_sub_cmds == 1) && !strlen(cmd_args) && !strcmp(cmds_parsed[0], "LIST"))
+    if((n_sub_cmds == 1) && !strcmp(cmds_parsed[0], "OPC?"))
     {
-      len = snprintf(tx_msg_str, 512,
+      if(strlen(cmd_args))
+      {
+        register_rc_err(203);
+        continue;
+      }
+      if(rc_cmd_in_progress)
+      {
+        len = snprintf(tx_msg_str, 1024, "0\n");
+      }
+      else
+      {
+        len = snprintf(tx_msg_str, 1024, "1\n");
+      }
+      rc_host_sock->write(tx_msg_str, len);
+      continue;
+    }
+
+    rc_cmd_in_progress = 1;
+
+    if((n_sub_cmds == 1) && !strcmp(cmds_parsed[0], "LIST"))
+    {
+      if(strlen(cmd_args))
+      {
+        register_rc_err(203);
+        continue;
+      }
+      len = snprintf(tx_msg_str, 1024,
               "*IDN?\n"
               "QUIT\n"
+              "*RST\n"
+              "*CLS\n"
+              "FAULT?\n"
+              "OPC?\n"
               "FILE:OPEN <path>\n"
               "FILE:CLOSE:ALL\n"
               "MONTAGE:LOAD <path>\n"
@@ -159,28 +195,88 @@ void UI_Mainwindow::rc_host_sock_rxdata_handler()
       continue;
     }
 
-    if((n_sub_cmds == 1) && !strlen(cmd_args) && !strcmp(cmds_parsed[0], "*IDN?"))
+    if((n_sub_cmds == 1) && !strcmp(cmds_parsed[0], "*IDN?"))
     {
-      len = snprintf(tx_msg_str, 512, PROGRAM_NAME "," PROGRAM_VERSION "," THIS_APP_BITS_W "\n");
+      if(strlen(cmd_args))
+      {
+        register_rc_err(203);
+        continue;
+      }
+      len = snprintf(tx_msg_str, 1024, PROGRAM_NAME "," PROGRAM_VERSION "," THIS_APP_BITS_W "\n");
       rc_host_sock->write(tx_msg_str, len);
       continue;
     }
 
-    if((n_sub_cmds == 1) && !strlen(cmd_args) && !strcmp(cmds_parsed[0], "QUIT"))
+    if((n_sub_cmds == 1) && !strcmp(cmds_parsed[0], "QUIT"))
     {
+      if(strlen(cmd_args))
+      {
+        register_rc_err(203);
+        continue;
+      }
       exit_program();
+      continue;
+    }
+
+    if((n_sub_cmds == 1) && !strcmp(cmds_parsed[0], "*RST"))
+    {
+      if(strlen(cmd_args))
+      {
+        register_rc_err(203);
+        continue;
+      }
+      close_all_files();
+      continue;
+    }
+
+    if((n_sub_cmds == 1) && !strcmp(cmds_parsed[0], "*CLS"))
+    {
+      if(strlen(cmd_args))
+      {
+        register_rc_err(203);
+        continue;
+      }
+      for(i=0; i<RC_ERR_QUEUE_SZ; i++)
+      {
+        rc_err_queue[i] = 0;
+      }
+      rc_err_queue_idx = 0;
+      continue;
+    }
+
+    if((n_sub_cmds == 1) && !strcmp(cmds_parsed[0], "FAULT?"))
+    {
+      if(strlen(cmd_args))
+      {
+        register_rc_err(203);
+        continue;
+      }
+      rc_err_queue_idx += (RC_ERR_QUEUE_SZ - 1);
+      rc_err_queue_idx %= RC_ERR_QUEUE_SZ;
+
+      len = snprintf(tx_msg_str, 1024, "%i\n", rc_err_queue[rc_err_queue_idx]);
+      rc_host_sock->write(tx_msg_str, len);
+      rc_err_queue[rc_err_queue_idx] = 0;
       continue;
     }
 
     if(!strcmp(cmds_parsed[0], "FILE"))
     {
       err = process_rc_cmd_file(cmds_parsed, cmd_args, n_sub_cmds);
+      if(err)
+      {
+        register_rc_err(err);
+      }
       continue;
     }
 
     if(!strcmp(cmds_parsed[0], "MONTAGE"))
     {
       err = process_rc_cmd_montage(cmds_parsed, cmd_args, n_sub_cmds);
+      if(err)
+      {
+        register_rc_err(err);
+      }
       continue;
     }
 
@@ -189,7 +285,7 @@ void UI_Mainwindow::rc_host_sock_rxdata_handler()
       err = process_rc_cmd_signal(cmds_parsed, cmd_args, n_sub_cmds);
       if(err)
       {
-        printf("process_rc_cmd_signal() returns: %i\n", err);
+        register_rc_err(err);
       }
       continue;
     }
@@ -197,14 +293,24 @@ void UI_Mainwindow::rc_host_sock_rxdata_handler()
     if(!strcmp(cmds_parsed[0], "TIMESCALE") || !strcmp(cmds_parsed[0], "TIMESCALE?"))
     {
       err = process_rc_cmd_timescale(cmds_parsed, cmd_args, n_sub_cmds);
+      if(err)
+      {
+        register_rc_err(err);
+      }
       continue;
     }
 
     if(!strcmp(cmds_parsed[0], "VIEWTIME") || !strcmp(cmds_parsed[0], "VIEWTIME?"))
     {
       err = process_rc_cmd_viewtime(cmds_parsed, cmd_args, n_sub_cmds);
+      if(err)
+      {
+        register_rc_err(err);
+      }
       continue;
     }
+
+    register_rc_err(202);
   }
 }
 
@@ -319,45 +425,56 @@ int UI_Mainwindow::process_rc_cmd_file(const char cmds_parsed[CMD_MAX_SUB_CMDS][
 {
   if(n_sub_cmds < 2)
   {
-    return -1;
+    return 202;
   }
 
   if(!strcmp(cmds_parsed[1], "CLOSE"))
   {
-    if((n_sub_cmds == 3) && !strcmp(cmds_parsed[2], "ALL") && !strlen(cmd_args))
+    if((n_sub_cmds == 3) && !strcmp(cmds_parsed[2], "ALL"))
     {
+      if(strlen(cmd_args))
+      {
+        return 203;
+      }
       close_all_files();
       return 0;
     }
     else
     {
-      return -2;
+      return 202;
     }
   }
   else if(!strcmp(cmds_parsed[1], "OPEN"))
     {
-      if((n_sub_cmds == 2) && strlen(cmd_args))
+      if(n_sub_cmds == 2)
       {
-        if(files_open >= MAXFILES)  return 0;
-        if(annot_editor_active && files_open)  return 0;
-        if((files_open > 0) && (live_stream_active))  return 0;
+        if(!strlen(cmd_args))
+        {
+          return 204;
+        }
+        if(files_open >= MAXFILES)  return 103;
+        if(annot_editor_active && files_open)  return 101;
+        if((files_open > 0) && (live_stream_active))  return 102;
 
         strlcpy(drop_path, cmd_args, MAX_PATH_LENGTH);
         rc_file_open_requested = 1;
         open_new_file();
+        if(rc_file_open_err)
+        {
+          register_rc_err(rc_file_open_err);
+          rc_file_open_err = 0;
+        }
+        drop_path[0] = 0;
+        rc_file_open_requested = 0;
         return 0;
       }
       else
       {
-        return -3;
+        return 202;
       }
     }
-    else
-    {
-      return -4;
-    }
 
-  return 0;
+  return 202;
 }
 
 
@@ -365,24 +482,24 @@ int UI_Mainwindow::process_rc_cmd_montage(const char cmds_parsed[CMD_MAX_SUB_CMD
 {
   if(n_sub_cmds < 2)
   {
-    return -1;
+    return 202;
   }
 
-  if((n_sub_cmds == 2) && !strcmp(cmds_parsed[1], "LOAD") && strlen(cmd_args))
+  if((n_sub_cmds == 2) && !strcmp(cmds_parsed[1], "LOAD"))
   {
-    if(!files_open)  return 0;
-    if(signalcomps >= MAXSIGNALS)  return 0;
+    if(!strlen(cmd_args))
+    {
+      return 204;
+    }
+    if(!files_open)  return 205;
+    if(signalcomps >= MAXSIGNALS)  return 205;
     strlcpy(montagepath, cmd_args, MAX_PATH_LENGTH);
     UI_LoadMontagewindow load_mtg(this, montagepath);
     montagepath[0] = 0;
     return 0;
   }
-  else
-  {
-    return -2;
-  }
 
-  return 0;
+  return 202;
 }
 
 
@@ -390,8 +507,8 @@ int UI_Mainwindow::process_rc_cmd_signal(const char cmds_parsed[CMD_MAX_SUB_CMDS
 {
   int i, j, n, len, ival;
 
-  char str1[512]="",
-       str2[512]="",
+  char str1[1024]="",
+       str2[1024]="",
        *ptr=NULL;
 
   double value2=100,
@@ -401,21 +518,25 @@ int UI_Mainwindow::process_rc_cmd_signal(const char cmds_parsed[CMD_MAX_SUB_CMDS
 
   if(n_sub_cmds < 3)
   {
-    return -1;
+    return 202;
   }
 
   if(!strcmp(cmds_parsed[1], "ADD"))
   {
-    if((n_sub_cmds == 3) && !strcmp(cmds_parsed[2], "LABEL") && strlen(cmd_args))
+    if((n_sub_cmds == 3) && !strcmp(cmds_parsed[2], "LABEL"))
     {
-      if(!files_open)  return 0;
-      if(signalcomps >= MAXSIGNALS)  return 0;
-      strlcpy(str1, cmd_args, 512);
+      if(!strlen(cmd_args))
+      {
+        return 204;
+      }
+      if(!files_open)  return 205;
+      if(signalcomps >= MAXSIGNALS)  return 205;
+      strlcpy(str1, cmd_args, 1024);
       trim_spaces(str1);
 
       for(i=0; i<edfheaderlist[0]->edfsignals; i++)
       {
-        strlcpy(str2, edfheaderlist[0]->edfparam[i].label, 512);
+        strlcpy(str2, edfheaderlist[0]->edfparam[i].label, 1024);
         if((!strncmp(str2, "EDF Annotations ", 16)) || (!strncmp(str2, "BDF Annotations ", 16)))
         {
           continue;
@@ -425,7 +546,7 @@ int UI_Mainwindow::process_rc_cmd_signal(const char cmds_parsed[CMD_MAX_SUB_CMDS
         if(!strcmp(str2, str1))
         {
           newsignalcomp = (struct signalcompblock *)calloc(1, sizeof(struct signalcompblock));
-          if(newsignalcomp==NULL)  return 0;
+          if(newsignalcomp==NULL)  return 206;
           newsignalcomp->uid = uid_seq++;
           newsignalcomp->num_of_signals = 1;
           newsignalcomp->edfhdr = edfheaderlist[0];
@@ -462,24 +583,36 @@ int UI_Mainwindow::process_rc_cmd_signal(const char cmds_parsed[CMD_MAX_SUB_CMDS
           break;
         }
       }
+      if(i == edfheaderlist[0]->edfsignals)
+      {
+        return 207;
+      }
 
       return 0;
     }
     else
     {
-      return -2;
+      return 202;
     }
   }
 
   if(!strcmp(cmds_parsed[1], "REMOVE"))
   {
-    if((n_sub_cmds == 3) && !strcmp(cmds_parsed[2], "ALL") && !strlen(cmd_args))
+    if((n_sub_cmds == 3) && !strcmp(cmds_parsed[2], "ALL"))
     {
+      if(strlen(cmd_args))
+      {
+        return 203;
+      }
       remove_all_signals();
       return 0;
     }
-    else if((n_sub_cmds == 3) && !strcmp(cmds_parsed[2], "LABEL") && strlen(cmd_args))
+    else if((n_sub_cmds == 3) && !strcmp(cmds_parsed[2], "LABEL"))
       {
+        if(!strlen(cmd_args))
+        {
+          return 204;
+        }
         i = get_signalcomp_number(cmd_args);
         if(i >= 0)
         {
@@ -489,26 +622,30 @@ int UI_Mainwindow::process_rc_cmd_signal(const char cmds_parsed[CMD_MAX_SUB_CMDS
         }
         else
         {
-          return -4;
+          return 207;
         }
       }
       else
       {
-        return -5;
+        return 202;
       }
   }
 
   if(!strcmp(cmds_parsed[1], "AMPLITUDE"))
   {
-    if((n_sub_cmds == 3) && !strcmp(cmds_parsed[2], "ALL") && strlen(cmd_args))
+    if((n_sub_cmds == 3) && !strcmp(cmds_parsed[2], "ALL"))
     {
-      if(!signalcomps)  return 0;
+      if(!strlen(cmd_args))
+      {
+        return 204;
+      }
+      if(!signalcomps)  return 205;
 
-      if(is_number(cmd_args))  return -6;
+      if(is_number(cmd_args))  return 203;
 
       value2 = atof(cmd_args);
 
-      if((value2 > 1000000.001) || (value2 < 0.0000000999))  return -7;
+      if((value2 > 1000000.001) || (value2 < 0.0000000999))  return 208;
 
       for(i=0; i<signalcomps; i++)
       {
@@ -534,9 +671,13 @@ int UI_Mainwindow::process_rc_cmd_signal(const char cmds_parsed[CMD_MAX_SUB_CMDS
       return 0;
     }
 
-    if((n_sub_cmds == 3) && !strcmp(cmds_parsed[2], "LABEL") && (strlen(cmd_args) > 2))
+    if((n_sub_cmds == 3) && !strcmp(cmds_parsed[2], "LABEL"))
     {
-      strlcpy(str1, cmd_args, 512);
+      if(strlen(cmd_args) < 3)
+      {
+        return 203;
+      }
+      strlcpy(str1, cmd_args, 1024);
 
       len = strlen(str1);
 
@@ -548,23 +689,23 @@ int UI_Mainwindow::process_rc_cmd_signal(const char cmds_parsed[CMD_MAX_SUB_CMDS
         }
       }
 
-      if(ptr == NULL)  return -8;
+      if(ptr == NULL)  return 204;
 
       *ptr = 0;
 
       ptr++;
 
-      if(!strlen(ptr))  return -9;
+      if(!strlen(ptr))  return 204;
 
-      if(is_number(ptr))  return -10;
+      if(is_number(ptr))  return 203;
 
-      if(!strlen(str1))  return -11;
+      if(!strlen(str1))  return 204;
 
       value2 = atof(ptr);
-      if((value2 > 1000000.001) || (value2 < 0.0000000999))  return -12;
+      if((value2 > 1000000.001) || (value2 < 0.0000000999))  return 208;
 
       n = get_signalcomp_number(str1);
-      if(n < 0)  return 0;
+      if(n < 0)  return 207;
 
       if(signalcomp[n]->edfhdr->edfparam[signalcomp[n]->edfsignal[0]].bitvalue < 0.0)
       {
@@ -587,14 +728,22 @@ int UI_Mainwindow::process_rc_cmd_signal(const char cmds_parsed[CMD_MAX_SUB_CMDS
       return 0;
     }
 
-    if((n_sub_cmds == 4) && !strcmp(cmds_parsed[2], "FIT") && !strcmp(cmds_parsed[3], "ALL") && !strlen(cmd_args))
+    if((n_sub_cmds == 4) && !strcmp(cmds_parsed[2], "FIT") && !strcmp(cmds_parsed[3], "ALL"))
     {
+      if(strlen(cmd_args))
+      {
+        return 203;
+      }
       fit_signals_to_pane();
       return 0;
     }
 
-    if((n_sub_cmds == 4) && !strcmp(cmds_parsed[2], "FIT") && !strcmp(cmds_parsed[3], "LABEL") && strlen(cmd_args))
+    if((n_sub_cmds == 4) && !strcmp(cmds_parsed[2], "FIT") && !strcmp(cmds_parsed[3], "LABEL"))
     {
+      if(!strlen(cmd_args))
+      {
+        return 204;
+      }
       n = get_signalcomp_number(cmd_args);
       if(n >= 0)
       {
@@ -603,21 +752,29 @@ int UI_Mainwindow::process_rc_cmd_signal(const char cmds_parsed[CMD_MAX_SUB_CMDS
       }
       else
       {
-        return -13;
+        return 207;
       }
     }
   }
 
   if(!strcmp(cmds_parsed[1], "OFFSET"))
   {
-    if((n_sub_cmds == 4) && !strcmp(cmds_parsed[2], "ADJUST") && !strcmp(cmds_parsed[3], "ALL") && !strlen(cmd_args))
+    if((n_sub_cmds == 4) && !strcmp(cmds_parsed[2], "ADJUST") && !strcmp(cmds_parsed[3], "ALL"))
     {
+      if(strlen(cmd_args))
+      {
+        return 203;
+      }
       fit_signals_dc_offset();
       return 0;
     }
 
-    if((n_sub_cmds == 4) && !strcmp(cmds_parsed[2], "ADJUST") && !strcmp(cmds_parsed[3], "LABEL") && strlen(cmd_args))
+    if((n_sub_cmds == 4) && !strcmp(cmds_parsed[2], "ADJUST") && !strcmp(cmds_parsed[3], "LABEL"))
     {
+      if(!strlen(cmd_args))
+      {
+        return 204;
+      }
       n = get_signalcomp_number(cmd_args);
       if(n >= 0)
       {
@@ -626,18 +783,26 @@ int UI_Mainwindow::process_rc_cmd_signal(const char cmds_parsed[CMD_MAX_SUB_CMDS
       }
       else
       {
-        return -14;
+        return 207;
       }
     }
 
-    if((n_sub_cmds == 4) && !strcmp(cmds_parsed[2], "ZERO") && !strcmp(cmds_parsed[3], "ALL") && !strlen(cmd_args))
+    if((n_sub_cmds == 4) && !strcmp(cmds_parsed[2], "ZERO") && !strcmp(cmds_parsed[3], "ALL"))
     {
+      if(strlen(cmd_args))
+      {
+        return 203;
+      }
       set_dc_offset_to_zero();
       return 0;
     }
 
-    if((n_sub_cmds == 4) && !strcmp(cmds_parsed[2], "ZERO") && !strcmp(cmds_parsed[3], "LABEL") && strlen(cmd_args))
+    if((n_sub_cmds == 4) && !strcmp(cmds_parsed[2], "ZERO") && !strcmp(cmds_parsed[3], "LABEL"))
     {
+      if(!strlen(cmd_args))
+      {
+        return 204;
+      }
       n = get_signalcomp_number(cmd_args);
       if(n >= 0)
       {
@@ -646,28 +811,36 @@ int UI_Mainwindow::process_rc_cmd_signal(const char cmds_parsed[CMD_MAX_SUB_CMDS
       }
       else
       {
-        return -15;
+        return 207;
       }
     }
   }
 
   if(!strcmp(cmds_parsed[1], "INVERT"))
   {
-    if((n_sub_cmds == 3) && !strcmp(cmds_parsed[2], "ALL") && strlen(cmd_args))
+    if((n_sub_cmds == 3) && !strcmp(cmds_parsed[2], "ALL"))
     {
-      if(is_integer_number(cmd_args))  return -16;
+      if(!strlen(cmd_args))
+      {
+        return 204;
+      }
+      if(is_integer_number(cmd_args))  return 203;
 
       n = atoi(cmd_args);
-      if((n < 0) || (n > 2))  return -17;
+      if((n < 0) || (n > 2))  return 208;
 
       signalcomp_invert(n);
 
       return 0;
     }
 
-    if((n_sub_cmds == 3) && !strcmp(cmds_parsed[2], "LABEL") && (strlen(cmd_args) > 2))
+    if((n_sub_cmds == 3) && !strcmp(cmds_parsed[2], "LABEL"))
     {
-      strlcpy(str1, cmd_args, 512);
+      if(strlen(cmd_args) < 3)
+      {
+        return 203;
+      }
+      strlcpy(str1, cmd_args, 1024);
 
       len = strlen(str1);
 
@@ -679,23 +852,23 @@ int UI_Mainwindow::process_rc_cmd_signal(const char cmds_parsed[CMD_MAX_SUB_CMDS
         }
       }
 
-      if(ptr == NULL)  return -18;
+      if(ptr == NULL)  return 204;
 
       *ptr = 0;
 
       ptr++;
 
-      if(!strlen(ptr))  return -19;
+      if(!strlen(ptr))  return 204;
 
-      if(is_integer_number(ptr))  return -20;
+      if(is_integer_number(ptr))  return 203;
 
-      if(!strlen(str1))  return -21;
+      if(!strlen(str1))  return 204;
 
       ival = atoi(ptr);
-      if((ival < 0) || (ival > 2))  return -22;
+      if((ival < 0) || (ival > 2))  return 208;
 
       n = get_signalcomp_number(str1);
-      if(n < 0)  return 0;
+      if(n < 0)  return 207;
 
       signalcomp_invert(ival, n);
 
@@ -703,11 +876,11 @@ int UI_Mainwindow::process_rc_cmd_signal(const char cmds_parsed[CMD_MAX_SUB_CMDS
     }
     else
     {
-      return -23;
+      return 202;
     }
   }
 
-  return 0;
+  return 202;
 }
 
 
@@ -717,38 +890,46 @@ int UI_Mainwindow::process_rc_cmd_timescale(const char cmds_parsed[CMD_MAX_SUB_C
 
   long long ltmp;
 
-  char tx_msg_str[512]="";
+  char tx_msg_str[1024]="";
 
   if(n_sub_cmds < 1)
   {
-    return -1;
+    return 202;
   }
 
-  if((n_sub_cmds == 1) && !strcmp(cmds_parsed[0], "TIMESCALE?") && !strlen(cmd_args))
+  if((n_sub_cmds == 1) && !strcmp(cmds_parsed[0], "TIMESCALE?"))
   {
+    if(strlen(cmd_args))
+    {
+      return 203;
+    }
 #ifdef Q_OS_WIN32
-    len = __mingw_snprintf(tx_msg_str, 512, "%llu.%llu\n", pagetime / TIME_DIMENSION, pagetime % TIME_DIMENSION);
+    len = __mingw_snprintf(tx_msg_str, 1024, "%llu.%llu\n", pagetime / TIME_DIMENSION, pagetime % TIME_DIMENSION);
 #else
-    len = snprintf(tx_msg_str, 512, "%llu.%llu\n", pagetime / TIME_DIMENSION, pagetime % TIME_DIMENSION);
+    len = snprintf(tx_msg_str, 1024, "%llu.%llu\n", pagetime / TIME_DIMENSION, pagetime % TIME_DIMENSION);
 #endif
     rc_host_sock->write(tx_msg_str, len);
     return 0;
   }
-  else if((n_sub_cmds == 1) && !strcmp(cmds_parsed[0], "TIMESCALE") && strlen(cmd_args))
+  else if((n_sub_cmds == 1) && !strcmp(cmds_parsed[0], "TIMESCALE"))
     {
-      if(is_number(cmd_args))  return 0;
+      if(!strlen(cmd_args))
+      {
+        return 204;
+      }
+      if(is_number(cmd_args))  return 203;
       ltmp = atoll_x(cmd_args, TIME_DIMENSION);
-      if((ltmp <= 100LL) || (ltmp >= (3600LL * TIME_DIMENSION)))  return 0;
+      if((ltmp <= 100LL) || (ltmp >= (3600LL * TIME_DIMENSION)))  return 208;
       pagetime = ltmp;
       setup_viewbuf();
-        return 0;
+      return 0;
     }
     else
     {
-      return -2;
+      return 202;
     }
 
-  return 0;
+  return 202;
 }
 
 
@@ -758,47 +939,60 @@ int UI_Mainwindow::process_rc_cmd_viewtime(const char cmds_parsed[CMD_MAX_SUB_CM
 
   long long ltmp;
 
-  char tx_msg_str[512]="";
+  char tx_msg_str[1024]="";
 
   if(n_sub_cmds < 1)
   {
-    return -1;
+    return 202;
   }
 
-  if((n_sub_cmds == 1) && !strcmp(cmds_parsed[0], "VIEWTIME?") && !strlen(cmd_args))
+  if((n_sub_cmds == 1) && !strcmp(cmds_parsed[0], "VIEWTIME?"))
   {
+    if(strlen(cmd_args))
+    {
+      return 203;
+    }
     if(!files_open)
     {
-      len = snprintf(tx_msg_str, 512, "0\n");
+      len = snprintf(tx_msg_str, 1024, "0\n");
       rc_host_sock->write(tx_msg_str, len);
       return 0;
     }
 #ifdef Q_OS_WIN32
-    len = __mingw_snprintf(tx_msg_str, 512, "%lli.%lli\n", edfheaderlist[sel_viewtime]->viewtime / TIME_DIMENSION, edfheaderlist[sel_viewtime]->viewtime % TIME_DIMENSION);
+    len = __mingw_snprintf(tx_msg_str, 1024, "%lli.%lli\n", edfheaderlist[sel_viewtime]->viewtime / TIME_DIMENSION, edfheaderlist[sel_viewtime]->viewtime % TIME_DIMENSION);
 #else
-    len = snprintf(tx_msg_str, 512, "%lli.%lli\n", edfheaderlist[sel_viewtime]->viewtime / TIME_DIMENSION, edfheaderlist[sel_viewtime]->viewtime % TIME_DIMENSION);
+    len = snprintf(tx_msg_str, 1024, "%lli.%lli\n", edfheaderlist[sel_viewtime]->viewtime / TIME_DIMENSION, edfheaderlist[sel_viewtime]->viewtime % TIME_DIMENSION);
 #endif
     rc_host_sock->write(tx_msg_str, len);
     return 0;
   }
-  else if((n_sub_cmds == 1) && !strcmp(cmds_parsed[0], "VIEWTIME") && strlen(cmd_args))
+  else if((n_sub_cmds == 1) && !strcmp(cmds_parsed[0], "VIEWTIME"))
     {
-      if(is_number(cmd_args))  return 0;
-      if(!files_open)  return 0;
+      if(!strlen(cmd_args))
+      {
+        return 204;
+      }
+      if(is_number(cmd_args))  return 203;
+      if(!files_open)  return 205;
       ltmp = atoll_x(cmd_args, TIME_DIMENSION);
-      if((ltmp <= (-30LL * TIME_DIMENSION)) || (ltmp >= (3600LL * 24LL * 7LL * TIME_DIMENSION)))  return 0;
+      if((ltmp <= (-30LL * TIME_DIMENSION)) || (ltmp >= (3600LL * 24LL * 7LL * TIME_DIMENSION)))  return 208;
       set_viewtime(ltmp);
       return 0;
     }
     else
     {
-      return -2;
+      return 202;
     }
 
-  return 0;
+  return 202;
 }
 
 
+void UI_Mainwindow::register_rc_err(int err)
+{
+  rc_err_queue[rc_err_queue_idx++] = err;
+  rc_err_queue_idx %= RC_ERR_QUEUE_SZ;
+}
 
 
 

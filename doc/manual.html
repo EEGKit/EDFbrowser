@@ -1927,11 +1927,10 @@
 </p>
 
 <div>
-<!--<table style="vertical-align:top; display:inline-table; empty-cells: hide; margin-left: 75px; border-collapse: collapse;">-->
 <table class="border">
   <tr class="border">
-    <th class="border">command</th>
-    <th class="border">description</th>
+    <th class="border" style="text-align:center;">Command</th>
+    <th class="border" style="text-align:center;">Description</th>
   </tr>
   <tr class="border">
     <td class="border">LIST</td>
@@ -1944,6 +1943,22 @@
   <tr class="border">
     <td class="border">QUIT</td>
     <td class="border">Closes the program</td>
+  </tr>
+  <tr class="border">
+    <td class="border">*RST</td>
+    <td class="border">Closes all open files</td>
+  </tr>
+  <tr class="border">
+    <td class="border">*CLS</td>
+    <td class="border">Deletes the error queue</td>
+  </tr>
+  <tr class="border">
+    <td class="border">FAULT?</td>
+    <td class="border">Shows an error code from the error queue</td>
+  </tr>
+  <tr class="border">
+    <td class="border">OPC?</td>
+    <td class="border">Operation complete: returns 1 if it has finished the operation, otherwise it returns 0</td>
   </tr>
   <tr class="border">
     <td class="border">FILE:OPEN &lt;path&gt;</td>
@@ -2026,6 +2041,77 @@
   <tr class="border">
     <td class="border">VIEWTIME &lt;seconds&gt;</td>
     <td class="border">Sets the viewtime relative to the start of the recording</td>
+  </tr>
+</table>
+</div>
+
+<p><br></p>
+
+<div>
+<table class="border">
+  <tr class="border">
+    <th class="border" style="text-align:center;">Error</th>
+    <th class="border" style="text-align:center;">Description</th>
+  </tr>
+  <tr class="border">
+    <td class="border">101</td>
+    <td class="border">Cannot open a second file</td>
+  </tr>
+  <tr class="border">
+    <td class="border">102</td>
+    <td class="border">Cannot open a second file</td>
+  </tr>
+  <tr class="border">
+    <td class="border">103</td>
+    <td class="border">Attempt to open too many files</td>
+  </tr>
+  <tr class="border">
+    <td class="border">104</td>
+    <td class="border">File has an unknown extension</td>
+  </tr>
+  <tr class="border">
+    <td class="border">105</td>
+    <td class="border">Cannot open file for reading</td>
+  </tr>
+  <tr class="border">
+    <td class="border">106</td>
+    <td class="border">File is not EDF or BDF compliant</td>
+  </tr>
+  <tr class="border">
+    <td class="border">107</td>
+    <td class="border">File is discontiguous (EDF+D or BDF+D)</td>
+  </tr>
+  <tr class="border">
+    <td class="border">201</td>
+    <td class="border">Command syntax error</td>
+  </tr>
+  <tr class="border">
+    <td class="border">202</td>
+    <td class="border">Unknown command received</td>
+  </tr>
+  <tr class="border">
+    <td class="border">203</td>
+    <td class="border">Invalid parameter received</td>
+  </tr>
+  <tr class="border">
+    <td class="border">204</td>
+    <td class="border">Missing parameter</td>
+  </tr>
+  <tr class="border">
+    <td class="border">205</td>
+    <td class="border">Operation not possible</td>
+  </tr>
+  <tr class="border">
+    <td class="border">206</td>
+    <td class="border">Malloc error</td>
+  </tr>
+  <tr class="border">
+    <td class="border">207</td>
+    <td class="border">Item not found</td>
+  </tr>
+  <tr class="border">
+    <td class="border">208</td>
+    <td class="border">Parameter value out of range</td>
   </tr>
 </table>
 </div>

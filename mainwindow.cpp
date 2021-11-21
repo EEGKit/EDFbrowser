@@ -1413,7 +1413,7 @@ void UI_Mainwindow::show_hypnogram()
 
 void UI_Mainwindow::open_new_file()
 {
-  FILE *newfile;
+  FILE *newfile=NULL;
 
   int i, len, present, position, button_nr=0;
 
@@ -1429,27 +1429,55 @@ void UI_Mainwindow::open_new_file()
 
   if(annot_editor_active && files_open)
   {
-    QMessageBox::critical(this, "Error", "You cannot open multiple files when editing annotations.\n"
-                                         "Close the annotation edit window first.");
+    if(rc_file_open_requested)
+    {
+      rc_file_open_err = 101;
+    }
+    else
+    {
+      QMessageBox::critical(this, "Error", "You cannot open multiple files when editing annotations.\n"
+                                           "Close the annotation edit window first.");
+    }
+    rc_file_open_requested = 0;
+    drop_path[0] = 0;
     cmdlineargument = 0;
     return;
   }
 
   if((files_open > 0) && (live_stream_active))
   {
-    QMessageBox::critical(this, "Error", "You cannot open multiple files while a streaming file is open.\n"
-                                         "Close the streaming file first.");
+    if(rc_file_open_requested)
+    {
+      rc_file_open_err = 102;
+    }
+    else
+    {
+      QMessageBox::critical(this, "Error", "You cannot open multiple files while a streaming file is open.\n"
+                                           "Close the streaming file first.");
+    }
+    rc_file_open_requested = 0;
+    drop_path[0] = 0;
+    cmdlineargument = 0;
     return;
   }
 
   if(files_open >= MAXFILES)
   {
-    QMessageBox::critical(this, "Error", "There are too many files opened.");
+    if(rc_file_open_requested)
+    {
+      rc_file_open_err = 103;
+    }
+    else
+    {
+      QMessageBox::critical(this, "Error", "There are too many files opened.");
+    }
+    rc_file_open_requested = 0;
+    drop_path[0] = 0;
     cmdlineargument = 0;
     return;
   }
 
-  if((cmdlineargument == 0) && (drop_path[0] == 0))
+  if((cmdlineargument == 0) && (drop_path[0] == 0) && (!rc_file_open_requested))
   {
     strlcpy(path, QFileDialog::getOpenFileName(this, "Open file", QString::fromLocal8Bit(recent_opendir), "EDF/BDF files (*.edf *.EDF *.bdf *.BDF *.rec *.REC)").toLocal8Bit().data(), MAX_PATH_LENGTH);
 
@@ -1548,9 +1576,18 @@ void UI_Mainwindow::open_new_file()
        &&(strcmp(path + (len - 4), ".bdf"))
        &&(strcmp(path + (len - 4), ".BDF")))
     {
-      snprintf(str, 2048, "File has an unknown extension:  \"%s\"", path + (len - 4));
+      if(rc_file_open_requested)
+      {
+        rc_file_open_err = 104;
+      }
+      else
+      {
+        snprintf(str, 2048, "File has an unknown extension:  \"%s\"", path + (len - 4));
 
-      QMessageBox::critical(this, "Error", QString::fromLocal8Bit(str));
+        QMessageBox::critical(this, "Error", QString::fromLocal8Bit(str));
+      }
+      rc_file_open_requested = 0;
+      drop_path[0] = 0;
       cmdlineargument = 0;
       return;
     }
@@ -1558,9 +1595,18 @@ void UI_Mainwindow::open_new_file()
     newfile = fopeno(path, "rb");
     if(newfile==NULL)
     {
-      snprintf(str, 2048, "Can not open file for reading:\n\"%s\"\n"
-                          "Check if you have the right permissions.", path);
-      QMessageBox::critical(this, "Error", QString::fromLocal8Bit(str));
+      if(rc_file_open_requested)
+      {
+        rc_file_open_err = 105;
+      }
+      else
+      {
+        snprintf(str, 2048, "Cannot open file for reading:\n\"%s\"\n"
+                            "Check if you have the right permissions.", path);
+        QMessageBox::critical(this, "Error", QString::fromLocal8Bit(str));
+      }
+      rc_file_open_requested = 0;
+      drop_path[0] = 0;
       cmdlineargument = 0;
       return;
     }
@@ -1587,35 +1633,55 @@ void UI_Mainwindow::open_new_file()
     {
       fclose(newfile);
 
-      if(strstr(str, "If you want to import annotations from this file") == NULL)
-      {
-        strlcat(str, "\n File is not a valid EDF or BDF file.", 2048);
-      }
+      newfile = NULL;
 
-      QMessageBox::critical(this, "Error", str);
+      if(rc_file_open_requested)
+      {
+        rc_file_open_err = 106;
+      }
+      else
+      {
+        if(strstr(str, "If you want to import annotations from this file") == NULL)
+        {
+          strlcat(str, "\n File is not a valid EDF or BDF file.", 2048);
+        }
+        QMessageBox::critical(this, "Error", str);
+      }
+      rc_file_open_requested = 0;
+      drop_path[0] = 0;
       cmdlineargument = 0;
       return;
     }
 
     if(edfhdr->discontinuous)
     {
-      if(edfhdr->edf)
+      if(rc_file_open_requested)
       {
-        QMessageBox::critical(this, "Error", "EDFbrowser cannot show EDF+D (discontiguous) files.\n"
-                                             "Convert this file to EDF+C first. You can find this converter\n"
-                                             "in the Tools menu (EDF+D to EDF+C converter).");
+        rc_file_open_err = 107;
       }
-
-      if(edfhdr->bdf)
+      else
       {
-        QMessageBox::critical(this, "Error", "EDFbrowser cannot show BDF+D (discontiguous) files.\n"
-                                             "Convert this file to BDF+C first. You can find this converter\n"
-                                             "in the Tools menu (EDF+D to EDF+C converter).");
+        if(edfhdr->edf)
+        {
+          QMessageBox::critical(this, "Error", "EDFbrowser cannot show EDF+D (discontiguous) files.\n"
+                                               "Convert this file to EDF+C first. You can find this converter\n"
+                                               "in the Tools menu (EDF+D to EDF+C converter).");
+        }
+
+        if(edfhdr->bdf)
+        {
+          QMessageBox::critical(this, "Error", "EDFbrowser cannot show BDF+D (discontiguous) files.\n"
+                                               "Convert this file to BDF+C first. You can find this converter\n"
+                                               "in the Tools menu (EDF+D to EDF+C converter).");
+        }
       }
 
       free(edfhdr->edfparam);
       free(edfhdr);
       fclose(newfile);
+      newfile = NULL;
+      rc_file_open_requested = 0;
+      drop_path[0] = 0;
       cmdlineargument = 0;
       return;
     }

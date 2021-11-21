@@ -306,6 +306,16 @@ UI_Mainwindow::UI_Mainwindow()
 
   rc_host_sock = NULL;
 
+  rc_cmd_in_progress = 0;
+
+  rc_file_open_err = 0;
+
+  rc_err_queue_idx = 0;
+  for(i=0; i<RC_ERR_QUEUE_SZ; i++)
+  {
+    rc_err_queue[i] = 0;
+  }
+
   cdsa_segmentlen = 30;
   cdsa_blocklen = 2;
   cdsa_overlap = 5;

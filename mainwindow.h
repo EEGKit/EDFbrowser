@@ -253,7 +253,11 @@ public:
       options_dialog_idx,
       edf_debug,
       rc_host_server_port,
-      rc_file_open_requested;
+      rc_file_open_requested,
+      rc_cmd_in_progress,
+      rc_file_open_err,
+      rc_err_queue_idx,
+      rc_err_queue[RC_ERR_QUEUE_SZ];
 
 long long annot_editor_user_button_epoch_len,
           hypnogram_epoch_len_threshold;
@@ -367,6 +371,8 @@ long long annot_editor_user_button_epoch_len,
   void remove_signalcomp(int);
 
   int get_signalcomp_number(const char *);
+
+  void register_rc_err(int);
 
 #ifdef Q_OS_WIN32
   QString specialFolder(int);
