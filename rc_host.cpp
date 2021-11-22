@@ -505,7 +505,7 @@ int UI_Mainwindow::process_rc_cmd_montage(const char cmds_parsed[CMD_MAX_SUB_CMD
 
 int UI_Mainwindow::process_rc_cmd_signal(const char cmds_parsed[CMD_MAX_SUB_CMDS][CMD_PARSE_STR_LEN], const char *cmd_args, int n_sub_cmds)
 {
-  int i, j, n, ival, err;
+  int i, j, n, ival, err, file_num=0;
 
   char str1[1024]="",
        str2[1024]="",
@@ -525,23 +525,44 @@ int UI_Mainwindow::process_rc_cmd_signal(const char cmds_parsed[CMD_MAX_SUB_CMDS
   {
     if((n_sub_cmds == 3) && !strcmp(cmds_parsed[2], "LABEL"))
     {
-      if(!strlen(cmd_args))
+      strlcpy(str1, cmd_args, 1024);
+      err = rc_get_last_cmd_args_token(str1, &ptr);
+      if(err)
       {
-        return 204;
+        return err;
       }
+
       if(!files_open)  return 205;
       if(signalcomps >= MAXSIGNALS)  return 205;
-      strlcpy(str1, cmd_args, 1024);
+      strip_types_from_label(str1);
       trim_spaces(str1);
 
-      for(i=0; i<edfheaderlist[0]->edfsignals; i++)
+      if(is_integer_number(ptr))
       {
-        strlcpy(str2, edfheaderlist[0]->edfparam[i].label, 1024);
+        return 203;
+      }
+
+      file_num = atoi(ptr);
+      if((file_num < 1) || (file_num > 32))
+      {
+        return 208;
+      }
+      file_num--;
+
+      if(file_num >= files_open)
+      {
+        return 207;
+      }
+
+      for(i=0; i<edfheaderlist[file_num]->edfsignals; i++)
+      {
+        strlcpy(str2, edfheaderlist[file_num]->edfparam[i].label, 1024);
         if((!strncmp(str2, "EDF Annotations ", 16)) || (!strncmp(str2, "BDF Annotations ", 16)))
         {
           continue;
         }
 
+        strip_types_from_label(str2);
         trim_spaces(str2);
         if(!strcmp(str2, str1))
         {
@@ -549,7 +570,7 @@ int UI_Mainwindow::process_rc_cmd_signal(const char cmds_parsed[CMD_MAX_SUB_CMDS
           if(newsignalcomp==NULL)  return 206;
           newsignalcomp->uid = uid_seq++;
           newsignalcomp->num_of_signals = 1;
-          newsignalcomp->edfhdr = edfheaderlist[0];
+          newsignalcomp->edfhdr = edfheaderlist[file_num];
           newsignalcomp->file_duration = newsignalcomp->edfhdr->long_data_record_duration * newsignalcomp->edfhdr->datarecords;
           newsignalcomp->voltpercm = default_amplitude;
           newsignalcomp->color = maincurve->signal_color;
@@ -583,7 +604,7 @@ int UI_Mainwindow::process_rc_cmd_signal(const char cmds_parsed[CMD_MAX_SUB_CMDS
           break;
         }
       }
-      if(i == edfheaderlist[0]->edfsignals)
+      if(i == edfheaderlist[file_num]->edfsignals)
       {
         return 207;
       }
@@ -679,6 +700,8 @@ int UI_Mainwindow::process_rc_cmd_signal(const char cmds_parsed[CMD_MAX_SUB_CMDS
       {
         return err;
       }
+
+      if(!files_open)  return 205;
 
       value2 = atof(ptr);
       if((value2 > 1000000.001) || (value2 < 0.0000000999))  return 208;

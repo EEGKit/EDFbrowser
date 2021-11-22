@@ -1973,8 +1973,8 @@
     <td class="border">Loads a montage file</td>
   </tr>
   <tr class="border">
-    <td class="border">SIGNAL:ADD:LABEL &lt;label&gt;</td>
-    <td class="border">Adds the signal label to the screen</td>
+    <td class="border">SIGNAL:ADD:LABEL &lt;label&gt; &lt;file number&gt;</td>
+    <td class="border">Adds the signal "label" from file "file" to the screen, file number indicates which one of the opened files, must be in the range 1 - 32</td>
   </tr>
   <tr class="border">
     <td class="border">SIGNAL:AMPLITUDE:ALL &lt;units&gt;</td>
@@ -1982,7 +1982,7 @@
   </tr>
   <tr class="border">
     <td class="border">SIGNAL:AMPLITUDE:LABEL &lt;label&gt; &lt;units&gt;</td>
-    <td class="border">Sets the amplitude for signal label (expressed in units/cm) e.g. SIGNAL:AMPLITUDE:LABEL F3 100</td>
+    <td class="border">Sets the amplitude for signal "label" (expressed in units/cm) e.g. SIGNAL:AMPLITUDE:LABEL F3 100</td>
   </tr>
   <tr class="border">
     <td class="border">SIGNAL:AMPLITUDE:FIT:ALL</td>
@@ -1990,7 +1990,7 @@
   </tr>
   <tr class="border">
     <td class="border">SIGNAL:AMPLITUDE:FIT:LABEL &lt;label&gt;</td>
-    <td class="border">Adjusts the amplitude for signal label automatically (fit to pane)</td>
+    <td class="border">Adjusts the amplitude for signal "label" automatically (fit to pane)</td>
   </tr>
   <tr class="border">
     <td class="border">SIGNAL:OFFSET:ADJUST:ALL</td>
@@ -1998,7 +1998,7 @@
   </tr>
   <tr class="border">
     <td class="border">SIGNAL:OFFSET:ADJUST:LABEL &lt;label&gt;</td>
-    <td class="border">Adjusts the vertical offset relative to the baseline for signal label automatically</td>
+    <td class="border">Adjusts the vertical offset relative to the baseline for signal "label" automatically</td>
   </tr>
   <tr class="border">
     <td class="border">SIGNAL:OFFSET:ZERO:ALL</td>
@@ -2006,7 +2006,7 @@
   </tr>
   <tr class="border">
     <td class="border">SIGNAL:OFFSET:ZERO:LABEL &lt;label&gt;</td>
-    <td class="border">Sets the vertical offset relative to the baseline for signal label to zero</td>
+    <td class="border">Sets the vertical offset relative to the baseline for signal "label" to zero</td>
   </tr>
   <tr class="border">
     <td class="border">SIGNAL:INVERT:ALL &lt;value&gt;</td>
@@ -2015,12 +2015,12 @@
   </tr>
   <tr class="border">
     <td class="border">SIGNAL:INVERT:LABEL &lt;label&gt; &lt;value&gt;</td>
-    <td class="border">Show signal label inverted if value is 1, show signal label normally if value is 0,<br>
+    <td class="border">Show signal "label" inverted if value is 1, show signal label normally if value is 0,<br>
                        if value is 2: toggle (invert if not inverted, show normal if inverted)</td>
   </tr>
   <tr class="border">
     <td class="border">SIGNAL:REMOVE:LABEL &lt;label&gt;</td>
-    <td class="border">Removes signal label from the screen</td>
+    <td class="border">Removes signal "label" from the screen</td>
   </tr>
   <tr class="border">
     <td class="border">SIGNAL:REMOVE:ALL</td>
