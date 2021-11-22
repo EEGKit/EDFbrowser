@@ -465,14 +465,9 @@ int UI_Mainwindow::process_rc_cmd_file(const char cmds_parsed[CMD_MAX_SUB_CMDS][
         strlcpy(drop_path, cmd_args, MAX_PATH_LENGTH);
         rc_file_open_requested = 1;
         open_new_file();
-        if(rc_file_open_err)
-        {
-          register_rc_err(rc_file_open_err);
-          rc_file_open_err = 0;
-        }
         drop_path[0] = 0;
         rc_file_open_requested = 0;
-        return 0;
+        return rc_file_open_err;
       }
       else
       {
@@ -502,7 +497,7 @@ int UI_Mainwindow::process_rc_cmd_montage(const char cmds_parsed[CMD_MAX_SUB_CMD
     strlcpy(montagepath, cmd_args, MAX_PATH_LENGTH);
     UI_LoadMontagewindow load_mtg(this, montagepath);
     montagepath[0] = 0;
-    return 0;
+    return rc_load_mtg_err;
   }
 
   return 202;

@@ -37,15 +37,24 @@ UI_LoadMontagewindow::UI_LoadMontagewindow(QWidget *w_parent, char *path)
 
   mtg_path[0] = 0;
 
+  LoadMontageDialog = NULL;
+
   if(path!=NULL)
   {
     strlcpy(mtg_path, path, MAX_PATH_LENGTH);
   }
 
+  if(mainwindow->rc_cmd_in_progress)
+  {
+    mainwindow->rc_load_mtg_err = LoadButtonClicked();
+
+    return;
+  }
+
   if(mainwindow->files_open==1)
   {
-    LoadMontageDialog = NULL;
     LoadButtonClicked();
+
     return;
   }
 
