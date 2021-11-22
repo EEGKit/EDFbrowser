@@ -1918,10 +1918,11 @@
   Portnumber is the TCP port and must be free and between 1024 and 65535.<br>
   (You can use the command ss -lntu to check for ports already occupied on your system, use a port number that is not in that list.)<br>
   <br>
-  Every command/query must end with a newline character.<br>
-  The decimal separator (if any) must be a dot.<br>
+  The following rules apply:<br>
+  - Every command/query must end with a newline character.<br>
+  - The decimal separator (if any) must be a dot.<br>
   <br>
-  After starting EDFbrowser, you can test the control port by using the command telnet 127.0.0.1 &lt;portnumber&gt;<br>
+  After starting EDFbrowser, you can test the control port by using the command telnet 127.0.0.1 &lt;portnumber&gt; (or use Putty)<br>
   In case of connection problems, check your firewall settings.<br>
   <br>
 </p>
@@ -1974,7 +1975,8 @@
   </tr>
   <tr class="border">
     <td class="border">SIGNAL:ADD:LABEL &lt;label&gt; &lt;file number&gt;</td>
-    <td class="border">Adds the signal "label" from file "file" to the screen, file number indicates which one of the opened files, must be in the range 1 - 32</td>
+    <td class="border">Adds the signal "label" from file "file number" to the screen, file number indicates which one of the opened files, must be in the range 1 - 32<br>
+                       File numbering order equals the order of which they were opened</td>
   </tr>
   <tr class="border">
     <td class="border">SIGNAL:AMPLITUDE:ALL &lt;units&gt;</td>
