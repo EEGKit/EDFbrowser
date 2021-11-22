@@ -505,7 +505,7 @@ int UI_Mainwindow::process_rc_cmd_montage(const char cmds_parsed[CMD_MAX_SUB_CMD
 
 int UI_Mainwindow::process_rc_cmd_signal(const char cmds_parsed[CMD_MAX_SUB_CMDS][CMD_PARSE_STR_LEN], const char *cmd_args, int n_sub_cmds)
 {
-  int i, j, n, len, ival;
+  int i, j, n, ival, err;
 
   char str1[1024]="",
        str2[1024]="",
@@ -673,33 +673,12 @@ int UI_Mainwindow::process_rc_cmd_signal(const char cmds_parsed[CMD_MAX_SUB_CMDS
 
     if((n_sub_cmds == 3) && !strcmp(cmds_parsed[2], "LABEL"))
     {
-      if(strlen(cmd_args) < 3)
-      {
-        return 203;
-      }
       strlcpy(str1, cmd_args, 1024);
-
-      len = strlen(str1);
-
-      for(i=0, ptr=NULL; i<len; i++)
+      err = rc_get_last_cmd_args_token(str1, &ptr);
+      if(err)
       {
-        if(str1[i] == ' ')
-        {
-          ptr = &str1[i];
-        }
+        return err;
       }
-
-      if(ptr == NULL)  return 204;
-
-      *ptr = 0;
-
-      ptr++;
-
-      if(!strlen(ptr))  return 204;
-
-      if(is_number(ptr))  return 203;
-
-      if(!strlen(str1))  return 204;
 
       value2 = atof(ptr);
       if((value2 > 1000000.001) || (value2 < 0.0000000999))  return 208;
@@ -836,33 +815,12 @@ int UI_Mainwindow::process_rc_cmd_signal(const char cmds_parsed[CMD_MAX_SUB_CMDS
 
     if((n_sub_cmds == 3) && !strcmp(cmds_parsed[2], "LABEL"))
     {
-      if(strlen(cmd_args) < 3)
-      {
-        return 203;
-      }
       strlcpy(str1, cmd_args, 1024);
-
-      len = strlen(str1);
-
-      for(i=0, ptr=NULL; i<len; i++)
+      err = rc_get_last_cmd_args_token(str1, &ptr);
+      if(err)
       {
-        if(str1[i] == ' ')
-        {
-          ptr = &str1[i];
-        }
+        return err;
       }
-
-      if(ptr == NULL)  return 204;
-
-      *ptr = 0;
-
-      ptr++;
-
-      if(!strlen(ptr))  return 204;
-
-      if(is_integer_number(ptr))  return 203;
-
-      if(!strlen(str1))  return 204;
 
       ival = atoi(ptr);
       if((ival < 0) || (ival > 2))  return 208;
@@ -995,6 +953,39 @@ void UI_Mainwindow::register_rc_err(int err)
 }
 
 
+int UI_Mainwindow::rc_get_last_cmd_args_token(char *cmd_args, char **dest)
+{
+  int i, len;
+
+  if(strlen(cmd_args) < 3)
+  {
+    return 203;
+  }
+
+  len = strlen(cmd_args);
+
+  for(i=0, *dest=NULL; i<len; i++)
+  {
+    if(cmd_args[i] == ' ')
+    {
+      *dest = &cmd_args[i];
+    }
+  }
+
+  if(*dest == NULL)  return 204;
+
+  **dest = 0;
+
+  (*dest)++;
+
+  if(!strlen(*dest))  return 204;
+
+  if(is_number(*dest))  return 203;
+
+  if(!strlen(cmd_args))  return 204;
+
+  return 0;
+}
 
 
 

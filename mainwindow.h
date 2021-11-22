@@ -374,6 +374,8 @@ long long annot_editor_user_button_epoch_len,
 
   void register_rc_err(int);
 
+  int rc_get_last_cmd_args_token(char *, char **);
+
 #ifdef Q_OS_WIN32
   QString specialFolder(int);
 #endif
