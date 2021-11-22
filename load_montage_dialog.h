@@ -78,9 +78,11 @@ private:
 
   char mtg_path[MAX_PATH_LENGTH];
 
+  int format_error(const char *, int , struct signalcompblock *, struct xml_handle *);
+
 private slots:
 
-  void LoadButtonClicked();
+  int LoadButtonClicked();
 
 };
 
