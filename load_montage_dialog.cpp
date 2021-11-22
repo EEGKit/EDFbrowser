@@ -813,13 +813,23 @@ int UI_LoadMontagewindow::LoadButtonClicked()
 
       if(err_ptr != NULL)
       {
-        snprintf(str2, 512, "%s\nFile: %s line: %i", err_ptr, __FILE__, __LINE__);
-        QMessageBox messagewindow(QMessageBox::Critical, "Error", str2);
-        messagewindow.exec();
-        free(err_ptr);
-        free(newsignalcomp);
-        xml_close(xml_hdl);
-        return 0;
+        if(mainwindow->rc_cmd_in_progress)
+        {
+          free(err_ptr);
+          free(newsignalcomp);
+          xml_close(xml_hdl);
+          return 206;
+        }
+        else
+        {
+          snprintf(str2, 512, "%s\nFile: %s line: %i", err_ptr, __FILE__, __LINE__);
+          QMessageBox messagewindow(QMessageBox::Critical, "Error", str2);
+          messagewindow.exec();
+          free(err_ptr);
+          free(newsignalcomp);
+          xml_close(xml_hdl);
+          return 0;
+        }
       }
 
       newsignalcomp->fid_run[filters_read] = fid_run_new(newsignalcomp->fidfilter[filters_read],
@@ -980,23 +990,41 @@ int UI_LoadMontagewindow::LoadButtonClicked()
 
       if(frequency >= newsignalcomp->edfhdr->edfparam[newsignalcomp->edfsignal[0]].sf_f / 2.0)
       {
-        snprintf(str2, 512, "There seems to be an error in this montage file.\nThe frequency of the filter(s) must be less than: samplerate / 2\nFile: %s line: %i", __FILE__, __LINE__);
-        QMessageBox messagewindow(QMessageBox::Critical, "Error", str2);
-        messagewindow.exec();
-        free(newsignalcomp);
-        xml_close(xml_hdl);
-        return 0;
-      }
-
-      if(type > 2)
-      {
-        if(frequency2 >= newsignalcomp->edfhdr->edfparam[newsignalcomp->edfsignal[0]].sf_f / 2.0)
+        if(mainwindow->rc_cmd_in_progress)
+        {
+          free(newsignalcomp);
+          xml_close(xml_hdl);
+          return 108;
+        }
+        else
         {
           snprintf(str2, 512, "There seems to be an error in this montage file.\nThe frequency of the filter(s) must be less than: samplerate / 2\nFile: %s line: %i", __FILE__, __LINE__);
           QMessageBox messagewindow(QMessageBox::Critical, "Error", str2);
           messagewindow.exec();
           free(newsignalcomp);
           xml_close(xml_hdl);
+          return 0;
+        }
+      }
+
+      if(type > 2)
+      {
+        if(frequency2 >= newsignalcomp->edfhdr->edfparam[newsignalcomp->edfsignal[0]].sf_f / 2.0)
+        {
+          if(mainwindow->rc_cmd_in_progress)
+          {
+            free(newsignalcomp);
+            xml_close(xml_hdl);
+            return 108;
+          }
+          else
+          {
+            snprintf(str2, 512, "There seems to be an error in this montage file.\nThe frequency of the filter(s) must be less than: samplerate / 2\nFile: %s line: %i", __FILE__, __LINE__);
+            QMessageBox messagewindow(QMessageBox::Critical, "Error", str2);
+            messagewindow.exec();
+            free(newsignalcomp);
+            xml_close(xml_hdl);
+          }
           return 0;
         }
       }
@@ -1125,12 +1153,22 @@ int UI_LoadMontagewindow::LoadButtonClicked()
 
       if(err_ptr != NULL)
       {
-        QMessageBox messagewindow(QMessageBox::Critical, "Error", err_ptr);
-        messagewindow.exec();
-        free(err_ptr);
-        free(newsignalcomp);
-        xml_close(xml_hdl);
-        return 0;
+        if(mainwindow->rc_cmd_in_progress)
+        {
+          free(err_ptr);
+          free(newsignalcomp);
+          xml_close(xml_hdl);
+          return 206;
+        }
+        else
+        {
+          QMessageBox messagewindow(QMessageBox::Critical, "Error", err_ptr);
+          messagewindow.exec();
+          free(err_ptr);
+          free(newsignalcomp);
+          xml_close(xml_hdl);
+          return 0;
+        }
       }
 
       newsignalcomp->fid_run[filters_read] = fid_run_new(newsignalcomp->fidfilter[filters_read],
@@ -1215,25 +1253,43 @@ int UI_LoadMontagewindow::LoadButtonClicked()
         newsignalcomp->plif_ecg_filter = plif_create_subtract_filter(sf, plif_powerlinefrequency, dthreshold);
         if(newsignalcomp->plif_ecg_filter == NULL)
         {
-          snprintf(str2, 512, "A memory allocation error occurred when creating a powerline interference removal filter.\n"
-                        "File: %s line: %i", __FILE__, __LINE__);
-          QMessageBox messagewindow(QMessageBox::Critical, "Error", str2);
-          messagewindow.exec();
-          free(newsignalcomp);
-          xml_close(xml_hdl);
-          return 0;
+          if(mainwindow->rc_cmd_in_progress)
+          {
+            free(newsignalcomp);
+            xml_close(xml_hdl);
+            return 206;
+          }
+          else
+          {
+            snprintf(str2, 512, "A memory allocation error occurred when creating a powerline interference removal filter.\n"
+                          "File: %s line: %i", __FILE__, __LINE__);
+            QMessageBox messagewindow(QMessageBox::Critical, "Error", str2);
+            messagewindow.exec();
+            free(newsignalcomp);
+            xml_close(xml_hdl);
+            return 0;
+          }
         }
 
         newsignalcomp->plif_ecg_filter_sav = plif_create_subtract_filter(sf, plif_powerlinefrequency, dthreshold);
         if(newsignalcomp->plif_ecg_filter_sav == NULL)
         {
-          snprintf(str2, 512, "A memory allocation error occurred when creating a powerline interference removal filter.\n"
-                        "File: %s line: %i", __FILE__, __LINE__);
-          QMessageBox messagewindow(QMessageBox::Critical, "Error", str2);
-          messagewindow.exec();
-          free(newsignalcomp);
-          xml_close(xml_hdl);
-          return 0;
+          if(mainwindow->rc_cmd_in_progress)
+          {
+            free(newsignalcomp);
+            xml_close(xml_hdl);
+            return 206;
+          }
+          else
+          {
+            snprintf(str2, 512, "A memory allocation error occurred when creating a powerline interference removal filter.\n"
+                          "File: %s line: %i", __FILE__, __LINE__);
+            QMessageBox messagewindow(QMessageBox::Critical, "Error", str2);
+            messagewindow.exec();
+            free(newsignalcomp);
+            xml_close(xml_hdl);
+            return 0;
+          }
         }
 
         newsignalcomp->plif_ecg_subtract_filter_plf = plif_powerlinefrequency / 60;
@@ -1323,12 +1379,21 @@ int UI_LoadMontagewindow::LoadButtonClicked()
                                                           sense);
             if(newsignalcomp->ecg_filter == NULL)
             {
-              snprintf(str2, 512, "Could not create an ECG filter.\nFile: %s line: %i", __FILE__, __LINE__);
-              QMessageBox messagewindow(QMessageBox::Critical, "Error", str2);
-              messagewindow.exec();
-              free(newsignalcomp);
-              xml_close(xml_hdl);
-              return 0;
+              if(mainwindow->rc_cmd_in_progress)
+              {
+                free(newsignalcomp);
+                xml_close(xml_hdl);
+                return 206;
+              }
+              else
+              {
+                snprintf(str2, 512, "Could not create an ECG filter.\nFile: %s line: %i", __FILE__, __LINE__);
+                QMessageBox messagewindow(QMessageBox::Critical, "Error", str2);
+                messagewindow.exec();
+                free(newsignalcomp);
+                xml_close(xml_hdl);
+                return 0;
+              }
             }
 
             strlcpy(newsignalcomp->signallabel_bu, newsignalcomp->signallabel, 512);
@@ -1385,12 +1450,21 @@ int UI_LoadMontagewindow::LoadButtonClicked()
 
           if(newsignalcomp->zratio_filter == NULL)
           {
-            snprintf(str2, 512, "A memory allocation error occurred when creating a Z-ratio filter.\nFile: %s line: %i", __FILE__, __LINE__);
-            QMessageBox messagewindow(QMessageBox::Critical, "Error", str2);
-            messagewindow.exec();
-            free(newsignalcomp);
-            xml_close(xml_hdl);
-            return 0;
+            if(mainwindow->rc_cmd_in_progress)
+            {
+              free(newsignalcomp);
+              xml_close(xml_hdl);
+              return 206;
+            }
+            else
+            {
+              snprintf(str2, 512, "A memory allocation error occurred when creating a Z-ratio filter.\nFile: %s line: %i", __FILE__, __LINE__);
+              QMessageBox messagewindow(QMessageBox::Critical, "Error", str2);
+              messagewindow.exec();
+              free(newsignalcomp);
+              xml_close(xml_hdl);
+              return 0;
+            }
           }
 
           strlcpy(newsignalcomp->signallabel_bu, newsignalcomp->signallabel, 512);
