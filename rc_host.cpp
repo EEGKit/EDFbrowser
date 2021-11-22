@@ -43,7 +43,7 @@ void UI_Mainwindow::rc_host_server_new_connection()
       printf("setup rc host socket\n");
 
       QObject::connect(rc_host_sock, SIGNAL(disconnected()), this, SLOT(rc_host_sock_disconnected_handler()));
-      QObject::connect(rc_host_sock, SIGNAL(readyRead()),    this, SLOT(rc_host_sock_rxdata_handler()), Qt::QueuedConnection);
+      QObject::connect(rc_host_sock, SIGNAL(readyRead()),    this, SLOT(rc_host_sock_rxdata_handler()));
     }
   }
 }
@@ -154,6 +154,12 @@ void UI_Mainwindow::rc_host_sock_rxdata_handler()
       continue;
     }
 
+    if(rc_cmd_in_progress)
+    {
+      register_rc_err(209);
+      continue;
+    }
+
     rc_cmd_in_progress = 1;
 
     if((n_sub_cmds == 1) && !strcmp(cmds_parsed[0], "LIST"))
@@ -164,6 +170,7 @@ void UI_Mainwindow::rc_host_sock_rxdata_handler()
         continue;
       }
       len = snprintf(tx_msg_str, 1024,
+              "LIST\n"
               "*IDN?\n"
               "QUIT\n"
               "*RST\n"
@@ -173,7 +180,7 @@ void UI_Mainwindow::rc_host_sock_rxdata_handler()
               "FILE:OPEN <path>\n"
               "FILE:CLOSE:ALL\n"
               "MONTAGE:LOAD <path>\n"
-              "SIGNAL:ADD:LABEL <label>\n"
+              "SIGNAL:ADD:LABEL <label> <file number>\n"
               "SIGNAL:AMPLITUDE:ALL <units>\n"
               "SIGNAL:AMPLITUDE:LABEL <label> <units>\n"
               "SIGNAL:AMPLITUDE:FIT:ALL\n"
@@ -190,7 +197,6 @@ void UI_Mainwindow::rc_host_sock_rxdata_handler()
               "TIMESCALE <seconds>\n"
               "VIEWTIME?\n"
               "VIEWTIME <seconds>\n");
-
       rc_host_sock->write(tx_msg_str, len);
       continue;
     }
