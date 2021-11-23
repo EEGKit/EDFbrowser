@@ -1913,16 +1913,16 @@
 <h3><a name="Remote_control">Remote control</a></h3>
 
 <p>
-  EDFbrowser can be controlled by another program using a direct TCP connection (aka Telnet) using a loopback port.<br>
+  EDFbrowser can be controlled by another program using a direct TCP connection (aka <a href="https://en.wikipedia.org/wiki/Telnet">Telnet</a>) using a <a href="https://en.wikipedia.org/wiki/Localhost">loopback port</a>.<br>
   Start EDFbrowser with the option --rc-host-port=&lt;portnumber&gt;.<br>
-  Portnumber is the TCP port and must be free and between 1024 and 65535.<br>
-  (You can use the command ss -lntu to check for ports already occupied on your system, use a port number that is not in that list.)<br>
+  <a href="https://en.wikipedia.org/wiki/Port_(computer_networking)">Portnumber</a> is the TCP port and must be free and between 1024 and 65535.<br>
+  (You can use the command <a href="https://en.wikipedia.org/wiki/Netstat">ss -lntu</a> to check for ports already occupied on your system, use a port number that is not in that list.)<br>
   <br>
   The following rules apply:<br>
   - Every command/query must end with a newline character.<br>
   - The decimal separator (if any) must be a dot.<br>
   <br>
-  After starting EDFbrowser, you can test the control port by using the command telnet 127.0.0.1 &lt;portnumber&gt; (or use Putty)<br>
+  After starting EDFbrowser, you can test the control port by using the command telnet 127.0.0.1 &lt;portnumber&gt; (or use <a href="https://en.wikipedia.org/wiki/PuTTY">Putty</a>)<br>
   In case of connection problems, check your firewall settings.<br>
   <br>
   Command list: parameters in angle brackets are mandatory and must be replaced with actual values<br>
