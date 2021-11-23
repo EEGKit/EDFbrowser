@@ -1014,7 +1014,7 @@
   - Absolute time<br>
 <br>
   The clock/date-time of the different files will coincide with each other.<br>
-  (this is only useful when the period of registration overlap eachother)<br>
+  (this is only useful when the period of registration overlap eachother or when when they are consecutive)<br>
 <br>
   - No timelock<br>
 <br>
@@ -1925,6 +1925,7 @@
   After starting EDFbrowser, you can test the control port by using the command telnet 127.0.0.1 &lt;portnumber&gt; (or use Putty)<br>
   In case of connection problems, check your firewall settings.<br>
   <br>
+  Command list: parameters in angle brackets are mandatory and must be replaced with actual values<br>
 </p>
 
 <div>
@@ -1939,7 +1940,7 @@
   </tr>
   <tr class="border">
     <td class="border">*IDN?</td>
-    <td class="border">Identity query, shows the program name and version</td>
+    <td class="border">Identity query, returns the program name and version</td>
   </tr>
   <tr class="border">
     <td class="border">QUIT</td>
@@ -1955,7 +1956,7 @@
   </tr>
   <tr class="border">
     <td class="border">FAULT?</td>
-    <td class="border">Shows an error code from the error queue</td>
+    <td class="border">Returns the most recent error code from the error queue and removes it from the error queue</td>
   </tr>
   <tr class="border">
     <td class="border">OPC?</td>
@@ -1971,12 +1972,12 @@
   </tr>
   <tr class="border">
     <td class="border">MONTAGE:LOAD &lt;path&gt; &lt;file number&gt;</td>
-    <td class="border">Loads a montage file and applies it to file "file number", file number indicates which one of the opened files, must be in the range 1 - 32<br>
+    <td class="border">Loads a montage file and applies it to the file "file number", file number indicates which one of the opened files, must be in the range 1 - 32<br>
                        File numbering order equals the order in which they were opened</td>
   </tr>
   <tr class="border">
     <td class="border">SIGNAL:ADD:LABEL &lt;label&gt; &lt;file number&gt;</td>
-    <td class="border">Adds the signal "label" from file "file number" to the screen, file number indicates which one of the opened files, must be in the range 1 - 32<br>
+    <td class="border">Adds the signal "label" from the file "file number" to the screen, file number indicates which one of the opened files, must be in the range 1 - 32<br>
                        File numbering order equals the order in which they were opened</td>
   </tr>
   <tr class="border">
@@ -2013,12 +2014,12 @@
   </tr>
   <tr class="border">
     <td class="border">SIGNAL:INVERT:ALL &lt;value&gt;</td>
-    <td class="border">Show all signals inverted if value is 1, show all signals normally if value is 0,<br>
+    <td class="border">Display all signals inverted if value is 1, show all signals normally if value is 0,<br>
                        if value is 2: toggle (invert if not inverted, show normal if inverted)</td>
   </tr>
   <tr class="border">
     <td class="border">SIGNAL:INVERT:LABEL &lt;label&gt; &lt;value&gt;</td>
-    <td class="border">Show signal "label" inverted if value is 1, show signal label normally if value is 0,<br>
+    <td class="border">Display signal "label" inverted if value is 1, show signal label normally if value is 0,<br>
                        if value is 2: toggle (invert if not inverted, show normal if inverted)</td>
   </tr>
   <tr class="border">
@@ -2031,7 +2032,7 @@
   </tr>
   <tr class="border">
     <td class="border">TIMESCALE?</td>
-    <td class="border">Shows the timescale in seconds</td>
+    <td class="border">Returns the timescale in seconds</td>
   </tr>
   <tr class="border">
     <td class="border">TIMESCALE &lt;seconds&gt;</td>
@@ -2039,11 +2040,29 @@
   </tr>
   <tr class="border">
     <td class="border">VIEWTIME?</td>
-    <td class="border">Shows the viewtime in seconds relative to the start of the recording</td>
+    <td class="border">Returns the viewtime in seconds relative to the start of the recording</td>
   </tr>
   <tr class="border">
     <td class="border">VIEWTIME &lt;seconds&gt;</td>
     <td class="border">Sets the viewtime relative to the start of the recording</td>
+  </tr>
+  <tr class="border">
+    <td class="border">TIMELOCK?</td>
+    <td class="border">Returns the <a href="#Timelock">Timelock / File synchronisation</a> mode, 0 = offset, 1 = absolute, 2 = no locking, 3 = user defined locking</td>
+  </tr>
+  <tr class="border">
+    <td class="border">TIMELOCK &lt;mode&gt;</td>
+    <td class="border">Sets the <a href="#Timelock">Timelock / File synchronisation</a> mode, 0 = offset, 1 = absolute, 2 = no locking, 3 = user defined locking</td>
+  </tr>
+  <tr class="border">
+    <td class="border">TIMELOCK:REFERENCE?</td>
+    <td class="border">Returns the file number of the file that acts as the <a href="#Timelock">reference</a>, file number indicates which one of the opened files, must be in the range 1 - 32<br>
+                       File numbering order equals the order in which they were opened</td>
+  </tr>
+  <tr class="border">
+    <td class="border">TIMELOCK:REFERENCE &lt;file number&gt;</td>
+    <td class="border">Sets the file number of the file that acts as the <a href="#Timelock">reference</a>, file number indicates which one of the opened files, must be in the range 1 - 32<br>
+                       File numbering order equals the order in which they were opened</td>
   </tr>
 </table>
 </div>

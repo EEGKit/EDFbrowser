@@ -316,6 +316,16 @@ void UI_Mainwindow::rc_host_sock_rxdata_handler()
       continue;
     }
 
+    if(!strcmp(cmds_parsed[0], "TIMELOCK") || !strcmp(cmds_parsed[0], "TIMELOCK?"))
+    {
+      err = process_rc_cmd_timelock(cmds_parsed, cmd_args, n_sub_cmds);
+      if(err)
+      {
+        register_rc_err(err);
+      }
+      continue;
+    }
+
     register_rc_err(202);
   }
 }
@@ -986,6 +996,73 @@ int UI_Mainwindow::process_rc_cmd_viewtime(const char cmds_parsed[CMD_MAX_SUB_CM
       ltmp = atoll_x(cmd_args, TIME_DIMENSION);
       if((ltmp <= (-30LL * TIME_DIMENSION)) || (ltmp >= (3600LL * 24LL * 7LL * TIME_DIMENSION)))  return 208;
       set_viewtime(ltmp);
+      return 0;
+    }
+    else
+    {
+      return 202;
+    }
+
+  return 202;
+}
+
+
+int UI_Mainwindow::process_rc_cmd_timelock(const char cmds_parsed[CMD_MAX_SUB_CMDS][CMD_PARSE_STR_LEN], const char *cmd_args, int n_sub_cmds)
+{
+  int len, mode=0, file_num=0;
+
+  char tx_msg_str[1024]="";
+
+  if(n_sub_cmds < 1)
+  {
+    return 202;
+  }
+
+  if((n_sub_cmds == 1) && !strcmp(cmds_parsed[0], "TIMELOCK?"))
+  {
+    if(strlen(cmd_args))
+    {
+      return 203;
+    }
+    len = snprintf(tx_msg_str, 1024, "%i\n", viewtime_sync);
+    rc_host_sock->write(tx_msg_str, len);
+    return 0;
+  }
+  else if((n_sub_cmds == 1) && !strcmp(cmds_parsed[0], "TIMELOCK"))
+    {
+      if(!strlen(cmd_args))
+      {
+        return 204;
+      }
+      if(is_integer_number(cmd_args))  return 203;
+      mode = atoi(cmd_args);
+      if((mode < 0) || (mode > 3))  return 208;
+      set_timesync(mode);
+      return 0;
+    }
+
+  if((n_sub_cmds == 2) && !strcmp(cmds_parsed[0], "TIMELOCK") && !strcmp(cmds_parsed[1], "REFERENCE?"))
+  {
+    if(strlen(cmd_args))
+    {
+      return 203;
+    }
+    len = snprintf(tx_msg_str, 1024, "%i\n", sel_viewtime);
+    rc_host_sock->write(tx_msg_str, len);
+    return 0;
+  }
+  else if((n_sub_cmds == 2) && !strcmp(cmds_parsed[0], "TIMELOCK") && !strcmp(cmds_parsed[1], "REFERENCE"))
+    {
+      if(!strlen(cmd_args))
+      {
+        return 204;
+      }
+      if(is_integer_number(cmd_args))  return 203;
+      file_num = atoi(cmd_args);
+      if((file_num < 1) || (file_num > 32))  return 208;
+      file_num--;
+      if(file_num >= files_open)  return 207;
+      set_timesync_reference(file_num);
       return 0;
     }
     else

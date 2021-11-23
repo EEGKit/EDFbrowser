@@ -494,6 +494,21 @@ void UI_Mainwindow::set_timesync_reference(QAction *action)
 }
 
 
+void UI_Mainwindow::set_timesync_reference(int ref)
+{
+  if((ref < 0) || (ref >= files_open))
+  {
+    return;
+  }
+
+  sel_viewtime = ref;
+
+  setMainwindowTitle(edfheaderlist[sel_viewtime]);
+
+  setup_viewbuf();
+}
+
+
 void UI_Mainwindow::set_timesync(QAction *)
 {
   int i;
@@ -530,6 +545,44 @@ void UI_Mainwindow::set_timesync(QAction *)
   {
     viewtime_sync = VIEWTIME_USER_DEF_SYNCED;
   }
+
+  setup_viewbuf();
+}
+
+
+void UI_Mainwindow::set_timesync(int mode)
+{
+  int i;
+
+  if(mode == VIEWTIME_UNSYNCED)
+  {
+    viewtime_sync = VIEWTIME_UNSYNCED;
+  }
+  else if(mode == VIEWTIME_SYNCED_OFFSET)
+    {
+      viewtime_sync = VIEWTIME_SYNCED_OFFSET;
+
+      for(i=0; i<files_open; i++)
+      {
+        edfheaderlist[i]->viewtime = edfheaderlist[sel_viewtime]->viewtime;
+      }
+    }
+    else if(mode == VIEWTIME_SYNCED_ABSOLUT)
+      {
+        viewtime_sync = VIEWTIME_SYNCED_ABSOLUT;
+
+        for(i=0; i<files_open; i++)
+        {
+          if(i!=sel_viewtime)
+          {
+            edfheaderlist[i]->viewtime = edfheaderlist[sel_viewtime]->viewtime + edfheaderlist[sel_viewtime]->starttime_offset - ((edfheaderlist[i]->utc_starttime - edfheaderlist[sel_viewtime]->utc_starttime) * TIME_DIMENSION) - edfheaderlist[i]->starttime_offset;
+          }
+        }
+      }
+      else if(mode == VIEWTIME_USER_DEF_SYNCED)
+        {
+          viewtime_sync = VIEWTIME_USER_DEF_SYNCED;
+        }
 
   setup_viewbuf();
 }

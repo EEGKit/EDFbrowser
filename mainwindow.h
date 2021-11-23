@@ -560,6 +560,7 @@ private:
   int process_rc_cmd_signal(const char [CMD_MAX_SUB_CMDS][CMD_PARSE_STR_LEN], const char *, int);
   int process_rc_cmd_timescale(const char [CMD_MAX_SUB_CMDS][CMD_PARSE_STR_LEN], const char *, int);
   int process_rc_cmd_viewtime(const char [CMD_MAX_SUB_CMDS][CMD_PARSE_STR_LEN], const char *, int);
+  int process_rc_cmd_timelock(const char [CMD_MAX_SUB_CMDS][CMD_PARSE_STR_LEN], const char *, int);
 
 public slots:
   void remove_all_signals();
@@ -577,6 +578,8 @@ public slots:
   void fit_signals_dc_offset(int n=-1);
   void set_dc_offset_to_zero(int n=-1);
   void signalcomp_invert(int, int n=-1);
+  void set_timesync_reference(int);
+  void set_timesync(int);
 
 private slots:
   void open_new_file();
