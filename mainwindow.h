@@ -257,6 +257,7 @@ public:
       rc_cmd_in_progress,
       rc_file_open_err,
       rc_load_mtg_err,
+      rc_load_mtg_file_num,
       rc_err_queue_idx,
       rc_err_queue[RC_ERR_QUEUE_SZ];
 

@@ -108,7 +108,7 @@ UI_LoadMontagewindow::UI_LoadMontagewindow(QWidget *w_parent, char *path)
 
 int UI_LoadMontagewindow::LoadButtonClicked()
 {
-  int i, k, n, p, r,
+  int i, k, n=0, p, r,
       tmp,
       skip,
       found,
@@ -155,8 +155,18 @@ int UI_LoadMontagewindow::LoadButtonClicked()
 
   struct edfhdrblock *edf_hdr=NULL;
 
-  if(mainwindow->files_open==1)  n = 0;
-  else  n = filelist->currentRow();
+  if(mainwindow->rc_cmd_in_progress)
+  {
+    n = mainwindow->rc_load_mtg_file_num;
+  }
+  else if(mainwindow->files_open==1)
+    {
+      n = 0;
+    }
+    else
+    {
+      n = filelist->currentRow();
+    }
 
   edf_hdr = mainwindow->edfheaderlist[n];
 

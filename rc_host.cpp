@@ -481,6 +481,11 @@ int UI_Mainwindow::process_rc_cmd_file(const char cmds_parsed[CMD_MAX_SUB_CMDS][
 
 int UI_Mainwindow::process_rc_cmd_montage(const char cmds_parsed[CMD_MAX_SUB_CMDS][CMD_PARSE_STR_LEN], const char *cmd_args, int n_sub_cmds)
 {
+  int err, file_num=0;
+
+  char str1[1024]="",
+       *ptr=NULL;
+
   if(n_sub_cmds < 2)
   {
     return 202;
@@ -488,13 +493,35 @@ int UI_Mainwindow::process_rc_cmd_montage(const char cmds_parsed[CMD_MAX_SUB_CMD
 
   if((n_sub_cmds == 2) && !strcmp(cmds_parsed[1], "LOAD"))
   {
-    if(!strlen(cmd_args))
+    strlcpy(str1, cmd_args, 1024);
+    err = rc_get_last_cmd_args_token(str1, &ptr);
+    if(err)
     {
-      return 204;
+      return err;
     }
     if(!files_open)  return 205;
     if(signalcomps >= MAXSIGNALS)  return 205;
-    strlcpy(montagepath, cmd_args, MAX_PATH_LENGTH);
+
+    if(is_integer_number(ptr))
+    {
+      return 203;
+    }
+
+    file_num = atoi(ptr);
+    if((file_num < 1) || (file_num > 32))
+    {
+      return 208;
+    }
+    file_num--;
+
+    if(file_num >= files_open)
+    {
+      return 207;
+    }
+
+    rc_load_mtg_file_num = file_num;
+
+    strlcpy(montagepath, str1, MAX_PATH_LENGTH);
     UI_LoadMontagewindow load_mtg(this, montagepath);
     montagepath[0] = 0;
     return rc_load_mtg_err;
