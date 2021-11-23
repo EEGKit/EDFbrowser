@@ -123,6 +123,11 @@ int main(int argc, char *argv[])
   qApp->setStyleSheet("QMessageBox { messagebox-text-interaction-flags: 5; }");
 
   UI_Mainwindow *MainWindow = new UI_Mainwindow;
+  if(MainWindow == NULL)
+  {
+    fprintf(stderr, "Malloc error!\n");
+    return EXIT_FAILURE;
+  }
 
   int ret = app.exec();
 
