@@ -119,7 +119,7 @@
   Use the Filemenu to open a stream. The stream must be a "growing" file.<br>
   This mode is used when you have an aquisitionprogram running that writes EDF or BDF.<br>
   While the aquisitionprogram writes the data to the file, you can use EDFbrowser to watch<br>
-  (follow) the actual data. EDFbrowser will regularly check the actual filesize and show the<br>
+  (follow) the actual data. EDFbrowser will regularly check the actual filesize and display the<br>
   last part of the file i.e. the most actual/recent data.<br>
   The default intervaltime between the updates is 500 milliSeconds and can be changed in the settingsmenu.
 </p>
@@ -189,7 +189,7 @@
 <h3><a name="Timescalemenu">Timescalemenu</a></h3>
 
 <p>
-  Use the Timescalemenu to choose the pagetime (the amount of seconds that must be shown on the screen).<br>
+  Use the Timescalemenu to choose the pagetime (the amount of seconds that must be displayed on the screen).<br>
   Be aware that a pagetime of more than five minutes slowsdown the program. Specially when there are<br>
   many signals on the screen and/or high samplefrequencies.<br>
   "3cm/Sec" will adjust the pagetime so that one second equals 3 cm horizontally. In case you get a different<br>
@@ -1919,6 +1919,7 @@
   (You can use the command <a href="https://en.wikipedia.org/wiki/Netstat">ss -lntu</a> to check for ports already occupied on your system, use a port number that is not in that list.)<br>
   <br>
   The following rules apply:<br>
+  - Max one connection at a time.<br>
   - Every command/query must end with a newline character.<br>
   - The decimal separator (if any) must be a dot.<br>
   <br>
@@ -2014,13 +2015,13 @@
   </tr>
   <tr class="border">
     <td class="border">SIGNAL:INVERT:ALL &lt;value&gt;</td>
-    <td class="border">Display all signals inverted if value is 1, show all signals normally if value is 0,<br>
-                       if value is 2: toggle (invert if not inverted, show normal if inverted)</td>
+    <td class="border">Display all signals inverted if value is 1, display all signals normally if value is 0,<br>
+                       if value is 2: toggle (invert if not inverted, display normal if inverted)</td>
   </tr>
   <tr class="border">
     <td class="border">SIGNAL:INVERT:LABEL &lt;label&gt; &lt;value&gt;</td>
-    <td class="border">Display signal "label" inverted if value is 1, show signal label normally if value is 0,<br>
-                       if value is 2: toggle (invert if not inverted, show normal if inverted)</td>
+    <td class="border">Display signal "label" inverted if value is 1, display signal label normally if value is 0,<br>
+                       if value is 2: toggle (invert if not inverted, display normal if inverted)</td>
   </tr>
   <tr class="border">
     <td class="border">SIGNAL:REMOVE:LABEL &lt;label&gt;</td>

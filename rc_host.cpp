@@ -32,6 +32,8 @@
 
 void UI_Mainwindow::rc_host_server_new_connection()
 {
+  QTcpSocket *tsock=NULL;
+
   printf("rc host server: new connection\n");
 
   if(rc_host_sock == NULL)
@@ -44,6 +46,14 @@ void UI_Mainwindow::rc_host_server_new_connection()
 
       QObject::connect(rc_host_sock, SIGNAL(disconnected()), this, SLOT(rc_host_sock_disconnected_handler()));
       QObject::connect(rc_host_sock, SIGNAL(readyRead()),    this, SLOT(rc_host_sock_rxdata_handler()));
+    }
+  }
+  else
+  {
+    tsock = rc_host_server->nextPendingConnection();
+    if(tsock != NULL)
+    {
+      tsock->close();
     }
   }
 }
@@ -87,6 +97,8 @@ void UI_Mainwindow::rc_host_sock_rxdata_handler()
 
       break;
     }
+
+//    printf("%c", rx_msg_str[rx_idx]);  /* test debug */
 
     if(rx_msg_str[rx_idx] != '\n')
     {
