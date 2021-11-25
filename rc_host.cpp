@@ -28,6 +28,34 @@
 #include "mainwindow.h"
 
 
+const char rc_cmd_key_lst[25][16]=
+{
+  "*LIST",
+  "*IDN?",
+  "*QUIT",
+  "*RST",
+  "*CLS",
+  "*FAULT?",
+  "*OPC?",
+  "FILE",
+  "OPEN",
+  "CLOSE",
+  "ALL",
+  "MONTAGE",
+  "LOAD",
+  "SIGNAL",
+  "ADD",
+  "LABEL",
+  "AMPLITUDE",
+  "FIT",
+  "OFFSET",
+  "ADJUST",
+  "ZERO",
+  "INVERT",
+  "REMOVE",
+  "TIMESCALE",
+  "VIEWTIME"
+};
 
 
 void UI_Mainwindow::rc_host_server_new_connection()
@@ -155,7 +183,7 @@ void UI_Mainwindow::rc_host_sock_rxdata_handler()
       continue;
     }
 
-    if((n_sub_cmds == 1) && !strcmp(cmds_parsed[0], "OPC?"))
+    if((n_sub_cmds == 1) && !strcmp(cmds_parsed[0], "*OPC?"))
     {
       if(strlen(cmd_args))
       {
@@ -182,7 +210,7 @@ void UI_Mainwindow::rc_host_sock_rxdata_handler()
 
     rc_cmd_in_progress = 1;
 
-    if((n_sub_cmds == 1) && !strcmp(cmds_parsed[0], "LIST"))
+    if((n_sub_cmds == 1) && !strcmp(cmds_parsed[0], "*LIST"))
     {
       if(strlen(cmd_args))
       {
@@ -190,13 +218,13 @@ void UI_Mainwindow::rc_host_sock_rxdata_handler()
         continue;
       }
       len = snprintf(tx_msg_str, 1024,
-              "LIST\n"
+              "*LIST\n"
               "*IDN?\n"
-              "QUIT\n"
+              "*QUIT\n"
               "*RST\n"
               "*CLS\n"
-              "FAULT?\n"
-              "OPC?\n"
+              "*FAULT?\n"
+              "*OPC?\n"
               "FILE:OPEN <path>\n"
               "FILE:CLOSE:ALL\n"
               "MONTAGE:LOAD <path>\n"
@@ -233,7 +261,7 @@ void UI_Mainwindow::rc_host_sock_rxdata_handler()
       continue;
     }
 
-    if((n_sub_cmds == 1) && !strcmp(cmds_parsed[0], "QUIT"))
+    if((n_sub_cmds == 1) && !strcmp(cmds_parsed[0], "*QUIT"))
     {
       if(strlen(cmd_args))
       {
@@ -270,7 +298,7 @@ void UI_Mainwindow::rc_host_sock_rxdata_handler()
       continue;
     }
 
-    if((n_sub_cmds == 1) && !strcmp(cmds_parsed[0], "FAULT?"))
+    if((n_sub_cmds == 1) && !strcmp(cmds_parsed[0], "*FAULT?"))
     {
       if(strlen(cmd_args))
       {
