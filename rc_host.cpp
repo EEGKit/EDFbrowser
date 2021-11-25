@@ -28,34 +28,75 @@
 #include "mainwindow.h"
 
 
-const char rc_cmd_key_lst[25][16]=
+const char rc_cmd_key_lst[26][32]=
 {
-  "*LIST",
-  "*IDN?",
-  "*QUIT",
-  "*RST",
-  "*CLS",
-  "*FAULT?",
-  "*OPC?",
-  "FILE",
-  "OPEN",
-  "CLOSE",
-  "ALL",
-  "MONTAGE",
-  "LOAD",
-  "SIGNAL",
-  "ADD",
-  "LABEL",
-  "AMPLITUDE",
-  "FIT",
-  "OFFSET",
-  "ADJUST",
-  "ZERO",
-  "INVERT",
-  "REMOVE",
-  "TIMESCALE",
-  "VIEWTIME"
+  "*LIST",      /*  0 */
+  "*IDN?",      /*  1 */
+  "*QUIT",      /*  2 */
+  "*RST",       /*  3 */
+  "*CLS",       /*  4 */
+  "*FAULT?",    /*  5 */
+  "*OPC?",      /*  6 */
+  "FILE",       /*  7 */
+  "OPEN",       /*  8 */
+  "CLOSE",      /*  9 */
+  "ALL",        /* 10 */
+  "MONTAGE",    /* 11 */
+  "LOAD",       /* 12 */
+  "SIGNAL",     /* 13 */
+  "ADD",        /* 14 */
+  "LABEL",      /* 15 */
+  "AMPLITUDE",  /* 16 */
+  "FIT",        /* 17 */
+  "OFFSET",     /* 18 */
+  "ADJUST",     /* 19 */
+  "ZERO",       /* 20 */
+  "INVERT",     /* 21 */
+  "REMOVE",     /* 22 */
+  "TIMESCALE",  /* 23 */
+  "VIEWTIME",   /* 24 */
+  ""            /* 25 */
 };
+
+
+int UI_Mainwindow::rc_cmd2key(const char *cmd_str)
+{
+  int i, len, idx;
+
+  char str[32];
+
+  strlcpy(str, cmd_str, 32);
+
+  len = strlen(str);
+  if(len < 3)  return -1;
+
+  ascii_toupper(str);
+
+  if(str[len-1] == '?')
+  {
+    len--;
+  }
+
+  for(i=0, idx=-1; i<25; i++)
+  {
+    if(!strncmp(str, rc_cmd_key_lst[i], len))
+    {
+      if(idx >= 0)
+      {
+        return -2;
+      }
+
+      idx = i;
+    }
+  }
+
+  if(idx < 0)
+  {
+    return -3;
+  }
+
+  return idx;
+}
 
 
 void UI_Mainwindow::rc_host_server_new_connection()
@@ -106,6 +147,8 @@ void UI_Mainwindow::rc_host_sock_disconnected_handler()
 void UI_Mainwindow::rc_host_sock_rxdata_handler()
 {
   int i, n, len, n_sub_cmds, err;
+
+  int cmds_parsed_key[CMD_MAX_SUB_CMDS]={-1,-1,-1,-1,-1,-1,-1,-1};
 
   static int rx_idx=0;
 
@@ -163,16 +206,13 @@ void UI_Mainwindow::rc_host_sock_rxdata_handler()
 
     trim_spaces(rx_msg_str);
 
-    n_sub_cmds = parse_rc_command(rx_msg_str, cmds_parsed, cmd_args, 1024);
+    n_sub_cmds = parse_rc_command(rx_msg_str, cmds_parsed, cmds_parsed_key, cmd_args, 1024);
 
 /*****************************************************************************/
-//     int i;
 //     printf("n_sub_cmds: %i\n", n_sub_cmds);
-//     for(i=0; i<CMD_MAX_SUB_CMDS; i++)
+//     for(i=0; i<n_sub_cmds; i++)
 //     {
-//       if(cmds_parsed[i][0] == 0)  break;
-//
-//       printf("sub command %i: ->%s<-\n", i, cmds_parsed[i]);
+//       printf("sub command %i: ->%s<-  key: %i\n", i, cmds_parsed[i], cmds_parsed_key[i]);
 //     }
 //     printf("cmd_args: ->%s<-\n", cmd_args);
 /*****************************************************************************/
@@ -379,7 +419,7 @@ void UI_Mainwindow::rc_host_sock_rxdata_handler()
 }
 
 
-int UI_Mainwindow::parse_rc_command(const char *cmd_str, char cmd_parsed_str[CMD_MAX_SUB_CMDS][CMD_PARSE_STR_LEN], char *arg_n_str, int arg_n_len)
+int UI_Mainwindow::parse_rc_command(const char *cmd_str, char cmd_parsed_str[CMD_MAX_SUB_CMDS][CMD_PARSE_STR_LEN], int *cmds_key, char *arg_n_str, int arg_n_len)
 {
   int i, j, k,
       last_char_colon=0;
@@ -390,6 +430,8 @@ int UI_Mainwindow::parse_rc_command(const char *cmd_str, char cmd_parsed_str[CMD
 
   for(j=0; j<CMD_MAX_SUB_CMDS; j++)
   {
+    cmds_key[j] = -1;
+
     cmd_parsed_str[j][0] = 0;
   }
 
@@ -422,6 +464,8 @@ int UI_Mainwindow::parse_rc_command(const char *cmd_str, char cmd_parsed_str[CMD
           return -5;
         }
       }
+
+      cmds_key[j] = rc_cmd2key(cmd_parsed_str[j]);
 
       ascii_toupper(cmd_parsed_str[j++]);
 
@@ -470,6 +514,8 @@ int UI_Mainwindow::parse_rc_command(const char *cmd_str, char cmd_parsed_str[CMD
       {
         return -7;
       }
+
+      cmds_key[j] = rc_cmd2key(cmd_parsed_str[j]);
 
       ascii_toupper(cmd_parsed_str[j++]);
 
