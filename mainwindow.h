@@ -254,12 +254,13 @@ public:
       edf_debug,
       rc_host_server_port,
       rc_file_open_requested,
-      rc_cmd_in_progress,
       rc_file_open_err,
       rc_load_mtg_err,
       rc_load_mtg_file_num,
       rc_err_queue_idx,
       rc_err_queue[RC_ERR_QUEUE_SZ];
+
+volatile int rc_cmd_in_progress;
 
 long long annot_editor_user_button_epoch_len,
           hypnogram_epoch_len_threshold;

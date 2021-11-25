@@ -32,6 +32,8 @@
 
 void UI_Mainwindow::rc_host_server_new_connection()
 {
+  int i;
+
   QTcpSocket *tsock=NULL;
 
   printf("rc host server: new connection\n");
@@ -43,6 +45,12 @@ void UI_Mainwindow::rc_host_server_new_connection()
     if(rc_host_sock != NULL)
     {
       printf("setup rc host socket\n");
+
+      for(i=0; i<RC_ERR_QUEUE_SZ; i++)
+      {
+        rc_err_queue[i] = 0;
+      }
+      rc_err_queue_idx = 0;
 
       QObject::connect(rc_host_sock, SIGNAL(disconnected()), this, SLOT(rc_host_sock_disconnected_handler()));
       QObject::connect(rc_host_sock, SIGNAL(readyRead()),    this, SLOT(rc_host_sock_rxdata_handler()));
