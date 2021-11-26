@@ -28,7 +28,7 @@
 #include "mainwindow.h"
 
 
-#define RC_HOST_DEBUG
+// #define RC_HOST_DEBUG
 
 
 const char rc_cmd_key_lst[RC_CMD_LIST_SZ][32]=
