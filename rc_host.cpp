@@ -28,7 +28,7 @@
 #include "mainwindow.h"
 
 
-const char rc_cmd_key_lst[26][32]=
+const char rc_cmd_key_lst[RC_CMD_LIST_SZ + 1][32]=
 {
   "*LIST",      /*  0 */
   "*IDN?",      /*  1 */
@@ -77,7 +77,7 @@ int UI_Mainwindow::rc_cmd2key(const char *cmd_str)
     len--;
   }
 
-  for(i=0, idx=-1; i<25; i++)
+  for(i=0, idx=-1; i<RC_CMD_LIST_SZ; i++)
   {
     if(!strncmp(str, rc_cmd_key_lst[i], len))
     {
@@ -169,6 +169,13 @@ void UI_Mainwindow::rc_host_sock_rxdata_handler()
 
   for(n=1; n>0; )
   {
+    if(rc_host_sock == NULL)
+    {
+      sock = NULL;
+
+      return;
+    }
+
     n = rc_host_sock->read(rx_msg_str + rx_idx, 1);
     if(n < 1)
     {

@@ -1344,7 +1344,7 @@ UI_Mainwindow::UI_Mainwindow()
         {
           printf("rc host server listening at port %i\n", rc_host_server_port);
 
-          QObject::connect(rc_host_server, SIGNAL(newConnection()), this, SLOT(rc_host_server_new_connection()));
+          QObject::connect(rc_host_server, SIGNAL(newConnection()), this, SLOT(rc_host_server_new_connection()), Qt::QueuedConnection);
         }
         else
         {

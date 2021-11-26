@@ -104,7 +104,36 @@
 #define VIDEO_STATUS_PAUSED      (17)
 #define VIDEO_STATUS_ENDED       (18)
 
-#define RC_ERR_QUEUE_SZ          (16)
+#define RC_CMD_LIST          (0)
+#define RC_CMD_IDN           (1)
+#define RC_CMD_QUIT          (2)
+#define RC_CMD_RST           (3)
+#define RC_CMD_CLS           (4)
+#define RC_CMD_FAULT         (5)
+#define RC_CMD_OPC           (6)
+#define RC_CMD_FILE          (7)
+#define RC_CMD_OPEN          (8)
+#define RC_CMD_CLOSE         (9)
+#define RC_CMD_ALL          (10)
+#define RC_CMD_MONTAGE      (11)
+#define RC_CMD_LOAD         (12)
+#define RC_CMD_SIGNAL       (13)
+#define RC_CMD_ADD          (14)
+#define RC_CMD_LABEL        (15)
+#define RC_CMD_AMPLITUDE    (16)
+#define RC_CMD_FIT          (17)
+#define RC_CMD_OFFSET       (18)
+#define RC_CMD_ADJUST       (19)
+#define RC_CMD_ZERO         (20)
+#define RC_CMD_INVERT       (21)
+#define RC_CMD_REMOVE       (22)
+#define RC_CMD_TIMESCALE    (23)
+#define RC_CMD_VIEWTIME     (24)
+
+#define RC_CMD_LIST_SZ      (25)
+#define RC_CMD_QUERY       (128)
+#define RC_ERR_QUEUE_SZ     (16)
+
 
 #include "filter.h"
 #include "third_party/fidlib/fidlib.h"
