@@ -1063,9 +1063,9 @@ int UI_Mainwindow::process_rc_cmd_timescale(const char *cmd_args, int *cmds_pars
       return 203;
     }
 #ifdef Q_OS_WIN32
-    len = __mingw_snprintf(tx_msg_str, 1024, "%llu.%llu\n", pagetime / TIME_DIMENSION, pagetime % TIME_DIMENSION);
+    len = __mingw_snprintf(tx_msg_str, 1024, "%llu.%07llu\n", pagetime / TIME_DIMENSION, pagetime % TIME_DIMENSION);
 #else
-    len = snprintf(tx_msg_str, 1024, "%llu.%llu\n", pagetime / TIME_DIMENSION, pagetime % TIME_DIMENSION);
+    len = snprintf(tx_msg_str, 1024, "%llu.%07llu\n", pagetime / TIME_DIMENSION, pagetime % TIME_DIMENSION);
 #endif
     rc_host_sock->write(tx_msg_str, len);
     return 0;
@@ -1118,9 +1118,9 @@ int UI_Mainwindow::process_rc_cmd_viewtime(const char *cmd_args, int *cmds_parse
       return 0;
     }
 #ifdef Q_OS_WIN32
-    len = __mingw_snprintf(tx_msg_str, 1024, "%lli.%lli\n", edfheaderlist[sel_viewtime]->viewtime / TIME_DIMENSION, edfheaderlist[sel_viewtime]->viewtime % TIME_DIMENSION);
+    len = __mingw_snprintf(tx_msg_str, 1024, "%lli.%07lli\n", edfheaderlist[sel_viewtime]->viewtime / TIME_DIMENSION, edfheaderlist[sel_viewtime]->viewtime % TIME_DIMENSION);
 #else
-    len = snprintf(tx_msg_str, 1024, "%lli.%lli\n", edfheaderlist[sel_viewtime]->viewtime / TIME_DIMENSION, edfheaderlist[sel_viewtime]->viewtime % TIME_DIMENSION);
+    len = snprintf(tx_msg_str, 1024, "%lli.%07lli\n", edfheaderlist[sel_viewtime]->viewtime / TIME_DIMENSION, edfheaderlist[sel_viewtime]->viewtime % TIME_DIMENSION);
 #endif
     rc_host_sock->write(tx_msg_str, len);
     return 0;
