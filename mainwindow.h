@@ -558,12 +558,12 @@ private:
   void mpr_write(const char *);
   int mpr_read(char *, int);
   int parse_rc_command(const char *, char [CMD_MAX_SUB_CMDS][CMD_PARSE_STR_LEN], int *, char *, int);
-  int process_rc_cmd_file(const char [CMD_MAX_SUB_CMDS][CMD_PARSE_STR_LEN], const char *, int);
-  int process_rc_cmd_montage(const char [CMD_MAX_SUB_CMDS][CMD_PARSE_STR_LEN], const char *, int);
-  int process_rc_cmd_signal(const char [CMD_MAX_SUB_CMDS][CMD_PARSE_STR_LEN], const char *, int);
-  int process_rc_cmd_timescale(const char [CMD_MAX_SUB_CMDS][CMD_PARSE_STR_LEN], const char *, int);
-  int process_rc_cmd_viewtime(const char [CMD_MAX_SUB_CMDS][CMD_PARSE_STR_LEN], const char *, int);
-  int process_rc_cmd_timelock(const char [CMD_MAX_SUB_CMDS][CMD_PARSE_STR_LEN], const char *, int);
+  int process_rc_cmd_file(const char *, int *, int);
+  int process_rc_cmd_montage(const char *, int *, int);
+  int process_rc_cmd_signal(const char *, int *, int);
+  int process_rc_cmd_timescale(const char *, int *, int);
+  int process_rc_cmd_viewtime(const char *, int *, int);
+  int process_rc_cmd_timelock(const char *, int *, int);
 
 public slots:
   void remove_all_signals();

@@ -28,15 +28,18 @@
 #include "mainwindow.h"
 
 
-const char rc_cmd_key_lst[RC_CMD_LIST_SZ + 1][32]=
+#define RC_HOST_DEBUG
+
+
+const char rc_cmd_key_lst[RC_CMD_LIST_SZ][32]=
 {
   "*LIST",      /*  0 */
-  "*IDN?",      /*  1 */
+  "*IDN",       /*  1 */
   "*QUIT",      /*  2 */
   "*RST",       /*  3 */
   "*CLS",       /*  4 */
-  "*FAULT?",    /*  5 */
-  "*OPC?",      /*  6 */
+  "*FAULT",     /*  5 */
+  "*OPC",       /*  6 */
   "FILE",       /*  7 */
   "OPEN",       /*  8 */
   "CLOSE",      /*  9 */
@@ -55,13 +58,14 @@ const char rc_cmd_key_lst[RC_CMD_LIST_SZ + 1][32]=
   "REMOVE",     /* 22 */
   "TIMESCALE",  /* 23 */
   "VIEWTIME",   /* 24 */
-  ""            /* 25 */
+  "TIMELOCK",   /* 25 */
+  "REFERENCE"   /* 26 */
 };
 
 
 int UI_Mainwindow::rc_cmd2key(const char *cmd_str)
 {
-  int i, len, idx;
+  int i, len, idx, query=0;
 
   char str[32];
 
@@ -74,6 +78,8 @@ int UI_Mainwindow::rc_cmd2key(const char *cmd_str)
 
   if(str[len-1] == '?')
   {
+    query = RC_CMD_QUERY;
+
     len--;
   }
 
@@ -95,7 +101,7 @@ int UI_Mainwindow::rc_cmd2key(const char *cmd_str)
     return -3;
   }
 
-  return idx;
+  return (idx + query);
 }
 
 
@@ -183,9 +189,9 @@ void UI_Mainwindow::rc_host_sock_rxdata_handler()
 
       break;
     }
-
-//    printf("%c", rx_msg_str[rx_idx]);  /* test debug */
-
+#ifdef RC_HOST_DEBUG
+    printf("%c", rx_msg_str[rx_idx]);  /* test debug */
+#endif
     if(rx_msg_str[rx_idx] != '\n')
     {
       rx_idx++;
@@ -214,23 +220,21 @@ void UI_Mainwindow::rc_host_sock_rxdata_handler()
     trim_spaces(rx_msg_str);
 
     n_sub_cmds = parse_rc_command(rx_msg_str, cmds_parsed, cmds_parsed_key, cmd_args, 1024);
-
-/*****************************************************************************/
-//     printf("n_sub_cmds: %i\n", n_sub_cmds);
-//     for(i=0; i<n_sub_cmds; i++)
-//     {
-//       printf("sub command %i: ->%s<-  key: %i\n", i, cmds_parsed[i], cmds_parsed_key[i]);
-//     }
-//     printf("cmd_args: ->%s<-\n", cmd_args);
-/*****************************************************************************/
-
+#ifdef RC_HOST_DEBUG
+    printf("n_sub_cmds: %i\n", n_sub_cmds);
+    for(i=0; i<n_sub_cmds; i++)
+    {
+      printf("sub command %i: ->%s<-  key: %i\n", i, cmds_parsed[i], cmds_parsed_key[i]);
+    }
+    printf("cmd_args: ->%s<-\n", cmd_args);
+#endif
     if(n_sub_cmds < 1)
     {
       register_rc_err(201);
       continue;
     }
 
-    if((n_sub_cmds == 1) && !strcmp(cmds_parsed[0], "*OPC?"))
+    if((n_sub_cmds == 1) && (cmds_parsed_key[0] == (RC_CMD_OPC | RC_CMD_QUERY)))
     {
       if(strlen(cmd_args))
       {
@@ -257,7 +261,7 @@ void UI_Mainwindow::rc_host_sock_rxdata_handler()
 
     rc_cmd_in_progress = 1;
 
-    if((n_sub_cmds == 1) && !strcmp(cmds_parsed[0], "*LIST"))
+    if((n_sub_cmds == 1) && (cmds_parsed_key[0] == (RC_CMD_LIST | RC_CMD_QUERY)))
     {
       if(strlen(cmd_args))
       {
@@ -265,7 +269,7 @@ void UI_Mainwindow::rc_host_sock_rxdata_handler()
         continue;
       }
       len = snprintf(tx_msg_str, 1024,
-              "*LIST\n"
+              "*LIST?\n"
               "*IDN?\n"
               "*QUIT\n"
               "*RST\n"
@@ -291,12 +295,17 @@ void UI_Mainwindow::rc_host_sock_rxdata_handler()
               "TIMESCALE?\n"
               "TIMESCALE <seconds>\n"
               "VIEWTIME?\n"
-              "VIEWTIME <seconds>\n");
+              "VIEWTIME <seconds>\n"
+              "TIMELOCK?\n"
+              "TIMELOCK <mode>\n"
+              "TIMELOCK:REFERENCE?\n"
+              "TIMELOCK:REFERENCE <file number>\n");
+
       rc_host_sock->write(tx_msg_str, len);
       continue;
     }
 
-    if((n_sub_cmds == 1) && !strcmp(cmds_parsed[0], "*IDN?"))
+    if((n_sub_cmds == 1) && (cmds_parsed_key[0] == (RC_CMD_IDN | RC_CMD_QUERY)))
     {
       if(strlen(cmd_args))
       {
@@ -308,7 +317,7 @@ void UI_Mainwindow::rc_host_sock_rxdata_handler()
       continue;
     }
 
-    if((n_sub_cmds == 1) && !strcmp(cmds_parsed[0], "*QUIT"))
+    if((n_sub_cmds == 1) && (cmds_parsed_key[0] == RC_CMD_QUIT))
     {
       if(strlen(cmd_args))
       {
@@ -319,7 +328,7 @@ void UI_Mainwindow::rc_host_sock_rxdata_handler()
       continue;
     }
 
-    if((n_sub_cmds == 1) && !strcmp(cmds_parsed[0], "*RST"))
+    if((n_sub_cmds == 1) && (cmds_parsed_key[0] == RC_CMD_RST))
     {
       if(strlen(cmd_args))
       {
@@ -330,7 +339,7 @@ void UI_Mainwindow::rc_host_sock_rxdata_handler()
       continue;
     }
 
-    if((n_sub_cmds == 1) && !strcmp(cmds_parsed[0], "*CLS"))
+    if((n_sub_cmds == 1) && (cmds_parsed_key[0] == RC_CMD_CLS))
     {
       if(strlen(cmd_args))
       {
@@ -345,7 +354,7 @@ void UI_Mainwindow::rc_host_sock_rxdata_handler()
       continue;
     }
 
-    if((n_sub_cmds == 1) && !strcmp(cmds_parsed[0], "*FAULT?"))
+    if((n_sub_cmds == 1) && (cmds_parsed_key[0] == (RC_CMD_FAULT | RC_CMD_QUERY)))
     {
       if(strlen(cmd_args))
       {
@@ -361,9 +370,9 @@ void UI_Mainwindow::rc_host_sock_rxdata_handler()
       continue;
     }
 
-    if(!strcmp(cmds_parsed[0], "FILE"))
+    if((cmds_parsed_key[0] & RC_CMD_MASK) == RC_CMD_FILE)
     {
-      err = process_rc_cmd_file(cmds_parsed, cmd_args, n_sub_cmds);
+      err = process_rc_cmd_file(cmd_args, cmds_parsed_key, n_sub_cmds);
       if(err)
       {
         register_rc_err(err);
@@ -371,9 +380,9 @@ void UI_Mainwindow::rc_host_sock_rxdata_handler()
       continue;
     }
 
-    if(!strcmp(cmds_parsed[0], "MONTAGE"))
+    if((cmds_parsed_key[0] & RC_CMD_MASK) == RC_CMD_MASK)
     {
-      err = process_rc_cmd_montage(cmds_parsed, cmd_args, n_sub_cmds);
+      err = process_rc_cmd_montage(cmd_args, cmds_parsed_key, n_sub_cmds);
       if(err)
       {
         register_rc_err(err);
@@ -381,9 +390,9 @@ void UI_Mainwindow::rc_host_sock_rxdata_handler()
       continue;
     }
 
-    if(!strcmp(cmds_parsed[0], "SIGNAL"))
+    if((cmds_parsed_key[0] & RC_CMD_MASK) == RC_CMD_SIGNAL)
     {
-      err = process_rc_cmd_signal(cmds_parsed, cmd_args, n_sub_cmds);
+      err = process_rc_cmd_signal(cmd_args, cmds_parsed_key, n_sub_cmds);
       if(err)
       {
         register_rc_err(err);
@@ -391,9 +400,9 @@ void UI_Mainwindow::rc_host_sock_rxdata_handler()
       continue;
     }
 
-    if(!strcmp(cmds_parsed[0], "TIMESCALE") || !strcmp(cmds_parsed[0], "TIMESCALE?"))
+    if((cmds_parsed_key[0] & RC_CMD_MASK) == RC_CMD_TIMESCALE)
     {
-      err = process_rc_cmd_timescale(cmds_parsed, cmd_args, n_sub_cmds);
+      err = process_rc_cmd_timescale(cmd_args, cmds_parsed_key, n_sub_cmds);
       if(err)
       {
         register_rc_err(err);
@@ -401,9 +410,9 @@ void UI_Mainwindow::rc_host_sock_rxdata_handler()
       continue;
     }
 
-    if(!strcmp(cmds_parsed[0], "VIEWTIME") || !strcmp(cmds_parsed[0], "VIEWTIME?"))
+    if((cmds_parsed_key[0] & RC_CMD_MASK) == RC_CMD_VIEWTIME)
     {
-      err = process_rc_cmd_viewtime(cmds_parsed, cmd_args, n_sub_cmds);
+      err = process_rc_cmd_viewtime(cmd_args, cmds_parsed_key, n_sub_cmds);
       if(err)
       {
         register_rc_err(err);
@@ -411,9 +420,9 @@ void UI_Mainwindow::rc_host_sock_rxdata_handler()
       continue;
     }
 
-    if(!strcmp(cmds_parsed[0], "TIMELOCK") || !strcmp(cmds_parsed[0], "TIMELOCK?"))
+    if((cmds_parsed_key[0] & RC_CMD_MASK) == RC_CMD_TIMELOCK)
     {
-      err = process_rc_cmd_timelock(cmds_parsed, cmd_args, n_sub_cmds);
+      err = process_rc_cmd_timelock(cmd_args, cmds_parsed_key, n_sub_cmds);
       if(err)
       {
         register_rc_err(err);
@@ -473,6 +482,18 @@ int UI_Mainwindow::parse_rc_command(const char *cmd_str, char cmd_parsed_str[CMD
       }
 
       cmds_key[j] = rc_cmd2key(cmd_parsed_str[j]);
+      if(cmds_key[j] < 0)
+      {
+        return -6;
+      }
+
+      if(j)
+      {
+        if(cmds_key[j-1] & RC_CMD_QUERY)
+        {
+          return -7;
+        }
+      }
 
       ascii_toupper(cmd_parsed_str[j++]);
 
@@ -485,18 +506,24 @@ int UI_Mainwindow::parse_rc_command(const char *cmd_str, char cmd_parsed_str[CMD
       {
         cmd_parsed_str[j][0] = 0;
 
-        return -6;
+        return -8;
       }
 
       last_char_colon++;
 
       cmd_parsed_str[j][k] = 0;
 
+      cmds_key[j] = rc_cmd2key(cmd_parsed_str[j]);
+      if(cmds_key[j] < 0)
+      {
+        return -9;
+      }
+
       ascii_toupper(cmd_parsed_str[j++]);
 
       if(j >= CMD_MAX_SUB_CMDS)
       {
-        return -5;
+        return -10;
       }
 
       k = 0;
@@ -514,15 +541,27 @@ int UI_Mainwindow::parse_rc_command(const char *cmd_str, char cmd_parsed_str[CMD
 
       if(!k)
       {
-        return -6;
+        return -11;
       }
 
       if(cmd_parsed_str[j][k-1] == ':')
       {
-        return -7;
+        return -12;
       }
 
       cmds_key[j] = rc_cmd2key(cmd_parsed_str[j]);
+      if(cmds_key[j] < 0)
+      {
+        return -13;
+      }
+
+      if(j)
+      {
+        if(cmds_key[j-1] & RC_CMD_QUERY)
+        {
+          return -14;
+        }
+      }
 
       ascii_toupper(cmd_parsed_str[j++]);
 
@@ -538,16 +577,16 @@ int UI_Mainwindow::parse_rc_command(const char *cmd_str, char cmd_parsed_str[CMD
 }
 
 
-int UI_Mainwindow::process_rc_cmd_file(const char cmds_parsed[CMD_MAX_SUB_CMDS][CMD_PARSE_STR_LEN], const char *cmd_args, int n_sub_cmds)
+int UI_Mainwindow::process_rc_cmd_file(const char *cmd_args, int *cmds_parsed_key, int n_sub_cmds)
 {
   if(n_sub_cmds < 2)
   {
     return 202;
   }
 
-  if(!strcmp(cmds_parsed[1], "CLOSE"))
+  if(cmds_parsed_key[1] == RC_CMD_CLOSE)
   {
-    if((n_sub_cmds == 3) && !strcmp(cmds_parsed[2], "ALL"))
+    if((n_sub_cmds == 3) && (cmds_parsed_key[2] == RC_CMD_ALL))
     {
       if(strlen(cmd_args))
       {
@@ -561,7 +600,7 @@ int UI_Mainwindow::process_rc_cmd_file(const char cmds_parsed[CMD_MAX_SUB_CMDS][
       return 202;
     }
   }
-  else if(!strcmp(cmds_parsed[1], "OPEN"))
+  else if(cmds_parsed_key[1] == RC_CMD_OPEN)
     {
       if(n_sub_cmds == 2)
       {
@@ -590,7 +629,7 @@ int UI_Mainwindow::process_rc_cmd_file(const char cmds_parsed[CMD_MAX_SUB_CMDS][
 }
 
 
-int UI_Mainwindow::process_rc_cmd_montage(const char cmds_parsed[CMD_MAX_SUB_CMDS][CMD_PARSE_STR_LEN], const char *cmd_args, int n_sub_cmds)
+int UI_Mainwindow::process_rc_cmd_montage(const char *cmd_args, int *cmds_parsed_key, int n_sub_cmds)
 {
   int err, file_num=0;
 
@@ -602,7 +641,7 @@ int UI_Mainwindow::process_rc_cmd_montage(const char cmds_parsed[CMD_MAX_SUB_CMD
     return 202;
   }
 
-  if((n_sub_cmds == 2) && !strcmp(cmds_parsed[1], "LOAD"))
+  if((n_sub_cmds == 2) && (cmds_parsed_key[1] == RC_CMD_LOAD))
   {
     strlcpy(str1, cmd_args, 1024);
     err = rc_get_last_cmd_args_token(str1, &ptr);
@@ -642,7 +681,7 @@ int UI_Mainwindow::process_rc_cmd_montage(const char cmds_parsed[CMD_MAX_SUB_CMD
 }
 
 
-int UI_Mainwindow::process_rc_cmd_signal(const char cmds_parsed[CMD_MAX_SUB_CMDS][CMD_PARSE_STR_LEN], const char *cmd_args, int n_sub_cmds)
+int UI_Mainwindow::process_rc_cmd_signal(const char *cmd_args, int *cmds_parsed_key, int n_sub_cmds)
 {
   int i, j, n, ival, err, file_num=0;
 
@@ -660,9 +699,9 @@ int UI_Mainwindow::process_rc_cmd_signal(const char cmds_parsed[CMD_MAX_SUB_CMDS
     return 202;
   }
 
-  if(!strcmp(cmds_parsed[1], "ADD"))
+  if(cmds_parsed_key[1] == RC_CMD_ADD)
   {
-    if((n_sub_cmds == 3) && !strcmp(cmds_parsed[2], "LABEL"))
+    if((n_sub_cmds == 3) && (cmds_parsed_key[2] == RC_CMD_LABEL))
     {
       strlcpy(str1, cmd_args, 1024);
       err = rc_get_last_cmd_args_token(str1, &ptr);
@@ -756,9 +795,9 @@ int UI_Mainwindow::process_rc_cmd_signal(const char cmds_parsed[CMD_MAX_SUB_CMDS
     }
   }
 
-  if(!strcmp(cmds_parsed[1], "REMOVE"))
+  if(cmds_parsed_key[1] == RC_CMD_REMOVE)
   {
-    if((n_sub_cmds == 3) && !strcmp(cmds_parsed[2], "ALL"))
+    if((n_sub_cmds == 3) && (cmds_parsed_key[2] == RC_CMD_ALL))
     {
       if(strlen(cmd_args))
       {
@@ -767,7 +806,7 @@ int UI_Mainwindow::process_rc_cmd_signal(const char cmds_parsed[CMD_MAX_SUB_CMDS
       remove_all_signals();
       return 0;
     }
-    else if((n_sub_cmds == 3) && !strcmp(cmds_parsed[2], "LABEL"))
+    else if((n_sub_cmds == 3) && (cmds_parsed_key[2] == RC_CMD_LABEL))
       {
         if(!strlen(cmd_args))
         {
@@ -791,9 +830,9 @@ int UI_Mainwindow::process_rc_cmd_signal(const char cmds_parsed[CMD_MAX_SUB_CMDS
       }
   }
 
-  if(!strcmp(cmds_parsed[1], "AMPLITUDE"))
+  if(cmds_parsed_key[1] == RC_CMD_AMPLITUDE)
   {
-    if((n_sub_cmds == 3) && !strcmp(cmds_parsed[2], "ALL"))
+    if((n_sub_cmds == 3) && (cmds_parsed_key[2] == RC_CMD_ALL))
     {
       if(!strlen(cmd_args))
       {
@@ -831,7 +870,7 @@ int UI_Mainwindow::process_rc_cmd_signal(const char cmds_parsed[CMD_MAX_SUB_CMDS
       return 0;
     }
 
-    if((n_sub_cmds == 3) && !strcmp(cmds_parsed[2], "LABEL"))
+    if((n_sub_cmds == 3) && (cmds_parsed_key[2] == RC_CMD_LABEL))
     {
       strlcpy(str1, cmd_args, 1024);
       err = rc_get_last_cmd_args_token(str1, &ptr);
@@ -869,7 +908,7 @@ int UI_Mainwindow::process_rc_cmd_signal(const char cmds_parsed[CMD_MAX_SUB_CMDS
       return 0;
     }
 
-    if((n_sub_cmds == 4) && !strcmp(cmds_parsed[2], "FIT") && !strcmp(cmds_parsed[3], "ALL"))
+    if((n_sub_cmds == 4) && (cmds_parsed_key[2] == RC_CMD_FIT) && (cmds_parsed_key[3] == RC_CMD_ALL))
     {
       if(strlen(cmd_args))
       {
@@ -879,7 +918,7 @@ int UI_Mainwindow::process_rc_cmd_signal(const char cmds_parsed[CMD_MAX_SUB_CMDS
       return 0;
     }
 
-    if((n_sub_cmds == 4) && !strcmp(cmds_parsed[2], "FIT") && !strcmp(cmds_parsed[3], "LABEL"))
+    if((n_sub_cmds == 4) && (cmds_parsed_key[2] == RC_CMD_FIT) && (cmds_parsed_key[3] == RC_CMD_LABEL))
     {
       if(!strlen(cmd_args))
       {
@@ -898,9 +937,9 @@ int UI_Mainwindow::process_rc_cmd_signal(const char cmds_parsed[CMD_MAX_SUB_CMDS
     }
   }
 
-  if(!strcmp(cmds_parsed[1], "OFFSET"))
+  if(cmds_parsed_key[1] == RC_CMD_OFFSET)
   {
-    if((n_sub_cmds == 4) && !strcmp(cmds_parsed[2], "ADJUST") && !strcmp(cmds_parsed[3], "ALL"))
+    if((n_sub_cmds == 4) && (cmds_parsed_key[2] == RC_CMD_ADJUST) && (cmds_parsed_key[3] == RC_CMD_ALL))
     {
       if(strlen(cmd_args))
       {
@@ -910,7 +949,7 @@ int UI_Mainwindow::process_rc_cmd_signal(const char cmds_parsed[CMD_MAX_SUB_CMDS
       return 0;
     }
 
-    if((n_sub_cmds == 4) && !strcmp(cmds_parsed[2], "ADJUST") && !strcmp(cmds_parsed[3], "LABEL"))
+    if((n_sub_cmds == 4) && (cmds_parsed_key[2] == RC_CMD_ADJUST) && (cmds_parsed_key[3] == RC_CMD_LABEL))
     {
       if(!strlen(cmd_args))
       {
@@ -928,7 +967,7 @@ int UI_Mainwindow::process_rc_cmd_signal(const char cmds_parsed[CMD_MAX_SUB_CMDS
       }
     }
 
-    if((n_sub_cmds == 4) && !strcmp(cmds_parsed[2], "ZERO") && !strcmp(cmds_parsed[3], "ALL"))
+    if((n_sub_cmds == 4) && (cmds_parsed_key[2] == RC_CMD_ZERO) && (cmds_parsed_key[3] == RC_CMD_ALL))
     {
       if(strlen(cmd_args))
       {
@@ -938,7 +977,7 @@ int UI_Mainwindow::process_rc_cmd_signal(const char cmds_parsed[CMD_MAX_SUB_CMDS
       return 0;
     }
 
-    if((n_sub_cmds == 4) && !strcmp(cmds_parsed[2], "ZERO") && !strcmp(cmds_parsed[3], "LABEL"))
+    if((n_sub_cmds == 4) && (cmds_parsed_key[2] == RC_CMD_ZERO) && (cmds_parsed_key[3] == RC_CMD_LABEL))
     {
       if(!strlen(cmd_args))
       {
@@ -957,9 +996,9 @@ int UI_Mainwindow::process_rc_cmd_signal(const char cmds_parsed[CMD_MAX_SUB_CMDS
     }
   }
 
-  if(!strcmp(cmds_parsed[1], "INVERT"))
+  if(cmds_parsed_key[1] == RC_CMD_INVERT)
   {
-    if((n_sub_cmds == 3) && !strcmp(cmds_parsed[2], "ALL"))
+    if((n_sub_cmds == 3) && (cmds_parsed_key[2] == RC_CMD_ALL))
     {
       if(!strlen(cmd_args))
       {
@@ -975,7 +1014,7 @@ int UI_Mainwindow::process_rc_cmd_signal(const char cmds_parsed[CMD_MAX_SUB_CMDS
       return 0;
     }
 
-    if((n_sub_cmds == 3) && !strcmp(cmds_parsed[2], "LABEL"))
+    if((n_sub_cmds == 3) && (cmds_parsed_key[2] == RC_CMD_LABEL))
     {
       strlcpy(str1, cmd_args, 1024);
       err = rc_get_last_cmd_args_token(str1, &ptr);
@@ -1004,7 +1043,7 @@ int UI_Mainwindow::process_rc_cmd_signal(const char cmds_parsed[CMD_MAX_SUB_CMDS
 }
 
 
-int UI_Mainwindow::process_rc_cmd_timescale(const char cmds_parsed[CMD_MAX_SUB_CMDS][CMD_PARSE_STR_LEN], const char *cmd_args, int n_sub_cmds)
+int UI_Mainwindow::process_rc_cmd_timescale(const char *cmd_args, int *cmds_parsed_key, int n_sub_cmds)
 {
   int len;
 
@@ -1017,7 +1056,7 @@ int UI_Mainwindow::process_rc_cmd_timescale(const char cmds_parsed[CMD_MAX_SUB_C
     return 202;
   }
 
-  if((n_sub_cmds == 1) && !strcmp(cmds_parsed[0], "TIMESCALE?"))
+  if((n_sub_cmds == 1) && (cmds_parsed_key[0] == (RC_CMD_TIMESCALE | RC_CMD_QUERY)))
   {
     if(strlen(cmd_args))
     {
@@ -1031,7 +1070,7 @@ int UI_Mainwindow::process_rc_cmd_timescale(const char cmds_parsed[CMD_MAX_SUB_C
     rc_host_sock->write(tx_msg_str, len);
     return 0;
   }
-  else if((n_sub_cmds == 1) && !strcmp(cmds_parsed[0], "TIMESCALE"))
+  else if((n_sub_cmds == 1) && (cmds_parsed_key[0] == RC_CMD_TIMESCALE))
     {
       if(!strlen(cmd_args))
       {
@@ -1053,7 +1092,7 @@ int UI_Mainwindow::process_rc_cmd_timescale(const char cmds_parsed[CMD_MAX_SUB_C
 }
 
 
-int UI_Mainwindow::process_rc_cmd_viewtime(const char cmds_parsed[CMD_MAX_SUB_CMDS][CMD_PARSE_STR_LEN], const char *cmd_args, int n_sub_cmds)
+int UI_Mainwindow::process_rc_cmd_viewtime(const char *cmd_args, int *cmds_parsed_key, int n_sub_cmds)
 {
   int len;
 
@@ -1066,7 +1105,7 @@ int UI_Mainwindow::process_rc_cmd_viewtime(const char cmds_parsed[CMD_MAX_SUB_CM
     return 202;
   }
 
-  if((n_sub_cmds == 1) && !strcmp(cmds_parsed[0], "VIEWTIME?"))
+  if((n_sub_cmds == 1) && (cmds_parsed_key[0] == (RC_CMD_VIEWTIME | RC_CMD_QUERY)))
   {
     if(strlen(cmd_args))
     {
@@ -1086,7 +1125,7 @@ int UI_Mainwindow::process_rc_cmd_viewtime(const char cmds_parsed[CMD_MAX_SUB_CM
     rc_host_sock->write(tx_msg_str, len);
     return 0;
   }
-  else if((n_sub_cmds == 1) && !strcmp(cmds_parsed[0], "VIEWTIME"))
+  else if((n_sub_cmds == 1) && (cmds_parsed_key[0] == RC_CMD_VIEWTIME))
     {
       if(!strlen(cmd_args))
       {
@@ -1108,7 +1147,7 @@ int UI_Mainwindow::process_rc_cmd_viewtime(const char cmds_parsed[CMD_MAX_SUB_CM
 }
 
 
-int UI_Mainwindow::process_rc_cmd_timelock(const char cmds_parsed[CMD_MAX_SUB_CMDS][CMD_PARSE_STR_LEN], const char *cmd_args, int n_sub_cmds)
+int UI_Mainwindow::process_rc_cmd_timelock(const char *cmd_args, int *cmds_parsed_key, int n_sub_cmds)
 {
   int len, mode=0, file_num=0;
 
@@ -1119,7 +1158,7 @@ int UI_Mainwindow::process_rc_cmd_timelock(const char cmds_parsed[CMD_MAX_SUB_CM
     return 202;
   }
 
-  if((n_sub_cmds == 1) && !strcmp(cmds_parsed[0], "TIMELOCK?"))
+  if((n_sub_cmds == 1) && (cmds_parsed_key[0] == (RC_CMD_TIMELOCK | RC_CMD_QUERY)))
   {
     if(strlen(cmd_args))
     {
@@ -1129,7 +1168,7 @@ int UI_Mainwindow::process_rc_cmd_timelock(const char cmds_parsed[CMD_MAX_SUB_CM
     rc_host_sock->write(tx_msg_str, len);
     return 0;
   }
-  else if((n_sub_cmds == 1) && !strcmp(cmds_parsed[0], "TIMELOCK"))
+  else if((n_sub_cmds == 1) && (cmds_parsed_key[0] == RC_CMD_TIMELOCK))
     {
       if(!strlen(cmd_args))
       {
@@ -1142,7 +1181,7 @@ int UI_Mainwindow::process_rc_cmd_timelock(const char cmds_parsed[CMD_MAX_SUB_CM
       return 0;
     }
 
-  if((n_sub_cmds == 2) && !strcmp(cmds_parsed[0], "TIMELOCK") && !strcmp(cmds_parsed[1], "REFERENCE?"))
+  if((n_sub_cmds == 2) && (cmds_parsed_key[0] == RC_CMD_TIMELOCK) && (cmds_parsed_key[1] == (RC_CMD_REFERENCE | RC_CMD_QUERY)))
   {
     if(strlen(cmd_args))
     {
@@ -1152,7 +1191,7 @@ int UI_Mainwindow::process_rc_cmd_timelock(const char cmds_parsed[CMD_MAX_SUB_CM
     rc_host_sock->write(tx_msg_str, len);
     return 0;
   }
-  else if((n_sub_cmds == 2) && !strcmp(cmds_parsed[0], "TIMELOCK") && !strcmp(cmds_parsed[1], "REFERENCE"))
+  else if((n_sub_cmds == 2) && (cmds_parsed_key[0] == RC_CMD_TIMELOCK) && (cmds_parsed_key[1] == RC_CMD_REFERENCE))
     {
       if(!strlen(cmd_args))
       {

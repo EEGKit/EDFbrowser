@@ -129,10 +129,14 @@
 #define RC_CMD_REMOVE       (22)
 #define RC_CMD_TIMESCALE    (23)
 #define RC_CMD_VIEWTIME     (24)
+#define RC_CMD_TIMELOCK     (25)
+#define RC_CMD_REFERENCE    (26)
 
-#define RC_CMD_LIST_SZ      (25)
-#define RC_CMD_QUERY       (128)
+#define RC_CMD_LIST_SZ      (27)
+#define RC_CMD_QUERY    (1 << 8)
 #define RC_ERR_QUEUE_SZ     (16)
+
+#define RC_CMD_MASK  (0xffffffff & (~RC_CMD_QUERY))
 
 
 #include "filter.h"

@@ -1922,6 +1922,8 @@
   - Max one connection at a time.<br>
   - Every command/query must end with a newline character.<br>
   - The decimal separator (if any) must be a dot.<br>
+  - Commands are not case sensitive<br>
+  - Commands may be abbreviated as long as they can be uniquely identified and as long as they contain at least three characters.<br>
   <br>
   After starting EDFbrowser, you can test the control port by using the command telnet 127.0.0.1 &lt;portnumber&gt; (or use <a href="https://en.wikipedia.org/wiki/PuTTY">Putty</a>)<br>
   In case of connection problems, check your firewall settings.<br>
@@ -1936,7 +1938,7 @@
     <th class="border" style="text-align:center;">Description</th>
   </tr>
   <tr class="border">
-    <td class="border">*LIST</td>
+    <td class="border">*LIST?</td>
     <td class="border">Returns a list of commands</td>
   </tr>
   <tr class="border">
@@ -1964,103 +1966,103 @@
     <td class="border">Operation complete: returns 1 if it has finished the operation, otherwise it returns 0</td>
   </tr>
   <tr class="border">
-    <td class="border">FILE:OPEN &lt;path&gt;</td>
+    <td class="border">FILe:OPEn &lt;path&gt;</td>
     <td class="border">Opens a file</td>
   </tr>
   <tr class="border">
-    <td class="border">FILE:CLOSE:ALL</td>
+    <td class="border">FILe:CLOse:ALL</td>
     <td class="border">Closes all open files</td>
   </tr>
   <tr class="border">
-    <td class="border">MONTAGE:LOAD &lt;path&gt; &lt;file number&gt;</td>
+    <td class="border">MONtage:LOAd &lt;path&gt; &lt;file number&gt;</td>
     <td class="border">Loads a montage file and applies it to the file "file number", file number indicates which one of the opened files, must be in the range 1 - 32<br>
                        File numbering order equals the order in which they were opened</td>
   </tr>
   <tr class="border">
-    <td class="border">SIGNAL:ADD:LABEL &lt;label&gt; &lt;file number&gt;</td>
+    <td class="border">SIGnal:ADD:LABel &lt;label&gt; &lt;file number&gt;</td>
     <td class="border">Adds the signal "label" from the file "file number" to the screen, file number indicates which one of the opened files, must be in the range 1 - 32<br>
                        File numbering order equals the order in which they were opened</td>
   </tr>
   <tr class="border">
-    <td class="border">SIGNAL:AMPLITUDE:ALL &lt;units&gt;</td>
+    <td class="border">SIGnal:AMPlitude:ALL &lt;units&gt;</td>
     <td class="border">Sets the amplitude for all signals (expressed in units/cm)</td>
   </tr>
   <tr class="border">
-    <td class="border">SIGNAL:AMPLITUDE:LABEL &lt;label&gt; &lt;units&gt;</td>
+    <td class="border">SIGnal:AMPlitude:LABel &lt;label&gt; &lt;units&gt;</td>
     <td class="border">Sets the amplitude for signal "label" (expressed in units/cm) e.g. SIGNAL:AMPLITUDE:LABEL F3 100</td>
   </tr>
   <tr class="border">
-    <td class="border">SIGNAL:AMPLITUDE:FIT:ALL</td>
+    <td class="border">SIGnal:AMPlitude:FIT:ALL</td>
     <td class="border">Adjusts the amplitude for all signals automatically (fit to pane)</td>
   </tr>
   <tr class="border">
-    <td class="border">SIGNAL:AMPLITUDE:FIT:LABEL &lt;label&gt;</td>
+    <td class="border">SIGnal:AMPlitude:FIT:LABel &lt;label&gt;</td>
     <td class="border">Adjusts the amplitude for signal "label" automatically (fit to pane)</td>
   </tr>
   <tr class="border">
-    <td class="border">SIGNAL:OFFSET:ADJUST:ALL</td>
+    <td class="border">SIGnal:OFFset:ADJust:ALL</td>
     <td class="border">Adjusts the vertical offset relative to the baseline for all signals automatically</td>
   </tr>
   <tr class="border">
-    <td class="border">SIGNAL:OFFSET:ADJUST:LABEL &lt;label&gt;</td>
+    <td class="border">SIGnal:OFFset:ADJust:LABel &lt;label&gt;</td>
     <td class="border">Adjusts the vertical offset relative to the baseline for signal "label" automatically</td>
   </tr>
   <tr class="border">
-    <td class="border">SIGNAL:OFFSET:ZERO:ALL</td>
+    <td class="border">SIGnal:OFFset:ZERo:ALL</td>
     <td class="border">Sets the vertical offset relative to the baseline for all signals to zero</td>
   </tr>
   <tr class="border">
-    <td class="border">SIGNAL:OFFSET:ZERO:LABEL &lt;label&gt;</td>
+    <td class="border">SIGnal:OFFset:ZERo:LABel &lt;label&gt;</td>
     <td class="border">Sets the vertical offset relative to the baseline for signal "label" to zero</td>
   </tr>
   <tr class="border">
-    <td class="border">SIGNAL:INVERT:ALL &lt;value&gt;</td>
+    <td class="border">SIGnal:INVert:ALL &lt;value&gt;</td>
     <td class="border">Display all signals inverted if value is 1, display all signals normally if value is 0,<br>
                        if value is 2: toggle (invert if not inverted, display normal if inverted)</td>
   </tr>
   <tr class="border">
-    <td class="border">SIGNAL:INVERT:LABEL &lt;label&gt; &lt;value&gt;</td>
+    <td class="border">SIGnal:INVert:LABel &lt;label&gt; &lt;value&gt;</td>
     <td class="border">Display signal "label" inverted if value is 1, display signal label normally if value is 0,<br>
                        if value is 2: toggle (invert if not inverted, display normal if inverted)</td>
   </tr>
   <tr class="border">
-    <td class="border">SIGNAL:REMOVE:LABEL &lt;label&gt;</td>
+    <td class="border">SIGnal:REMove:LABel &lt;label&gt;</td>
     <td class="border">Removes signal "label" from the screen</td>
   </tr>
   <tr class="border">
-    <td class="border">SIGNAL:REMOVE:ALL</td>
+    <td class="border">SIGnal:REMove:ALL</td>
     <td class="border">Removes all signals from the screen</td>
   </tr>
   <tr class="border">
-    <td class="border">TIMESCALE?</td>
+    <td class="border">TIMEScale?</td>
     <td class="border">Returns the timescale in seconds</td>
   </tr>
   <tr class="border">
-    <td class="border">TIMESCALE &lt;seconds&gt;</td>
+    <td class="border">TIMEScale &lt;seconds&gt;</td>
     <td class="border">Sets the timescale</td>
   </tr>
   <tr class="border">
-    <td class="border">VIEWTIME?</td>
+    <td class="border">VIEwtime?</td>
     <td class="border">Returns the viewtime in seconds relative to the start of the recording</td>
   </tr>
   <tr class="border">
-    <td class="border">VIEWTIME &lt;seconds&gt;</td>
+    <td class="border">VIEwtime &lt;seconds&gt;</td>
     <td class="border">Sets the viewtime relative to the start of the recording</td>
   </tr>
   <tr class="border">
-    <td class="border">TIMELOCK?</td>
+    <td class="border">TIMELock?</td>
     <td class="border">Returns the <a href="#Timelock">Timelock / File synchronisation</a> mode, 0 = offset, 1 = absolute, 2 = no locking, 3 = user defined locking</td>
   </tr>
   <tr class="border">
-    <td class="border">TIMELOCK &lt;mode&gt;</td>
+    <td class="border">TIMELock &lt;mode&gt;</td>
     <td class="border">Sets the <a href="#Timelock">Timelock / File synchronisation</a> mode, 0 = offset, 1 = absolute, 2 = no locking, 3 = user defined locking</td>
   </tr>
   <tr class="border">
-    <td class="border">TIMELOCK:REFERENCE?</td>
+    <td class="border">TIMELock:REFerence?</td>
     <td class="border">Returns the file number of the file that acts as the <a href="#Timelock">reference</a>, file numbering order equals the order in which they were opened</td>
   </tr>
   <tr class="border">
-    <td class="border">TIMELOCK:REFERENCE &lt;file number&gt;</td>
+    <td class="border">TIMELock:REFerence &lt;file number&gt;</td>
     <td class="border">Sets the file number of the file that will act as the <a href="#Timelock">reference</a>, file number indicates which one of the opened files, must be in the range 1 - 32<br>
                        File numbering order equals the order in which they were opened</td>
   </tr>
