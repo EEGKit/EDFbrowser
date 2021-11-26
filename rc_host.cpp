@@ -1227,7 +1227,7 @@ int UI_Mainwindow::rc_get_last_cmd_args_token(char *cmd_args, char **dest)
 
   if(strlen(cmd_args) < 3)
   {
-    return 203;
+    return 204;
   }
 
   len = strlen(cmd_args);
