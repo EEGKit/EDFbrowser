@@ -59,7 +59,10 @@ const char rc_cmd_key_lst[RC_CMD_LIST_SZ][32]=
   "TIMESCALE",  /* 23 */
   "VIEWTIME",   /* 24 */
   "TIMELOCK",   /* 25 */
-  "REFERENCE"   /* 26 */
+  "REFERENCE",  /* 26 */
+  "SYSTEM",     /* 27 */
+  "LOCKED",     /* 28 */
+  "MODE"        /* 29 */
 };
 
 
@@ -276,30 +279,32 @@ void UI_Mainwindow::rc_host_sock_rxdata_handler()
               "*CLS\n"
               "*FAULT?\n"
               "*OPC?\n"
-              "FILE:OPEN <path>\n"
-              "FILE:CLOSE:ALL\n"
-              "MONTAGE:LOAD <path>\n"
-              "SIGNAL:ADD:LABEL <label> <file number>\n"
-              "SIGNAL:AMPLITUDE:ALL <units>\n"
-              "SIGNAL:AMPLITUDE:LABEL <label> <units>\n"
-              "SIGNAL:AMPLITUDE:FIT:ALL\n"
-              "SIGNAL:AMPLITUDE:FIT:LABEL <label>\n"
-              "SIGNAL:OFFSET:ADJUST:ALL\n"
-              "SIGNAL:OFFSET:ADJUST:LABEL <label>\n"
-              "SIGNAL:OFFSET:ZERO:ALL\n"
-              "SIGNAL:OFFSET:ZERO:LABEL <label>\n"
-              "SIGNAL:INVERT:ALL <value>\n"
-              "SIGNAL:INVERT:LABEL <label> <value>\n"
-              "SIGNAL:REMOVE:LABEL <label>\n"
-              "SIGNAL:REMOVE:ALL\n"
-              "TIMESCALE?\n"
-              "TIMESCALE <seconds>\n"
-              "VIEWTIME?\n"
-              "VIEWTIME <seconds>\n"
-              "TIMELOCK?\n"
-              "TIMELOCK <mode>\n"
-              "TIMELOCK:REFERENCE?\n"
-              "TIMELOCK:REFERENCE <file number>\n");
+              "FILe:OPEn <path>\n"
+              "FILe:CLOse:ALL\n"
+              "MONtage:LOAd <path>\n"
+              "SIGnal:ADD:LABel <label> <file number>\n"
+              "SIGnal:AMPlitude:ALL <units>\n"
+              "SIGnal:AMPlitude:LABel <label> <units>\n"
+              "SIGnal:AMPlitude:FIT:ALL\n"
+              "SIGnal:AMPlitude:FIT:LABel <label>\n"
+              "SIGnal:OFFset:ADJust:ALL\n"
+              "SIGnal:OFFset:ADJust:LABel <label>\n"
+              "SIGnal:OFFset:ZERo:ALL\n"
+              "SIGnal:OFFset:ZERo:LABEL <label>\n"
+              "SIGnal:INVert:ALL <0|1|2>\n"
+              "SIGnal:INVert:LABel <label> <0|1|2>\n"
+              "SIGnal:REMove:LABel <label>\n"
+              "SIGnal:REMove:ALL\n"
+              "TIMEScale?\n"
+              "TIMEScale <seconds>\n"
+              "VIEwtime?\n"
+              "VIEwtime <seconds>\n"
+              "TIMELock:MODe?\n"
+              "TIMELock:MODe <0|1|2|3>\n"
+              "TIMELock:REFerence?\n"
+              "TIMELock:REFerence <file number>\n"
+              "SYStem:LOCked?\n"
+              "SYStem:LOCked <0|1>\n");
 
       rc_host_sock->write(tx_msg_str, len);
       continue;
@@ -423,6 +428,16 @@ void UI_Mainwindow::rc_host_sock_rxdata_handler()
     if((cmds_parsed_key[0] & RC_CMD_MASK) == RC_CMD_TIMELOCK)
     {
       err = process_rc_cmd_timelock(cmd_args, cmds_parsed_key, n_sub_cmds);
+      if(err)
+      {
+        register_rc_err(err);
+      }
+      continue;
+    }
+
+    if((cmds_parsed_key[0] & RC_CMD_MASK) == RC_CMD_SYSTEM)
+    {
+      err = process_rc_cmd_system(cmd_args, cmds_parsed_key, n_sub_cmds);
       if(err)
       {
         register_rc_err(err);
@@ -1158,7 +1173,7 @@ int UI_Mainwindow::process_rc_cmd_timelock(const char *cmd_args, int *cmds_parse
     return 202;
   }
 
-  if((n_sub_cmds == 1) && (cmds_parsed_key[0] == (RC_CMD_TIMELOCK | RC_CMD_QUERY)))
+  if((n_sub_cmds == 2) && (cmds_parsed_key[0] == RC_CMD_TIMELOCK) && (cmds_parsed_key[1] == (RC_CMD_MODE | RC_CMD_QUERY)))
   {
     if(strlen(cmd_args))
     {
@@ -1168,7 +1183,7 @@ int UI_Mainwindow::process_rc_cmd_timelock(const char *cmd_args, int *cmds_parse
     rc_host_sock->write(tx_msg_str, len);
     return 0;
   }
-  else if((n_sub_cmds == 1) && (cmds_parsed_key[0] == RC_CMD_TIMELOCK))
+  else if((n_sub_cmds == 2) && (cmds_parsed_key[0] == RC_CMD_TIMELOCK) && (cmds_parsed_key[1] == RC_CMD_MODE))
     {
       if(!strlen(cmd_args))
       {
@@ -1209,6 +1224,66 @@ int UI_Mainwindow::process_rc_cmd_timelock(const char *cmd_args, int *cmds_parse
     {
       return 202;
     }
+
+  return 202;
+}
+
+
+int UI_Mainwindow::process_rc_cmd_system(const char *cmd_args, int *cmds_parsed_key, int n_sub_cmds)
+{
+  int len, lock;
+
+  char tx_msg_str[1024]="";
+
+  if(n_sub_cmds < 2)
+  {
+    return 202;
+  }
+
+  if(n_sub_cmds == 2)
+  {
+    if((cmds_parsed_key[0] == RC_CMD_SYSTEM) && (cmds_parsed_key[1] == (RC_CMD_LOCKED | RC_CMD_QUERY)))
+    {
+      if(strlen(cmd_args))
+      {
+        return 203;
+      }
+      if(rc_system_locked)
+      {
+        len = snprintf(tx_msg_str, 1024, "1\n");
+      }
+      else
+      {
+        len = snprintf(tx_msg_str, 1024, "0\n");
+      }
+      rc_host_sock->write(tx_msg_str, len);
+      return 0;
+    }
+    else if((cmds_parsed_key[0] == RC_CMD_SYSTEM) && (cmds_parsed_key[1] == RC_CMD_LOCKED))
+      {
+        if(!strlen(cmd_args))
+        {
+          return 203;
+        }
+        if(is_integer_number(cmd_args))  return 203;
+        lock = atoi(cmd_args);
+        if((lock < 0) || (lock > 1))  return 208;
+        if(lock == 1)
+        {
+          rc_system_locked = 1;
+          setEnabled(false);
+        }
+        else
+        {
+          rc_system_locked = 0;
+          setEnabled(true);
+        }
+      }
+      else
+      {
+        return 202;
+      }
+  }
 
   return 202;
 }

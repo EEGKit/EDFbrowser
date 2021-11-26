@@ -131,8 +131,11 @@
 #define RC_CMD_VIEWTIME     (24)
 #define RC_CMD_TIMELOCK     (25)
 #define RC_CMD_REFERENCE    (26)
+#define RC_CMD_SYSTEM       (27)
+#define RC_CMD_LOCKED       (28)
+#define RC_CMD_MODE         (29)
 
-#define RC_CMD_LIST_SZ      (27)
+#define RC_CMD_LIST_SZ      (30)
 #define RC_CMD_QUERY    (1 << 8)
 #define RC_ERR_QUEUE_SZ     (16)
 

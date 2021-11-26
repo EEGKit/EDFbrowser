@@ -320,6 +320,8 @@ UI_Mainwindow::UI_Mainwindow()
     rc_err_queue[i] = 0;
   }
 
+  rc_system_locked = 0;
+
   cdsa_segmentlen = 30;
   cdsa_blocklen = 2;
   cdsa_overlap = 5;

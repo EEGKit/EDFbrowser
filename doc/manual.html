@@ -2016,12 +2016,12 @@
     <td class="border">Sets the vertical offset relative to the baseline for signal "label" to zero</td>
   </tr>
   <tr class="border">
-    <td class="border">SIGnal:INVert:ALL &lt;value&gt;</td>
+    <td class="border">SIGnal:INVert:ALL &lt;0|1|2&gt;</td>
     <td class="border">Display all signals inverted if value is 1, display all signals normally if value is 0,<br>
                        if value is 2: toggle (invert if not inverted, display normal if inverted)</td>
   </tr>
   <tr class="border">
-    <td class="border">SIGnal:INVert:LABel &lt;label&gt; &lt;value&gt;</td>
+    <td class="border">SIGnal:INVert:LABel &lt;label&gt; &lt;0|1|2&gt;</td>
     <td class="border">Display signal "label" inverted if value is 1, display signal label normally if value is 0,<br>
                        if value is 2: toggle (invert if not inverted, display normal if inverted)</td>
   </tr>
@@ -2050,11 +2050,11 @@
     <td class="border">Sets the viewtime relative to the start of the recording</td>
   </tr>
   <tr class="border">
-    <td class="border">TIMELock?</td>
+    <td class="border">TIMELock:MODe?</td>
     <td class="border">Returns the <a href="#Timelock">Timelock / File synchronisation</a> mode, 0 = offset, 1 = absolute, 2 = no locking, 3 = user defined locking</td>
   </tr>
   <tr class="border">
-    <td class="border">TIMELock &lt;mode&gt;</td>
+    <td class="border">TIMELock:MODe &lt;0|1|2|3&gt;</td>
     <td class="border">Sets the <a href="#Timelock">Timelock / File synchronisation</a> mode, 0 = offset, 1 = absolute, 2 = no locking, 3 = user defined locking</td>
   </tr>
   <tr class="border">
@@ -2065,6 +2065,15 @@
     <td class="border">TIMELock:REFerence &lt;file number&gt;</td>
     <td class="border">Sets the file number of the file that will act as the <a href="#Timelock">reference</a>, file number indicates which one of the opened files, must be in the range 1 - 32<br>
                        File numbering order equals the order in which they were opened</td>
+  </tr>
+  <tr class="border">
+    <td class="border">SYStem:LOCk?</td>
+    <td class="border">Returns 1 if the system is locked, otherwise 0</td>
+  </tr>
+  <tr class="border">
+    <td class="border">SYStem:LOCk &lt;0|1&gt;</td>
+    <td class="border">If value is 1, the GUI (graphical user interface) will be locked, otherwise it will be unlocked<br>
+                       If the GUI is locked, the program will ignore all user input (mouse, keyboard)</td>
   </tr>
 </table>
 </div>
