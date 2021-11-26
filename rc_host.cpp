@@ -380,7 +380,7 @@ void UI_Mainwindow::rc_host_sock_rxdata_handler()
       continue;
     }
 
-    if((cmds_parsed_key[0] & RC_CMD_MASK) == RC_CMD_MASK)
+    if((cmds_parsed_key[0] & RC_CMD_MASK) == RC_CMD_MONTAGE)
     {
       err = process_rc_cmd_montage(cmd_args, cmds_parsed_key, n_sub_cmds);
       if(err)
