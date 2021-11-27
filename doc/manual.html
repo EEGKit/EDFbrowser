@@ -1947,7 +1947,7 @@
   </tr>
   <tr class="border">
     <td class="border">*QUIT</td>
-    <td class="border">Closes the program</td>
+    <td class="border">Closes EDFbrowser</td>
   </tr>
   <tr class="border">
     <td class="border">*RST</td>
@@ -1981,11 +1981,12 @@
   </tr>
   <tr class="border">
     <td class="border">SIGnal:AMPlitude:ALL &lt;units&gt;</td>
-    <td class="border">Sets the amplitude for all signals (expressed in units/cm)</td>
+    <td class="border">Sets the amplitude for all signals (expressed in units/cm), units can be an integer or a real number and must be in the range +1e-7 to +1e6</td>
   </tr>
   <tr class="border">
     <td class="border">SIGnal:AMPlitude:LABel &lt;label&gt; &lt;units&gt;</td>
-    <td class="border">Sets the amplitude for signal "label" (expressed in units/cm) e.g. SIGNAL:AMPLITUDE:LABEL F3 100</td>
+    <td class="border">Sets the amplitude for signal "label" (expressed in units/cm) e.g. SIGNAL:AMPLITUDE:LABEL F3 100<br>
+                       Units can be an integer or a real number and must be in the range +1e-7 to +1e6</td>
   </tr>
   <tr class="border">
     <td class="border">SIGnal:AMPlitude:FIT:ALL</td>
@@ -2035,7 +2036,7 @@
   </tr>
   <tr class="border">
     <td class="border">TIMEScale &lt;seconds&gt;</td>
-    <td class="border">Sets the timescale</td>
+    <td class="border">Sets the timescale, seconds can be an integer or a real number and must be in the range +1e-5 to +6048e3</td>
   </tr>
   <tr class="border">
     <td class="border">VIEwtime?</td>
@@ -2043,7 +2044,7 @@
   </tr>
   <tr class="border">
     <td class="border">VIEwtime &lt;seconds&gt;</td>
-    <td class="border">Sets the viewtime relative to the start of the recording</td>
+    <td class="border">Sets the viewtime relative to the start of the recording, seconds can be an integer or a real number and must be in the range -3e1 to +6048e3</td>
   </tr>
   <tr class="border">
     <td class="border">TIMELock:MODe?</td>
@@ -2064,7 +2065,7 @@
   </tr>
   <tr class="border">
     <td class="border">SYStem:ERRor?</td>
-    <td class="border">Queries the last entry in the error queue and deletes it</td>
+    <td class="border">Queries the last entry in the error queue and deletes it, if there are no more errors in the queue, it returns 0</td>
   </tr>
   <tr class="border">
     <td class="border">SYStem:LOCk?</td>
@@ -2073,7 +2074,7 @@
   <tr class="border">
     <td class="border">SYStem:LOCk &lt;0|1&gt;</td>
     <td class="border">If value is 1, the GUI (graphical user interface) will be locked, otherwise it will be unlocked<br>
-                       If the GUI is locked, the program will ignore all user input (mouse, keyboard)</td>
+                       If the GUI is locked, EDFbrowser will ignore all user input (mouse, keyboard)</td>
   </tr>
 </table>
 </div>
@@ -2088,7 +2089,7 @@
   </tr>
   <tr class="border">
     <td class="border" style="text-align:center;">0</td>
-    <td class="border">No error</td>
+    <td class="border">There are no errors in the error queue</td>
   </tr>
   <tr class="border">
     <td class="border">101</td>
@@ -2156,7 +2157,8 @@
   </tr>
   <tr class="border">
     <td class="border">301</td>
-    <td class="border">Busy, try again later</td>
+    <td class="border">Busy, try again later, use the command *OPC?<br>
+                       to check if EDFbrowser has finished the operation</td>
   </tr>
 </table>
 </div>

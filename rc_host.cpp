@@ -1077,7 +1077,7 @@ int UI_Mainwindow::process_rc_cmd_timescale(const char *cmd_args, int *cmds_pars
       }
       if(is_number(cmd_args))  return 203;
       ltmp = atoll_x(cmd_args, TIME_DIMENSION);
-      if((ltmp <= 100LL) || (ltmp >= (3600LL * TIME_DIMENSION)))  return 208;
+      if((ltmp < 100LL) || (ltmp > (7LL * 24LL * 3600LL * TIME_DIMENSION)))  return 208;
       pagetime = ltmp;
       setup_viewbuf();
       return 0;
@@ -1133,7 +1133,7 @@ int UI_Mainwindow::process_rc_cmd_viewtime(const char *cmd_args, int *cmds_parse
       if(is_number(cmd_args))  return 203;
       if(!files_open)  return 205;
       ltmp = atoll_x(cmd_args, TIME_DIMENSION);
-      if((ltmp <= (-30LL * TIME_DIMENSION)) || (ltmp >= (3600LL * 24LL * 7LL * TIME_DIMENSION)))  return 208;
+      if((ltmp < (-30LL * TIME_DIMENSION)) || (ltmp > (7LL * 24LL * 3600LL * TIME_DIMENSION)))  return 208;
       set_viewtime(ltmp);
       return 0;
     }
@@ -1290,6 +1290,8 @@ int UI_Mainwindow::process_rc_cmd_system(const char *cmd_args, int *cmds_parsed_
 
 void UI_Mainwindow::register_rc_err(int err)
 {
+  if(!err)  return;
+
   rc_err_queue[rc_err_queue_idx++] = err;
   rc_err_queue_idx %= RC_ERR_QUEUE_SZ;
 }
