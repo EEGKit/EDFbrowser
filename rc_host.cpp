@@ -258,7 +258,7 @@ void UI_Mainwindow::rc_host_sock_rxdata_handler()
 
     if(rc_cmd_in_progress)
     {
-      register_rc_err(209);
+      register_rc_err(301);
       continue;
     }
 
