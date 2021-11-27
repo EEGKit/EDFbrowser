@@ -1342,7 +1342,7 @@ UI_Mainwindow::UI_Mainwindow()
       {
         rc_host_server = new QTcpServer;
         rc_host_server->setMaxPendingConnections(1);
-        if(rc_host_server->listen(QHostAddress::Any, rc_host_server_port) == true)
+        if(rc_host_server->listen(QHostAddress::LocalHost, rc_host_server_port) == true)
         {
           printf("rc host server listening at port %i\n", rc_host_server_port);
 
