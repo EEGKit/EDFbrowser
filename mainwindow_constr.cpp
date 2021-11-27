@@ -34,6 +34,8 @@ UI_Mainwindow::UI_Mainwindow()
 {
   int i, j, k;
 
+  bool ret;
+
   myfont = new QFont;
   monofont = new QFont;
 #if QT_VERSION >= 0x050200
@@ -299,6 +301,8 @@ UI_Mainwindow::UI_Mainwindow()
   spectrumdock_colorbars = 0;
 
   rc_host_server_port = 0;
+
+  rc_host_server_public = 0;
 
   rc_file_open_requested = 0;
 
@@ -1342,7 +1346,15 @@ UI_Mainwindow::UI_Mainwindow()
       {
         rc_host_server = new QTcpServer;
         rc_host_server->setMaxPendingConnections(1);
-        if(rc_host_server->listen(QHostAddress::LocalHost, rc_host_server_port) == true)
+        if(rc_host_server_public == 1)
+        {
+          ret = rc_host_server->listen(QHostAddress::Any, rc_host_server_port);
+        }
+        else
+        {
+          ret = rc_host_server->listen(QHostAddress::LocalHost, rc_host_server_port);
+        }
+        if(ret == true)
         {
           printf("rc host server listening at port %i\n", rc_host_server_port);
 

@@ -1156,6 +1156,27 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   flayout4_2->addRow("Check for updates during startup", hlayout_tmp);
   QObject::connect(checkbox4_5, SIGNAL(stateChanged(int)), this, SLOT(checkbox4_5Clicked(int)));
 
+  checkbox4_13 = new QCheckBox;
+  checkbox4_13->setTristate(false);
+  if(mainwindow->rc_host_server_public)
+  {
+    checkbox4_13->setCheckState(Qt::Checked);
+  }
+  else
+  {
+    checkbox4_13->setCheckState(Qt::Unchecked);
+  }
+  hlayout_tmp = new QHBoxLayout;
+  hlayout_tmp->setAlignment(Qt::AlignCenter);
+  hlayout_tmp->addWidget(checkbox4_13);
+  hlayout_tmp->addStretch(1000);
+  flayout4_2->addRow("Set remote control port public", hlayout_tmp);
+  QObject::connect(checkbox4_13, SIGNAL(stateChanged(int)), this, SLOT(checkbox4_13Clicked(int)));
+  flayout4_2->labelForField(hlayout_tmp)->setToolTip("If enabled, and EDFbrowser is started with the option --rc-host-port,\n"
+                                                     "the remote control port will be publicly accessible.\n");
+  checkbox4_13->setToolTip("If enabled, and EDFbrowser is started with the option --rc-host-port,\n"
+                           "the remote control port will be publicly accessible.\n");
+
   combobox4_2 = new QComboBox;
   combobox4_2->addItem("relative");
   combobox4_2->addItem("real (relative)");
@@ -1960,6 +1981,29 @@ void UI_OptionsDialog::checkbox4_11Clicked(int state)
   else
   {
     mainwindow->edf_debug = 0;
+  }
+}
+
+
+void UI_OptionsDialog::checkbox4_13Clicked(int state)
+{
+  if(state==Qt::Checked)
+  {
+    mainwindow->rc_host_server_public = 1;
+
+    QMessageBox::warning(optionsdialog, "Warning",
+                         "Making the remote control port publicly accessible to your network is not recommended and\n"
+                         "can be a potential security issue.\n"
+                         "\nYou need to restart EDFbrowser for the changes to take effect.");
+  }
+  else
+  {
+    mainwindow->rc_host_server_public = 0;
+
+    QMessageBox::warning(optionsdialog, "Warning",
+                         "The remote control port can still be activated when EDFbrowser is started with the option --rc-host-port but\n"
+                         "it will only be accessible from this system.\n"
+                         "\nYou need to restart EDFbrowser for the changes to take effect.");
   }
 }
 

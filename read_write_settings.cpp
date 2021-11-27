@@ -2591,6 +2591,23 @@ void UI_Mainwindow::read_general_settings()
     xml_go_up(xml_hdl);
   }
 
+  if(!(xml_goto_nth_element_inside(xml_hdl, "rc_host_server_public", 0)))
+  {
+    if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+    {
+      xml_close(xml_hdl);
+      return;
+    }
+
+    rc_host_server_public = atoi(result);
+    if(rc_host_server_public != 1)
+    {
+      rc_host_server_public = 0;
+    }
+
+    xml_go_up(xml_hdl);
+  }
+
   xml_close(xml_hdl);
 
 //  printf("Read all general settings.\n");
@@ -3140,6 +3157,8 @@ void UI_Mainwindow::write_settings()
     fprintf(cfgfile, "    <auto_update_annot_onset>%i</auto_update_annot_onset>\n", auto_update_annot_onset);
 
     fprintf(cfgfile, "    <use_diverse_signal_colors>%i</use_diverse_signal_colors>\n", use_diverse_signal_colors);
+
+    fprintf(cfgfile, "    <rc_host_server_public>%i</rc_host_server_public>\n", rc_host_server_public);
 
     fprintf(cfgfile, "  </UI>\n</config>\n");
 

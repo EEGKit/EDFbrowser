@@ -253,6 +253,7 @@ public:
       options_dialog_idx,
       edf_debug,
       rc_host_server_port,
+      rc_host_server_public,
       rc_file_open_requested,
       rc_file_open_err,
       rc_load_mtg_err,

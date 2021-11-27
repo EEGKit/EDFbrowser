@@ -126,6 +126,7 @@ QCheckBox      *checkbox1,
                *checkbox4_10,
                *checkbox4_11,
                *checkbox4_12,
+               *checkbox4_13,
                *checkbox2_1,
                *checkbox2_2,
                *checkbox2_3,
@@ -203,6 +204,7 @@ void checkbox4_9Clicked(int);
 void checkbox4_10Clicked(int);
 void checkbox4_11Clicked(int);
 void checkbox4_12Clicked(int);
+void checkbox4_13Clicked(int);
 void checkbox7_2Clicked(int);
 void checkbox7_3Clicked(int);
 void checkbox7_4Clicked(int);
