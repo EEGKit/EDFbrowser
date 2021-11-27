@@ -109,8 +109,8 @@
 #define RC_CMD_QUIT          (2)
 #define RC_CMD_RST           (3)
 #define RC_CMD_CLS           (4)
-#define RC_CMD_FAULT         (5)
-#define RC_CMD_OPC           (6)
+#define RC_CMD_OPC           (5)
+#define RC_CMD_ERROR         (6)
 #define RC_CMD_FILE          (7)
 #define RC_CMD_OPEN          (8)
 #define RC_CMD_CLOSE         (9)
@@ -137,7 +137,7 @@
 
 #define RC_CMD_LIST_SZ      (30)
 #define RC_CMD_QUERY    (1 << 8)
-#define RC_ERR_QUEUE_SZ     (16)
+#define RC_ERR_QUEUE_SZ     (64)
 
 #define RC_CMD_MASK  (0xffffffff & (~RC_CMD_QUERY))
 

@@ -38,8 +38,8 @@ const char rc_cmd_key_lst[RC_CMD_LIST_SZ][32]=
   "*QUIT",      /*  2 */
   "*RST",       /*  3 */
   "*CLS",       /*  4 */
-  "*FAULT",     /*  5 */
-  "*OPC",       /*  6 */
+  "*OPC",       /*  5 */
+  "ERROR",      /*  6 */
   "FILE",       /*  7 */
   "OPEN",       /*  8 */
   "CLOSE",      /*  9 */
@@ -277,7 +277,6 @@ void UI_Mainwindow::rc_host_sock_rxdata_handler()
               "*QUIT\n"
               "*RST\n"
               "*CLS\n"
-              "*FAULT?\n"
               "*OPC?\n"
               "FILe:OPEn <path>\n"
               "FILe:CLOse:ALL\n"
@@ -303,6 +302,7 @@ void UI_Mainwindow::rc_host_sock_rxdata_handler()
               "TIMELock:MODe <0|1|2|3>\n"
               "TIMELock:REFerence?\n"
               "TIMELock:REFerence <file number>\n"
+              "SYStem:ERRor?\n"
               "SYStem:LOCked?\n"
               "SYStem:LOCked <0|1>\n");
 
@@ -356,22 +356,6 @@ void UI_Mainwindow::rc_host_sock_rxdata_handler()
         rc_err_queue[i] = 0;
       }
       rc_err_queue_idx = 0;
-      continue;
-    }
-
-    if((n_sub_cmds == 1) && (cmds_parsed_key[0] == (RC_CMD_FAULT | RC_CMD_QUERY)))
-    {
-      if(strlen(cmd_args))
-      {
-        register_rc_err(203);
-        continue;
-      }
-      rc_err_queue_idx += (RC_ERR_QUEUE_SZ - 1);
-      rc_err_queue_idx %= RC_ERR_QUEUE_SZ;
-
-      len = snprintf(tx_msg_str, 1024, "%i\n", rc_err_queue[rc_err_queue_idx]);
-      rc_host_sock->write(tx_msg_str, len);
-      rc_err_queue[rc_err_queue_idx] = 0;
       continue;
     }
 
@@ -1278,11 +1262,26 @@ int UI_Mainwindow::process_rc_cmd_system(const char *cmd_args, int *cmds_parsed_
           rc_system_locked = 0;
           setEnabled(true);
         }
+        return 0;
       }
-      else
-      {
-        return 202;
-      }
+      else if((cmds_parsed_key[0] == RC_CMD_SYSTEM) && (cmds_parsed_key[1] == (RC_CMD_ERROR | RC_CMD_QUERY)))
+        {
+          if(strlen(cmd_args))
+          {
+            return 203;
+          }
+          rc_err_queue_idx += (RC_ERR_QUEUE_SZ - 1);
+          rc_err_queue_idx %= RC_ERR_QUEUE_SZ;
+
+          len = snprintf(tx_msg_str, 1024, "%i\n", rc_err_queue[rc_err_queue_idx]);
+          rc_host_sock->write(tx_msg_str, len);
+          rc_err_queue[rc_err_queue_idx] = 0;
+          return 0;
+        }
+        else
+        {
+          return 202;
+        }
   }
 
   return 202;

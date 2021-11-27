@@ -1955,11 +1955,7 @@
   </tr>
   <tr class="border">
     <td class="border">*CLS</td>
-    <td class="border">Deletes the error queue</td>
-  </tr>
-  <tr class="border">
-    <td class="border">*FAULT?</td>
-    <td class="border">Returns the most recent error code from the error queue and removes it from the error queue</td>
+    <td class="border">Clears the error queue</td>
   </tr>
   <tr class="border">
     <td class="border">*OPC?</td>
@@ -2065,6 +2061,10 @@
     <td class="border">TIMELock:REFerence &lt;file number&gt;</td>
     <td class="border">Sets the file number of the file that will act as the <a href="#Timelock">reference</a>, file number indicates which one of the opened files, must be in the range 1 - 32<br>
                        File numbering order equals the order in which they were opened</td>
+  </tr>
+  <tr class="border">
+    <td class="border">SYStem:ERRor?</td>
+    <td class="border">Queries the last entry in the error queue and deletes it</td>
   </tr>
   <tr class="border">
     <td class="border">SYStem:LOCk?</td>
