@@ -373,6 +373,10 @@ void UI_Signalswindow::DisplayCompButtonClicked()
         {
           newsignalcomp->voltpercm = mainwindow->default_amplitude;
         }
+        if(newsignalcomp->voltpercm < 0.0)
+        {
+          newsignalcomp->voltpercm = -newsignalcomp->voltpercm;
+        }
 
         if(newsignalcomp->edfhdr->edfparam[j].bitvalue < 0.0)
         {
@@ -452,6 +456,10 @@ void UI_Signalswindow::DisplayButtonClicked()
     else
     {
       newsignalcomp->voltpercm = mainwindow->default_amplitude;
+    }
+    if(newsignalcomp->voltpercm < 0.0)
+    {
+      newsignalcomp->voltpercm = -newsignalcomp->voltpercm;
     }
     if(mainwindow->use_diverse_signal_colors && (!color_selected))
     {
