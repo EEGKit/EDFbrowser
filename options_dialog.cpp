@@ -2000,10 +2000,10 @@ void UI_OptionsDialog::checkbox4_13Clicked(int state)
   {
     mainwindow->rc_host_server_public = 0;
 
-    QMessageBox::warning(optionsdialog, "Warning",
-                         "The remote control port can still be activated when EDFbrowser is started with the option --rc-host-port but\n"
-                         "it will only be accessible from this system.\n"
-                         "\nYou need to restart EDFbrowser for the changes to take effect.");
+    QMessageBox::information(optionsdialog, "Information",
+                             "The remote control port can still be activated when EDFbrowser is started with the option --rc-host-port but\n"
+                             "it will only be accessible from this system.\n"
+                             "\nYou need to restart EDFbrowser for the changes to take effect.");
   }
 }
 
