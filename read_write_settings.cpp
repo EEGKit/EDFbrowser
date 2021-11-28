@@ -2523,6 +2523,34 @@ void UI_Mainwindow::read_general_settings()
     xml_go_up(xml_hdl);
   }
 
+  if(!(xml_goto_nth_element_inside(xml_hdl, "default_amplitude_physmax_div", 0)))
+  {
+    if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+    {
+      xml_close(xml_hdl);
+      return;
+    }
+
+    default_amplitude_physmax_div = atoi(result);
+    if((default_amplitude_physmax_div < 1) || (default_amplitude_physmax_div > 100))  default_amplitude_physmax_div = 1;
+
+    xml_go_up(xml_hdl);
+  }
+
+  if(!(xml_goto_nth_element_inside(xml_hdl, "default_amplitude_use_physmax_div", 0)))
+  {
+    if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+    {
+      xml_close(xml_hdl);
+      return;
+    }
+
+    default_amplitude_use_physmax_div = atoi(result);
+    if(default_amplitude_use_physmax_div != 1)  default_amplitude_use_physmax_div = 0;
+
+    xml_go_up(xml_hdl);
+  }
+
   if(!(xml_goto_nth_element_inside(xml_hdl, "linear_interpolation", 0)))
   {
     if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
@@ -3149,6 +3177,10 @@ void UI_Mainwindow::write_settings()
     fprintf(cfgfile, "    <mainwindow_title_type>%i</mainwindow_title_type>\n", mainwindow_title_type);
 
     fprintf(cfgfile, "    <default_amplitude>%.10e</default_amplitude>\n", default_amplitude);
+
+    fprintf(cfgfile, "    <default_amplitude_physmax_div>%i</default_amplitude_physmax_div>\n", default_amplitude_physmax_div);
+
+    fprintf(cfgfile, "    <default_amplitude_use_physmax_div>%i</default_amplitude_use_physmax_div>\n", default_amplitude_use_physmax_div);
 
     fprintf(cfgfile, "    <linear_interpolation>%i</linear_interpolation>\n", linear_interpol);
 

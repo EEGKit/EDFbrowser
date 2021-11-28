@@ -97,6 +97,7 @@ QSpinBox       *spinbox1_1,
                *spinbox4_1,
                *spinbox4_2,
                *spinbox4_3,
+               *spinbox4_5,
                *spinbox5_1,
                *spinbox5_2,
                *spinbox7_1;
@@ -164,10 +165,13 @@ QWidget        *tab1,
                *tab6,
                *tab7;
 
+QButtonGroup   *def_amp_radio_group;
+
 void update_interface(void);
 
 private slots:
 
+void def_amp_radio_group_clicked(int);
 void BgColorButtonClicked(SpecialButton *);
 void SrColorButtonClicked(SpecialButton *);
 void BrColorButtonClicked(SpecialButton *);
@@ -228,6 +232,7 @@ void combobox4_2IndexChanged(int);
 void combobox4_3IndexChanged(int);
 void spinBox4_2ValueChanged(int);
 void spinBox4_3ValueChanged(int);
+void spinbox4_5ValueChanged(int);
 void saveColorSchemaButtonClicked();
 void loadColorSchemaButtonClicked();
 void loadColorSchema_NK();

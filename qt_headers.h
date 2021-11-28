@@ -77,6 +77,7 @@
 #include <QListWidget>
 #include <QListWidgetItem>
 #include <QRadioButton>
+#include <QButtonGroup>
 #include <QGroupBox>
 #include <QComboBox>
 #include <QCheckBox>

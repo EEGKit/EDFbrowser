@@ -2211,22 +2211,30 @@ void ViewCurve::drawCurve_stage_2(QPainter *painter, int w_width, int w_height, 
 
       painter->drawLine(0, baseline, w, baseline);
 
-      if(signalcomp[i]->voltpercm < 0.1)
+      if(signalcomp[i]->voltpercm < 0.001)
       {
-        strlcpy(str2, "%+.3f ", 32);
+        strlcpy(str2, "%+.5f ", 32);
       }
-      else if(signalcomp[i]->voltpercm < 1.0)
-            {
-              strlcpy(str2, "%+.2f ", 32);
-            }
-            else if(signalcomp[i]->voltpercm < 10.0)
+      else if(signalcomp[i]->voltpercm < 0.01)
+        {
+          strlcpy(str2, "%+.4f ", 32);
+        }
+        else if(signalcomp[i]->voltpercm < 0.1)
+          {
+            strlcpy(str2, "%+.3f ", 32);
+          }
+          else if(signalcomp[i]->voltpercm < 1.0)
                 {
-                  strlcpy(str2, "%+.1f ", 32);
+                  strlcpy(str2, "%+.2f ", 32);
                 }
-                else
-                {
-                  strlcpy(str2, "%+.0f ", 32);
-                }
+                else if(signalcomp[i]->voltpercm < 10.0)
+                    {
+                      strlcpy(str2, "%+.1f ", 32);
+                    }
+                    else
+                    {
+                      strlcpy(str2, "%+.0f ", 32);
+                    }
 
       strlcat(str2, signalcomp[i]->physdimension, 32);
 

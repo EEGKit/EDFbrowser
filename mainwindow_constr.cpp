@@ -300,6 +300,10 @@ UI_Mainwindow::UI_Mainwindow()
 
   spectrumdock_colorbars = 0;
 
+  default_amplitude_physmax_div = 1;
+
+  default_amplitude_use_physmax_div = 0;
+
   rc_host_server_port = 0;
 
   rc_host_server_public = 0;

@@ -319,7 +319,6 @@ void UI_Signalswindow::DisplayCompButtonClicked()
   newsignalcomp->num_of_signals = n;
   newsignalcomp->edfhdr = mainwindow->edfheaderlist[filelist->currentRow()];
   newsignalcomp->file_duration = newsignalcomp->edfhdr->long_data_record_duration * newsignalcomp->edfhdr->datarecords;
-  newsignalcomp->voltpercm = mainwindow->default_amplitude;
   if(mainwindow->use_diverse_signal_colors && (!color_selected))
   {
     newsignalcomp->color = default_color_list[default_color_idx++];
@@ -365,9 +364,19 @@ void UI_Signalswindow::DisplayCompButtonClicked()
         remove_trailing_spaces(newsignalcomp->signallabel);
         strlcat(newsignalcomp->signallabel, " ", 512);
 
+        if(mainwindow->default_amplitude_use_physmax_div)
+        {
+          newsignalcomp->voltpercm = (newsignalcomp->edfhdr->edfparam[j].phys_max - newsignalcomp->edfhdr->edfparam[j].phys_min)
+                                       / (mainwindow->default_amplitude_physmax_div * 2);
+        }
+        else
+        {
+          newsignalcomp->voltpercm = mainwindow->default_amplitude;
+        }
+
         if(newsignalcomp->edfhdr->edfparam[j].bitvalue < 0.0)
         {
-          newsignalcomp->voltpercm = mainwindow->default_amplitude * -1;
+          newsignalcomp->voltpercm *= -1;
         }
         newsignalcomp->sensitivity[i] = newsignalcomp->edfhdr->edfparam[j].bitvalue / ((double)newsignalcomp->voltpercm * mainwindow->y_pixelsizefactor);
       }
@@ -431,7 +440,19 @@ void UI_Signalswindow::DisplayButtonClicked()
     newsignalcomp->num_of_signals = 1;
     newsignalcomp->edfhdr = mainwindow->edfheaderlist[filelist->currentRow()];
     newsignalcomp->file_duration = newsignalcomp->edfhdr->long_data_record_duration * newsignalcomp->edfhdr->datarecords;
-    newsignalcomp->voltpercm = mainwindow->default_amplitude;
+    item = selectedlist.at(i);
+    s = item->data(Qt::UserRole).toInt();
+    newsignalcomp->edfsignal[0] = s;
+    newsignalcomp->factor[0] = 1;
+    if(mainwindow->default_amplitude_use_physmax_div)
+    {
+      newsignalcomp->voltpercm = (newsignalcomp->edfhdr->edfparam[s].phys_max - newsignalcomp->edfhdr->edfparam[s].phys_min)
+                                   / (mainwindow->default_amplitude_physmax_div * 2);
+    }
+    else
+    {
+      newsignalcomp->voltpercm = mainwindow->default_amplitude;
+    }
     if(mainwindow->use_diverse_signal_colors && (!color_selected))
     {
       newsignalcomp->color = default_color_list[default_color_idx++];
@@ -444,13 +465,9 @@ void UI_Signalswindow::DisplayButtonClicked()
     newsignalcomp->hasruler = 0;
     newsignalcomp->polarity = 1;
 
-    item = selectedlist.at(i);
-    s = item->data(Qt::UserRole).toInt();
-    newsignalcomp->edfsignal[0] = s;
-    newsignalcomp->factor[0] = 1;
     if(newsignalcomp->edfhdr->edfparam[s].bitvalue < 0.0)
     {
-      newsignalcomp->voltpercm = mainwindow->default_amplitude * -1;
+      newsignalcomp->voltpercm *= -1;
     }
     newsignalcomp->sensitivity[0] = newsignalcomp->edfhdr->edfparam[s].bitvalue / ((double)newsignalcomp->voltpercm * mainwindow->y_pixelsizefactor);
 

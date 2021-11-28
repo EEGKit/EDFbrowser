@@ -1201,6 +1201,13 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   flayout4_2->addRow("Window title content", hlayout_tmp);
   QObject::connect(combobox4_3, SIGNAL(currentIndexChanged(int)), this, SLOT(combobox4_3IndexChanged(int)));
 
+  QRadioButton *def_amp_radio_button0 = new QRadioButton;
+  QRadioButton *def_amp_radio_button1 = new QRadioButton;
+  def_amp_radio_group = new QButtonGroup(this);
+  def_amp_radio_group->addButton(def_amp_radio_button0, 0);
+  def_amp_radio_group->addButton(def_amp_radio_button1, 1);
+  QObject::connect(def_amp_radio_group, SIGNAL(buttonClicked(int)), this, SLOT(def_amp_radio_group_clicked(int)));
+
   dspinbox4_4 = new QDoubleSpinBox;
   dspinbox4_4->setMinimum(0.001);
   dspinbox4_4->setMaximum(10000000);
@@ -1208,10 +1215,43 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   dspinbox4_4->setValue(mainwindow->default_amplitude);
   hlayout_tmp = new QHBoxLayout;
   hlayout_tmp->setAlignment(Qt::AlignCenter);
+  hlayout_tmp->addWidget(def_amp_radio_button0);
   hlayout_tmp->addWidget(dspinbox4_4);
   hlayout_tmp->addStretch(1000);
-  flayout4_2->addRow("Default amplitude", hlayout_tmp);
+  vlayout_tmp = new QVBoxLayout;
+  vlayout_tmp->setAlignment(Qt::AlignCenter);
+  vlayout_tmp->addLayout(hlayout_tmp);
+
+  spinbox4_5 = new QSpinBox;
+  spinbox4_5->setMinimum(1);
+  spinbox4_5->setMaximum(100);
+  spinbox4_5->setPrefix("PhysMax / ");
+  spinbox4_5->setSuffix(" /cm");
+  spinbox4_5->setValue(mainwindow->default_amplitude_physmax_div);
+  spinbox4_5->setToolTip("If selected, the default amplitude (units/cm) will be the physical maximum (as set in the EDF header) divided by this value");
+  hlayout_tmp = new QHBoxLayout;
+  hlayout_tmp->setAlignment(Qt::AlignCenter);
+  hlayout_tmp->addWidget(def_amp_radio_button1);
+  hlayout_tmp->addWidget(spinbox4_5);
+  hlayout_tmp->addStretch(1000);
+  vlayout_tmp->addLayout(hlayout_tmp);
+
+  if(mainwindow->default_amplitude_use_physmax_div)
+  {
+    def_amp_radio_button0->setChecked(false);
+    def_amp_radio_button1->setChecked(true);
+    dspinbox4_4->setEnabled(false);
+  }
+  else
+  {
+    def_amp_radio_button1->setChecked(false);
+    def_amp_radio_button0->setChecked(true);
+    spinbox4_5->setEnabled(false);
+  }
+
+  flayout4_2->addRow("Default amplitude", vlayout_tmp);
   QObject::connect(dspinbox4_4, SIGNAL(valueChanged(double)), this, SLOT(dspinbox4_4ValueChanged(double)));
+  QObject::connect(spinbox4_5,  SIGNAL(valueChanged(int)),    this, SLOT(spinbox4_5ValueChanged(int)));
 
   checkbox4_6 = new QCheckBox;
   checkbox4_6->setTristate(false);
@@ -3286,6 +3326,36 @@ void UI_OptionsDialog::tab7_settings_changed()
     }
   }
 }
+
+
+void UI_OptionsDialog::def_amp_radio_group_clicked(int id)
+{
+  if(id == 1)
+  {
+    dspinbox4_4->setEnabled(false);
+    spinbox4_5->setEnabled(true);
+    mainwindow->default_amplitude_use_physmax_div = 1;
+  }
+  else
+  {
+    spinbox4_5->setEnabled(false);
+    dspinbox4_4->setEnabled(true);
+    mainwindow->default_amplitude_use_physmax_div = 0;
+  }
+}
+
+
+void UI_OptionsDialog::spinbox4_5ValueChanged(int val)
+{
+  mainwindow->default_amplitude_physmax_div = val;
+}
+
+
+
+
+
+
+
 
 
 
