@@ -733,12 +733,8 @@ int UI_Mainwindow::process_rc_cmd_signal(const char *cmd_args, int *cmds_parsed_
 
       for(i=0; i<edfheaderlist[file_num]->edfsignals; i++)
       {
+        if(edfheaderlist[file_num]->edfparam[i].annotation)  continue;
         strlcpy(str2, edfheaderlist[file_num]->edfparam[i].label, 1024);
-        if((!strncmp(str2, "EDF Annotations ", 16)) || (!strncmp(str2, "BDF Annotations ", 16)))
-        {
-          continue;
-        }
-
         strip_types_from_label(str2);
         trim_spaces(str2);
         if(!strcmp(str2, str1))
@@ -749,7 +745,19 @@ int UI_Mainwindow::process_rc_cmd_signal(const char *cmd_args, int *cmds_parsed_
           newsignalcomp->num_of_signals = 1;
           newsignalcomp->edfhdr = edfheaderlist[file_num];
           newsignalcomp->file_duration = newsignalcomp->edfhdr->long_data_record_duration * newsignalcomp->edfhdr->datarecords;
-          newsignalcomp->voltpercm = default_amplitude;
+          if(default_amplitude_use_physmax_div)
+          {
+            newsignalcomp->voltpercm = (newsignalcomp->edfhdr->edfparam[i].phys_max - newsignalcomp->edfhdr->edfparam[i].phys_min)
+                                         / (default_amplitude_physmax_div * 2);
+          }
+          else
+          {
+            newsignalcomp->voltpercm = default_amplitude;
+          }
+          if(newsignalcomp->voltpercm < 0.0)
+          {
+            newsignalcomp->voltpercm = -newsignalcomp->voltpercm;
+          }
           newsignalcomp->color = maincurve->signal_color;
           newsignalcomp->hasruler = 0;
           newsignalcomp->polarity = 1;
