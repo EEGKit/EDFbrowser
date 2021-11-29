@@ -735,7 +735,7 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   hlayout_tmp->setAlignment(Qt::AlignCenter);
   hlayout_tmp->addWidget(checkbox7_7);
   hlayout_tmp->addStretch(1000);
-  flayout7_2->addRow("Stay on page / epoch boundary", hlayout_tmp);
+  flayout7_2->addRow("Viewtime must stay on page / epoch boundary", hlayout_tmp);
   QObject::connect(checkbox7_7, SIGNAL(stateChanged(int)), this, SLOT(checkbox7_7Clicked(int)));
   flayout7_2->labelForField(hlayout_tmp)->setToolTip("If enabled, the page will always start at an integer multiple of the page / epoch length.");
 
@@ -1352,7 +1352,7 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
 
   checkbox4_12 = new QCheckBox;
   checkbox4_12->setTristate(false);
-  checkbox4_12->setToolTip("Annotation filter affects the annotationlist only, not the annotation markers in the signal window");
+  checkbox4_12->setToolTip("Annotation filter affects the annotation list only, not the annotation markers in the signal window");
   if(mainwindow->annot_filter->hide_in_list_only)
   {
     checkbox4_12->setCheckState(Qt::Checked);
@@ -1366,7 +1366,7 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   hlayout_tmp->addWidget(checkbox4_12);
   hlayout_tmp->addStretch(1000);
   flayout4_2->addRow("Annotations: filter list only", hlayout_tmp);
-  flayout4_2->labelForField(hlayout_tmp)->setToolTip("Annotation filter affects the annotationlist only, not the annotation markers in the signal window");
+  flayout4_2->labelForField(hlayout_tmp)->setToolTip("Annotation filter affects the annotation list only, not the annotation markers in the signal window");
   QObject::connect(checkbox4_12, SIGNAL(stateChanged(int)), this, SLOT(checkbox4_12Clicked(int)));
 
   hlayout_tmp = new QHBoxLayout;

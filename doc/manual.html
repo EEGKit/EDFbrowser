@@ -451,14 +451,14 @@
   This can be done in: Settings -> Options -> Annotation editor.<br>
   You can freely assign any name to a user button. The name will be used as the description of the annotation.<br>
   You can setup which actions will be performed when clicking on a user button:<br>
-  - set the name<br>
+  - set the description<br>
   - set the onset time<br>
   - set the duration<br>
-  - advance the viewtime (fileposition) with the page /epoch time<br>
+  - advance the viewtime (file position) with the page /epoch time<br>
   Keyboard shortcuts for the user buttons are: Ctrl + 1, Ctrl + 2, Ctrl + 3, etc.<br><br>
 
   Note: It's possible to let the viewtime automatically stay on an integer multiple of the page /epoch time when using the user buttons to create annotations.<br>
-  I.e. the viewtime and pagetime will allways in the epoch boundary. This can be setup in: Settings -> Options -> Annotation editor.<br><br>
+  I.e. the viewtime and pagetime will allways be at the epoch boundary. This can be setup in: Settings -> Options -> Annotation editor.<br><br>
 
   Note: It's possible to let advance the viewtime automatically when using the user buttons to create annotations.<br>
   I.e. the viewtime will advance with the selected page / epoch time when clicking on a user button. This can be setup in: Settings -> Options -> Annotation editor.<br><br>
@@ -617,8 +617,8 @@
   When using the <a href="#Annotation_editor">Annotation editor</a>, the hypnogram will be updated realtime when adding, moving or deleting annotations.<br>
   <br>
   You can select whether you want the hypnogram draws from onset to the next onset or according to the duration of the annotation.<br>
-  When you select the latter, any gaps between annotations or overlapping annotations will be highlighted in order to assist you<br>
-  with scoring the file.
+  When you select the latter, any gaps / overlaps between consegutive annotations greater than 0.1 second will be highlighted red in order<br>
+  to assist you with scoring the file.
 </p>
 
 <p><br></p>
