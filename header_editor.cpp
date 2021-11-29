@@ -1447,7 +1447,7 @@ void UI_headerEditorWindow::save_hdr()
       }
       latin1_to_ascii(scratchpad, 8);
       scratchpad[8] = 0;
-      fseeko(file, (long long)(256 + (edfsignals * 96) + (i * 8)), SEEK_SET);
+      fseeko(file, (long long)(256 + (edfsignals * 96) + (i * 8)), SEEK_SET);  // physical dimension
       fprintf(file, "%s", scratchpad);
 
       strlcpy(scratchpad, ((QLineEdit *)(signallist->cellWidget(i, 2)))->text().toLatin1().data(), 256);
@@ -1457,7 +1457,7 @@ void UI_headerEditorWindow::save_hdr()
       }
       latin1_to_ascii(scratchpad, 80);
       scratchpad[80] = 0;
-      fseeko(file, (long long)(256 + (edfsignals * 136) + (i * 80)), SEEK_SET);
+      fseeko(file, (long long)(256 + (edfsignals * 136) + (i * 80)), SEEK_SET);  // prefiltering
       fprintf(file, "%s", scratchpad);
 
       strlcpy(scratchpad, ((QLineEdit *)(signallist->cellWidget(i, 3)))->text().toLatin1().data(), 256);
@@ -1467,7 +1467,7 @@ void UI_headerEditorWindow::save_hdr()
       }
       latin1_to_ascii(scratchpad, 80);
       scratchpad[80] = 0;
-      fseeko(file, (long long)(256 + (edfsignals * 16) + (i * 80)), SEEK_SET);
+      fseeko(file, (long long)(256 + (edfsignals * 16) + (i * 80)), SEEK_SET);  // transducer type
       fprintf(file, "%s", scratchpad);
 
       strlcpy(scratchpad, hdr + 256 + (edfsignals * 120) + (i * 8), 9);  // digital minimum
@@ -1652,16 +1652,29 @@ void UI_headerEditorWindow::save_hdr()
         }
       }
 
-      fseeko(file, (long long)(256 + (edfsignals * 112) + (i * 8)), SEEK_SET);
-      fprintf(file, "%s", scratchpad2);
-
-      if(dig_ok == 3)
+      if(atof(scratchpad) == atof(scratchpad2))
       {
         fseeko(file, (long long)(256 + (edfsignals * 104) + (i * 8)), SEEK_SET);
-        fprintf(file, "%s", scratchpad2);
+        fprintf(file, "-1       ");
 
         fseeko(file, (long long)(256 + (edfsignals * 112) + (i * 8)), SEEK_SET);
-        fprintf(file, "%s", scratchpad);
+        fprintf(file, "1        ");
+      }
+      else
+      {
+        if(dig_ok == 3)
+        {
+          fseeko(file, (long long)(256 + (edfsignals * 104) + (i * 8)), SEEK_SET);
+          fprintf(file, "%s", scratchpad2);
+
+          fseeko(file, (long long)(256 + (edfsignals * 112) + (i * 8)), SEEK_SET);
+          fprintf(file, "%s", scratchpad);
+        }
+        else
+        {
+          fseeko(file, (long long)(256 + (edfsignals * 112) + (i * 8)), SEEK_SET);
+          fprintf(file, "%s", scratchpad2);
+        }
       }
     }
 

@@ -845,7 +845,8 @@ struct edfhdrblock * EDFfileCheck::check_edf_file(FILE *inputfile, char *txt_str
     edfhdr->edfparam[i].phys_max = atof(scratchpad);
     if(edfhdr->edfparam[i].phys_max==edfhdr->edfparam[i].phys_min)
     {
-      snprintf(txt_string, txt_len, "Error, physical maximum of signal %i is equal to physical minimum",
+      snprintf(txt_string, txt_len, "Error, physical maximum of signal %i is equal to physical minimum\n"
+                          "You can try to fix it with the header editor, check the manual for the procedure.",
              i + 1);
       free(edf_hdr);
       free(edfhdr->edfparam);
