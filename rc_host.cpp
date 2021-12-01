@@ -566,6 +566,8 @@ int UI_Mainwindow::parse_rc_command(const char *cmd_str, char cmd_parsed_str[CMD
 
       strlcpy(arg_n_str, cmd_str + i + 1, arg_n_len);
 
+      trim_spaces(arg_n_str);
+
       return j;
     }
 
@@ -1329,6 +1331,8 @@ int UI_Mainwindow::rc_get_last_cmd_args_token(char *cmd_args, char **dest)
   **dest = 0;
 
   (*dest)++;
+
+  trim_spaces(cmd_args);
 
   if(!strlen(*dest))  return 204;
 
