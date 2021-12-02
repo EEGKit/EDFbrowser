@@ -167,7 +167,6 @@ public:
 
   int files_open,
       signalcomps,
-      totalviewbufsize,
       sel_viewtime,
       viewtime_sync,
       print_to_edf_active,
@@ -274,7 +273,8 @@ long long annot_editor_user_button_epoch_len,
 
   unsigned long long pagetime,
                      maxfilesize_to_readin_annotations,
-                     uid_seq;
+                     uid_seq,
+                     totalviewbufsize_bytes;
 
   char *viewbuf,
        viewtime_string[128],

@@ -224,6 +224,7 @@ void UI_Mainwindow::setup_viewbuf()
     {
       free(viewbuf);
       viewbuf = NULL;
+      totalviewbufsize_bytes = 0;
     }
 
 //    printf("debug: totalsize is: %llu\n", totalsize);
@@ -248,8 +249,10 @@ void UI_Mainwindow::setup_viewbuf()
       live_stream_active = 0;
       QMessageBox::critical(this, "Error", "Internal error: Memory allocation error:\n\"prefilterbuf\"");
       remove_all_signals();
+      totalviewbufsize_bytes = 0;
       return;
     }
+    totalviewbufsize_bytes = totalsize;
 
     for(i=0; i<signalcomps; i++)
     {
@@ -590,6 +593,7 @@ void UI_Mainwindow::setup_viewbuf()
   {
     free(viewbuf);
     viewbuf = NULL;
+    totalviewbufsize_bytes = 0;
   }
 
   if(totalsize)
@@ -617,8 +621,10 @@ void UI_Mainwindow::setup_viewbuf()
       QMessageBox::critical(this, "Error", "The system was not able to provide enough resources (memory) to perform the requested action.\n"
                                            "Decrease the timescale and try again.");
       remove_all_signals();
+      totalviewbufsize_bytes = 0;
       return;
     }
+    totalviewbufsize_bytes = totalsize;
   }
 
   for(i=0; i<signalcomps; i++)

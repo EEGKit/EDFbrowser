@@ -2921,7 +2921,8 @@ void ViewCurve::drawCurve_stage_1(QPainter *painter, int w_width, int w_height, 
       minimum,
       maximum,
       runin_samples,
-      stat_zero_crossing=0;
+      stat_zero_crossing=0,
+      wait_cursor=0;
 
   char *viewbuf;
 
@@ -3039,6 +3040,12 @@ void ViewCurve::drawCurve_stage_1(QPainter *painter, int w_width, int w_height, 
 //   printf("start:  signalcomp is %08X      screensamples is %08X\n---------------------\n", (int)(signalcomp[i]), (int)(&screensamples[i]));
 // }
 
+    if((mainwindow->totalviewbufsize_bytes > 64000000LL) && (!mainwindow->live_stream_active) && (!mainwindow->playback_realtime_active))
+    {
+      QApplication::setOverrideCursor(Qt::WaitCursor);
+      wait_cursor = 1;
+    }
+
     for(i=0; i<n; i++)
     {
       thr[i]->init_vars(mainwindow, &signalcomp[0], i,
@@ -3052,6 +3059,12 @@ void ViewCurve::drawCurve_stage_1(QPainter *painter, int w_width, int w_height, 
     for(i=0; i<n; i++)
     {
       thr[i]->wait();
+    }
+
+    if(wait_cursor)
+    {
+      QApplication::restoreOverrideCursor();
+      wait_cursor = 0;
     }
   }
   else

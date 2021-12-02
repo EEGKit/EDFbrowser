@@ -1122,7 +1122,7 @@ UI_Mainwindow::UI_Mainwindow()
   pagetime = 10 * TIME_DIMENSION;
   viewtime_string[0] = 0;
   pagetime_string[0] = 0;
-  totalviewbufsize = 0;
+  totalviewbufsize_bytes = 0LL;
   print_to_edf_active = 0;
   annot_editor_active = 0;
   annotations_edited = 0;
