@@ -265,6 +265,7 @@ private:
 
   void backup_colors_for_printing(void);
   void restore_colors_after_printing(void);
+  void overlay_message(QPainter *);
 
 protected slots:
 
