@@ -640,6 +640,18 @@ UI_Mainwindow::UI_Mainwindow()
   page_3600 = new QAction("1 hour/page", this);
   displaymenu->addAction(page_3600);
 
+  page_8h = new QAction("8 hour/page", this);
+  displaymenu->addAction(page_8h);
+
+  page_12h = new QAction("12 hour/page", this);
+  displaymenu->addAction(page_12h);
+
+  page_24h = new QAction("24 hour/page", this);
+  displaymenu->addAction(page_24h);
+
+  page_48h = new QAction("48 hour/page", this);
+  displaymenu->addAction(page_48h);
+
   displaymenu->addSeparator();
 
   page_div2 = new QAction("Timescale / 2", this);
@@ -693,6 +705,10 @@ UI_Mainwindow::UI_Mainwindow()
   DisplayGroup->addAction(page_300);
   DisplayGroup->addAction(page_1200);
   DisplayGroup->addAction(page_3600);
+  DisplayGroup->addAction(page_8h);
+  DisplayGroup->addAction(page_12h);
+  DisplayGroup->addAction(page_24h);
+  DisplayGroup->addAction(page_48h);
   connect(DisplayGroup, SIGNAL(triggered(QAction *)), this, SLOT(set_display_time(QAction *)));
 
   amplitudemenu = new QMenu(this);

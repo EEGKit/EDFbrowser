@@ -3098,6 +3098,10 @@ void UI_Mainwindow::set_display_time(QAction *action)
   if(action==page_300)   pagetime = TIME_DIMENSION * 300;
   if(action==page_1200)  pagetime = TIME_DIMENSION * 1200;
   if(action==page_3600)  pagetime = TIME_DIMENSION * 3600;
+  if(action==page_8h)    pagetime = TIME_DIMENSION * 3600 * 8;
+  if(action==page_12h)   pagetime = TIME_DIMENSION * 3600 * 12;
+  if(action==page_24h)   pagetime = TIME_DIMENSION * 3600 * 24;
+  if(action==page_48h)   pagetime = TIME_DIMENSION * 3600 * 48;
 
   setup_viewbuf();
 }
