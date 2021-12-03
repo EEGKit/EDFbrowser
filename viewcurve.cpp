@@ -3059,6 +3059,10 @@ void ViewCurve::drawCurve_stage_1(QPainter *painter, int w_width, int w_height, 
     if((mainwindow->totalviewbufsize_bytes > 64000000LL) && (!mainwindow->live_stream_active) && (!mainwindow->playback_realtime_active))
     {
       mainwindow->processing_waveform_data = 1;
+      if(!mainwindow->rc_system_locked)
+      {
+        mainwindow->setEnabled(false);
+      }
       QApplication::setOverrideCursor(Qt::WaitCursor);
       wait_cursor = 1;
       update();
@@ -3090,6 +3094,10 @@ void ViewCurve::drawCurve_stage_1(QPainter *painter, int w_width, int w_height, 
       QApplication::restoreOverrideCursor();
       wait_cursor = 0;
       mainwindow->processing_waveform_data = 0;
+      if(!mainwindow->rc_system_locked)
+      {
+        mainwindow->setEnabled(true);
+      }
     }
   }
   else
