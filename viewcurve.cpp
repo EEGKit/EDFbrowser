@@ -2940,7 +2940,7 @@ void ViewCurve::drawCurve_stage_1(QPainter *painter, int w_width, int w_height, 
 
   char *viewbuf;
 
-  unsigned long long s, s2;
+  unsigned long long s, s2, total_samples_processed;
 
   double dig_value=0.0,
          f_tmp=0.0;
@@ -3010,7 +3010,7 @@ void ViewCurve::drawCurve_stage_1(QPainter *painter, int w_width, int w_height, 
     signalcomp[i]->sample_pixel_ratio = (double)signalcomp[i]->samples_on_screen / (double)w;
   }
 
-  if((viewbuf==NULL)||(screensamples==NULL))
+  if((viewbuf==NULL)||(screensamples==NULL)||(!signalcomps))
   {
     if(graphicBuf!=NULL)
     {
@@ -3056,7 +3056,20 @@ void ViewCurve::drawCurve_stage_1(QPainter *painter, int w_width, int w_height, 
 //   printf("start:  signalcomp is %08X      screensamples is %08X\n---------------------\n", (int)(signalcomp[i]), (int)(&screensamples[i]));
 // }
 
-    if((mainwindow->totalviewbufsize_bytes > 64000000LL) && (!mainwindow->live_stream_active) && (!mainwindow->playback_realtime_active))
+    for(i=0, total_samples_processed=0LL; i<signalcomps; i++)
+    {
+      if(signalcomp[i]->sample_stop > signalcomp[i]->sample_start)
+      {
+        total_samples_processed += (signalcomp[i]->sample_stop - signalcomp[i]->sample_start);
+      }
+    }
+
+//    printf("total_samples_processed: %llu\n", total_samples_processed);
+
+    if(((total_samples_processed / n) > 10000000LL) &&
+       (mainwindow->totalviewbufsize_bytes > 64000000LL) &&
+       (!mainwindow->live_stream_active) &&
+       (!mainwindow->playback_realtime_active))
     {
       mainwindow->processing_waveform_data = 1;
       if(!mainwindow->rc_system_locked)
