@@ -1,5 +1,5 @@
 
- version 1.89      to be defined
+ version 1.89      December 5, 2021
  --------------
 
  - Hypnogram: highlight gaps / overlaps: use a threshold of 0.1 sec. so that very small gaps / overlaps
@@ -8,6 +8,12 @@
  - Videoplayer: remember the path for the recent video file independently from the recent EDF file.
 
  - Added the possibility to "remote control" EDFbrowser by another program using a loopback port.
+
+ - Header editor: it can now also repair a file which contains signals that have equal values for physical maximum and physical minimum.
+
+ - Show a waiting cursor when processing waveform data when the timescale is set to a large value.
+
+ - Added the possibility to set the default amplitude according to the physical maximum of the signal.
 
 
  version 1.88      November 2, 2021
