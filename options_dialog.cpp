@@ -2966,6 +2966,17 @@ void UI_OptionsDialog::update_interface(void)
     }
   }
 
+  spinbox1_1->setValue(mainwindow->maincurve->crosshair_1.dot_sz);
+
+  if(mainwindow->maincurve->crosshair_1.has_hor_line)
+  {
+    checkbox6->setCheckState(Qt::Checked);
+  }
+  else
+  {
+    checkbox6->setCheckState(Qt::Unchecked);
+  }
+
   mainwindow->maincurve->update();
 }
 
@@ -3034,6 +3045,12 @@ void UI_OptionsDialog::loadColorSchema_NK()
 
   mainwindow->use_diverse_signal_colors = 0;
 
+  mainwindow->maincurve->crosshair_1.dot_sz = 4;
+  mainwindow->maincurve->crosshair_2.dot_sz = 4;
+
+  mainwindow->maincurve->crosshair_1.has_hor_line = 0;
+  mainwindow->maincurve->crosshair_2.has_hor_line = 0;
+
   update_interface();
 }
 
@@ -3100,6 +3117,12 @@ void UI_OptionsDialog::loadColorSchema_Dark()
 
   mainwindow->use_diverse_signal_colors = 1;
 
+  mainwindow->maincurve->crosshair_1.dot_sz = 4;
+  mainwindow->maincurve->crosshair_2.dot_sz = 4;
+
+  mainwindow->maincurve->crosshair_1.has_hor_line = 0;
+  mainwindow->maincurve->crosshair_2.has_hor_line = 0;
+
   update_interface();
 }
 
@@ -3149,6 +3172,12 @@ void UI_OptionsDialog::loadColorSchema_blue_gray()
   mainwindow->clip_to_pane = 0;
 
   mainwindow->use_diverse_signal_colors = 0;
+
+  mainwindow->maincurve->crosshair_1.dot_sz = 4;
+  mainwindow->maincurve->crosshair_2.dot_sz = 4;
+
+  mainwindow->maincurve->crosshair_1.has_hor_line = 0;
+  mainwindow->maincurve->crosshair_2.has_hor_line = 0;
 
   update_interface();
 }

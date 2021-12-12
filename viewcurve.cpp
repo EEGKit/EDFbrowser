@@ -125,17 +125,20 @@ ViewCurve::ViewCurve(QWidget *w_parent) : QWidget(w_parent)
   annot_duration_color_selected.setBlue(127);
   annot_duration_color_selected.setAlpha(32);
 
-  signal_color = 12;
+  signal_color = Qt::yellow;
 
-  floating_ruler_color = 10;
-
-  blackwhite_printing = 1;
+  floating_ruler_color = Qt::cyan;
 
   memset(&crosshair_1, 0, sizeof(struct crossHairStruct));
   memset(&crosshair_2, 0, sizeof(struct crossHairStruct));
 
   crosshair_1.dot_sz = 4;
   crosshair_2.dot_sz = 4;
+
+  crosshair_1.color = Qt::red;
+  crosshair_2.color = Qt::cyan;
+
+  blackwhite_printing = 1;
 
 /////////////////////////////////////////////////////////
 

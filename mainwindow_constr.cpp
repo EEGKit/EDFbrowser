@@ -151,7 +151,7 @@ UI_Mainwindow::UI_Mainwindow()
 
   channel_linked_annotations = 1;
 
-  use_diverse_signal_colors = 0;
+  use_diverse_signal_colors = 1;
 
   dig_min_max_overflow = 0;
 
