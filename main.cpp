@@ -13,6 +13,7 @@
 #include <QColor>
 #include <QFont>
 #include <QEventLoop>
+#include <QMessageBox>
 
 
 #include "mainwindow.h"
@@ -122,10 +123,22 @@ int main(int argc, char *argv[])
 
   qApp->setStyleSheet("QMessageBox { messagebox-text-interaction-flags: 5; }");
 
+  char str[512]="";
+
   UI_Mainwindow *MainWindow = new UI_Mainwindow;
   if(MainWindow == NULL)
   {
-    fprintf(stderr, "Malloc error!\n");
+    splash.close();
+
+    snprintf(str, 512, "Malloc error.\nFile: %s  line: %i", __FILE__, __LINE__);
+
+    fprintf(stderr, "%s\n", str);
+
+    QMessageBox msgBox;
+    msgBox.setIcon(QMessageBox::Critical);
+    msgBox.setText(str);
+    msgBox.exec();
+
     return EXIT_FAILURE;
   }
 
