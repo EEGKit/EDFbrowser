@@ -42,9 +42,10 @@
 #include "filteredblockread.h"
 #include "signalcurve.h"
 #include "annotations_dock.h"
-#include "filter.h"
-#include "spike_filter.h"
-#include "ravg_filter.h"
+
+#include "filt/filter.h"
+#include "filt/ravg_filter.h"
+#include "filt/spike_filter.h"
 
 #include "third_party/kiss_fft/kiss_fftr.h"
 

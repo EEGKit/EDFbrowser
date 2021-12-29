@@ -40,11 +40,12 @@
 
 #include "global.h"
 #include "mainwindow.h"
-#include "ecg_filter.h"
 #include "signalcurve.h"
 #include "edf_annot_list.h"
 #include "ecg_statistics.h"
 #include "utils.h"
+
+#include "filt/ecg_filter.h"
 
 
 class UI_Mainwindow;

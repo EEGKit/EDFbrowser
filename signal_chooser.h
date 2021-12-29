@@ -42,9 +42,10 @@
 #include "mainwindow.h"
 #include "viewcurve.h"
 #include "adjustfiltersettings.h"
-#include "ecg_filter.h"
 #include "utils.h"
 #include "edf_helper.h"
+
+#include "filt/ecg_filter.h"
 
 
 

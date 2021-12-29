@@ -40,11 +40,12 @@
 #include "mainwindow.h"
 #include "signalcurve.h"
 #include "utils.h"
-#include "filter.h"
-#include "spike_filter.h"
-#include "ravg_filter.h"
 #include "flywheel.h"
-#include "fft_wrap.h"
+
+#include "filt/fft_wrap.h"
+#include "filt/filter.h"
+#include "filt/ravg_filter.h"
+#include "filt/spike_filter.h"
 
 #include "third_party/fidlib/fidlib.h"
 

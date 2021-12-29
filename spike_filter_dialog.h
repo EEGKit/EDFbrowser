@@ -39,8 +39,9 @@
 
 #include "global.h"
 #include "mainwindow.h"
-#include "spike_filter.h"
 #include "utils.h"
+
+#include "filt/spike_filter.h"
 
 
 

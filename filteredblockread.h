@@ -38,9 +38,10 @@
 #include <string.h>
 
 #include "global.h"
-#include "filter.h"
-#include "spike_filter.h"
-#include "ravg_filter.h"
+
+#include "filt/filter.h"
+#include "filt/ravg_filter.h"
+#include "filt/spike_filter.h"
 
 #include "third_party/fidlib/fidlib.h"
 

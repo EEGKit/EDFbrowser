@@ -39,7 +39,8 @@
 #include "mainwindow.h"
 #include "utils.h"
 #include "edflib.h"
-#include "ravg_filter.h"
+
+#include "../filt/ravg_filter.h"
 
 
 class UI_Mainwindow;

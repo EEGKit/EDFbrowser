@@ -142,15 +142,15 @@
 #define RC_CMD_MASK  (0xffffffff & (~RC_CMD_QUERY))
 
 
-#include "filter.h"
-#include "third_party/fidlib/fidlib.h"
-#include "ravg_filter.h"
-#include "spike_filter.h"
-#include "ecg_filter.h"
-#include "z_ratio_filter.h"
 #include "edf_annot_list.h"
-#include "plif_ecg_subtract_filter.h"
-#include "fir_filter.h"
+#include "filt/ecg_filter.h"
+#include "filt/filter.h"
+#include "filt/fir_filter.h"
+#include "filt/plif_ecg_subtract_filter.h"
+#include "filt/ravg_filter.h"
+#include "filt/spike_filter.h"
+#include "filt/z_ratio_filter.h"
+#include "third_party/fidlib/fidlib.h"
 
 
 struct edfparamblock{

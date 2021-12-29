@@ -38,8 +38,9 @@
 #include "global.h"
 #include "mainwindow.h"
 #include "check_edf_file.h"
-#include "filter.h"
 #include "utils.h"
+
+#include "../filt/filter.h"
 
 
 

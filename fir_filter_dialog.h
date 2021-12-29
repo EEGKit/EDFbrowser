@@ -38,8 +38,9 @@
 
 #include "global.h"
 #include "mainwindow.h"
-#include "fir_filter.h"
 #include "utils.h"
+
+#include "filt/fir_filter.h"
 
 
 #define FIR_FILTER_MAX_TAPS       5000

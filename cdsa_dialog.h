@@ -39,8 +39,9 @@
 #include "mainwindow.h"
 #include "utils.h"
 #include "filteredblockread.h"
-#include "fft_wrap.h"
 #include "cdsa_dock.h"
+
+#include "filt/fft_wrap.h"
 
 
 

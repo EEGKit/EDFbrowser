@@ -41,8 +41,9 @@
 #include "global.h"
 #include "mainwindow.h"
 #include "viewcurve.h"
-#include "ravg_filter.h"
 #include "utils.h"
+
+#include "filt/ravg_filter.h"
 
 #include "third_party/fidlib/fidlib.h"
 

@@ -41,13 +41,14 @@
 #include "global.h"
 #include "mainwindow.h"
 #include "xml.h"
-#include "filter.h"
-#include "spike_filter.h"
 #include "utc_date_time.h"
 #include "utils.h"
 #include "spectrum_dock.h"
-#include "plif_ecg_subtract_filter.h"
 #include "edf_helper.h"
+
+#include "filt/filter.h"
+#include "filt/plif_ecg_subtract_filter.h"
+#include "filt/spike_filter.h"
 
 #include "third_party/fidlib/fidlib.h"
 
