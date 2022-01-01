@@ -159,8 +159,6 @@ UI_Mainwindow::UI_Mainwindow()
 
   options_dialog_idx = 0;
 
-  processing_waveform_data = 0;
-
   edf_debug = 0;
 
   for(i=0; i<8; i++)

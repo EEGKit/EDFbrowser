@@ -1217,26 +1217,12 @@ void ViewCurve::paintEvent(QPaintEvent *)
   paint.setRenderHint(QPainter::Qt4CompatiblePainting, true);
 #endif
 
-  if(mainwindow->processing_waveform_data)
-  {
-    overlay_message(&paint);
-    return;
-  }
-
   drawCurve_stage_2(&paint);
 
   if(mainwindow->dig_min_max_overflow && (!mainwindow->dig_min_max_overflow_warning_showed))
   {
     mainwindow->dig_min_max_overflow_timer->start(20);
   }
-}
-
-
-void ViewCurve::overlay_message(QPainter *painter)
-{
-  painter->fillRect((w / 2) - 5, (h / 2) - 20, 100 * w_scaling, 30, backgroundcolor);
-  painter->setPen(text_color);
-  painter->drawText(w / 2, h / 2, "Processing...");
 }
 
 
@@ -1726,8 +1712,7 @@ void ViewCurve::drawCurve_stage_1(QPainter *painter, int w_width, int w_height, 
       minimum,
       maximum,
       runin_samples,
-      stat_zero_crossing=0,
-      wait_cursor=0;
+      stat_zero_crossing=0;
 
   char *viewbuf;
 
@@ -1746,8 +1731,6 @@ void ViewCurve::drawCurve_stage_1(QPainter *painter, int w_width, int w_height, 
           unsigned char four[4];
         } var;
 
-
-  mainwindow->processing_waveform_data = 0;
 
   if(mainwindow->exit_in_progress)
   {
@@ -1857,22 +1840,6 @@ void ViewCurve::drawCurve_stage_1(QPainter *painter, int w_width, int w_height, 
 
 //    printf("total_samples_processed: %llu\n", total_samples_processed);
 
-    if(((total_samples_processed / n) > 10000000LL) &&
-       (mainwindow->totalviewbufsize_bytes > 64000000LL) &&
-       (!mainwindow->live_stream_active) &&
-       (!mainwindow->playback_realtime_active))
-    {
-      mainwindow->processing_waveform_data = 1;
-      if(!mainwindow->rc_system_locked)
-      {
-        mainwindow->setEnabled(false);
-      }
-      QApplication::setOverrideCursor(Qt::WaitCursor);
-      wait_cursor = 1;
-      update();
-      qApp->processEvents();
-    }
-
     for(i=0; i<n; i++)
     {
       thr[i]->init_vars(mainwindow, &signalcomp[0], i,
@@ -1881,27 +1848,11 @@ void ViewCurve::drawCurve_stage_1(QPainter *painter, int w_width, int w_height, 
                         printsize_y_factor, &crosshair_1, &crosshair_2, cpu_cnt, linear_interpol);
 
       thr[i]->start();
-
-      if(wait_cursor)
-      {
-        qApp->processEvents();
-      }
     }
 
     for(i=0; i<n; i++)
     {
       thr[i]->wait();
-    }
-
-    if(wait_cursor)
-    {
-      QApplication::restoreOverrideCursor();
-      wait_cursor = 0;
-      mainwindow->processing_waveform_data = 0;
-      if(!mainwindow->rc_system_locked)
-      {
-        mainwindow->setEnabled(true);
-      }
     }
   }
   else
@@ -2362,8 +2313,6 @@ void ViewCurve::drawCurve_stage_1(QPainter *painter, int w_width, int w_height, 
       }
     }
   }
-
-  mainwindow->processing_waveform_data = 0;
 
   if(printing)
   {
