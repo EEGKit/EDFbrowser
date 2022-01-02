@@ -1,4 +1,13 @@
 
+ version 1.90      January 2, 2022
+ --------------
+
+ - Some minor fixes related to set the color options.
+
+ - Undo commit: "Show a waiting cursor when processing waveform data when the timescale is set to a large value"
+   for now, because it interferes with user input (mouse: crosshairs).
+
+
  version 1.89      December 5, 2021
  --------------
 
