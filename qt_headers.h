@@ -15,6 +15,9 @@
 #include <QtGlobal>
 #include <QObject>
 #include <QApplication>
+#if QT_VERSION >= 0x050000
+#include <QGuiApplication>
+#endif
 #include <QStyle>
 #include <QStyleFactory>
 #include <QEvent>

@@ -1273,9 +1273,22 @@ UI_Mainwindow::UI_Mainwindow()
     }
   }
 
-  if((!window_width_sav_rest) || (!window_height_sav_rest) ||
-     (window_width_sav_rest > (QApplication::desktop()->availableGeometry().width())) ||
+#if QT_VERSION >= 0x050F00
+  if((window_width_sav_rest > (QGuiApplication::screens()[0]->availableGeometry().width())) ||
+     (window_height_sav_rest > (QGuiApplication::screens()[0]->availableGeometry().height())))
+  {
+    window_width_sav_rest = 0;
+    window_height_sav_rest = 0;
+  }
+#else
+  if((window_width_sav_rest > (QApplication::desktop()->availableGeometry().width())) ||
      (window_height_sav_rest > (QApplication::desktop()->availableGeometry().height())))
+  {
+    window_width_sav_rest = 0;
+    window_height_sav_rest = 0;
+  }
+#endif
+  if((!window_width_sav_rest) || (!window_height_sav_rest))
   {
     showMaximized();
   }
