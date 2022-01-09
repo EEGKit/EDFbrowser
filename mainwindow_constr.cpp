@@ -161,6 +161,9 @@ UI_Mainwindow::UI_Mainwindow()
 
   edf_debug = 0;
 
+  window_width_sav_rest = 0;
+  window_height_sav_rest = 0;
+
   for(i=0; i<8; i++)
   {
     annot_edit_user_button_enabled[i] = 0;
@@ -1270,7 +1273,17 @@ UI_Mainwindow::UI_Mainwindow()
     }
   }
 
-  showMaximized();
+  if((!window_width_sav_rest) || (!window_height_sav_rest) ||
+     (window_width_sav_rest > (QApplication::desktop()->availableGeometry().width())) ||
+     (window_height_sav_rest > (QApplication::desktop()->availableGeometry().height())))
+  {
+    showMaximized();
+  }
+  else
+  {
+    resize(window_width_sav_rest, window_height_sav_rest);
+    show();
+  }
 
   maincurve->setFocus(Qt::OtherFocusReason);
 

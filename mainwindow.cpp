@@ -126,6 +126,9 @@ void UI_Mainwindow::closeEvent(QCloseEvent *cl_event)
 
     close_all_files();
 
+    window_width_sav_rest = width();
+    window_height_sav_rest = height();
+
     write_settings();
 
     free(spectrum_colorbar);

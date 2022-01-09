@@ -663,6 +663,49 @@ void UI_Mainwindow::read_general_settings()
     xml_go_up(xml_hdl);
   }
 
+  if(!(xml_goto_nth_element_inside(xml_hdl, "window_geometry", 0)))
+  {
+    if(xml_goto_nth_element_inside(xml_hdl, "window_width_sav_rest", 0))
+    {
+      xml_close(xml_hdl);
+      return;
+    }
+    if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+    {
+      xml_close(xml_hdl);
+      return;
+    }
+
+    window_width_sav_rest = atoi(result);
+    if((window_width_sav_rest < 640) || (window_width_sav_rest > 100000))
+    {
+      window_width_sav_rest = 0;
+    }
+
+    xml_go_up(xml_hdl);
+
+    if(xml_goto_nth_element_inside(xml_hdl, "window_height_sav_rest", 0))
+    {
+      xml_close(xml_hdl);
+      return;
+    }
+    if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+    {
+      xml_close(xml_hdl);
+      return;
+    }
+
+    window_height_sav_rest = atoi(result);
+    if((window_height_sav_rest < 480) || (window_height_sav_rest > 100000))
+    {
+      window_height_sav_rest = 0;
+      window_width_sav_rest = 0;
+    }
+
+    xml_go_up(xml_hdl);
+  }
+  xml_go_up(xml_hdl);
+
   if(xml_goto_nth_element_inside(xml_hdl, "pixelsizefactor", 0))
   {
     xml_close(xml_hdl);
@@ -2675,8 +2718,14 @@ void UI_Mainwindow::write_settings()
                      "  <cfg_app_version>" PROGRAM_NAME " " PROGRAM_VERSION "</cfg_app_version>\n"
                      "  <UI>\n"
                      "    <font_size>%i</font_size>\n"
-                     "    <monofont_size>%i</monofont_size>\n"
-                     "    <colors>\n", font_size, monofont_size);
+                     "    <monofont_size>%i</monofont_size>\n", font_size, monofont_size);
+
+    fprintf(cfgfile, "    <window_geometry>\n"
+                     "      <window_width_sav_rest>%i</window_width_sav_rest>\n"
+                     "      <window_height_sav_rest>%i</window_height_sav_rest>\n"
+                     "    </window_geometry>\n", window_width_sav_rest, window_height_sav_rest);
+
+    fprintf(cfgfile, "    <colors>\n");
 
     fprintf(cfgfile, "      <backgroundcolor>\n"
                     "        <red>%i</red>\n"

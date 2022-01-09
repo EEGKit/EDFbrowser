@@ -263,7 +263,9 @@ public:
       rc_load_mtg_file_num,
       rc_err_queue_idx,
       rc_err_queue[RC_ERR_QUEUE_SZ],
-      rc_system_locked;
+      rc_system_locked,
+      window_width_sav_rest,
+      window_height_sav_rest;
 
 volatile int rc_cmd_in_progress;
 
