@@ -1483,7 +1483,7 @@ void UI_Mainwindow::open_new_file()
 
   rc_file_open_err = 0;
 
-  if(edflib_version() != 120)  return;
+  if(edflib_version() != 121)  return;
 
   if(annot_editor_active && files_open)
   {

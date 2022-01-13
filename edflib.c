@@ -35,7 +35,7 @@
 
 #include "edflib.h"
 
-#define EDFLIB_VERSION  (120)
+#define EDFLIB_VERSION  (121)
 #define EDFLIB_MAXFILES  (64)
 
 #if defined(__APPLE__) || defined(__MACH__) || defined(__APPLE_CC__) || defined(__HAIKU__)
@@ -2341,7 +2341,7 @@ static struct edfhdrblock * edflib_check_edf_file(FILE *inputfile, int *edf_erro
     }
 
     p = 0;
-    if(edfhdr->patient[p]=='X')
+    if((edfhdr->patient[p]=='X') && (edfhdr->patient[p+1]==' '))
     {
       edfhdr->plus_patientcode[0] = 0;
       p += 2;
@@ -2550,7 +2550,7 @@ static struct edfhdrblock * edflib_check_edf_file(FILE *inputfile, int *edf_erro
     edfhdr->plus_startdate[11] = 0;
     p += i + 1;
 
-    if(edfhdr->recording[p]=='X')
+    if((edfhdr->recording[p]=='X') && (edfhdr->recording[p+1]==' '))
     {
       edfhdr->plus_admincode[0] = 0;
       p += 2;
@@ -2570,7 +2570,7 @@ static struct edfhdrblock * edflib_check_edf_file(FILE *inputfile, int *edf_erro
       p += i + 1;
     }
 
-    if(edfhdr->recording[p]=='X')
+    if((edfhdr->recording[p]=='X') && (edfhdr->recording[p+1]==' '))
     {
       edfhdr->plus_technician[0] = 0;
       p += 2;
@@ -2590,7 +2590,7 @@ static struct edfhdrblock * edflib_check_edf_file(FILE *inputfile, int *edf_erro
       p += i + 1;
     }
 
-    if(edfhdr->recording[p]=='X')
+    if((edfhdr->recording[p]=='X') && (edfhdr->recording[p+1]==' '))
     {
       edfhdr->plus_equipment[0] = 0;
       p += 2;
