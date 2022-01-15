@@ -4625,7 +4625,44 @@ void UI_Mainwindow::signalcomp_invert(int inv, int n)
 }
 
 
+#if QT_VERSION >= 0x050B00
+void UI_Mainwindow::desktop_resized(int)
+{
+  QFontMetrics fm(*myfont);
 
+  font_pixel_height = fm.ascent();
+
+  font_pixel_width = (fm.horizontalAdvance("ABCDEFGHIJKLMNOPQRSTUVWXYZ") / 26.0) + 0.5;
+//  printf("font_pixel_height: %i    font_pixel_width: %i\n", font_pixel_height, font_pixel_width);
+
+  h_scaling = fm.height() / 18.0;
+
+  w_scaling = fm.horizontalAdvance("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789") / 260.0;
+
+  if(w_scaling > 4.0)  w_scaling = 4.0;
+  if(w_scaling < 1.0)  w_scaling = 1.0;
+
+  if(h_scaling > 4.0)  h_scaling = 4.0;
+  if(h_scaling < 1.0)  h_scaling = 1.0;
+
+//  printf("w_scaling: %f    h_scaling: %f\n", w_scaling, h_scaling);
+
+  dpix = maincurve->physicalDpiX();
+
+  dpiy = maincurve->physicalDpiY();
+
+//  printf("dpix: %i    dpiy: %i\n", dpix, dpiy);
+
+  if(auto_dpi)
+  {
+    y_pixelsizefactor = 2.54 / dpiy;
+
+    x_pixelsizefactor = 2.54 / dpix;
+  }
+
+//  showMaximized();
+}
+#endif
 
 
 

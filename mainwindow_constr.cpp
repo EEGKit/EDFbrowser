@@ -1273,9 +1273,11 @@ UI_Mainwindow::UI_Mainwindow()
     }
   }
 
-#if QT_VERSION >= 0x050F00
-  if((window_width_sav_rest > (QGuiApplication::screens()[0]->availableGeometry().width())) ||
-     (window_height_sav_rest > (QGuiApplication::screens()[0]->availableGeometry().height())))
+#if QT_VERSION >= 0x050B00
+//   if((window_width_sav_rest > (QGuiApplication::screens()[0]->availableGeometry().width())) ||
+//      (window_height_sav_rest > (QGuiApplication::screens()[0]->availableGeometry().height())))
+  if((window_width_sav_rest > (QGuiApplication::primaryScreen()->availableGeometry().width())) ||
+     (window_height_sav_rest > (QGuiApplication::primaryScreen()->availableGeometry().height())))
   {
     window_width_sav_rest = 0;
     window_height_sav_rest = 0;
@@ -1435,6 +1437,9 @@ UI_Mainwindow::UI_Mainwindow()
   }
 
   QObject::connect(maincurve, SIGNAL(file_dropped()), this, SLOT(open_new_file()));
+#if QT_VERSION >= 0x050B00
+  QObject::connect(QApplication::desktop(), SIGNAL(resized(int)), this, SLOT(desktop_resized(int)));
+#endif
 }
 
 

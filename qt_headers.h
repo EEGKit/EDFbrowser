@@ -11,10 +11,10 @@
 #ifndef QT_HEADERS_INCLUDE_H
 #define QT_HEADERS_INCLUDE_H
 
-
 #include <QtGlobal>
 #include <QObject>
 #include <QApplication>
+#include <QDesktopWidget>
 #if QT_VERSION >= 0x050000
 #include <QGuiApplication>
 #endif
@@ -121,12 +121,10 @@
 #include <QBrush>
 #include <QColorDialog>
 #include <QElapsedTimer>
-#include <QDesktopWidget>
 #include <QPainterPath>
 #include <QShortcut>
 #include <QTcpServer>
 #include <QMutex>
-
 #if QT_VERSION >= 0x050200
 #include <QFontDatabase>
 #endif
