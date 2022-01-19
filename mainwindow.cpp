@@ -4662,6 +4662,11 @@ void UI_Mainwindow::desktop_resized(int)
 
 //  showMaximized();
 }
+
+void UI_Mainwindow::screen_changed(QScreen *)
+{
+  desktop_resized(0);
+}
 #endif
 
 
