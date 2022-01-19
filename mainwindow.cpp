@@ -4660,7 +4660,7 @@ void UI_Mainwindow::desktop_resized(int)
     x_pixelsizefactor = 2.54 / dpix;
   }
 
-//  showMaximized();
+  maincurve->update();
 }
 
 void UI_Mainwindow::screen_changed(QScreen *)

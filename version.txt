@@ -1,4 +1,14 @@
 
+ version 1.91      to be defined
+ --------------
+
+ - Save/restore the windowsize when closing/starting the program.
+
+ - Fixed a bug where EDFplus patient and recording subfields where not read correctly if they started with an 'X'.
+
+ - Adjust scaling when dragged to another screen with a different resolution.
+
+
  version 1.90      January 2, 2022
  --------------
 
