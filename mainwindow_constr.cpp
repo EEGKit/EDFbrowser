@@ -1436,13 +1436,9 @@ UI_Mainwindow::UI_Mainwindow()
     }
   }
 
-  QObject::connect(maincurve, SIGNAL(file_dropped()), this, SLOT(open_new_file()));
-#if QT_VERSION >= 0x050B00
-  QGuiApplication* guiApp = dynamic_cast<QGuiApplication*>(qApp);
-  QObject::connect(guiApp,                         SIGNAL(primaryScreenChanged(QScreen *)), this, SLOT(screen_changed(QScreen *)));
-  QObject::connect(QApplication::desktop(),        SIGNAL(resized(int)),                    this, SLOT(desktop_resized(int)));
-  QObject::connect(this->window()->windowHandle(), SIGNAL(screenChanged(QScreen*)),         this, SLOT(screen_changed(QScreen*)));
-#endif
+  QObject::connect(maincurve,                      SIGNAL(file_dropped()),          this, SLOT(open_new_file()));
+  QObject::connect(this->window()->windowHandle(), SIGNAL(screenChanged(QScreen*)), this, SLOT(screen_changed(QScreen*)));
+  QObject::connect(QApplication::desktop(),        SIGNAL(resized(int)),            this, SLOT(desktop_resized(int)));
 }
 
 

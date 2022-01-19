@@ -712,10 +712,8 @@ private slots:
   void rc_host_server_new_connection();
   void rc_host_sock_rxdata_handler();
   void rc_host_sock_disconnected_handler();
-#if QT_VERSION >= 0x050B00
   void desktop_resized(int);
   void screen_changed(QScreen *);
-#endif
 //  void search_pattern();
 
 protected:

@@ -17,8 +17,8 @@
 #include <QDesktopWidget>
 #if QT_VERSION >= 0x050000
 #include <QGuiApplication>
-#include <QScreen>
 #endif
+#include <QScreen>
 #include <QStyle>
 #include <QStyleFactory>
 #include <QEvent>
