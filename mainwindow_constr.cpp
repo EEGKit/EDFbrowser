@@ -1437,7 +1437,9 @@ UI_Mainwindow::UI_Mainwindow()
   }
 
   QObject::connect(maincurve,                      SIGNAL(file_dropped()),          this, SLOT(open_new_file()));
+#if QT_VERSION >= 0x050000
   QObject::connect(this->window()->windowHandle(), SIGNAL(screenChanged(QScreen*)), this, SLOT(screen_changed(QScreen*)));
+#endif
   QObject::connect(QApplication::desktop(),        SIGNAL(resized(int)),            this, SLOT(desktop_resized(int)));
 }
 
