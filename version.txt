@@ -1,5 +1,5 @@
 
- version 1.91      to be defined
+ version 1.91      February 4, 2022
  --------------
 
  - Save/restore the windowsize when closing/starting the program.
