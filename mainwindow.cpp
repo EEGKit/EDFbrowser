@@ -3947,17 +3947,17 @@ QString UI_Mainwindow::specialFolder(int type)
         typedef BOOL (WINAPI*GetSpecialFolderPath)(HWND, LPTSTR, int, BOOL);
         GetSpecialFolderPath SHGetSpecialFolderPath = (GetSpecialFolderPath)library.resolve("SHGetSpecialFolderPathW");
         if (SHGetSpecialFolderPath) {
-            TCHAR path[MAX_PATH];
-            SHGetSpecialFolderPath(0, path, type, false);
-            result = QString::fromUtf16((ushort*)path);
+            TCHAR path_w[MAX_PATH];
+            SHGetSpecialFolderPath(0, path_w, type, false);
+            result = QString::fromUtf16((ushort*)path_w);
         }
     } , {
         typedef BOOL (WINAPI*GetSpecialFolderPath)(HWND, char*, int, BOOL);
         GetSpecialFolderPath SHGetSpecialFolderPath = (GetSpecialFolderPath)library.resolve("SHGetSpecialFolderPathA");
         if (SHGetSpecialFolderPath) {
-            char path[MAX_PATH];
-            SHGetSpecialFolderPath(0, path, type, false);
-            result = QString::fromLocal8Bit(path);
+            char path_w[MAX_PATH];
+            SHGetSpecialFolderPath(0, path_w, type, false);
+            result = QString::fromLocal8Bit(path_w);
         }
     } );
 
