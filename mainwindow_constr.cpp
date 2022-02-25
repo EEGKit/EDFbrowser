@@ -524,6 +524,13 @@ UI_Mainwindow::UI_Mainwindow()
   save_act->setEnabled(false);
   connect(save_act, SIGNAL(triggered()), this, SLOT(save_file()));
 
+  save_project_act = new QAction("Save project", this);
+  save_project_act->setEnabled(false);
+  connect(save_project_act, SIGNAL(triggered()), this, SLOT(save_project()));
+
+  load_project_act = new QAction("Load project", this);
+  connect(load_project_act, SIGNAL(triggered()), this, SLOT(load_project()));
+
   video_act = new QAction("Start video", this);
   connect(video_act, SIGNAL(triggered()), this, SLOT(start_stop_video()));
   video_act->setShortcut(QKeySequence("Ctrl+Shift+V"));
@@ -538,8 +545,12 @@ UI_Mainwindow::UI_Mainwindow()
   filemenu->addSeparator();
   filemenu->addAction("Playback file", this, SLOT(playback_file()), QKeySequence("Ctrl+Space"));
   filemenu->addSeparator();
-  filemenu->addAction(save_act);
   filemenu->addMenu(recent_filesmenu);
+  filemenu->addAction(save_act);
+  filemenu->addSeparator();
+//   filemenu->addAction(load_project_act);
+//   filemenu->addAction(save_project_act);
+//   filemenu->addSeparator();
   filemenu->addMenu(printmenu);
   filemenu->addAction("Info",         this, SLOT(show_file_info()));
   filemenu->addMenu(close_filemenu);

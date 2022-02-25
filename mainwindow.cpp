@@ -379,6 +379,303 @@ void UI_Mainwindow::save_file()
 }
 
 
+void UI_Mainwindow::save_project()
+{
+  int i, j, k, use_index=0;
+
+  if(!files_open)
+  {
+    save_project_act->setEnabled(false);
+    return;
+  }
+
+  char pro_path[MAX_PATH_LENGTH]="";
+
+  FILE *pro_file=NULL;
+
+  strlcpy(pro_path, recent_montagedir, MAX_PATH_LENGTH);
+  strlcat(pro_path, "/my_project.epf", MAX_PATH_LENGTH);
+
+  strlcpy(pro_path, QFileDialog::getSaveFileName(0, "Save project", QString::fromLocal8Bit(pro_path), "Project files (*.epf *.EPF)").toLocal8Bit().data(), MAX_PATH_LENGTH);
+
+  if(!strcmp(pro_path, ""))
+  {
+    return;
+  }
+
+  if(strlen(pro_path) > 4)
+  {
+    if(strcmp(pro_path + strlen(pro_path) - 4, ".epf"))
+    {
+      strlcat(pro_path, ".epf", MAX_PATH_LENGTH);
+    }
+  }
+
+  get_directory_from_path(recent_montagedir, pro_path, MAX_PATH_LENGTH);
+
+  pro_file = fopeno(pro_path, "wb");
+  if(pro_file==NULL)
+  {
+    QMessageBox::critical(this, "Error", "Can not create project file for writing.");
+    return;
+  }
+
+  fprintf(pro_file, "<?xml version=\"1.0\"?>\n<" PROGRAM_NAME "_project>\n");
+
+  fprintf(pro_file, "  <edf_files>\n");
+  for(i=0; i<files_open; i++)
+  {
+    fprintf(pro_file, "    <file>");
+    xml_fwrite_encode_entity(pro_file, edfheaderlist[i]->filename);
+    fprintf(pro_file, "</file>\n");
+  }
+  for(i=0; i<files_open; i++)
+  {
+#ifdef Q_OS_WIN32
+    __mingw_fprintf(pro_file, "    <viewtime>%lli</viewtime>\n", edfheaderlist[i]->viewtime);
+#else
+    fprintf(pro_file, "    <viewtime>%lli</viewtime>\n", edfheaderlist[i]->viewtime);
+#endif
+  }
+  fprintf(pro_file, "  </edf_files>\n");
+
+  fprintf(pro_file, "  <ref_file>%i</ref_file>\n", sel_viewtime);
+
+  fprintf(pro_file, "  <timesync_mode>%i</timesync_mode>\n", viewtime_sync);
+
+#ifdef Q_OS_WIN32
+  __mingw_fprintf(pro_file, "  <pagetime>%lli</pagetime>\n", pagetime);
+#else
+  fprintf(pro_file, "  <pagetime>%lli</pagetime>\n", pagetime);
+#endif
+
+  for(i=0; i<signalcomps; i++)
+  {
+    fprintf(pro_file, "  <signalcomposition>\n");
+
+    fprintf(pro_file, "    <file>");
+
+    xml_fwrite_encode_entity(pro_file, signalcomp[i]->edfhdr->filename);
+
+    fprintf(pro_file, "</file>\n");
+
+    fprintf(pro_file, "    <alias>");
+
+    xml_fwrite_encode_entity(pro_file, signalcomp[i]->alias);
+
+    fprintf(pro_file, "</alias>\n");
+
+    fprintf(pro_file, "    <num_of_signals>%i</num_of_signals>\n", signalcomp[i]->num_of_signals);
+
+    fprintf(pro_file, "    <voltpercm>%f</voltpercm>\n", signalcomp[i]->voltpercm);
+
+    fprintf(pro_file, "    <screen_offset>%f</screen_offset>\n", signalcomp[i]->screen_offset);
+
+    fprintf(pro_file, "    <polarity>%i</polarity>\n", signalcomp[i]->polarity);
+
+    fprintf(pro_file, "    <color>%i</color>\n", signalcomp[i]->color);
+
+    if(signalcomp[i]->spike_filter)
+    {
+      fprintf(pro_file, "    <spike_filter_cnt>%i</spike_filter_cnt>\n", 1);
+    }
+    else
+    {
+      fprintf(pro_file, "    <spike_filter_cnt>%i</spike_filter_cnt>\n", 0);
+    }
+
+    fprintf(pro_file, "    <filter_cnt>%i</filter_cnt>\n", signalcomp[i]->filter_cnt);
+
+    fprintf(pro_file, "    <fidfilter_cnt>%i</fidfilter_cnt>\n", signalcomp[i]->fidfilter_cnt);
+
+    fprintf(pro_file, "    <ravg_filter_cnt>%i</ravg_filter_cnt>\n", signalcomp[i]->ravg_filter_cnt);
+
+    for(j=0; j<signalcomp[i]->num_of_signals; j++)
+    {
+      fprintf(pro_file, "    <signal>\n");
+
+      if(use_index)
+      {
+        fprintf(pro_file, "      <edfindex>%i</edfindex>\n", signalcomp[i]->edfsignal[j]);
+      }
+      else
+      {
+        fprintf(pro_file, "      <label>");
+
+        xml_fwrite_encode_entity(pro_file, signalcomp[i]->edfhdr->edfparam[signalcomp[i]->edfsignal[j]].label);
+
+        fprintf(pro_file, "</label>\n");
+      }
+
+      fprintf(pro_file, "      <factor>%e</factor>\n", signalcomp[i]->factor[j]);
+
+      fprintf(pro_file, "    </signal>\n");
+    }
+
+    if(signalcomp[i]->spike_filter)
+    {
+      fprintf(pro_file, "    <spike_filter>\n");
+
+      fprintf(pro_file, "      <velocity>%.16f</velocity>\n", signalcomp[i]->spike_filter_velocity);
+
+      fprintf(pro_file, "      <holdoff>%i</holdoff>\n", signalcomp[i]->spike_filter_holdoff);
+
+      fprintf(pro_file, "    </spike_filter>\n");
+    }
+
+    for(j=0; j<signalcomp[i]->filter_cnt; j++)
+    {
+      fprintf(pro_file, "    <filter>\n");
+
+      fprintf(pro_file, "      <LPF>%i</LPF>\n", signalcomp[i]->filter[j]->is_LPF);
+
+      fprintf(pro_file, "      <frequency>%.16f</frequency>\n", signalcomp[i]->filter[j]->cutoff_frequency);
+
+      fprintf(pro_file, "    </filter>\n");
+    }
+
+    for(j=0; j<signalcomp[i]->ravg_filter_cnt; j++)
+    {
+      fprintf(pro_file, "    <ravg_filter>\n");
+
+      fprintf(pro_file, "      <type>%i</type>\n", signalcomp[i]->ravg_filter[j]->type);
+
+      fprintf(pro_file, "      <size>%i</size>\n", signalcomp[i]->ravg_filter[j]->size);
+
+      fprintf(pro_file, "    </ravg_filter>\n");
+    }
+
+    for(j=0; j<signalcomp[i]->fidfilter_cnt; j++)
+    {
+      fprintf(pro_file, "    <fidfilter>\n");
+
+      fprintf(pro_file, "      <type>%i</type>\n", signalcomp[i]->fidfilter_type[j]);
+
+      fprintf(pro_file, "      <frequency>%.16f</frequency>\n", signalcomp[i]->fidfilter_freq[j]);
+
+      fprintf(pro_file, "      <frequency2>%.16f</frequency2>\n", signalcomp[i]->fidfilter_freq2[j]);
+
+      fprintf(pro_file, "      <ripple>%.16f</ripple>\n", signalcomp[i]->fidfilter_ripple[j]);
+
+      fprintf(pro_file, "      <order>%i</order>\n", signalcomp[i]->fidfilter_order[j]);
+
+      fprintf(pro_file, "      <model>%i</model>\n", signalcomp[i]->fidfilter_model[j]);
+
+      fprintf(pro_file, "    </fidfilter>\n");
+    }
+
+    if(signalcomp[i]->fir_filter != NULL)
+    {
+      k = fir_filter_size(signalcomp[i]->fir_filter);
+
+      fprintf(pro_file, "    <fir_filter>\n");
+
+      fprintf(pro_file, "      <size>%i</size>\n", k);
+
+      for(j=0; j<k; j++)
+      {
+        fprintf(pro_file, "      <tap>%.20f</tap>\n", fir_filter_tap(j, signalcomp[i]->fir_filter));
+      }
+
+      fprintf(pro_file, "    </fir_filter>\n");
+    }
+
+    if(signalcomp[i]->plif_ecg_filter != NULL)
+    {
+      fprintf(pro_file, "    <plif_ecg_filter>\n");
+
+      fprintf(pro_file, "      <plf>%i</plf>\n", signalcomp[i]->plif_ecg_subtract_filter_plf);
+
+      fprintf(pro_file, "    </plif_ecg_filter>\n");
+    }
+
+    if(signalcomp[i]->ecg_filter != NULL)
+    {
+      fprintf(pro_file, "    <ecg_filter>\n");
+
+      fprintf(pro_file, "      <type>1</type>\n");
+
+      fprintf(pro_file, "    </ecg_filter>\n");
+    }
+
+    if(signalcomp[i]->zratio_filter != NULL)
+    {
+      fprintf(pro_file, "    <zratio_filter>\n");
+
+      fprintf(pro_file, "      <type>1</type>\n");
+
+      fprintf(pro_file, "      <crossoverfreq>%f</crossoverfreq>\n", signalcomp[i]->zratio_crossoverfreq);
+
+      fprintf(pro_file, "    </zratio_filter>\n");
+    }
+
+    if(signalcomp[i]->hasruler)
+    {
+      fprintf(pro_file, "    <floating_ruler>\n");
+
+      fprintf(pro_file, "      <hasruler>1</hasruler>\n");
+
+      fprintf(pro_file, "      <ruler_x_position>%i</ruler_x_position>\n", maincurve->ruler_x_position);
+
+      fprintf(pro_file, "      <ruler_y_position>%i</ruler_y_position>\n", maincurve->ruler_y_position);
+
+      fprintf(pro_file, "      <floating_ruler_value>%i</floating_ruler_value>\n", maincurve->float_ruler_more);
+
+      fprintf(pro_file, "    </floating_ruler>\n");
+    }
+
+    fprintf(pro_file, "  </signalcomposition>\n");
+  }
+
+  fprintf(pro_file, "</" PROGRAM_NAME "_project>\n");
+
+  fclose(pro_file);
+}
+
+
+void UI_Mainwindow::load_project()
+{
+  int button_nr=0, err;
+
+  char pro_path[MAX_PATH_LENGTH]="";
+
+  if(annotations_edited)
+  {
+    QMessageBox messagewindow;
+    messagewindow.setText("There are unsaved annotations,\n are you sure you want to close this file?");
+    messagewindow.setIcon(QMessageBox::Question);
+    messagewindow.setStandardButtons(QMessageBox::Cancel | QMessageBox::Close);
+    messagewindow.setDefaultButton(QMessageBox::Cancel);
+    button_nr = messagewindow.exec();
+  }
+
+  if(button_nr == QMessageBox::Cancel)
+  {
+    return;
+  }
+
+  annotations_edited = 0;
+
+  close_all_files();
+
+  strlcpy(pro_path, QFileDialog::getOpenFileName(0, "Load project", QString::fromLocal8Bit(recent_montagedir), "Project files (*.epf *.EPF)").toLocal8Bit().data(), MAX_PATH_LENGTH);
+
+  if(!strcmp(pro_path, ""))
+  {
+    return;
+  }
+
+  get_directory_from_path(recent_montagedir, pro_path, MAX_PATH_LENGTH);
+
+  err = read_project_file(pro_path);
+
+  if(err)
+  {
+    printf("load_project() returned error: %i\n", err);
+  }
+}
+
+
 void UI_Mainwindow::slider_moved(int value)
 {
   long long new_viewtime, tmp;
@@ -1899,6 +2196,11 @@ void UI_Mainwindow::open_new_file()
 
   rc_file_open_requested = 0;
 
+  if(files_open)
+  {
+    save_project_act->setEnabled(true);
+  }
+
   close_filemenu->addAction(QString::fromLocal8Bit(path));
 }
 
@@ -2573,6 +2875,11 @@ void UI_Mainwindow::close_file_action_func(QAction *action)
   files_open--;
 
   setup_viewbuf();
+
+  if(!files_open)
+  {
+    save_project_act->setEnabled(false);
+  }
 }
 
 
@@ -2615,6 +2922,8 @@ void UI_Mainwindow::close_all_files()
   {
     return;
   }
+
+  save_project_act->setEnabled(false);
 
   annotations_edited = 0;
 

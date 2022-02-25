@@ -158,6 +158,7 @@ SOURCES += mainwindow_constr.cpp
 SOURCES += mainwindow.cpp
 SOURCES += rc_host.cpp
 SOURCES += viewbuf.cpp
+SOURCES += load_project.cpp
 SOURCES += videoplayer.cpp
 SOURCES += read_write_settings.cpp
 SOURCES += viewcurve.cpp
