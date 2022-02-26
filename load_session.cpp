@@ -184,6 +184,7 @@ int UI_Mainwindow::read_session_file(const char *path_session)
   {
     sel_viewtime = 0;
   }
+  setMainwindowTitle(edfheaderlist[sel_viewtime]);
   xml_go_up(xml_hdl);
 
   if(xml_goto_nth_element_inside(xml_hdl, "timesync_mode", 0))
@@ -198,6 +199,18 @@ int UI_Mainwindow::read_session_file(const char *path_session)
   if((viewtime_sync < 0) || (viewtime_sync > 3))
   {
     viewtime_sync = 1;
+  }
+  switch(viewtime_sync)
+  {
+    case VIEWTIME_SYNCED_OFFSET :   offset_timesync_act->setChecked(true);
+                                    break;
+    case VIEWTIME_SYNCED_ABSOLUT :  absolut_timesync_act->setChecked(true);
+                                    break;
+    case VIEWTIME_UNSYNCED :        no_timesync_act->setChecked(true);
+                                    break;
+    case VIEWTIME_USER_DEF_SYNCED : user_def_sync_act->setChecked(true);
+                                    break;
+    default                       : break;
   }
   xml_go_up(xml_hdl);
 
@@ -1393,7 +1406,35 @@ int UI_Mainwindow::session_format_error(const char *file_name, int line_number, 
 {
   char str[2048]="";
 
-  snprintf(str, 2048, "There seems to be an error in this session file.\nFile: %s\nline: %i", file_name, line_number);
+  if(rc_file_open_err == 103)
+  {
+    strlcpy(str, "Attempt to open too many files", 2048);
+  }
+  else if(rc_file_open_err == 104)
+    {
+      strlcpy(str, "File has an unknown extension", 2048);
+    }
+    else if(rc_file_open_err == 105)
+      {
+        strlcpy(str, "Cannot open file for reading", 2048);
+      }
+      else if(rc_file_open_err == 106)
+        {
+          strlcpy(str, "File is not EDF or BDF compliant", 2048);
+        }
+        else if(rc_file_open_err == 107)
+          {
+            strlcpy(str, "File is discontiguous (EDF+D or BDF+D)", 2048);
+          }
+          else if(rc_file_open_err == 108)
+            {
+              strlcpy(str, "File has a formatting error", 2048);
+            }
+            else
+            {
+              snprintf(str, 2048, "There seems to be an error in this session file.\nFile: %s\nline: %i", file_name, line_number);
+            }
+
   QMessageBox messagewindow(QMessageBox::Critical, "Error", str);
   messagewindow.exec();
   free(sigcomp);
