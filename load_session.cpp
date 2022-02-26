@@ -28,9 +28,9 @@
 #include "mainwindow.h"
 
 
-int UI_Mainwindow::read_session_file(const char *path_pro)
+int UI_Mainwindow::read_session_file(const char *path_session)
 {
-  int i, k, n=0, p, r,
+  int i, n=0, r,
       tmp,
       skip,
       found,
@@ -46,14 +46,14 @@ int UI_Mainwindow::read_session_file(const char *path_pro)
       type=0,
       model=0,
       size=0,
-      amp_cat[3],
       f_ruler_cnt=0,
       holdoff=100,
       plif_powerlinefrequency,
       not_compatibel,
       sf,
       n_taps,
-      sense;
+      sense,
+      use_relative_path=0;
 
   char result[XML_STRBUFLEN],
        scratchpad[2048]="",
@@ -75,14 +75,12 @@ int UI_Mainwindow::read_session_file(const char *path_pro)
 
   struct signalcompblock *newsignalcomp=NULL;
 
-//  struct edfhdrblock *edf_hdr=NULL;
+  if(path_session == NULL) return -999;
 
-  if(path_pro == NULL) return -999;
-
-  xml_hdl = xml_get_handle(path_pro);
+  xml_hdl = xml_get_handle(path_session);
   if(xml_hdl==NULL)
   {
-    snprintf(scratchpad, 2048, "Can not open session file:\n%s", path_pro);
+    snprintf(scratchpad, 2048, "Can not open session file:\n%s", path_session);
     QMessageBox messagewindow(QMessageBox::Critical, "Error", QString::fromLocal8Bit(scratchpad));
     messagewindow.exec();
     return -1;
@@ -101,10 +99,10 @@ int UI_Mainwindow::read_session_file(const char *path_pro)
   {
     return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
   }
-  session_relative_paths = atoi(result);
-  if((session_relative_paths < 0) || (session_relative_paths > 1))
+  use_relative_path = atoi(result);
+  if((use_relative_path < 0) || (use_relative_path > 1))
   {
-    session_relative_paths = 0;
+    use_relative_path = 0;
   }
   xml_go_up(xml_hdl);
 
@@ -130,7 +128,17 @@ int UI_Mainwindow::read_session_file(const char *path_pro)
 
     rc_file_open_requested = 1;
 
-    strlcpy(path, result, MAX_PATH_LENGTH);
+    if(use_relative_path)
+    {
+      get_directory_from_path(path, path_session, MAX_PATH_LENGTH);
+      strlcat(path, "/", MAX_PATH_LENGTH);
+      strlcat(path, result, MAX_PATH_LENGTH);
+//      printf("path: ->%s<-\npath_session: ->%s<-\nfile: ->%s<-\n", path, path_session, result);  //FIXME
+    }
+    else
+    {
+      strlcpy(path, result, MAX_PATH_LENGTH);
+    }
 
     open_new_file();
 
@@ -138,10 +146,25 @@ int UI_Mainwindow::read_session_file(const char *path_pro)
 
     if(rc_file_open_err)
     {
-      printf("read_session_file(): error: %i\n", rc_file_open_err);
+      printf("read_session_file(): error: %i\n", rc_file_open_err);  //FIXME
 
       return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
     }
+
+    xml_go_up(xml_hdl);
+  }
+
+  for(i=0; i<files_open; i++)
+  {
+    if(xml_goto_nth_element_inside(xml_hdl, "viewtime", i))
+    {
+      break;
+    }
+    if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+    {
+      return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+    }
+    edfheaderlist[i]->viewtime = atoll(result);
 
     xml_go_up(xml_hdl);
   }
@@ -241,7 +264,20 @@ int UI_Mainwindow::read_session_file(const char *path_pro)
     }
     for(n=0; n<files_open; n++)
     {
-      if(!strcmp(edfheaderlist[n]->filename, result))
+      if(use_relative_path)
+      {
+        get_directory_from_path(path, path_session, MAX_PATH_LENGTH);
+        strlcat(path, "/", MAX_PATH_LENGTH);
+        strlcat(path, result, MAX_PATH_LENGTH);
+      }
+      else
+      {
+        strlcpy(path, result, MAX_PATH_LENGTH);
+      }
+
+//      printf("path: ->%s<-\npath_session: ->%s<-\nfile: ->%s<-\n", path, path_session, result);  //FIXME
+
+      if(!strcmp(edfheaderlist[n]->filename, path))
       {
         break;
       }

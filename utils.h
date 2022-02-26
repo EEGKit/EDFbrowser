@@ -66,6 +66,7 @@ int convert_non_ascii_to_hex(char *,  const char *, int);
 void remove_extension_from_filename(char *);  /* removes extension including the dot */
 int get_filename_from_path(char *dest, const char *src, int size);  /* size is size of destination, returns length of filename */
 int get_directory_from_path(char *dest, const char *src, int size);  /* size is size of destination, returns length of directory */
+void get_relative_path_from_absolut_paths(char *dest, const char *src1, const char *src2, int size);  /* size is size of destination, dest points to src2 relative to src1 */
 void sanitize_ascii(char *);  /* replaces all non-ascii characters with a dot */
 /* replaces all control chars (decimal values < 32 and decimal value == 127 (DEL)) */
 /* works also with UTF-8 and Latin-1 */

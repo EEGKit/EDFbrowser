@@ -34,8 +34,76 @@
 #define FLT_ROUNDS 1
 
 
+/*
+ * src1: /data/amos/dir1/dir2/dir3/file1.txt
+ *
+ * src2: /data/amos/dir1/dir4/file2.txt
+ *
+ */
 
-  /* removes extension including the dot */
+/* size is size of destination */
+/* dest points to src2 relative to src1 */
+void get_relative_path_from_absolut_paths(char *dest, const char *src1, const char *src2, int size)
+{
+  int i, len1, len2, len_min, delim_shared=0, delim1=0, delim2=0;
+
+  if(size < 1) return;
+
+  dest[0] = 0;
+
+  len1 = strlen(src1);
+
+  len2 = strlen(src2);
+
+  len_min = (len1 > len2) ? len2 : len1;
+
+  for(i=0; i<len_min; i++)
+  {
+    if(src1[i] != src2[i])
+    {
+      break;
+    }
+    else
+    {
+      if(src1[i] == '/')
+      {
+        delim_shared++;
+      }
+    }
+  }
+
+  for(; i<len1; i++)
+  {
+    if(src1[i] == '/')
+    {
+      delim1++;
+    }
+  }
+
+  for(i=0; i<delim1; i++)
+  {
+    strlcat(dest, "../", size);
+  }
+
+  for(i=0; i<len2; i++)
+  {
+    if(src2[i] == '/')
+    {
+      delim2++;
+
+      if(delim2 == delim_shared)
+      {
+        i++;
+        break;
+      }
+    }
+  }
+
+  strlcat(dest, src2 + i, size);
+}
+
+
+/* removes extension including the dot */
 void remove_extension_from_filename(char *str)
 {
   int i, len;
@@ -64,7 +132,7 @@ void remove_extension_from_filename(char *str)
 }
 
 
-  /* sz is size of destination, returns length of filename */
+/* sz is size of destination, returns length of filename */
 int get_filename_from_path(char *dest, const char *src, int sz)
 {
   int i, len;
@@ -115,8 +183,8 @@ int get_filename_from_path(char *dest, const char *src, int sz)
 }
 
 
-  /* sz is size of destination, returns length of directory */
-  /* last character of destination is not a slash! */
+/* sz is size of destination, returns length of directory */
+/* last character of destination is not a slash! */
 int get_directory_from_path(char *dest, const char *src, int sz)
 {
   int i, len;

@@ -1133,6 +1133,8 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   hlayout_tmp->addStretch(1000);
   flayout4_1->addRow("Use relative paths when saving a session", hlayout_tmp);
   QObject::connect(checkbox4_14, SIGNAL(stateChanged(int)), this, SLOT(checkbox4_14Clicked(int)));
+  flayout4_1->labelForField(hlayout_tmp)->setToolTip("If checked, use relative paths for the EDF files instead of absolute paths when storing the session");
+  checkbox4_14->setToolTip("If checked, use relative paths for the EDF files instead of absolute paths when storing the session");
 
   checkbox4_11 = new QCheckBox;
   checkbox4_11->setTristate(false);

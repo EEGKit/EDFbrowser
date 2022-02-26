@@ -389,31 +389,32 @@ void UI_Mainwindow::save_session()
     return;
   }
 
-  char pro_path[MAX_PATH_LENGTH]="";
+  char session_path[MAX_PATH_LENGTH]="",
+       path_relative[MAX_PATH_LENGTH]="";
 
   FILE *pro_file=NULL;
 
-  strlcpy(pro_path, recent_montagedir, MAX_PATH_LENGTH);
-  strlcat(pro_path, "/my_session.esf", MAX_PATH_LENGTH);
+  strlcpy(session_path, recent_montagedir, MAX_PATH_LENGTH);
+  strlcat(session_path, "/my_session.esf", MAX_PATH_LENGTH);
 
-  strlcpy(pro_path, QFileDialog::getSaveFileName(0, "Save session", QString::fromLocal8Bit(pro_path), "Session files (*.esf *.ESF)").toLocal8Bit().data(), MAX_PATH_LENGTH);
+  strlcpy(session_path, QFileDialog::getSaveFileName(0, "Save session", QString::fromLocal8Bit(session_path), "Session files (*.esf *.ESF)").toLocal8Bit().data(), MAX_PATH_LENGTH);
 
-  if(!strcmp(pro_path, ""))
+  if(!strcmp(session_path, ""))
   {
     return;
   }
 
-  if(strlen(pro_path) > 4)
+  if(strlen(session_path) > 4)
   {
-    if(strcmp(pro_path + strlen(pro_path) - 4, ".esf"))
+    if(strcmp(session_path + strlen(session_path) - 4, ".esf"))
     {
-      strlcat(pro_path, ".esf", MAX_PATH_LENGTH);
+      strlcat(session_path, ".esf", MAX_PATH_LENGTH);
     }
   }
 
-  get_directory_from_path(recent_montagedir, pro_path, MAX_PATH_LENGTH);
+  get_directory_from_path(recent_montagedir, session_path, MAX_PATH_LENGTH);
 
-  pro_file = fopeno(pro_path, "wb");
+  pro_file = fopeno(session_path, "wb");
   if(pro_file==NULL)
   {
     QMessageBox::critical(this, "Error", "Can not create session file for writing.");
@@ -428,7 +429,16 @@ void UI_Mainwindow::save_session()
   for(i=0; i<files_open; i++)
   {
     fprintf(pro_file, "    <file>");
-    xml_fwrite_encode_entity(pro_file, edfheaderlist[i]->filename);
+    if(session_relative_paths)
+    {
+      get_relative_path_from_absolut_paths(path_relative, session_path, edfheaderlist[i]->filename, MAX_PATH_LENGTH);
+      xml_fwrite_encode_entity(pro_file, path_relative);
+//      printf("src1: ->%s<-\nsrc2: ->%s<-\ndest: ->%s<-\n", session_path, edfheaderlist[i]->filename, path_relative);  //FIXME
+    }
+    else
+    {
+      xml_fwrite_encode_entity(pro_file, edfheaderlist[i]->filename);
+    }
     fprintf(pro_file, "</file>\n");
   }
   for(i=0; i<files_open; i++)
@@ -457,7 +467,16 @@ void UI_Mainwindow::save_session()
 
     fprintf(pro_file, "    <file>");
 
-    xml_fwrite_encode_entity(pro_file, signalcomp[i]->edfhdr->filename);
+    if(session_relative_paths)
+    {
+      get_relative_path_from_absolut_paths(path_relative, session_path, signalcomp[i]->edfhdr->filename, MAX_PATH_LENGTH);
+      xml_fwrite_encode_entity(pro_file, path_relative);
+//      printf("src1: ->%s<-\nsrc2: ->%s<-\ndest: ->%s<-\n", session_path, signalcomp[i]->edfhdr->filename, path_relative);  //FIXME
+    }
+    else
+    {
+      xml_fwrite_encode_entity(pro_file, signalcomp[i]->edfhdr->filename);
+    }
 
     fprintf(pro_file, "</file>\n");
 
@@ -639,7 +658,7 @@ void UI_Mainwindow::load_session()
 {
   int button_nr=0, err;
 
-  char pro_path[MAX_PATH_LENGTH]="";
+  char session_path[MAX_PATH_LENGTH]="";
 
   if(annotations_edited)
   {
@@ -650,6 +669,15 @@ void UI_Mainwindow::load_session()
     messagewindow.setDefaultButton(QMessageBox::Cancel);
     button_nr = messagewindow.exec();
   }
+  else if(files_open)
+    {
+      QMessageBox messagewindow;
+      messagewindow.setText("This will close all files, continue?");
+      messagewindow.setIcon(QMessageBox::Question);
+      messagewindow.setStandardButtons(QMessageBox::Cancel | QMessageBox::Close);
+      messagewindow.setDefaultButton(QMessageBox::Cancel);
+      button_nr = messagewindow.exec();
+    }
 
   if(button_nr == QMessageBox::Cancel)
   {
@@ -660,16 +688,16 @@ void UI_Mainwindow::load_session()
 
   close_all_files();
 
-  strlcpy(pro_path, QFileDialog::getOpenFileName(0, "Load session", QString::fromLocal8Bit(recent_montagedir), "Session files (*.esf *.ESF)").toLocal8Bit().data(), MAX_PATH_LENGTH);
+  strlcpy(session_path, QFileDialog::getOpenFileName(0, "Load session", QString::fromLocal8Bit(recent_montagedir), "Session files (*.esf *.ESF)").toLocal8Bit().data(), MAX_PATH_LENGTH);
 
-  if(!strcmp(pro_path, ""))
+  if(!strcmp(session_path, ""))
   {
     return;
   }
 
-  get_directory_from_path(recent_montagedir, pro_path, MAX_PATH_LENGTH);
+  get_directory_from_path(recent_montagedir, session_path, MAX_PATH_LENGTH);
 
-  err = read_session_file(pro_path);
+  err = read_session_file(session_path);
 
   if(err)
   {

@@ -1,4 +1,10 @@
 
+ version 1.92      to be defined
+ --------------
+
+ - Added the option to save and load a session.
+
+
  version 1.91      February 4, 2022
  --------------
 
