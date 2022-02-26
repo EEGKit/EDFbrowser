@@ -914,6 +914,19 @@ void UI_Mainwindow::set_timesync(int mode)
           viewtime_sync = VIEWTIME_USER_DEF_SYNCED;
         }
 
+  switch(viewtime_sync)
+  {
+    case VIEWTIME_SYNCED_OFFSET :   offset_timesync_act->setChecked(true);
+                                    break;
+    case VIEWTIME_SYNCED_ABSOLUT :  absolut_timesync_act->setChecked(true);
+                                    break;
+    case VIEWTIME_UNSYNCED :        no_timesync_act->setChecked(true);
+                                    break;
+    case VIEWTIME_USER_DEF_SYNCED : user_def_sync_act->setChecked(true);
+                                    break;
+    default                       : break;
+  }
+
   setup_viewbuf();
 }
 
