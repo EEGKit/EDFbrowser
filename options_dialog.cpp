@@ -1117,6 +1117,23 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   flayout4_1->labelForField(hlayout_tmp)->setToolTip("Use all available CPU cores to render the signal waveforms on the screen");
   checkbox4_4->setToolTip("Use all available CPU cores to render the signal waveforms on the screen");
 
+  checkbox4_14 = new QCheckBox;
+  checkbox4_14->setTristate(false);
+  if(mainwindow->session_relative_paths)
+  {
+    checkbox4_14->setCheckState(Qt::Checked);
+  }
+  else
+  {
+    checkbox4_14->setCheckState(Qt::Unchecked);
+  }
+  hlayout_tmp = new QHBoxLayout;
+  hlayout_tmp->setAlignment(Qt::AlignCenter);
+  hlayout_tmp->addWidget(checkbox4_14);
+  hlayout_tmp->addStretch(1000);
+  flayout4_1->addRow("Use relative paths when saving a session", hlayout_tmp);
+  QObject::connect(checkbox4_14, SIGNAL(stateChanged(int)), this, SLOT(checkbox4_14Clicked(int)));
+
   checkbox4_11 = new QCheckBox;
   checkbox4_11->setTristate(false);
   if(mainwindow->edf_debug)
@@ -2008,6 +2025,19 @@ void UI_OptionsDialog::checkbox4_4Clicked(int state)
   else
   {
     mainwindow->use_threads = 0;
+  }
+}
+
+
+void UI_OptionsDialog::checkbox4_14Clicked(int state)
+{
+  if(state==Qt::Checked)
+  {
+    mainwindow->session_relative_paths = 1;
+  }
+  else
+  {
+    mainwindow->session_relative_paths = 0;
   }
 }
 

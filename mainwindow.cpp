@@ -379,13 +379,13 @@ void UI_Mainwindow::save_file()
 }
 
 
-void UI_Mainwindow::save_project()
+void UI_Mainwindow::save_session()
 {
   int i, j, k, use_index=0;
 
   if(!files_open)
   {
-    save_project_act->setEnabled(false);
+    save_session_act->setEnabled(false);
     return;
   }
 
@@ -394,9 +394,9 @@ void UI_Mainwindow::save_project()
   FILE *pro_file=NULL;
 
   strlcpy(pro_path, recent_montagedir, MAX_PATH_LENGTH);
-  strlcat(pro_path, "/my_project.epf", MAX_PATH_LENGTH);
+  strlcat(pro_path, "/my_session.esf", MAX_PATH_LENGTH);
 
-  strlcpy(pro_path, QFileDialog::getSaveFileName(0, "Save project", QString::fromLocal8Bit(pro_path), "Project files (*.epf *.EPF)").toLocal8Bit().data(), MAX_PATH_LENGTH);
+  strlcpy(pro_path, QFileDialog::getSaveFileName(0, "Save session", QString::fromLocal8Bit(pro_path), "Session files (*.esf *.ESF)").toLocal8Bit().data(), MAX_PATH_LENGTH);
 
   if(!strcmp(pro_path, ""))
   {
@@ -405,9 +405,9 @@ void UI_Mainwindow::save_project()
 
   if(strlen(pro_path) > 4)
   {
-    if(strcmp(pro_path + strlen(pro_path) - 4, ".epf"))
+    if(strcmp(pro_path + strlen(pro_path) - 4, ".esf"))
     {
-      strlcat(pro_path, ".epf", MAX_PATH_LENGTH);
+      strlcat(pro_path, ".esf", MAX_PATH_LENGTH);
     }
   }
 
@@ -416,11 +416,13 @@ void UI_Mainwindow::save_project()
   pro_file = fopeno(pro_path, "wb");
   if(pro_file==NULL)
   {
-    QMessageBox::critical(this, "Error", "Can not create project file for writing.");
+    QMessageBox::critical(this, "Error", "Can not create session file for writing.");
     return;
   }
 
-  fprintf(pro_file, "<?xml version=\"1.0\"?>\n<" PROGRAM_NAME "_project>\n");
+  fprintf(pro_file, "<?xml version=\"1.0\"?>\n<" PROGRAM_NAME "_session>\n");
+
+  fprintf(pro_file, "  <relative_path>%i</relative_path>\n", session_relative_paths);
 
   fprintf(pro_file, "  <edf_files>\n");
   for(i=0; i<files_open; i++)
@@ -627,13 +629,13 @@ void UI_Mainwindow::save_project()
     fprintf(pro_file, "  </signalcomposition>\n");
   }
 
-  fprintf(pro_file, "</" PROGRAM_NAME "_project>\n");
+  fprintf(pro_file, "</" PROGRAM_NAME "_session>\n");
 
   fclose(pro_file);
 }
 
 
-void UI_Mainwindow::load_project()
+void UI_Mainwindow::load_session()
 {
   int button_nr=0, err;
 
@@ -658,7 +660,7 @@ void UI_Mainwindow::load_project()
 
   close_all_files();
 
-  strlcpy(pro_path, QFileDialog::getOpenFileName(0, "Load project", QString::fromLocal8Bit(recent_montagedir), "Project files (*.epf *.EPF)").toLocal8Bit().data(), MAX_PATH_LENGTH);
+  strlcpy(pro_path, QFileDialog::getOpenFileName(0, "Load session", QString::fromLocal8Bit(recent_montagedir), "Session files (*.esf *.ESF)").toLocal8Bit().data(), MAX_PATH_LENGTH);
 
   if(!strcmp(pro_path, ""))
   {
@@ -667,11 +669,11 @@ void UI_Mainwindow::load_project()
 
   get_directory_from_path(recent_montagedir, pro_path, MAX_PATH_LENGTH);
 
-  err = read_project_file(pro_path);
+  err = read_session_file(pro_path);
 
   if(err)
   {
-    printf("load_project() returned error: %i\n", err);
+    printf("load_session() returned error: %i\n", err);
   }
 }
 
@@ -2198,7 +2200,7 @@ void UI_Mainwindow::open_new_file()
 
   if(files_open)
   {
-    save_project_act->setEnabled(true);
+    save_session_act->setEnabled(true);
   }
 
   close_filemenu->addAction(QString::fromLocal8Bit(path));
@@ -2878,7 +2880,7 @@ void UI_Mainwindow::close_file_action_func(QAction *action)
 
   if(!files_open)
   {
-    save_project_act->setEnabled(false);
+    save_session_act->setEnabled(false);
   }
 }
 
@@ -2923,7 +2925,7 @@ void UI_Mainwindow::close_all_files()
     return;
   }
 
-  save_project_act->setEnabled(false);
+  save_session_act->setEnabled(false);
 
   annotations_edited = 0;
 

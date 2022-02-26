@@ -862,6 +862,23 @@ void UI_Mainwindow::read_general_settings()
     xml_go_up(xml_hdl);
   }
 
+  if(!(xml_goto_nth_element_inside(xml_hdl, "session_relative_paths", 0)))
+  {
+    if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+    {
+      xml_close(xml_hdl);
+      return;
+    }
+
+    session_relative_paths = atoi(result);
+    if((session_relative_paths < 0) || (session_relative_paths > 1))
+    {
+      session_relative_paths = 0;
+    }
+
+    xml_go_up(xml_hdl);
+  }
+
   if(!(xml_goto_nth_element_inside(xml_hdl, "edf_debug", 0)))
   {
     if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
@@ -2882,6 +2899,9 @@ void UI_Mainwindow::write_settings()
 
     fprintf(cfgfile, "    <use_threads>%i</use_threads>\n",
                     use_threads);
+
+    fprintf(cfgfile, "    <session_relative_paths>%i</session_relative_paths>\n",
+                    session_relative_paths);
 
     fprintf(cfgfile, "    <edf_debug>%i</edf_debug>\n",
                     edf_debug);

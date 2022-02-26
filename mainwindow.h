@@ -265,7 +265,8 @@ public:
       rc_err_queue[RC_ERR_QUEUE_SZ],
       rc_system_locked,
       window_width_sav_rest,
-      window_height_sav_rest;
+      window_height_sav_rest,
+      session_relative_paths;
 
 volatile int rc_cmd_in_progress;
 
@@ -399,8 +400,8 @@ long long annot_editor_user_button_epoch_len,
                *monofont;
 
   QAction      *save_act,
-               *save_project_act,
-               *load_project_act,
+               *save_session_act,
+               *load_session_act,
                *load_predefined_mtg_act[MAXPREDEFINEDMONTAGES],
                *Escape_act,
                *video_act;
@@ -568,8 +569,8 @@ private:
   void read_recent_file_settings();
   void read_general_settings();
   void write_settings();
-  int read_project_file(const char *);
-  int project_format_error(const char *, int, struct signalcompblock *, struct xml_handle *);
+  int read_session_file(const char *);
+  int session_format_error(const char *, int, struct signalcompblock *, struct xml_handle *);
   long long check_edf_file_datarecords(struct edfhdrblock *);
   void mpr_write(const char *);
   int mpr_read(char *, int);
@@ -676,8 +677,8 @@ private slots:
   void bdf2edf_converter();
   void annotation_editor();
   void save_file();
-  void save_project();
-  void load_project();
+  void save_session();
+  void load_session();
   void unisens2edf_converter();
   void BI98002edf_converter();
   void export_annotations();

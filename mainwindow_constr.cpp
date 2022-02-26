@@ -333,6 +333,8 @@ UI_Mainwindow::UI_Mainwindow()
 
   rc_system_locked = 0;
 
+  session_relative_paths = 0;
+
   cdsa_segmentlen = 30;
   cdsa_blocklen = 2;
   cdsa_overlap = 5;
@@ -524,12 +526,12 @@ UI_Mainwindow::UI_Mainwindow()
   save_act->setEnabled(false);
   connect(save_act, SIGNAL(triggered()), this, SLOT(save_file()));
 
-  save_project_act = new QAction("Save project", this);
-  save_project_act->setEnabled(false);
-  connect(save_project_act, SIGNAL(triggered()), this, SLOT(save_project()));
+  save_session_act = new QAction("Save session", this);
+  save_session_act->setEnabled(false);
+  connect(save_session_act, SIGNAL(triggered()), this, SLOT(save_session()));
 
-  load_project_act = new QAction("Load project", this);
-  connect(load_project_act, SIGNAL(triggered()), this, SLOT(load_project()));
+  load_session_act = new QAction("Load session", this);
+  connect(load_session_act, SIGNAL(triggered()), this, SLOT(load_session()));
 
   video_act = new QAction("Start video", this);
   connect(video_act, SIGNAL(triggered()), this, SLOT(start_stop_video()));
@@ -548,9 +550,9 @@ UI_Mainwindow::UI_Mainwindow()
   filemenu->addMenu(recent_filesmenu);
   filemenu->addAction(save_act);
   filemenu->addSeparator();
-//   filemenu->addAction(load_project_act);
-//   filemenu->addAction(save_project_act);
-//   filemenu->addSeparator();
+  filemenu->addAction(load_session_act);
+  filemenu->addAction(save_session_act);
+  filemenu->addSeparator();
   filemenu->addMenu(printmenu);
   filemenu->addAction("Info",         this, SLOT(show_file_info()));
   filemenu->addMenu(close_filemenu);
