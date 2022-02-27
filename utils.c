@@ -58,7 +58,7 @@ void get_relative_path_from_absolut_paths(char *dest, const char *src1, const ch
     }
     else
     {
-      if(src1[i] == '/')
+      if((src1[i] == '/') || (src1[i] == '\\'))
       {
         delim_shared++;
       }
@@ -67,7 +67,7 @@ void get_relative_path_from_absolut_paths(char *dest, const char *src1, const ch
 
   for(; i<len1; i++)
   {
-    if(src1[i] == '/')
+    if((src1[i] == '/') || (src1[i] == '\\'))
     {
       delim1++;
     }
@@ -80,7 +80,7 @@ void get_relative_path_from_absolut_paths(char *dest, const char *src1, const ch
 
   for(i=0; i<len2; i++)
   {
-    if(src2[i] == '/')
+    if((src2[i] == '/') || (src2[i] == '\\'))
     {
       delim2++;
 
@@ -112,7 +112,7 @@ void sanitize_path(char *path)
     {
       dots++;
     }
-    else if(path[i] == '/')
+    else if((path[i] == '/') || (path[i] == '\\'))
       {
         if(letter)
         {
