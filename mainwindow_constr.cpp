@@ -333,6 +333,10 @@ UI_Mainwindow::UI_Mainwindow()
 
   rc_system_locked = 0;
 
+  session_start_video = 0;
+
+  session_video_seek = 0;
+
   session_relative_paths = 0;
 
   cdsa_segmentlen = 30;
@@ -565,6 +569,7 @@ UI_Mainwindow::UI_Mainwindow()
   sessionmenu->addAction(save_session_act);
   sessionmenu->addSeparator();
   sessionmenu->addAction(load_session_act);
+  sessionmenu->addSeparator();
   sessionmenu->addMenu(recent_session_menu);
   menubar->addMenu(sessionmenu);
 

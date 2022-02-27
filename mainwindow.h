@@ -266,6 +266,8 @@ public:
       rc_system_locked,
       window_width_sav_rest,
       window_height_sav_rest,
+      session_start_video,
+      session_video_seek,
       session_relative_paths;
 
 volatile int rc_cmd_in_progress;

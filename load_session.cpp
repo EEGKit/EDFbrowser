@@ -1396,9 +1396,55 @@ int UI_Mainwindow::read_session_file(const char *path_session)
 
   xml_goto_root(xml_hdl);
 
+  videopath[0] = 0;
+
+  session_video_seek = 0;
+
+  if(!xml_goto_nth_element_inside(xml_hdl, "video_file", 0))
+  {
+    if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+    {
+      return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+    }
+    if(use_relative_path)
+    {
+      get_directory_from_path(videopath, path_session, MAX_PATH_LENGTH);
+      strlcat(videopath, "/", MAX_PATH_LENGTH);
+      strlcat(videopath, result, MAX_PATH_LENGTH);
+      sanitize_path(videopath);
+//      printf("videopath: ->%s<-\npath_session: ->%s<-\nfile: ->%s<-\n", videopath, path_session, result);  //FIXME
+    }
+    else
+    {
+      strlcpy(videopath, result, MAX_PATH_LENGTH);
+    }
+    xml_go_up(xml_hdl);
+
+    if(!xml_goto_nth_element_inside(xml_hdl, "video_seek", 0))
+    {
+      if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+      {
+        return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+      }
+      session_video_seek = atoi(result);
+      if(session_video_seek < 0)
+      {
+        session_video_seek = 0;
+      }
+      xml_go_up(xml_hdl);
+    }
+  }
+
   xml_close(xml_hdl);
 
   setup_viewbuf();
+
+  if(strlen(videopath) > 5)
+  {
+    session_start_video = 1;
+
+    start_stop_video();
+  }
 
   return 0;
 }
