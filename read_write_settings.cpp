@@ -441,6 +441,18 @@ void UI_Mainwindow::read_recent_file_settings()
     xml_go_up(xml_hdl);
   }
 
+  if(!(xml_goto_nth_element_inside(xml_hdl, "recent_sessiondir", 0)))
+  {
+    if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+    {
+      xml_close(xml_hdl);
+      return;
+    }
+
+    strlcpy(recent_sessiondir, result, MAX_PATH_LENGTH);
+    xml_go_up(xml_hdl);
+  }
+
   if(!(xml_goto_nth_element_inside(xml_hdl, "recent_savedir", 0)))
   {
     if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
@@ -2946,6 +2958,12 @@ void UI_Mainwindow::write_settings()
     xml_fwrite_encode_entity(cfgfile, recent_montagedir);
 
     fprintf(cfgfile, "</recent_montagedir>\n");
+
+    fprintf(cfgfile, "    <recent_sessiondir>");
+
+    xml_fwrite_encode_entity(cfgfile, recent_sessiondir);
+
+    fprintf(cfgfile, "</recent_sessiondir>\n");
 
     fprintf(cfgfile, "    <recent_savedir>");
 

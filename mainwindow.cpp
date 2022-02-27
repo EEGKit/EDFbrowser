@@ -394,7 +394,7 @@ void UI_Mainwindow::save_session()
 
   FILE *pro_file=NULL;
 
-  strlcpy(session_path, recent_montagedir, MAX_PATH_LENGTH);
+  strlcpy(session_path, recent_sessiondir, MAX_PATH_LENGTH);
   strlcat(session_path, "/my_session.esf", MAX_PATH_LENGTH);
 
   strlcpy(session_path, QFileDialog::getSaveFileName(0, "Save session", QString::fromLocal8Bit(session_path), "Session files (*.esf *.ESF)").toLocal8Bit().data(), MAX_PATH_LENGTH);
@@ -412,7 +412,7 @@ void UI_Mainwindow::save_session()
     }
   }
 
-  get_directory_from_path(recent_montagedir, session_path, MAX_PATH_LENGTH);
+  get_directory_from_path(recent_sessiondir, session_path, MAX_PATH_LENGTH);
 
   pro_file = fopeno(session_path, "wb");
   if(pro_file==NULL)
@@ -688,14 +688,14 @@ void UI_Mainwindow::load_session()
 
   close_all_files();
 
-  strlcpy(session_path, QFileDialog::getOpenFileName(0, "Load session", QString::fromLocal8Bit(recent_montagedir), "Session files (*.esf *.ESF)").toLocal8Bit().data(), MAX_PATH_LENGTH);
+  strlcpy(session_path, QFileDialog::getOpenFileName(0, "Load session", QString::fromLocal8Bit(recent_sessiondir), "Session files (*.esf *.ESF)").toLocal8Bit().data(), MAX_PATH_LENGTH);
 
   if(!strcmp(session_path, ""))
   {
     return;
   }
 
-  get_directory_from_path(recent_montagedir, session_path, MAX_PATH_LENGTH);
+  get_directory_from_path(recent_sessiondir, session_path, MAX_PATH_LENGTH);
 
   err = read_session_file(session_path);
 

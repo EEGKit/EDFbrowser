@@ -288,6 +288,7 @@ long long annot_editor_user_button_epoch_len,
        recent_savedir[MAX_PATH_LENGTH],
        recent_opendir[MAX_PATH_LENGTH],
        recent_video_opendir[MAX_PATH_LENGTH],
+       recent_sessiondir[MAX_PATH_LENGTH],
        predefined_mtg_path[MAXPREDEFINEDMONTAGES][MAX_PATH_LENGTH],
        recent_file_mtg_path[MAX_RECENTFILES][MAX_PATH_LENGTH],
        recent_colordir[MAX_PATH_LENGTH],
@@ -426,6 +427,7 @@ private:
   QMenuBar     *menubar;
 
   QMenu        *filemenu,
+               *sessionmenu,
                *signalmenu,
                *displaymenu,
                *amplitudemenu,
