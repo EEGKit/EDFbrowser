@@ -706,6 +706,10 @@ void UI_Mainwindow::load_session()
 
   annotations_edited = 0;
 
+  session_start_video = 0;
+
+  session_video_seek = 0;
+
   close_all_files();
 
   strlcpy(session_path, QFileDialog::getOpenFileName(0, "Load session", QString::fromLocal8Bit(recent_sessiondir), "Session files (*.esf *.ESF)").toLocal8Bit().data(), MAX_PATH_LENGTH);
@@ -2620,6 +2624,8 @@ void UI_Mainwindow::remove_all_signals()
 
   stop_playback();
 
+  session_start_video = 0;
+
   for(i=0; i<MAXSPECTRUMDOCKS; i++)
   {
     spectrumdock[i]->clear();
@@ -3031,6 +3037,8 @@ void UI_Mainwindow::close_all_files()
   save_session_act->setEnabled(false);
 
   annotations_edited = 0;
+
+  session_start_video = 0;
 
   remove_all_signals();
 
