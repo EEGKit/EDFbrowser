@@ -291,6 +291,7 @@ long long annot_editor_user_button_epoch_len,
        recent_sessiondir[MAX_PATH_LENGTH],
        predefined_mtg_path[MAXPREDEFINEDMONTAGES][MAX_PATH_LENGTH],
        recent_file_mtg_path[MAX_RECENTFILES][MAX_PATH_LENGTH],
+       recent_session_path[MAX_RECENTFILES][MAX_PATH_LENGTH],
        recent_colordir[MAX_PATH_LENGTH],
        cfg_app_version[17],
        drop_path[MAX_PATH_LENGTH],
@@ -440,6 +441,7 @@ private:
                *timemenu,
                *windowmenu,
                *recent_filesmenu,
+               *recent_session_menu,
                *close_filemenu,
                *montagemenu,
                *patternmenu,
@@ -650,6 +652,7 @@ private slots:
   void set_timesync(QAction *);
   void set_timesync_reference(QAction *);
   void recent_file_action_func(QAction *);
+  void recent_session_action_func(QAction *);
   void sync_by_crosshairs();
   void save_montage();
   void load_montage();

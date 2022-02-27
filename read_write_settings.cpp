@@ -564,6 +564,45 @@ void UI_Mainwindow::read_recent_file_settings()
     xml_go_up(xml_hdl);
   }
 
+  if(!(xml_goto_nth_element_inside(xml_hdl, "recent_session_file", 0)))
+  {
+    if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+    {
+      xml_close(xml_hdl);
+      return;
+    }
+    if(result[0] != 0)
+    {
+      strlcpy(&recent_session_path[0][0], result, MAX_PATH_LENGTH);
+      act = new QAction(QString::fromLocal8Bit(&recent_session_path[0][0]), recent_session_menu);
+      act->setData(QVariant(0));
+      recent_session_menu->addAction(act);
+
+      for(i=1; i<MAX_RECENTFILES; i++)
+      {
+        if(xml_goto_next_element_with_same_name(xml_hdl))
+        {
+          break;
+        }
+        if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+        {
+          xml_close(xml_hdl);
+          return;
+        }
+        if(result[0] == 0)
+        {
+          break;
+        }
+        strlcpy(&recent_session_path[i][0], result, MAX_PATH_LENGTH);
+        act = new QAction(QString::fromLocal8Bit(&recent_session_path[i][0]), recent_session_menu);
+        act->setData(QVariant(i));
+        recent_session_menu->addAction(act);
+      }
+    }
+
+    xml_go_up(xml_hdl);
+  }
+
   if(!(xml_goto_nth_element_inside(xml_hdl, "predefined_mtg_path", 0)))
   {
     if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
@@ -2951,6 +2990,15 @@ void UI_Mainwindow::write_settings()
       xml_fwrite_encode_entity(cfgfile, &recent_file_mtg_path[i][0]);
 
       fprintf(cfgfile, "</recent_file_mtg>\n");
+    }
+
+    for(i=0; i<MAX_RECENTFILES; i++)
+    {
+      fprintf(cfgfile, "    <recent_session_file>");
+
+      xml_fwrite_encode_entity(cfgfile, &recent_session_path[i][0]);
+
+      fprintf(cfgfile, "</recent_session_file>\n");
     }
 
     fprintf(cfgfile, "    <recent_montagedir>");

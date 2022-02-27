@@ -133,6 +133,7 @@ int UI_Mainwindow::read_session_file(const char *path_session)
       get_directory_from_path(path, path_session, MAX_PATH_LENGTH);
       strlcat(path, "/", MAX_PATH_LENGTH);
       strlcat(path, result, MAX_PATH_LENGTH);
+      sanitize_path(path);
 //      printf("path: ->%s<-\npath_session: ->%s<-\nfile: ->%s<-\n", path, path_session, result);  //FIXME
     }
     else
@@ -282,6 +283,7 @@ int UI_Mainwindow::read_session_file(const char *path_session)
         get_directory_from_path(path, path_session, MAX_PATH_LENGTH);
         strlcat(path, "/", MAX_PATH_LENGTH);
         strlcat(path, result, MAX_PATH_LENGTH);
+        sanitize_path(path);
       }
       else
       {

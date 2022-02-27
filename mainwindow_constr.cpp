@@ -549,6 +549,10 @@ UI_Mainwindow::UI_Mainwindow()
   filemenu->addAction("Exit",         this, SLOT(exit_program()), QKeySequence::Quit);
   menubar->addMenu(filemenu);
 
+  recent_session_menu = new QMenu(this);
+  recent_session_menu->setTitle("Recent sessions");
+  connect(recent_session_menu, SIGNAL(triggered(QAction *)), this, SLOT(recent_session_action_func(QAction *)));
+
   save_session_act = new QAction("Save", this);
   save_session_act->setEnabled(false);
   connect(save_session_act, SIGNAL(triggered()), this, SLOT(save_session()));
@@ -558,8 +562,10 @@ UI_Mainwindow::UI_Mainwindow()
 
   sessionmenu = new QMenu(this);
   sessionmenu->setTitle("Session");
-  sessionmenu->addAction(load_session_act);
   sessionmenu->addAction(save_session_act);
+  sessionmenu->addSeparator();
+  sessionmenu->addAction(load_session_act);
+  sessionmenu->addMenu(recent_session_menu);
   menubar->addMenu(sessionmenu);
 
   signalmenu = new QMenu(this);
@@ -1206,6 +1212,7 @@ UI_Mainwindow::UI_Mainwindow()
   {
     recent_file_path[i][0] = 0;
     recent_file_mtg_path[i][0] = 0;
+    recent_session_path[i][0] = 0;
   }
 
   for(i=0; i<MAXPREDEFINEDMONTAGES; i++)

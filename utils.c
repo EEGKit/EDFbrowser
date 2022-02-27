@@ -34,13 +34,6 @@
 #define FLT_ROUNDS 1
 
 
-/*
- * src1: /data/amos/dir1/dir2/dir3/file1.txt
- *
- * src2: /data/amos/dir1/dir4/file2.txt
- *
- */
-
 /* size is size of destination */
 /* dest points to src2 relative to src1 */
 void get_relative_path_from_absolut_paths(char *dest, const char *src1, const char *src2, int size)
@@ -100,6 +93,67 @@ void get_relative_path_from_absolut_paths(char *dest, const char *src1, const ch
   }
 
   strlcat(dest, src2 + i, size);
+}
+
+
+/* removes double dot entries */
+void sanitize_path(char *path)
+{
+  int i, j, len, cut=0, delim_pos1=-1, delim_pos2=-1, delim_pos3=-1, dots=0, letter=0, dir=0;
+
+  if(path == NULL)  return;
+
+  len = strlen(path);
+  if(len < 2)  return;
+
+  for(i=0; i<len; i++)
+  {
+    if(path[i] == '.')
+    {
+      dots++;
+    }
+    else if(path[i] == '/')
+      {
+        if(letter)
+        {
+          letter = 0;
+
+          dir = 1;
+        }
+
+        delim_pos1 = delim_pos2;
+
+        delim_pos2 = delim_pos3;
+
+        delim_pos3 = i;
+
+        if((dots == 2) && (delim_pos1 >= 0) && dir)
+        {
+          cut = delim_pos3 - delim_pos1;
+
+          for(j=delim_pos1; j<(len-cut+1); j++)
+          {
+            path[j] = path[j+cut];
+          }
+
+          len = strlen(path);
+
+          i = 0;
+
+          dots = 0;
+
+          continue;
+        }
+
+        dots = 0;
+      }
+      else
+      {
+        dots = 3;
+
+        letter++;
+      }
+  }
 }
 
 
