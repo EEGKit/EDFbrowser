@@ -142,6 +142,8 @@ void sanitize_path(char *path)
 
           dots = 0;
 
+          dir = 0;
+
           continue;
         }
 
