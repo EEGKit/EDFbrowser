@@ -50,6 +50,8 @@ void get_relative_path_from_absolut_paths(char *dest, const char *src1, const ch
 
   len_min = (len1 > len2) ? len2 : len1;
 
+  if(!len_min)  return;
+
   for(i=0; i<len_min; i++)
   {
     if(src1[i] != src2[i])
