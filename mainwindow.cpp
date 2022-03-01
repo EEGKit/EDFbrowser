@@ -666,6 +666,53 @@ void UI_Mainwindow::save_session()
     fprintf(pro_file, "  <video_seek>%i</video_seek>\n", video_player->fpos);
   }
 
+  struct spectrumdocksettings settings;
+
+  for(i=0; i<MAXSPECTRUMDOCKS; i++)
+  {
+    if(spectrumdock[i]->dock->isVisible())
+    {
+      spectrumdock[i]->getsettings(&settings);
+
+      if(settings.signalnr >= 0)
+      {
+        fprintf(pro_file, "  <powerspectrumdock>\n");
+
+        fprintf(pro_file, "    <signalnum>%i</signalnum>\n", settings.signalnr);
+
+        fprintf(pro_file, "    <amp>%i</amp>\n", settings.amp);
+
+        fprintf(pro_file, "    <log_min_sl>%i</log_min_sl>\n", settings.log_min_sl);
+
+        fprintf(pro_file, "    <wheel>%i</wheel>\n", settings.wheel);
+
+        fprintf(pro_file, "    <span>%i</span>\n", settings.span);
+
+        fprintf(pro_file, "    <center>%i</center>\n", settings.center);
+
+        fprintf(pro_file, "    <log>%i</log>\n", settings.log);
+
+        fprintf(pro_file, "    <sqrt>%i</sqrt>\n", settings.sqrt);
+
+        fprintf(pro_file, "    <colorbar>%i</colorbar>\n", settings.colorbar);
+
+        fprintf(pro_file, "    <maxvalue>%.10e</maxvalue>\n", settings.maxvalue);
+
+        fprintf(pro_file, "    <maxvalue_sqrt>%.10e</maxvalue_sqrt>\n", settings.maxvalue_sqrt);
+
+        fprintf(pro_file, "    <maxvalue_vlog>%.10e</maxvalue_vlog>\n", settings.maxvalue_vlog);
+
+        fprintf(pro_file, "    <maxvalue_sqrt_vlog>%.10e</maxvalue_sqrt_vlog>\n", settings.maxvalue_sqrt_vlog);
+
+        fprintf(pro_file, "    <minvalue_vlog>%.10e</minvalue_vlog>\n", settings.minvalue_vlog);
+
+        fprintf(pro_file, "    <minvalue_sqrt_vlog>%.10e</minvalue_sqrt_vlog>\n", settings.minvalue_sqrt_vlog);
+
+        fprintf(pro_file, "  </powerspectrumdock>\n");
+      }
+    }
+  }
+
   fprintf(pro_file, "</" PROGRAM_NAME "_session>\n");
 
   fclose(pro_file);

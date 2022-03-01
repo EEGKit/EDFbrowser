@@ -1435,9 +1435,280 @@ int UI_Mainwindow::read_session_file(const char *path_session)
     }
   }
 
+  xml_goto_root(xml_hdl);
+
+  struct spectrumdocksettings settings[MAXSPECTRUMDOCKS];
+
+  for(i=0; i<MAXSPECTRUMDOCKS; i++)
+  {
+    settings[i].signalnr = -1;
+  }
+
+  for(i=0; i<MAXSPECTRUMDOCKS; i++)
+  {
+    if(!(xml_goto_nth_element_inside(xml_hdl, "powerspectrumdock", i)))
+    {
+      if(xml_goto_nth_element_inside(xml_hdl, "signalnum", 0))
+      {
+        return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+      }
+      else
+      {
+        if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+        {
+          return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        }
+
+        settings[i].signalnr = atoi(result);
+
+        xml_go_up(xml_hdl);
+      }
+
+      if(xml_goto_nth_element_inside(xml_hdl, "amp", 0))
+      {
+        return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+      }
+      else
+      {
+        if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+        {
+          return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        }
+
+        settings[i].amp = atoi(result);
+
+        xml_go_up(xml_hdl);
+      }
+
+      if(xml_goto_nth_element_inside(xml_hdl, "log_min_sl", 0))
+      {
+        settings[i].log_min_sl = 1000;
+      }
+      else
+      {
+        if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+        {
+          return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        }
+
+        settings[i].log_min_sl = atoi(result);
+
+        xml_go_up(xml_hdl);
+      }
+
+      if(xml_goto_nth_element_inside(xml_hdl, "wheel", 0))
+      {
+        return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+      }
+      else
+      {
+        if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+        {
+          return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        }
+
+        settings[i].wheel = atoi(result);
+
+        xml_go_up(xml_hdl);
+      }
+
+      if(xml_goto_nth_element_inside(xml_hdl, "span", 0))
+      {
+        return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+      }
+      else
+      {
+        if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+        {
+          return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        }
+
+        settings[i].span = atoi(result);
+
+        xml_go_up(xml_hdl);
+      }
+
+      if(xml_goto_nth_element_inside(xml_hdl, "center", 0))
+      {
+        return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+      }
+      else
+      {
+        if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+        {
+          return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        }
+
+        settings[i].center = atoi(result);
+
+        xml_go_up(xml_hdl);
+      }
+
+      if(xml_goto_nth_element_inside(xml_hdl, "log", 0))
+      {
+        return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+      }
+      else
+      {
+        if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+        {
+          return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        }
+
+        settings[i].log = atoi(result);
+
+        xml_go_up(xml_hdl);
+      }
+
+      if(xml_goto_nth_element_inside(xml_hdl, "sqrt", 0))
+      {
+        return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+      }
+      else
+      {
+        if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+        {
+          return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        }
+
+        settings[i].sqrt = atoi(result);
+
+        xml_go_up(xml_hdl);
+      }
+
+      if(xml_goto_nth_element_inside(xml_hdl, "colorbar", 0))
+      {
+        return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+      }
+      else
+      {
+        if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+        {
+          return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        }
+
+        settings[i].colorbar = atoi(result);
+
+        xml_go_up(xml_hdl);
+      }
+
+      if(xml_goto_nth_element_inside(xml_hdl, "maxvalue", 0))
+      {
+        return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+      }
+      else
+      {
+        if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+        {
+          return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        }
+
+        settings[i].maxvalue = atof(result);
+
+        xml_go_up(xml_hdl);
+      }
+
+      if(xml_goto_nth_element_inside(xml_hdl, "maxvalue_sqrt", 0))
+      {
+        return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+      }
+      else
+      {
+        if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+        {
+          return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        }
+
+        settings[i].maxvalue_sqrt = atof(result);
+
+        xml_go_up(xml_hdl);
+      }
+
+      if(xml_goto_nth_element_inside(xml_hdl, "maxvalue_vlog", 0))
+      {
+        return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+      }
+      else
+      {
+        if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+        {
+          return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        }
+
+        settings[i].maxvalue_vlog = atof(result);
+
+        xml_go_up(xml_hdl);
+      }
+
+      if(xml_goto_nth_element_inside(xml_hdl, "maxvalue_sqrt_vlog", 0))
+      {
+        return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+      }
+      else
+      {
+        if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+        {
+          return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        }
+
+        settings[i].maxvalue_sqrt_vlog = atof(result);
+
+        xml_go_up(xml_hdl);
+      }
+
+      if(xml_goto_nth_element_inside(xml_hdl, "minvalue_vlog", 0))
+      {
+        return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+      }
+      else
+      {
+        if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+        {
+          return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        }
+
+        settings[i].minvalue_vlog = atof(result);
+
+        xml_go_up(xml_hdl);
+      }
+
+      if(xml_goto_nth_element_inside(xml_hdl, "minvalue_sqrt_vlog", 0))
+      {
+        return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+      }
+      else
+      {
+        if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+        {
+          return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        }
+
+        settings[i].minvalue_sqrt_vlog = atof(result);
+
+        xml_go_up(xml_hdl);
+      }
+
+      xml_go_up(xml_hdl);
+    }
+    else
+    {
+      break;
+    }
+  }
+
   xml_close(xml_hdl);
 
   setup_viewbuf();
+
+  for(i=0; i<MAXSPECTRUMDOCKS; i++)
+  {
+    if((settings[i].signalnr >= 0) && (settings[i].signalnr < MAXSIGNALS) && (settings[i].signalnr < signalcomps))
+    {
+      spectrumdock[i]->init(settings[i].signalnr);
+
+      spectrumdock[i]->setsettings(settings[i]);
+    }
+  }
 
   if(strlen(videopath) > 5)
   {
