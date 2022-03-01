@@ -46,6 +46,7 @@ int UI_Mainwindow::read_session_file(const char *path_session)
       type=0,
       model=0,
       size=0,
+      amp_cat[3],
       f_ruler_cnt=0,
       holdoff=100,
       plif_powerlinefrequency,
@@ -1708,6 +1709,45 @@ int UI_Mainwindow::read_session_file(const char *path_session)
 
       spectrumdock[i]->setsettings(settings[i]);
     }
+  }
+
+  timescale_doubler = round_125_cat(pagetime);
+
+  for(i=0; i<3; i++)
+  {
+    amp_cat[i] = 0;
+  }
+
+  for(i=0; i<signalcomps; i++)
+  {
+    tmp = round_125_cat(signalcomp[i]->voltpercm);
+
+    switch(tmp)
+    {
+      case 10 : amp_cat[0]++;
+                break;
+      case 20 : amp_cat[1]++;
+                break;
+      case 50 : amp_cat[2]++;
+                break;
+    }
+  }
+
+  amplitude_doubler = 10;
+
+  if((amp_cat[1] > amp_cat[0]) && (amp_cat[1] >= amp_cat[2]))
+  {
+    amplitude_doubler = 20;
+  }
+
+  if((amp_cat[2] > amp_cat[0]) && (amp_cat[2] > amp_cat[1]))
+  {
+    amplitude_doubler = 50;
+  }
+
+  if(f_ruler_cnt == 1)
+  {
+    maincurve->ruler_active = 1;
   }
 
   if(strlen(videopath) > 5)
