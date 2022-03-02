@@ -1182,12 +1182,11 @@ UI_Mainwindow::UI_Mainwindow()
   annotationlist_backup = NULL;
 
   zoomhistory = (struct zoomhistoryblock *)calloc(1, sizeof(struct zoomhistoryblock));
-
+  zoomhistory->idx = 0;
   zoomhistory->history_size_tail = 0;
-  zoomhistory->history_size_front = 0;
+  zoomhistory->history_size_head = 0;
   for(i=0; i<MAXZOOMHISTORY; i++)
   {
-    zoomhistory->pntr = 0;
     zoomhistory->pagetime[i] = 10 * TIME_DIMENSION;
     for(j=0; j<MAXFILES; j++)
     {
@@ -1195,8 +1194,8 @@ UI_Mainwindow::UI_Mainwindow()
     }
     for(j=0; j<MAXSIGNALS; j++)
     {
-      zoomhistory->voltpercm[i][j] = 70.0;
-      zoomhistory->screen_offset[i][j] = 0.0;
+      zoomhistory->voltpercm[i][j] = 70;
+      zoomhistory->screen_offset[i][j] = 0;
       for(k=0; k<MAXSIGNALS; k++)
       {
         zoomhistory->sensitivity[i][j][k] = 0.0475;

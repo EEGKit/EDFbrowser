@@ -916,21 +916,21 @@ void ViewCurve::mouseReleaseEvent(QMouseEvent *release_event)
           {
             for(i=0; i<mainwindow->files_open; i++)
             {
-              mainwindow->zoomhistory->viewtime[mainwindow->zoomhistory->pntr][i] = mainwindow->edfheaderlist[i]->viewtime;
+              mainwindow->zoomhistory->viewtime[mainwindow->zoomhistory->idx][i] = mainwindow->edfheaderlist[i]->viewtime;
             }
-            mainwindow->zoomhistory->pagetime[mainwindow->zoomhistory->pntr] = mainwindow->pagetime;
+            mainwindow->zoomhistory->pagetime[mainwindow->zoomhistory->idx] = mainwindow->pagetime;
             for(i=0; i<signalcomps; i++)
             {
-              mainwindow->zoomhistory->voltpercm[mainwindow->zoomhistory->pntr][i] = signalcomp[i]->voltpercm;
-              mainwindow->zoomhistory->screen_offset[mainwindow->zoomhistory->pntr][i] = signalcomp[i]->screen_offset;
+              mainwindow->zoomhistory->voltpercm[mainwindow->zoomhistory->idx][i] = signalcomp[i]->voltpercm;
+              mainwindow->zoomhistory->screen_offset[mainwindow->zoomhistory->idx][i] = signalcomp[i]->screen_offset;
 
               for(j=0; j<signalcomp[i]->num_of_signals; j++)
               {
-                mainwindow->zoomhistory->sensitivity[mainwindow->zoomhistory->pntr][i][j] = signalcomp[i]->sensitivity[j];
+                mainwindow->zoomhistory->sensitivity[mainwindow->zoomhistory->idx][i][j] = signalcomp[i]->sensitivity[j];
               }
             }
-            mainwindow->zoomhistory->pntr++;
-            mainwindow->zoomhistory->pntr %= MAXZOOMHISTORY;
+            mainwindow->zoomhistory->idx++;
+            mainwindow->zoomhistory->idx %= MAXZOOMHISTORY;
 
             for(i=0; i<mainwindow->files_open; i++)
             {
@@ -956,7 +956,7 @@ void ViewCurve::mouseReleaseEvent(QMouseEvent *release_event)
             }
 
             mainwindow->zoomhistory->history_size_tail++;
-            mainwindow->zoomhistory->history_size_front = 0;
+            mainwindow->zoomhistory->history_size_head = 0;
 
             mainwindow->setup_viewbuf();
           }

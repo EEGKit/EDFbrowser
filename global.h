@@ -323,9 +323,9 @@ struct signalcompblock{
       };
 
 struct zoomhistoryblock{
-        int pntr;
+        int idx;
         int history_size_tail;
-        int history_size_front;
+        int history_size_head;
         long long viewtime[MAXZOOMHISTORY][MAXFILES];
         long long pagetime[MAXZOOMHISTORY];
         double voltpercm[MAXZOOMHISTORY][MAXSIGNALS];
