@@ -342,7 +342,7 @@ void UI_Mainwindow::save_file()
   outputfile = fopeno(f_path, "wb");
   if(outputfile==NULL)
   {
-    QMessageBox::critical(this, "Error", "Can not create a file for writing.");
+    QMessageBox::critical(this, "Error", "Cannot create a file for writing.");
     return;
   }
 
@@ -417,7 +417,7 @@ void UI_Mainwindow::save_session()
   pro_file = fopeno(session_path, "wb");
   if(pro_file==NULL)
   {
-    QMessageBox::critical(this, "Error", "Can not create session file for writing.");
+    QMessageBox::critical(this, "Error", "Cannot create session file for writing.");
     return;
   }
 

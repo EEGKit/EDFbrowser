@@ -148,7 +148,7 @@ int UI_Mainwindow::read_session_file(const char *path_session)
 
     if(rc_file_open_err)
     {
-      printf("read_session_file(): error: %i\n", rc_file_open_err);  //FIXME
+//      printf("read_session_file(): error: %i\n", rc_file_open_err);  //FIXME
 
       return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
     }
@@ -1775,7 +1775,7 @@ int UI_Mainwindow::session_format_error(const char *file_name, int line_number, 
     }
     else if(rc_file_open_err == 105)
       {
-        strlcpy(str, "Cannot open file for reading", 2048);
+        snprintf(str, 2048, "Cannot open file for reading:\n  \n%s", path);
       }
       else if(rc_file_open_err == 106)
         {
