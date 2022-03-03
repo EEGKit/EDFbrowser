@@ -584,10 +584,10 @@ int UI_Mainwindow::read_session_file(const char *path_session)
         }
       }
 
-      newsignalcomp->sensitivity[signals_read] = newsignalcomp->edfhdr->edfparam[newsignalcomp->edfsignal[signals_read]].bitvalue / (newsignalcomp->voltpercm * y_pixelsizefactor);
-
       if(!signals_read)
       {
+        newsignalcomp->sensitivity = newsignalcomp->edfhdr->edfparam[newsignalcomp->edfsignal[0]].bitvalue / (newsignalcomp->voltpercm * y_pixelsizefactor);
+
         newsignalcomp->signallabel[0] = 0;
       }
 

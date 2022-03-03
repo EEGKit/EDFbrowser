@@ -70,7 +70,7 @@ ViewCurve::ViewCurve(QWidget *w_parent) : QWidget(w_parent)
   printing = 0;
   pressed_on_label = 0;
 
-  original_sensitivity = (double *)calloc(1, sizeof(double[MAXSIGNALS]));
+  original_sensitivity = 0;
 
   mouse_press_coordinate_x = 0;
   mouse_press_coordinate_y = 0;
@@ -187,25 +187,11 @@ ViewCurve::~ViewCurve()
 {
   int i;
 
-  if(graphicBuf!=NULL)
-  {
-    free(graphicBuf);
-  }
+  free(graphicBuf);
 
-  if(active_markers!=NULL)
-  {
-    free(active_markers);
-  }
+  free(active_markers);
 
-  if(original_sensitivity!=NULL)
-  {
-    free(original_sensitivity);
-  }
-
-  if(screensamples!=NULL)
-  {
-    free(screensamples);
-  }
+  free(screensamples);
 
   delete printfont;
   delete annot_marker_pen;
@@ -497,7 +483,7 @@ void ViewCurve::wheelEvent(QWheelEvent *wheel_event)
 
 void ViewCurve::mousePressEvent(QMouseEvent *press_event)
 {
-  int i, j,
+  int i,
       baseline,
       signalcomps,
       m_x,
@@ -702,10 +688,7 @@ void ViewCurve::mousePressEvent(QMouseEvent *press_event)
 
       if((m_y<(baseline-(2*h_scaling)))&&(m_y>(baseline-(17*h_scaling)))&&(m_x>(2*w_scaling))&&(m_x<(((signallabel_strlen * 8) + 2) * w_scaling)))
       {
-        for(j=0; j<signalcomp[i]->num_of_signals; j++)
-        {
-          original_sensitivity[j] = signalcomp[i]->sensitivity[j];
-        }
+        original_sensitivity = signalcomp[i]->sensitivity;
         original_screen_offset = signalcomp[i]->screen_offset;
         signalcomp[i]->hasgaintracking = 1;
         use_move_events = 1;
@@ -773,7 +756,7 @@ void ViewCurve::mousePressEvent(QMouseEvent *press_event)
 
 void ViewCurve::mouseReleaseEvent(QMouseEvent *release_event)
 {
-  int i, j, dist1, dist2, n,
+  int i, dist1, dist2, n,
       baseline,
       signalcomps,
       m_x,
@@ -923,11 +906,7 @@ void ViewCurve::mouseReleaseEvent(QMouseEvent *release_event)
             {
               mainwindow->zoomhistory->voltpercm[mainwindow->zoomhistory->idx][i] = signalcomp[i]->voltpercm;
               mainwindow->zoomhistory->screen_offset[mainwindow->zoomhistory->idx][i] = signalcomp[i]->screen_offset;
-
-              for(j=0; j<signalcomp[i]->num_of_signals; j++)
-              {
-                mainwindow->zoomhistory->sensitivity[mainwindow->zoomhistory->idx][i][j] = signalcomp[i]->sensitivity[j];
-              }
+              mainwindow->zoomhistory->sensitivity[mainwindow->zoomhistory->idx][i] = signalcomp[i]->sensitivity;
             }
             mainwindow->zoomhistory->idx++;
             mainwindow->zoomhistory->idx %= MAXZOOMHISTORY;
@@ -946,13 +925,8 @@ void ViewCurve::mouseReleaseEvent(QMouseEvent *release_event)
               mainwindow->signalcomp[i]->screen_offset = mainwindow->signalcomp[i]->screen_offset * zoomfactor;
               mainwindow->signalcomp[i]->screen_offset += (((double)h * (zoomfactor - 1.0) * (double)(i + 1)) / (double)(signalcomps + 1));
               mainwindow->signalcomp[i]->screen_offset -= ((double)mouse_press_coordinate_y * zoomfactor);
-
-              mainwindow->signalcomp[i]->voltpercm = mainwindow->signalcomp[i]->voltpercm / ((double)h / (double)(m_y - mouse_press_coordinate_y));
-
-              for(j=0; j<mainwindow->signalcomp[i]->num_of_signals; j++)
-              {
-                mainwindow->signalcomp[i]->sensitivity[j] =  mainwindow->signalcomp[i]->sensitivity[j] * ((double)h / (double)(m_y - mouse_press_coordinate_y));
-              }
+              mainwindow->signalcomp[i]->voltpercm /= ((double)h / (double)(m_y - mouse_press_coordinate_y));
+              mainwindow->signalcomp[i]->sensitivity *= ((double)h / (double)(m_y - mouse_press_coordinate_y));
             }
 
             mainwindow->zoomhistory->history_size_tail++;
@@ -1041,7 +1015,7 @@ void ViewCurve::mouseReleaseEvent(QMouseEvent *release_event)
 
 void ViewCurve::mouseMoveEvent(QMouseEvent *move_event)
 {
-  int i, j, signalcomps, delta_x, delta_y;
+  int i, signalcomps, delta_x, delta_y;
 
   double d_temp;
 
@@ -1154,21 +1128,16 @@ void ViewCurve::mouseMoveEvent(QMouseEvent *move_event)
 
       if(signalcomp[i]->hasgaintracking)
       {
-        for(j=0; j<signalcomp[i]->num_of_signals; j++)
+        d_temp = original_sensitivity * (1.0 + ((double)(-delta_y) / 50.0));
+
+        if(d_temp>0.000001)
         {
-          d_temp = original_sensitivity[j] * (1.0 + ((double)(-delta_y) / 50.0));
+          signalcomp[i]->sensitivity = d_temp;
 
-          if(d_temp>0.000001)
-          {
-            signalcomp[i]->sensitivity[j] = d_temp;
-
-            d_temp = signalcomp[i]->edfhdr->edfparam[signalcomp[i]->edfsignal[j]].bitvalue / (signalcomp[i]->sensitivity[j] * mainwindow->y_pixelsizefactor);
-
-            signalcomp[i]->voltpercm = d_temp;
-          }
+          signalcomp[i]->voltpercm = signalcomp[i]->edfhdr->edfparam[signalcomp[i]->edfsignal[0]].bitvalue / (signalcomp[i]->sensitivity * mainwindow->y_pixelsizefactor);
         }
 
-        signalcomp[i]->screen_offset = original_screen_offset * (signalcomp[i]->sensitivity[0] / original_sensitivity[0]);
+        signalcomp[i]->screen_offset = original_screen_offset * (signalcomp[i]->sensitivity / original_sensitivity);
       }
     }
 
@@ -2111,11 +2080,11 @@ void ViewCurve::drawCurve_stage_1(QPainter *painter, int w_width, int w_height, 
 
         if(printing)
         {
-          value = (int)(dig_value * signalcomp[i]->sensitivity[0] * printsize_y_factor) * signalcomp[i]->polarity;
+          value = (int)(dig_value * signalcomp[i]->sensitivity * printsize_y_factor) * signalcomp[i]->polarity;
         }
         else
         {
-          value = (int)(dig_value * signalcomp[i]->sensitivity[0]) * signalcomp[i]->polarity;
+          value = (int)(dig_value * signalcomp[i]->sensitivity) * signalcomp[i]->polarity;
 
           signalcomp[i]->stat_cnt++;
           signalcomp[i]->stat_sum += dig_value;
@@ -2648,11 +2617,11 @@ void drawCurve_stage_1_thread::run()
 
       if(printing)
       {
-        value = (int)(dig_value * signalcomp->sensitivity[0] * printsize_y_factor) * signalcomp->polarity;
+        value = (int)(dig_value * signalcomp->sensitivity * printsize_y_factor) * signalcomp->polarity;
       }
       else
       {
-        value = (int)(dig_value * signalcomp->sensitivity[0]) * signalcomp->polarity;
+        value = (int)(dig_value * signalcomp->sensitivity * signalcomp->polarity);
 
         signalcomp->stat_cnt++;
         signalcomp->stat_sum += dig_value;
@@ -3038,7 +3007,7 @@ void ViewCurve::signalInvert()
 
 void ViewCurve::ECGdetectButton()
 {
-  int i, sense=1;
+  int sense=1;
 
   char str[32]={""};
 
@@ -3116,19 +3085,13 @@ void ViewCurve::ECGdetectButton()
 
   if(newsignalcomp->edfhdr->edfparam[newsignalcomp->edfsignal[0]].bitvalue < 0.0)
   {
-    for(i=0; i<newsignalcomp->num_of_signals; i++)
-    {
-      newsignalcomp->sensitivity[i] = newsignalcomp->edfhdr->edfparam[newsignalcomp->edfsignal[i]].bitvalue / -5.0 / mainwindow->y_pixelsizefactor;
-    }
+    newsignalcomp->sensitivity = newsignalcomp->edfhdr->edfparam[newsignalcomp->edfsignal[0]].bitvalue / -5.0 / mainwindow->y_pixelsizefactor;
 
     newsignalcomp->voltpercm = -5.0;
   }
   else
   {
-    for(i=0; i<newsignalcomp->num_of_signals; i++)
-    {
-      newsignalcomp->sensitivity[i] = newsignalcomp->edfhdr->edfparam[newsignalcomp->edfsignal[i]].bitvalue / 5.0 / mainwindow->y_pixelsizefactor;
-    }
+    newsignalcomp->sensitivity = newsignalcomp->edfhdr->edfparam[newsignalcomp->edfsignal[0]].bitvalue / 5.0 / mainwindow->y_pixelsizefactor;
 
     newsignalcomp->voltpercm = 5.0;
   }
@@ -3421,8 +3384,6 @@ void ViewCurve::ScaleBox2Changed(double value)
 
 void ViewCurve::ScaleBoxChanged(double value)
 {
-  int i;
-
   double original_value;
 
   if(signal_nr >= mainwindow->signalcomps)
@@ -3435,10 +3396,7 @@ void ViewCurve::ScaleBoxChanged(double value)
     value *= -1.0;
   }
 
-  for(i=0; i<mainwindow->signalcomp[signal_nr]->num_of_signals; i++)
-  {
-    mainwindow->signalcomp[signal_nr]->sensitivity[i] = mainwindow->signalcomp[signal_nr]->edfhdr->edfparam[mainwindow->signalcomp[signal_nr]->edfsignal[i]].bitvalue / value / mainwindow->y_pixelsizefactor;
-  }
+  mainwindow->signalcomp[signal_nr]->sensitivity = mainwindow->signalcomp[signal_nr]->edfhdr->edfparam[mainwindow->signalcomp[signal_nr]->edfsignal[0]].bitvalue / value / mainwindow->y_pixelsizefactor;
 
   original_value = mainwindow->signalcomp[signal_nr]->voltpercm;
 

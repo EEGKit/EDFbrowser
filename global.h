@@ -249,7 +249,7 @@ struct signalcompblock{
         int edfsignal[MAXSIGNALS];
         double factor[MAXSIGNALS];
         int polarity;
-        double sensitivity[MAXSIGNALS];
+        double sensitivity;
         int oldvalue;
         long long oldsmplnr;
         long long file_duration;
@@ -329,7 +329,7 @@ struct zoomhistoryblock{
         long long viewtime[MAXZOOMHISTORY][MAXFILES];
         long long pagetime[MAXZOOMHISTORY];
         double voltpercm[MAXZOOMHISTORY][MAXSIGNALS];
-        double sensitivity[MAXZOOMHISTORY][MAXSIGNALS][MAXSIGNALS];
+        double sensitivity[MAXZOOMHISTORY][MAXSIGNALS];
         double screen_offset[MAXZOOMHISTORY][MAXSIGNALS];
        };
 

@@ -1358,7 +1358,7 @@ void UI_Mainwindow::add_spike_filter()
 
 void UI_Mainwindow::zoomback()
 {
-  int i, j;
+  int i;
 
   if(!files_open)  return;
 
@@ -1378,11 +1378,7 @@ void UI_Mainwindow::zoomback()
   {
     zoomhistory->voltpercm[zoomhistory->idx][i] = signalcomp[i]->voltpercm;
     zoomhistory->screen_offset[zoomhistory->idx][i] = signalcomp[i]->screen_offset;
-
-    for(j=0; j<signalcomp[i]->num_of_signals; j++)
-    {
-      zoomhistory->sensitivity[zoomhistory->idx][i][j] = signalcomp[i]->sensitivity[j];
-    }
+    zoomhistory->sensitivity[zoomhistory->idx][i] = signalcomp[i]->sensitivity;
   }
 
   zoomhistory->idx--;
@@ -1399,11 +1395,7 @@ void UI_Mainwindow::zoomback()
   {
     signalcomp[i]->voltpercm = zoomhistory->voltpercm[zoomhistory->idx][i];
     signalcomp[i]->screen_offset = zoomhistory->screen_offset[zoomhistory->idx][i];
-
-    for(j=0; j<signalcomp[i]->num_of_signals; j++)
-    {
-      signalcomp[i]->sensitivity[j] = zoomhistory->sensitivity[zoomhistory->idx][i][j];
-    }
+    signalcomp[i]->sensitivity = zoomhistory->sensitivity[zoomhistory->idx][i];
   }
 
   setup_viewbuf();
@@ -1412,7 +1404,7 @@ void UI_Mainwindow::zoomback()
 
 void UI_Mainwindow::forward()
 {
-  int i, j;
+  int i;
 
   if(!files_open)  return;
 
@@ -1436,11 +1428,7 @@ void UI_Mainwindow::forward()
   {
     signalcomp[i]->voltpercm = zoomhistory->voltpercm[zoomhistory->idx][i];
     signalcomp[i]->screen_offset = zoomhistory->screen_offset[zoomhistory->idx][i];
-
-    for(j=0; j<signalcomp[i]->num_of_signals; j++)
-    {
-      signalcomp[i]->sensitivity[j] = zoomhistory->sensitivity[zoomhistory->idx][i][j];
-    }
+    signalcomp[i]->sensitivity = zoomhistory->sensitivity[zoomhistory->idx][i];
   }
 
   setup_viewbuf();
@@ -3043,7 +3031,7 @@ void UI_Mainwindow::close_file_action_func(QAction *action)
 
 void UI_Mainwindow::close_all_files()
 {
-  int i, j, k,
+  int i, j,
       button_nr=0,
       inst_num=0;
 
@@ -3180,10 +3168,7 @@ void UI_Mainwindow::close_all_files()
     {
       zoomhistory->voltpercm[i][j] = 70;
       zoomhistory->screen_offset[i][j] = 0.0;
-      for(k=0; k<MAXSIGNALS; k++)
-      {
-        zoomhistory->sensitivity[i][j][k] = 0.0475;
-      }
+      zoomhistory->sensitivity[i][j] = 0.0475;
     }
   }
 
@@ -3675,7 +3660,7 @@ void UI_Mainwindow::set_display_time_whole_rec()
 
 void UI_Mainwindow::fit_signals_to_pane(int n)
 {
-  int i, j,
+  int i,
       pane_size;
 
   if(!signalcomps)  return;
@@ -3689,23 +3674,20 @@ void UI_Mainwindow::fit_signals_to_pane(int n)
       continue;
     }
 
-    for(j=0; j<signalcomp[i]->num_of_signals; j++)
+    if(signalcomp[i]->max_dig_value!=signalcomp[i]->min_dig_value)
     {
-      if(signalcomp[i]->max_dig_value!=signalcomp[i]->min_dig_value)
-      {
-        signalcomp[i]->sensitivity[j] = (double)pane_size / (double)(signalcomp[i]->max_dig_value - signalcomp[i]->min_dig_value);
-      }
-      else
-      {
-        signalcomp[i]->sensitivity[j] = pane_size;
-      }
+      signalcomp[i]->sensitivity = (double)pane_size / (double)(signalcomp[i]->max_dig_value - signalcomp[i]->min_dig_value);
+    }
+    else
+    {
+      signalcomp[i]->sensitivity = pane_size;
     }
 
     signalcomp[i]->voltpercm =
      signalcomp[i]->edfhdr->edfparam[signalcomp[i]->edfsignal[0]].bitvalue
-     / (signalcomp[i]->sensitivity[0] * y_pixelsizefactor);
+     / (signalcomp[i]->sensitivity * y_pixelsizefactor);
 
-    signalcomp[i]->screen_offset = ((signalcomp[i]->max_dig_value + signalcomp[i]->min_dig_value) / 2.0) * signalcomp[i]->sensitivity[0] * signalcomp[i]->polarity;
+    signalcomp[i]->screen_offset = ((signalcomp[i]->max_dig_value + signalcomp[i]->min_dig_value) / 2.0) * signalcomp[i]->sensitivity * signalcomp[i]->polarity;
   }
 
   maincurve->drawCurve_stage_1();
@@ -3725,7 +3707,7 @@ void UI_Mainwindow::fit_signals_dc_offset(int n)
       continue;
     }
 
-    signalcomp[i]->screen_offset = ((signalcomp[i]->max_dig_value + signalcomp[i]->min_dig_value) / 2.0) * signalcomp[i]->sensitivity[0] * signalcomp[i]->polarity;
+    signalcomp[i]->screen_offset = ((signalcomp[i]->max_dig_value + signalcomp[i]->min_dig_value) / 2.0) * signalcomp[i]->sensitivity * signalcomp[i]->polarity;
   }
 
   maincurve->drawCurve_stage_1();
@@ -3734,7 +3716,7 @@ void UI_Mainwindow::fit_signals_dc_offset(int n)
 
 void UI_Mainwindow::set_amplitude(QAction *action)
 {
-  int i, j;
+  int i;
 
   double value=100.0, original_value, value2=100.0;
 
@@ -3884,10 +3866,7 @@ void UI_Mainwindow::set_amplitude(QAction *action)
       value2 *= -1.0;
     }
 
-    for(j=0; j<signalcomp[i]->num_of_signals; j++)
-    {
-      signalcomp[i]->sensitivity[j] = (signalcomp[i]->edfhdr->edfparam[signalcomp[i]->edfsignal[j]].bitvalue / value2) / y_pixelsizefactor;
-    }
+    signalcomp[i]->sensitivity = (signalcomp[i]->edfhdr->edfparam[signalcomp[i]->edfsignal[0]].bitvalue / value2) / y_pixelsizefactor;
 
     original_value = signalcomp[i]->voltpercm;
 
@@ -3902,7 +3881,7 @@ void UI_Mainwindow::set_amplitude(QAction *action)
 
 void UI_Mainwindow::set_amplitude_mult2()
 {
-  int i, j;
+  int i;
 
   for(i=0; i<signalcomps; i++)
   {
@@ -3937,10 +3916,7 @@ void UI_Mainwindow::set_amplitude_mult2()
       signalcomp[i]->screen_offset /= 2.5;
     }
 
-    for(j=0; j<signalcomp[i]->num_of_signals; j++)
-    {
-      signalcomp[i]->sensitivity[j] = (signalcomp[i]->edfhdr->edfparam[signalcomp[i]->edfsignal[j]].bitvalue / signalcomp[i]->voltpercm) / y_pixelsizefactor;
-    }
+    signalcomp[i]->sensitivity = (signalcomp[i]->edfhdr->edfparam[signalcomp[i]->edfsignal[0]].bitvalue / signalcomp[i]->voltpercm) / y_pixelsizefactor;
   }
 
   if(amplitude_doubler == 10)
@@ -3965,7 +3941,7 @@ void UI_Mainwindow::set_amplitude_mult2()
 
 void UI_Mainwindow::set_amplitude_div2()
 {
-  int i, j;
+  int i;
 
   for(i=0; i<signalcomps; i++)
   {
@@ -4000,10 +3976,7 @@ void UI_Mainwindow::set_amplitude_div2()
       signalcomp[i]->screen_offset *= 2.5;
     }
 
-    for(j=0; j<signalcomp[i]->num_of_signals; j++)
-    {
-      signalcomp[i]->sensitivity[j] = (signalcomp[i]->edfhdr->edfparam[signalcomp[i]->edfsignal[j]].bitvalue / signalcomp[i]->voltpercm) / y_pixelsizefactor;
-    }
+    signalcomp[i]->sensitivity = (signalcomp[i]->edfhdr->edfparam[signalcomp[i]->edfsignal[0]].bitvalue / signalcomp[i]->voltpercm) / y_pixelsizefactor;
   }
 
   if(amplitude_doubler == 10)

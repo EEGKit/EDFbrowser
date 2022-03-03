@@ -684,7 +684,7 @@ int UI_Mainwindow::process_rc_cmd_montage(const char *cmd_args, int *cmds_parsed
 
 int UI_Mainwindow::process_rc_cmd_signal(const char *cmd_args, int *cmds_parsed_key, int n_sub_cmds)
 {
-  int i, j, n, ival, err, file_num=0;
+  int i, n, ival, err, file_num=0;
 
   char str1[1024]="",
        str2[1024]="",
@@ -770,7 +770,7 @@ int UI_Mainwindow::process_rc_cmd_signal(const char *cmd_args, int *cmds_parsed_
           {
             newsignalcomp->voltpercm = default_amplitude * -1;
           }
-          newsignalcomp->sensitivity[0] = newsignalcomp->edfhdr->edfparam[i].bitvalue / ((double)newsignalcomp->voltpercm * y_pixelsizefactor);
+          newsignalcomp->sensitivity = newsignalcomp->edfhdr->edfparam[i].bitvalue / ((double)newsignalcomp->voltpercm * y_pixelsizefactor);
 
           strlcpy(newsignalcomp->signallabel, newsignalcomp->edfhdr->edfparam[i].label, 256);
           newsignalcomp->signallabel_type_stripped = strip_types_from_label(newsignalcomp->signallabel);
@@ -862,10 +862,7 @@ int UI_Mainwindow::process_rc_cmd_signal(const char *cmd_args, int *cmds_parsed_
           value2 *= -1.0;
         }
 
-        for(j=0; j<signalcomp[i]->num_of_signals; j++)
-        {
-          signalcomp[i]->sensitivity[j] = (signalcomp[i]->edfhdr->edfparam[signalcomp[i]->edfsignal[j]].bitvalue / value2) / y_pixelsizefactor;
-        }
+        signalcomp[i]->sensitivity = (signalcomp[i]->edfhdr->edfparam[signalcomp[i]->edfsignal[0]].bitvalue / value2) / y_pixelsizefactor;
 
         original_value = signalcomp[i]->voltpercm;
 
@@ -901,10 +898,7 @@ int UI_Mainwindow::process_rc_cmd_signal(const char *cmd_args, int *cmds_parsed_
         value2 *= -1.0;
       }
 
-      for(j=0; j<signalcomp[n]->num_of_signals; j++)
-      {
-        signalcomp[n]->sensitivity[j] = (signalcomp[n]->edfhdr->edfparam[signalcomp[n]->edfsignal[j]].bitvalue / value2) / y_pixelsizefactor;
-      }
+      signalcomp[n]->sensitivity = (signalcomp[n]->edfhdr->edfparam[signalcomp[n]->edfsignal[0]].bitvalue / value2) / y_pixelsizefactor;
 
       original_value = signalcomp[n]->voltpercm;
 

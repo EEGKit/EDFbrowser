@@ -382,7 +382,7 @@ void UI_Signalswindow::DisplayCompButtonClicked()
         {
           newsignalcomp->voltpercm *= -1;
         }
-        newsignalcomp->sensitivity[i] = newsignalcomp->edfhdr->edfparam[j].bitvalue / ((double)newsignalcomp->voltpercm * mainwindow->y_pixelsizefactor);
+        newsignalcomp->sensitivity = newsignalcomp->edfhdr->edfparam[j].bitvalue / ((double)newsignalcomp->voltpercm * mainwindow->y_pixelsizefactor);
       }
     }
   }
@@ -477,7 +477,7 @@ void UI_Signalswindow::DisplayButtonClicked()
     {
       newsignalcomp->voltpercm *= -1;
     }
-    newsignalcomp->sensitivity[0] = newsignalcomp->edfhdr->edfparam[s].bitvalue / ((double)newsignalcomp->voltpercm * mainwindow->y_pixelsizefactor);
+    newsignalcomp->sensitivity = newsignalcomp->edfhdr->edfparam[s].bitvalue / ((double)newsignalcomp->voltpercm * mainwindow->y_pixelsizefactor);
 
     strlcpy(newsignalcomp->signallabel, newsignalcomp->edfhdr->edfparam[s].label, 256);
     newsignalcomp->signallabel_type_stripped = strip_types_from_label(newsignalcomp->signallabel);

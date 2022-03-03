@@ -253,8 +253,6 @@ void UI_ZScoreWindow::ZscoreDialogDestroyed(QObject *)
 
 void UI_ZScoreWindow::addTraceButtonClicked()
 {
-  int i;
-
   struct edfhdrblock *hdr;
 
   struct signalcompblock *signalcomp,
@@ -306,19 +304,13 @@ void UI_ZScoreWindow::addTraceButtonClicked()
 
   if(dblcmp(signalcomp->edfhdr->edfparam[signalcomp->edfsignal[0]].bitvalue, 0.0) < 0)
   {
-    for(i=0; i<signalcomp->num_of_signals; i++)
-    {
-      signalcomp->sensitivity[i] = signalcomp->edfhdr->edfparam[signalcomp->edfsignal[i]].bitvalue / -1.0 / mainwindow->y_pixelsizefactor;
-    }
+    signalcomp->sensitivity = signalcomp->edfhdr->edfparam[signalcomp->edfsignal[0]].bitvalue / -1.0 / mainwindow->y_pixelsizefactor;
 
     signalcomp->voltpercm = -1.0;
   }
   else
   {
-    for(i=0; i<signalcomp->num_of_signals; i++)
-    {
-      signalcomp->sensitivity[i] = signalcomp->edfhdr->edfparam[signalcomp->edfsignal[i]].bitvalue / 1.0 / mainwindow->y_pixelsizefactor;
-    }
+    signalcomp->sensitivity = signalcomp->edfhdr->edfparam[signalcomp->edfsignal[0]].bitvalue / 1.0 / mainwindow->y_pixelsizefactor;
 
     signalcomp->voltpercm = 1.0;
   }

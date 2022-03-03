@@ -1574,20 +1574,16 @@ void UI_OptionsDialog::calibrate_checkbox_stateChanged(int state)
 
 void UI_OptionsDialog::ApplyButtonClicked()
 {
-  int i, j;
+  int i;
 
   mainwindow->y_pixelsizefactor = spinbox2_1->value() / 4450.0;
   mainwindow->x_pixelsizefactor = spinbox2_2->value() / 3550.0;
 
   for(i=0; i<mainwindow->signalcomps; i++)
   {
-    for(j=0; j<mainwindow->signalcomp[i]->num_of_signals; j++)
-    {
-      mainwindow->signalcomp[i]->sensitivity[j] =
-       mainwindow->signalcomp[i]->edfhdr->edfparam[mainwindow->signalcomp[i]->edfsignal[j]].bitvalue
-       / ((double)mainwindow->signalcomp[i]->voltpercm
-       * mainwindow->y_pixelsizefactor);
-    }
+    mainwindow->signalcomp[i]->sensitivity = mainwindow->signalcomp[i]->edfhdr->edfparam[mainwindow->signalcomp[i]->edfsignal[0]].bitvalue
+     / ((double)mainwindow->signalcomp[i]->voltpercm
+     * mainwindow->y_pixelsizefactor);
   }
 
   mainwindow->maincurve->drawCurve_stage_1();

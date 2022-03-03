@@ -32,7 +32,7 @@
 
 UI_Mainwindow::UI_Mainwindow()
 {
-  int i, j, k;
+  int i, j;
 
   bool ret;
 
@@ -1196,10 +1196,7 @@ UI_Mainwindow::UI_Mainwindow()
     {
       zoomhistory->voltpercm[i][j] = 70;
       zoomhistory->screen_offset[i][j] = 0;
-      for(k=0; k<MAXSIGNALS; k++)
-      {
-        zoomhistory->sensitivity[i][j][k] = 0.0475;
-      }
+      zoomhistory->sensitivity[i][j] = 0.0475;
     }
   }
 

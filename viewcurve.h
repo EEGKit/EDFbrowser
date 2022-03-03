@@ -255,7 +255,7 @@ private:
               w,
               h;
 
-  double      *original_sensitivity,
+  double      original_sensitivity,
               painter_pixelsizefactor,
               printsize_x_factor,
               printsize_y_factor;

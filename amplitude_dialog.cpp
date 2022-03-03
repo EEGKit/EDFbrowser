@@ -90,7 +90,7 @@ UI_Userdefined_amplitude_Dialog::UI_Userdefined_amplitude_Dialog(QWidget *w_pare
 
 void UI_Userdefined_amplitude_Dialog::okbutton_pressed()
 {
-  int i, j;
+  int i;
 
   double value2, original_value;
 
@@ -117,10 +117,7 @@ void UI_Userdefined_amplitude_Dialog::okbutton_pressed()
       value2 *= -1.0;
     }
 
-    for(j=0; j<mainwindow->signalcomp[i]->num_of_signals; j++)
-    {
-      mainwindow->signalcomp[i]->sensitivity[j] = (mainwindow->signalcomp[i]->edfhdr->edfparam[mainwindow->signalcomp[i]->edfsignal[j]].bitvalue / value2) / mainwindow->y_pixelsizefactor;
-    }
+    mainwindow->signalcomp[i]->sensitivity = (mainwindow->signalcomp[i]->edfhdr->edfparam[mainwindow->signalcomp[i]->edfsignal[0]].bitvalue / value2) / mainwindow->y_pixelsizefactor;
 
     original_value = mainwindow->signalcomp[i]->voltpercm;
 
