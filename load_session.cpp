@@ -541,6 +541,7 @@ int UI_Mainwindow::read_session_file(const char *path_session)
       if(!found)
       {
         free(newsignalcomp);
+        newsignalcomp = NULL;
         skip = 1;
         signalcomps_read++;
         xml_go_up(xml_hdl);
@@ -554,6 +555,7 @@ int UI_Mainwindow::read_session_file(const char *path_session)
           != newsignalcomp->edfhdr->edfparam[newsignalcomp->edfsignal[0]].smp_per_record)
         {
           free(newsignalcomp);
+          newsignalcomp = NULL;
           skip = 1;
           signalcomps_read++;
           xml_go_up(xml_hdl);
@@ -565,6 +567,7 @@ int UI_Mainwindow::read_session_file(const char *path_session)
                   newsignalcomp->edfhdr->edfparam[newsignalcomp->edfsignal[0]].bitvalue))
         {
           free(newsignalcomp);
+          newsignalcomp = NULL;
           skip = 1;
           signalcomps_read++;
           xml_go_up(xml_hdl);
@@ -576,6 +579,7 @@ int UI_Mainwindow::read_session_file(const char *path_session)
                   newsignalcomp->edfhdr->edfparam[newsignalcomp->edfsignal[0]].physdimension))
         {
           free(newsignalcomp);
+          newsignalcomp = NULL;
           skip = 1;
           signalcomps_read++;
           xml_go_up(xml_hdl);
@@ -617,10 +621,10 @@ int UI_Mainwindow::read_session_file(const char *path_session)
       xml_go_up(xml_hdl);
     }
 
+    if(skip)  continue;
+
     remove_trailing_spaces(newsignalcomp->signallabel);
     newsignalcomp->signallabellen = strlen(newsignalcomp->signallabel);
-
-    if(skip)  continue;
 
     strlcpy(newsignalcomp->physdimension, newsignalcomp->edfhdr->edfparam[newsignalcomp->edfsignal[0]].physdimension, 9);
     remove_trailing_spaces(newsignalcomp->physdimension);

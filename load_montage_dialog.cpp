@@ -643,6 +643,7 @@ int UI_LoadMontagewindow::LoadButtonClicked()
       if(!found)
       {
         free(newsignalcomp);
+        newsignalcomp = NULL;
         skip = 1;
         signalcomps_read++;
         xml_go_up(xml_hdl);
@@ -656,6 +657,7 @@ int UI_LoadMontagewindow::LoadButtonClicked()
           != newsignalcomp->edfhdr->edfparam[newsignalcomp->edfsignal[0]].smp_per_record)
         {
           free(newsignalcomp);
+          newsignalcomp = NULL;
           skip = 1;
           signalcomps_read++;
           xml_go_up(xml_hdl);
@@ -667,6 +669,7 @@ int UI_LoadMontagewindow::LoadButtonClicked()
                   newsignalcomp->edfhdr->edfparam[newsignalcomp->edfsignal[0]].bitvalue))
         {
           free(newsignalcomp);
+          newsignalcomp = NULL;
           skip = 1;
           signalcomps_read++;
           xml_go_up(xml_hdl);
@@ -678,6 +681,7 @@ int UI_LoadMontagewindow::LoadButtonClicked()
                   newsignalcomp->edfhdr->edfparam[newsignalcomp->edfsignal[0]].physdimension))
         {
           free(newsignalcomp);
+          newsignalcomp = NULL;
           skip = 1;
           signalcomps_read++;
           xml_go_up(xml_hdl);
@@ -719,10 +723,10 @@ int UI_LoadMontagewindow::LoadButtonClicked()
       xml_go_up(xml_hdl);
     }
 
+    if(skip)  continue;
+
     remove_trailing_spaces(newsignalcomp->signallabel);
     newsignalcomp->signallabellen = strlen(newsignalcomp->signallabel);
-
-    if(skip)  continue;
 
     strlcpy(newsignalcomp->physdimension, newsignalcomp->edfhdr->edfparam[newsignalcomp->edfsignal[0]].physdimension, 9);
     remove_trailing_spaces(newsignalcomp->physdimension);
@@ -835,7 +839,9 @@ int UI_LoadMontagewindow::LoadButtonClicked()
         if(mainwindow->rc_cmd_in_progress)
         {
           free(err_ptr);
+          err_ptr = NULL;
           free(newsignalcomp);
+          newsignalcomp = NULL;
           xml_close(xml_hdl);
           return 206;
         }
@@ -845,7 +851,9 @@ int UI_LoadMontagewindow::LoadButtonClicked()
           QMessageBox messagewindow(QMessageBox::Critical, "Error", str2);
           messagewindow.exec();
           free(err_ptr);
+          err_ptr = NULL;
           free(newsignalcomp);
+          newsignalcomp = NULL;
           xml_close(xml_hdl);
           return 0;
         }
@@ -1012,6 +1020,7 @@ int UI_LoadMontagewindow::LoadButtonClicked()
         if(mainwindow->rc_cmd_in_progress)
         {
           free(newsignalcomp);
+          newsignalcomp = NULL;
           xml_close(xml_hdl);
           return 108;
         }
@@ -1021,6 +1030,7 @@ int UI_LoadMontagewindow::LoadButtonClicked()
           QMessageBox messagewindow(QMessageBox::Critical, "Error", str2);
           messagewindow.exec();
           free(newsignalcomp);
+          newsignalcomp = NULL;
           xml_close(xml_hdl);
           return 0;
         }
@@ -1033,6 +1043,7 @@ int UI_LoadMontagewindow::LoadButtonClicked()
           if(mainwindow->rc_cmd_in_progress)
           {
             free(newsignalcomp);
+            newsignalcomp = NULL;
             xml_close(xml_hdl);
             return 108;
           }
@@ -1042,6 +1053,7 @@ int UI_LoadMontagewindow::LoadButtonClicked()
             QMessageBox messagewindow(QMessageBox::Critical, "Error", str2);
             messagewindow.exec();
             free(newsignalcomp);
+            newsignalcomp = NULL;
             xml_close(xml_hdl);
           }
           return 0;
@@ -1175,7 +1187,9 @@ int UI_LoadMontagewindow::LoadButtonClicked()
         if(mainwindow->rc_cmd_in_progress)
         {
           free(err_ptr);
+          err_ptr = NULL;
           free(newsignalcomp);
+          newsignalcomp = NULL;
           xml_close(xml_hdl);
           return 206;
         }
@@ -1184,7 +1198,9 @@ int UI_LoadMontagewindow::LoadButtonClicked()
           QMessageBox messagewindow(QMessageBox::Critical, "Error", err_ptr);
           messagewindow.exec();
           free(err_ptr);
+          err_ptr = NULL;
           free(newsignalcomp);
+          newsignalcomp = NULL;
           xml_close(xml_hdl);
           return 0;
         }
@@ -1275,6 +1291,7 @@ int UI_LoadMontagewindow::LoadButtonClicked()
           if(mainwindow->rc_cmd_in_progress)
           {
             free(newsignalcomp);
+            newsignalcomp = NULL;
             xml_close(xml_hdl);
             return 206;
           }
@@ -1285,6 +1302,7 @@ int UI_LoadMontagewindow::LoadButtonClicked()
             QMessageBox messagewindow(QMessageBox::Critical, "Error", str2);
             messagewindow.exec();
             free(newsignalcomp);
+            newsignalcomp = NULL;
             xml_close(xml_hdl);
             return 0;
           }
@@ -1296,6 +1314,7 @@ int UI_LoadMontagewindow::LoadButtonClicked()
           if(mainwindow->rc_cmd_in_progress)
           {
             free(newsignalcomp);
+            newsignalcomp = NULL;
             xml_close(xml_hdl);
             return 206;
           }
@@ -1306,6 +1325,7 @@ int UI_LoadMontagewindow::LoadButtonClicked()
             QMessageBox messagewindow(QMessageBox::Critical, "Error", str2);
             messagewindow.exec();
             free(newsignalcomp);
+            newsignalcomp = NULL;
             xml_close(xml_hdl);
             return 0;
           }
@@ -1401,6 +1421,7 @@ int UI_LoadMontagewindow::LoadButtonClicked()
               if(mainwindow->rc_cmd_in_progress)
               {
                 free(newsignalcomp);
+                newsignalcomp = NULL;
                 xml_close(xml_hdl);
                 return 206;
               }
@@ -1410,6 +1431,7 @@ int UI_LoadMontagewindow::LoadButtonClicked()
                 QMessageBox messagewindow(QMessageBox::Critical, "Error", str2);
                 messagewindow.exec();
                 free(newsignalcomp);
+                newsignalcomp = NULL;
                 xml_close(xml_hdl);
                 return 0;
               }
@@ -1472,6 +1494,7 @@ int UI_LoadMontagewindow::LoadButtonClicked()
             if(mainwindow->rc_cmd_in_progress)
             {
               free(newsignalcomp);
+              newsignalcomp = NULL;
               xml_close(xml_hdl);
               return 206;
             }
@@ -1481,6 +1504,7 @@ int UI_LoadMontagewindow::LoadButtonClicked()
               QMessageBox messagewindow(QMessageBox::Critical, "Error", str2);
               messagewindow.exec();
               free(newsignalcomp);
+              newsignalcomp = NULL;
               xml_close(xml_hdl);
               return 0;
             }

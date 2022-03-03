@@ -326,6 +326,8 @@ void remove_trailing_spaces(char *str)
 
   len = strlen(str);
 
+  if(!len) return;
+
   for(i=(len-1); i>=0; i--)
   {
     if(str[i]!=' ')  break;
