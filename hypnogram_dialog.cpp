@@ -233,7 +233,7 @@ void UI_hypnogram_window::start_button_clicked()
   strlcpy(dock_param.stage_name[4], stage5_edit->text().toLatin1().data(), 32);
   strlcpy(dock_param.stage_name[5], stage6_edit->text().toLatin1().data(), 32);
 
-  for(i=0; i<6; i++)
+  for(i=0; i<HYPNOGRAM_STAGENUM; i++)
   {
     trim_spaces(dock_param.stage_name[i]);
 
@@ -247,7 +247,7 @@ void UI_hypnogram_window::start_button_clicked()
   strlcpy(dock_param.annot_name[4], annot5_edit->text().toLatin1().data(), 32);
   strlcpy(dock_param.annot_name[5], annot6_edit->text().toLatin1().data(), 32);
 
-  for(i=0; i<6; i++)
+  for(i=0; i<HYPNOGRAM_STAGENUM; i++)
   {
     trim_spaces(dock_param.annot_name[i]);
 

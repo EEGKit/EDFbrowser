@@ -30,7 +30,7 @@
 
 int UI_Mainwindow::read_session_file(const char *path_session)
 {
-  int i, n=0, r,
+  int i, j, n=0, r,
       tmp,
       skip,
       found,
@@ -54,7 +54,8 @@ int UI_Mainwindow::read_session_file(const char *path_session)
       sf,
       n_taps,
       sense,
-      use_relative_path=0;
+      use_relative_path=0,
+      hdr_idx=0;
 
   char result[XML_STRBUFLEN],
        scratchpad[2048]="",
@@ -75,6 +76,10 @@ int UI_Mainwindow::read_session_file(const char *path_session)
   struct xml_handle *xml_hdl=NULL;
 
   struct signalcompblock *newsignalcomp=NULL;
+
+  struct hypnogram_dock_param_struct dock_param;
+
+  memset(&dock_param, 0, sizeof(struct hypnogram_dock_param_struct));
 
   if(path_session == NULL) return -999;
 
@@ -1692,6 +1697,112 @@ int UI_Mainwindow::read_session_file(const char *path_session)
 
         xml_go_up(xml_hdl);
       }
+
+      xml_go_up(xml_hdl);
+    }
+    else
+    {
+      break;
+    }
+  }
+
+  xml_goto_root(xml_hdl);
+
+  for(i=0; i<MAXHYPNOGRAMDOCKS; i++)
+  {
+    if(!(xml_goto_nth_element_inside(xml_hdl, "hypnogram", i)))
+    {
+      memset(&dock_param, 0, sizeof(struct hypnogram_dock_param_struct));
+
+      if(xml_goto_nth_element_inside(xml_hdl, "instance_num", 0))
+      {
+        return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+      }
+      else
+      {
+        if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+        {
+          return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        }
+
+        dock_param.instance_num = atoi(result);
+        if((dock_param.instance_num < 0) || (dock_param.instance_num >= MAXHYPNOGRAMDOCKS))
+        {
+          xml_go_up(xml_hdl);
+
+          continue;
+        }
+
+        xml_go_up(xml_hdl);
+      }
+
+      if(xml_goto_nth_element_inside(xml_hdl, "hdr_idx", 0))
+      {
+        return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+      }
+      else
+      {
+        if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+        {
+          return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        }
+
+        hdr_idx = atoi(result);
+        if((hdr_idx < 0) || (hdr_idx >= files_open))
+        {
+          xml_go_up(xml_hdl);
+
+          continue;
+        }
+
+        dock_param.edfhdr = edfheaderlist[hdr_idx];
+
+        xml_go_up(xml_hdl);
+      }
+
+      for(j=0; j<HYPNOGRAM_STAGENUM; j++)
+      {
+        if(xml_goto_nth_element_inside(xml_hdl, "stage_name", j))
+        {
+          return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        }
+
+        if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+        {
+          return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        }
+
+        strlcpy(dock_param.stage_name[j], result, 32);
+
+        xml_go_up(xml_hdl);
+      }
+
+      for(j=0; j<HYPNOGRAM_STAGENUM; j++)
+      {
+        if(xml_goto_nth_element_inside(xml_hdl, "annot_name", j))
+        {
+          return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        }
+
+        if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+        {
+          return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        }
+
+        strlcpy(dock_param.annot_name[j], result, 32);
+
+        xml_go_up(xml_hdl);
+      }
+
+      hypnogram_dock[dock_param.instance_num] = new UI_hypnogram_dock(this, dock_param);
+
+      addToolBar(Qt::BottomToolBarArea, hypnogram_dock[dock_param.instance_num]->hypnogram_dock);
+
+      insertToolBarBreak(hypnogram_dock[dock_param.instance_num]->hypnogram_dock);
+
+      dock_param.edfhdr->hypnogram_idx[dock_param.instance_num] = dock_param.instance_num + 1;
+
+      QObject::connect(this, SIGNAL(annot_docklist_changed()), hypnogram_dock[dock_param.instance_num], SLOT(update_curve()));
 
       xml_go_up(xml_hdl);
     }

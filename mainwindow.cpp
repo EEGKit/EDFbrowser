@@ -381,7 +381,7 @@ void UI_Mainwindow::save_file()
 
 void UI_Mainwindow::save_session()
 {
-  int i, j, k, use_index=0;
+  int i, j, k, hdr_idx=0, use_index=0;
 
   if(!files_open)
   {
@@ -717,7 +717,34 @@ void UI_Mainwindow::save_session()
   {
     if(hypnogram_dock[i] == NULL)  continue;
 
+    for(hdr_idx=0; hdr_idx<files_open; hdr_idx++)
+    {
+      if(edfheaderlist[hdr_idx] == hypnogram_dock[i]->param.edfhdr)
+      {
+        break;
+      }
+    }
+    if(hdr_idx == files_open)  continue;
+
     fprintf(pro_file, "  <hypnogram>\n");
+
+    fprintf(pro_file, "    <instance_num>%i</instance_num>\n", hypnogram_dock[i]->param.instance_num);
+
+    for(j=0; j<HYPNOGRAM_STAGENUM; j++)
+    {
+      fprintf(pro_file, "    <stage_name>");
+      xml_fwrite_encode_entity(pro_file, hypnogram_dock[i]->param.stage_name[j]);
+      fprintf(pro_file, "</stage_name>\n");
+    }
+
+    for(j=0; j<HYPNOGRAM_STAGENUM; j++)
+    {
+      fprintf(pro_file, "    <annot_name>");
+      xml_fwrite_encode_entity(pro_file, hypnogram_dock[i]->param.annot_name[j]);
+      fprintf(pro_file, "</annot_name>\n");
+    }
+
+    fprintf(pro_file, "    <hdr_idx>%i</hdr_idx>\n", hdr_idx);
 
     fprintf(pro_file, "  </hypnogram>\n");
   }

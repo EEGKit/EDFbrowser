@@ -40,6 +40,9 @@
 #include "edf_annot_list.h"
 
 
+#define HYPNOGRAM_STAGENUM   (6)
+
+
 class UI_Mainwindow;
 class simple_tracking_indicator2;
 class simple_ruler_indicator2;
@@ -49,8 +52,8 @@ class hypnogram_curve_widget;
 struct hypnogram_dock_param_struct
 {
   int instance_num;
-  char stage_name[6][32];
-  char annot_name[6][32];
+  char stage_name[HYPNOGRAM_STAGENUM][32];
+  char annot_name[HYPNOGRAM_STAGENUM][32];
   struct edfhdrblock *edfhdr;
   UI_Mainwindow  *mainwindow;
 };
@@ -71,12 +74,12 @@ public:
   double w_scaling,
          h_scaling;
 
+  struct hypnogram_dock_param_struct param;
+
 public slots:
   void update_curve(void);
 
 private:
-
-  struct hypnogram_dock_param_struct param;
 
   simple_tracking_indicator2 *trck_indic;
 

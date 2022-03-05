@@ -283,7 +283,7 @@ void simple_ruler_indicator2::paintEvent(QPaintEvent *)
 
   painter.drawLine(w - 4, offset, w - 4, h - offset);
 
-  for(i=0; i<6; i++)
+  for(i=0; i<HYPNOGRAM_STAGENUM; i++)
   {
     painter.drawLine(w - 4, (int)((pixel_per_unit * i) + 0.5 + offset), w - 13, (int)((pixel_per_unit * i) + 0.5 + offset));
 
@@ -366,7 +366,7 @@ void hypnogram_curve_widget::paintEvent(QPaintEvent *)
     strlcpy(str, annot->description, 48);
     trim_spaces(str);
 
-    for(j=0; j<6; j++)
+    for(j=0; j<HYPNOGRAM_STAGENUM; j++)
     {
       if(!strcmp(str, param.annot_name[j]))
       {
