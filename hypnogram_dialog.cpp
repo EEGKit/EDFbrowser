@@ -260,7 +260,7 @@ void UI_hypnogram_window::start_button_clicked()
 
   mainwindow->insertToolBarBreak(mainwindow->hypnogram_dock[instance_num]->hypnogram_dock);
 
-  edfhdr->hypnogram_dock[instance_num] = instance_num + 1;
+  edfhdr->hypnogram_idx[instance_num] = instance_num + 1;
 
   QObject::connect(mainwindow, SIGNAL(annot_docklist_changed()), mainwindow->hypnogram_dock[instance_num], SLOT(update_curve()));
 

@@ -713,6 +713,15 @@ void UI_Mainwindow::save_session()
     }
   }
 
+  for(i=0; i<MAXHYPNOGRAMDOCKS; i++)
+  {
+    if(hypnogram_dock[i] == NULL)  continue;
+
+    fprintf(pro_file, "  <hypnogram>\n");
+
+    fprintf(pro_file, "  </hypnogram>\n");
+  }
+
   fprintf(pro_file, "</" PROGRAM_NAME "_session>\n");
 
   fclose(pro_file);
@@ -2779,7 +2788,7 @@ void UI_Mainwindow::close_file_action_func(QAction *action)
 
   for(i=0; i<MAXHYPNOGRAMDOCKS; i++)
   {
-    inst_num = edfheaderlist[file_n]->hypnogram_dock[i];
+    inst_num = edfheaderlist[file_n]->hypnogram_idx[i];
 
     if(inst_num > 0)
     {
@@ -2790,7 +2799,7 @@ void UI_Mainwindow::close_file_action_func(QAction *action)
         hypnogram_dock[inst_num - 1] = NULL;
       }
 
-      edfheaderlist[file_n]->hypnogram_dock[i] = 0;
+      edfheaderlist[file_n]->hypnogram_idx[i] = 0;
     }
   }
 
@@ -3083,7 +3092,7 @@ void UI_Mainwindow::close_all_files()
 
     for(i=0; i<MAXHYPNOGRAMDOCKS; i++)
     {
-      inst_num = edfheaderlist[files_open]->hypnogram_dock[i];
+      inst_num = edfheaderlist[files_open]->hypnogram_idx[i];
 
       if(inst_num > 0)
       {
@@ -3094,7 +3103,7 @@ void UI_Mainwindow::close_all_files()
           hypnogram_dock[inst_num - 1] = NULL;
         }
 
-        edfheaderlist[files_open]->hypnogram_dock[i] = 0;
+        edfheaderlist[files_open]->hypnogram_idx[i] = 0;
       }
     }
 

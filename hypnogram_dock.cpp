@@ -103,7 +103,7 @@ UI_hypnogram_dock::~UI_hypnogram_dock()
 
     mainwindow->removeToolBar(hypnogram_dock);
 
-    param.edfhdr->hypnogram_dock[param.instance_num] = 0;
+    param.edfhdr->hypnogram_idx[param.instance_num] = 0;
 
     mainwindow->hypnogram_dock[param.instance_num] = NULL;
   }
@@ -122,7 +122,7 @@ void UI_hypnogram_dock::hypnogram_dock_destroyed(QObject *)
   {
     is_deleted = 1;
 
-    param.edfhdr->hypnogram_dock[param.instance_num] = 0;
+    param.edfhdr->hypnogram_idx[param.instance_num] = 0;
 
     mainwindow->hypnogram_dock[param.instance_num] = NULL;
   }

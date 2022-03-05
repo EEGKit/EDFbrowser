@@ -226,7 +226,7 @@ struct edfhdrblock{
         struct    edfparamblock *edfparam;
         struct    annotation_list annot_list;
         char      unique_annotations_list[MAX_UNIQUE_ANNOTATIONS][MAX_ANNOTATION_LEN];
-        int       hypnogram_dock[MAXHYPNOGRAMDOCKS];
+        int       hypnogram_idx[MAXHYPNOGRAMDOCKS];
         int       hrv_dock[MAXHRVDOCKS];
       };
 
