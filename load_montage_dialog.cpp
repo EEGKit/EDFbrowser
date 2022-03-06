@@ -212,7 +212,7 @@ int UI_LoadMontagewindow::LoadButtonClicked()
     {
       for(i=0; i<MAXCDSADOCKS; i++)
       {
-        p = mainwindow->signalcomp[k]->cdsa_dock[i];
+        p = mainwindow->signalcomp[k]->cdsa_idx[i];
 
         if(p != 0)
         {

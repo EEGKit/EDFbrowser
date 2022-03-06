@@ -48,12 +48,13 @@
 class UI_Mainwindow;
 
 
+
 class UI_cdsa_window : public QObject
 {
   Q_OBJECT
 
 public:
-  UI_cdsa_window(QWidget *, struct signalcompblock *, int);
+  UI_cdsa_window(QWidget *, struct signalcompblock *, int, struct cdsa_dock_param_struct *p_par=NULL);
 
   UI_Mainwindow  *mainwindow;
 
@@ -62,6 +63,8 @@ private:
   int sf, cdsa_instance_nr, export_data;
 
   struct signalcompblock *signalcomp;
+
+  struct cdsa_dock_param_struct *no_dialog_params;
 
   QDialog       *myobjectDialog;
 

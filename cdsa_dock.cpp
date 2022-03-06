@@ -133,9 +133,9 @@ UI_cdsa_dock::~UI_cdsa_dock()
 
     cdsa_dock->close();
 
-    param.signalcomp->cdsa_dock[param.instance_nr] = 0;
+    param.signalcomp->cdsa_idx[param.instance_num] = 0;
 
-    mainwindow->cdsa_dock[param.instance_nr] = NULL;
+    mainwindow->cdsa_dock[param.instance_num] = NULL;
   }
 }
 
@@ -146,9 +146,9 @@ void UI_cdsa_dock::cdsa_dock_destroyed(QObject *)
   {
     is_deleted = 1;
 
-    param.signalcomp->cdsa_dock[param.instance_nr] = 0;
+    param.signalcomp->cdsa_idx[param.instance_num] = 0;
 
-    mainwindow->cdsa_dock[param.instance_nr] = NULL;
+    mainwindow->cdsa_dock[param.instance_num] = NULL;
   }
 
   delete this;

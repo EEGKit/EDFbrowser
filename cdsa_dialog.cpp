@@ -32,11 +32,15 @@
 
 
 
-UI_cdsa_window::UI_cdsa_window(QWidget *w_parent, struct signalcompblock *signal_comp, int numb)
+UI_cdsa_window::UI_cdsa_window(QWidget *w_parent, struct signalcompblock *signal_comp, int numb, struct cdsa_dock_param_struct *p_par)
 {
-  char str[1024]={""};
+  char str[1024]="";
+
+  myobjectDialog = NULL;
 
   mainwindow = (UI_Mainwindow *)w_parent;
+
+  no_dialog_params = p_par;
 
   signalcomp = signal_comp;
 
@@ -48,6 +52,15 @@ UI_cdsa_window::UI_cdsa_window(QWidget *w_parent, struct signalcompblock *signal
   if(!sf)
   {
     sf = signalcomp->edfhdr->edfparam[signalcomp->edfsignal[0]].sf_f + 0.5;
+  }
+
+  if(no_dialog_params)
+  {
+    no_dialog_params->sf = sf;
+
+    start_button_clicked();
+
+    return;
   }
 
   snprintf(str, 1024, "Color Density Spectral Array   %s", signalcomp->signallabel);
@@ -436,14 +449,7 @@ void UI_cdsa_window::start_button_clicked()
 
   FILE *dat_f=NULL;
 
-  if(export_data_checkbox->checkState() == Qt::Checked)
-  {
-    export_data = 1;
-  }
-  else
-  {
-    export_data = 0;
-  }
+  export_data = 0;
 
   for(i=0; i<256; i++)
   {
@@ -494,77 +500,144 @@ void UI_cdsa_window::start_button_clicked()
     rgb_map[i][2] = i - 1530;
   }
 
-  if(log_checkbox->checkState() == Qt::Checked)
+  if(myobjectDialog)
   {
-    log_density = 1;
-  }
-  mainwindow->cdsa_log = log_density;
-
-  if(pwr_voltage_checkbox->checkState() == Qt::Checked)
-  {
-    power_density = 1;
-  }
-  mainwindow->cdsa_pwr_voltage = power_density;
-
-  samples_in_file = (long long)signalcomp->edfhdr->datarecords * (long long)signalcomp->edfhdr->edfparam[signalcomp->edfsignal[0]].smp_per_record;
-
-//  printf("start_button_clicked(): samples_in_file: %lli\n", samples_in_file);
-
-  segmentlen = segmentlen_spinbox->value();
-  mainwindow->cdsa_segmentlen = segmentlen;
-
-  blocklen = blocklen_spinbox->value();
-  mainwindow->cdsa_blocklen = blocklen;
-
-  h_min = min_hz_spinbox->value();
-  mainwindow->cdsa_min_hz = h_min;
-
-  h_max = max_hz_spinbox->value();
-  mainwindow->cdsa_max_hz = h_max;
-
-  if(power_density)
-  {
-    if(log_density)
+    if(export_data_checkbox->checkState() == Qt::Checked)
     {
-      v_scale = 1785.0 / ((max_pwr_spinbox->value() - min_pwr_spinbox->value()) / 10.0);
+      export_data = 1;
+    }
 
-      log_minimum_offset = min_pwr_spinbox->value() / 10.0;
+    if(log_checkbox->checkState() == Qt::Checked)
+    {
+      log_density = 1;
+    }
+    mainwindow->cdsa_log = log_density;
+
+    if(pwr_voltage_checkbox->checkState() == Qt::Checked)
+    {
+      power_density = 1;
+    }
+    mainwindow->cdsa_pwr_voltage = power_density;
+
+    segmentlen = segmentlen_spinbox->value();
+    mainwindow->cdsa_segmentlen = segmentlen;
+
+    blocklen = blocklen_spinbox->value();
+    mainwindow->cdsa_blocklen = blocklen;
+
+    h_min = min_hz_spinbox->value();
+    mainwindow->cdsa_min_hz = h_min;
+
+    h_max = max_hz_spinbox->value();
+    mainwindow->cdsa_max_hz = h_max;
+
+    if(power_density)
+    {
+      if(log_density)
+      {
+        v_scale = 1785.0 / ((max_pwr_spinbox->value() - min_pwr_spinbox->value()) / 10.0);
+
+        log_minimum_offset = min_pwr_spinbox->value() / 10.0;
+      }
+      else
+      {
+        v_scale = 1785.0 / (max_voltage_spinbox->value() * max_voltage_spinbox->value());
+      }
     }
     else
     {
-      v_scale = 1785.0 / (max_voltage_spinbox->value() * max_voltage_spinbox->value());
-    }
-  }
-  else
-  {
-    if(log_density)
-    {
-      v_scale = 1785.0 / ((max_pwr_spinbox->value() - min_pwr_spinbox->value()) / 20.0);
+      if(log_density)
+      {
+        v_scale = 1785.0 / ((max_pwr_spinbox->value() - min_pwr_spinbox->value()) / 20.0);
 
-      log_minimum_offset = min_pwr_spinbox->value() / 20.0;
+        log_minimum_offset = min_pwr_spinbox->value() / 20.0;
+      }
+      else
+      {
+        v_scale = 1785.0 / max_voltage_spinbox->value();
+      }
+    }
+
+    mainwindow->cdsa_max_pwr = max_pwr_spinbox->value();
+    mainwindow->cdsa_min_pwr = min_pwr_spinbox->value();
+    mainwindow->cdsa_max_voltage = max_voltage_spinbox->value();
+
+    window_func = windowfunc_combobox->currentIndex();
+    mainwindow->cdsa_window_func = window_func;
+
+    overlap = overlap_combobox->currentIndex() + 1;
+    mainwindow->cdsa_overlap = overlap;
+  }
+  else  // no dialog
+  {
+    export_data = 0;
+
+    log_density = no_dialog_params->log;
+    mainwindow->cdsa_log = log_density;
+
+    power_density = no_dialog_params->power_voltage;
+    mainwindow->cdsa_pwr_voltage = power_density;
+
+    segmentlen = no_dialog_params->segment_len;
+    mainwindow->cdsa_segmentlen = segmentlen;
+
+    blocklen = no_dialog_params->block_len;
+    mainwindow->cdsa_blocklen = blocklen;
+
+    h_min = no_dialog_params->min_hz;
+    mainwindow->cdsa_min_hz = h_min;
+
+    h_max = no_dialog_params->max_hz;
+    mainwindow->cdsa_max_hz = h_max;
+
+    mainwindow->cdsa_max_pwr = no_dialog_params->max_pwr;
+    mainwindow->cdsa_min_pwr = no_dialog_params->min_pwr;
+    mainwindow->cdsa_max_voltage = no_dialog_params->max_voltage;
+
+    if(power_density)
+    {
+      if(log_density)
+      {
+        v_scale = 1785.0 / ((no_dialog_params->max_pwr - no_dialog_params->min_pwr) / 10.0);
+
+        log_minimum_offset = no_dialog_params->min_pwr / 10.0;
+      }
+      else
+      {
+        v_scale = 1785.0 / (no_dialog_params->max_voltage * no_dialog_params->max_voltage);
+      }
     }
     else
     {
-      v_scale = 1785.0 / max_voltage_spinbox->value();
+      if(log_density)
+      {
+        v_scale = 1785.0 / ((no_dialog_params->max_pwr - no_dialog_params->min_pwr) / 20.0);
+
+        log_minimum_offset = no_dialog_params->min_pwr / 20.0;
+      }
+      else
+      {
+        v_scale = 1785.0 / no_dialog_params->max_voltage;
+      }
     }
+
+    window_func = no_dialog_params->window_func;
+    mainwindow->cdsa_window_func = window_func;
+
+    overlap = no_dialog_params->overlap;
+    mainwindow->cdsa_overlap = overlap;
   }
-
-  mainwindow->cdsa_max_pwr = max_pwr_spinbox->value();
-  mainwindow->cdsa_min_pwr = min_pwr_spinbox->value();
-  mainwindow->cdsa_max_voltage = max_voltage_spinbox->value();
-
-  window_func = windowfunc_combobox->currentIndex();
-  mainwindow->cdsa_window_func = window_func;
-
-  overlap = overlap_combobox->currentIndex() + 1;
-  mainwindow->cdsa_overlap = overlap;
 
   smpls_in_segment = sf * segmentlen;
 
   smpl_in_block = sf * blocklen;
 
+  samples_in_file = (long long)signalcomp->edfhdr->datarecords * (long long)signalcomp->edfhdr->edfparam[signalcomp->edfsignal[0]].smp_per_record;
+
   segments_in_recording = samples_in_file / (long long)smpls_in_segment;
 
+//   printf("start_button_clicked(): samples_in_file: %lli\n", samples_in_file);
+//
 //   printf("start_button_clicked(): sf: %i\n", sf);
 //
 //   printf("start_button_clicked(): segmentlen: %i\n", segmentlen);
@@ -860,7 +933,7 @@ void UI_cdsa_window::start_button_clicked()
   dock_param.pxm = pxm;
   dock_param.segment_len = segmentlen;
   dock_param.segments_in_recording = segments_in_recording;
-  dock_param.instance_nr = cdsa_instance_nr;
+  dock_param.instance_num = cdsa_instance_nr;
 
   if(log_density)
   {
@@ -875,7 +948,7 @@ void UI_cdsa_window::start_button_clicked()
 
   mainwindow->cdsa_dock[cdsa_instance_nr] = new UI_cdsa_dock(mainwindow, dock_param);
 
-  signalcomp->cdsa_dock[cdsa_instance_nr] = cdsa_instance_nr + 1;
+  signalcomp->cdsa_idx[cdsa_instance_nr] = cdsa_instance_nr + 1;
 
   pxm = NULL;
 
@@ -885,7 +958,10 @@ void UI_cdsa_window::start_button_clicked()
     dat_f = NULL;
   }
 
-  myobjectDialog->close();
+  if(myobjectDialog)
+  {
+    myobjectDialog->close();
+  }
 }
 
 

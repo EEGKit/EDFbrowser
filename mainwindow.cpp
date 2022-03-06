@@ -381,7 +381,7 @@ void UI_Mainwindow::save_file()
 
 void UI_Mainwindow::save_session()
 {
-  int i, j, k, hdr_idx=0, use_index=0;
+  int i, j, k, hdr_idx=0, sigcomp_idx=0, use_index=0;
 
   if(!files_open)
   {
@@ -747,6 +747,50 @@ void UI_Mainwindow::save_session()
     fprintf(pro_file, "    <hdr_idx>%i</hdr_idx>\n", hdr_idx);
 
     fprintf(pro_file, "  </hypnogram>\n");
+  }
+
+  for(i=0; i<MAXCDSADOCKS; i++)
+  {
+    if(cdsa_dock[i] == NULL)  continue;
+
+    for(sigcomp_idx=0; sigcomp_idx<signalcomps; sigcomp_idx++)
+    {
+      if(signalcomp[sigcomp_idx] == cdsa_dock[i]->param.signalcomp)
+      {
+        break;
+      }
+    }
+    if(sigcomp_idx == signalcomps)  continue;
+
+    fprintf(pro_file, "  <cdsa>\n");
+
+    fprintf(pro_file, "    <sigcomp_idx>%i</sigcomp_idx>\n", sigcomp_idx);
+
+    fprintf(pro_file, "    <min_hz>%i</min_hz>\n", cdsa_dock[i]->param.min_hz);
+
+    fprintf(pro_file, "    <max_hz>%i</max_hz>\n", cdsa_dock[i]->param.max_hz);
+
+    fprintf(pro_file, "    <segment_len>%i</segment_len>\n", cdsa_dock[i]->param.segment_len);
+
+    fprintf(pro_file, "    <block_len>%i</block_len>\n", cdsa_dock[i]->param.block_len);
+
+    fprintf(pro_file, "    <overlap>%i</overlap>\n", cdsa_dock[i]->param.overlap);
+
+    fprintf(pro_file, "    <window_func>%i</window_func>\n", cdsa_dock[i]->param.window_func);
+
+    fprintf(pro_file, "    <max_voltage>%.10e</max_voltage>\n", cdsa_dock[i]->param.max_voltage);
+
+    fprintf(pro_file, "    <max_pwr>%i</max_pwr>\n", cdsa_dock[i]->param.max_pwr);
+
+    fprintf(pro_file, "    <min_pwr>%i</min_pwr>\n", cdsa_dock[i]->param.min_pwr);
+
+    fprintf(pro_file, "    <log>%i</log>\n", cdsa_dock[i]->param.log);
+
+    fprintf(pro_file, "    <power_voltage>%i</power_voltage>\n", cdsa_dock[i]->param.power_voltage);
+
+    fprintf(pro_file, "    <instance_num>%i</instance_num>\n", cdsa_dock[i]->param.instance_num);
+
+    fprintf(pro_file, "  </cdsa>\n");
   }
 
   fprintf(pro_file, "</" PROGRAM_NAME "_session>\n");
@@ -2874,7 +2918,7 @@ void UI_Mainwindow::close_file_action_func(QAction *action)
 
       for(i=0; i<MAXCDSADOCKS; i++)
       {
-        p = signalcomp[j]->cdsa_dock[i];
+        p = signalcomp[j]->cdsa_idx[i];
 
         if(p != 0)
         {
@@ -4984,7 +5028,7 @@ void UI_Mainwindow::remove_signalcomp(int signal_nr)
 
   for(i=0; i<MAXCDSADOCKS; i++)
   {
-    p = signalcomp[signal_nr]->cdsa_dock[i];
+    p = signalcomp[signal_nr]->cdsa_idx[i];
 
     if(p != 0)
     {

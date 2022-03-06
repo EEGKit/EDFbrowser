@@ -68,8 +68,9 @@ struct cdsa_dock_param_struct
   int log;
   int power_voltage;
   QPixmap *pxm;
-  int instance_nr;
+  int instance_num;
   char unit[32];
+  int no_dialog;
 };
 
 
@@ -88,9 +89,9 @@ public:
   double w_scaling,
          h_scaling;
 
-private:
-
   struct cdsa_dock_param_struct param;
+
+private:
 
   simple_tracking_indicator *trck_indic;
   simple_ruler_indicator     *srl_indic;

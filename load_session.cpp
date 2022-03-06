@@ -55,7 +55,8 @@ int UI_Mainwindow::read_session_file(const char *path_session)
       n_taps,
       sense,
       use_relative_path=0,
-      hdr_idx=0;
+      hdr_idx=0,
+      sigcomp_idx=0;
 
   char result[XML_STRBUFLEN],
        scratchpad[2048]="",
@@ -77,9 +78,13 @@ int UI_Mainwindow::read_session_file(const char *path_session)
 
   struct signalcompblock *newsignalcomp=NULL;
 
-  struct hypnogram_dock_param_struct dock_param;
+  struct hypnogram_dock_param_struct hypnogram_param;
 
-  memset(&dock_param, 0, sizeof(struct hypnogram_dock_param_struct));
+  memset(&hypnogram_param, 0, sizeof(struct hypnogram_dock_param_struct));
+
+  struct cdsa_dock_param_struct cdsa_param;
+
+  memset(&cdsa_param, 0, sizeof(struct cdsa_dock_param_struct));
 
   if(path_session == NULL) return -999;
 
@@ -1712,7 +1717,7 @@ int UI_Mainwindow::read_session_file(const char *path_session)
   {
     if(!(xml_goto_nth_element_inside(xml_hdl, "hypnogram", i)))
     {
-      memset(&dock_param, 0, sizeof(struct hypnogram_dock_param_struct));
+      memset(&hypnogram_param, 0, sizeof(struct hypnogram_dock_param_struct));
 
       if(xml_goto_nth_element_inside(xml_hdl, "instance_num", 0))
       {
@@ -1725,11 +1730,11 @@ int UI_Mainwindow::read_session_file(const char *path_session)
           return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
         }
 
-        dock_param.instance_num = atoi(result);
-        if((dock_param.instance_num < 0) || (dock_param.instance_num >= MAXHYPNOGRAMDOCKS))
+        hypnogram_param.instance_num = atoi(result);
+        if((hypnogram_param.instance_num < 0) || (hypnogram_param.instance_num >= MAXHYPNOGRAMDOCKS))
         {
           xml_go_up(xml_hdl);
-
+          xml_go_up(xml_hdl);
           continue;
         }
 
@@ -1751,11 +1756,11 @@ int UI_Mainwindow::read_session_file(const char *path_session)
         if((hdr_idx < 0) || (hdr_idx >= files_open))
         {
           xml_go_up(xml_hdl);
-
+          xml_go_up(xml_hdl);
           continue;
         }
 
-        dock_param.edfhdr = edfheaderlist[hdr_idx];
+        hypnogram_param.edfhdr = edfheaderlist[hdr_idx];
 
         xml_go_up(xml_hdl);
       }
@@ -1772,7 +1777,7 @@ int UI_Mainwindow::read_session_file(const char *path_session)
           return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
         }
 
-        strlcpy(dock_param.stage_name[j], result, 32);
+        strlcpy(hypnogram_param.stage_name[j], result, 32);
 
         xml_go_up(xml_hdl);
       }
@@ -1789,20 +1794,355 @@ int UI_Mainwindow::read_session_file(const char *path_session)
           return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
         }
 
-        strlcpy(dock_param.annot_name[j], result, 32);
+        strlcpy(hypnogram_param.annot_name[j], result, 32);
 
         xml_go_up(xml_hdl);
       }
 
-      hypnogram_dock[dock_param.instance_num] = new UI_hypnogram_dock(this, dock_param);
+      hypnogram_dock[hypnogram_param.instance_num] = new UI_hypnogram_dock(this, hypnogram_param);
 
-      addToolBar(Qt::BottomToolBarArea, hypnogram_dock[dock_param.instance_num]->hypnogram_dock);
+      addToolBar(Qt::BottomToolBarArea, hypnogram_dock[hypnogram_param.instance_num]->hypnogram_dock);
 
-      insertToolBarBreak(hypnogram_dock[dock_param.instance_num]->hypnogram_dock);
+      insertToolBarBreak(hypnogram_dock[hypnogram_param.instance_num]->hypnogram_dock);
 
-      dock_param.edfhdr->hypnogram_idx[dock_param.instance_num] = dock_param.instance_num + 1;
+      hypnogram_param.edfhdr->hypnogram_idx[hypnogram_param.instance_num] = hypnogram_param.instance_num + 1;
 
-      QObject::connect(this, SIGNAL(annot_docklist_changed()), hypnogram_dock[dock_param.instance_num], SLOT(update_curve()));
+      QObject::connect(this, SIGNAL(annot_docklist_changed()), hypnogram_dock[hypnogram_param.instance_num], SLOT(update_curve()));
+
+      xml_go_up(xml_hdl);
+    }
+    else
+    {
+      break;
+    }
+  }
+
+  for(i=0; i<MAXCDSADOCKS; i++)
+  {
+    if(!(xml_goto_nth_element_inside(xml_hdl, "cdsa", i)))
+    {
+      memset(&cdsa_param, 0, sizeof(struct cdsa_dock_param_struct));
+
+      if(xml_goto_nth_element_inside(xml_hdl, "instance_num", 0))
+      {
+        return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+      }
+      else
+      {
+        if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+        {
+          return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        }
+
+        cdsa_param.instance_num = atoi(result);
+        if((cdsa_param.instance_num < 0) || (cdsa_param.instance_num >= MAXCDSADOCKS))
+        {
+          xml_go_up(xml_hdl);
+          xml_go_up(xml_hdl);
+          continue;
+        }
+
+        xml_go_up(xml_hdl);
+      }
+
+      if(xml_goto_nth_element_inside(xml_hdl, "sigcomp_idx", 0))
+      {
+        return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+      }
+      else
+      {
+        if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+        {
+          return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        }
+
+        sigcomp_idx = atoi(result);
+        if((sigcomp_idx < 0) || (sigcomp_idx >= signalcomps))
+        {
+          xml_go_up(xml_hdl);
+          xml_go_up(xml_hdl);
+          continue;
+        }
+
+        cdsa_param.signalcomp = signalcomp[sigcomp_idx];
+
+        xml_go_up(xml_hdl);
+      }
+
+      if(xml_goto_nth_element_inside(xml_hdl, "min_hz", 0))
+      {
+        return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+      }
+      else
+      {
+        if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+        {
+          return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        }
+
+        cdsa_param.min_hz = atoi(result);
+        if(cdsa_param.min_hz < 0)
+        {
+          xml_go_up(xml_hdl);
+          xml_go_up(xml_hdl);
+          continue;
+        }
+
+        xml_go_up(xml_hdl);
+      }
+
+      if(xml_goto_nth_element_inside(xml_hdl, "max_hz", 0))
+      {
+        return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+      }
+      else
+      {
+        if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+        {
+          return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        }
+
+        cdsa_param.max_hz = atoi(result);
+        if(cdsa_param.max_hz < 0)
+        {
+          xml_go_up(xml_hdl);
+          xml_go_up(xml_hdl);
+          continue;
+        }
+
+        xml_go_up(xml_hdl);
+      }
+
+      if(xml_goto_nth_element_inside(xml_hdl, "segment_len", 0))
+      {
+        return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+      }
+      else
+      {
+        if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+        {
+          return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        }
+
+        cdsa_param.segment_len = atoi(result);
+        if((cdsa_param.segment_len < 5) || (cdsa_param.segment_len > 300))
+        {
+          xml_go_up(xml_hdl);
+          xml_go_up(xml_hdl);
+          continue;
+        }
+
+        xml_go_up(xml_hdl);
+      }
+
+      if(xml_goto_nth_element_inside(xml_hdl, "block_len", 0))
+      {
+        return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+      }
+      else
+      {
+        if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+        {
+          return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        }
+
+        cdsa_param.block_len = atoi(result);
+        if((cdsa_param.block_len < 1) || (cdsa_param.block_len > 10))
+        {
+          xml_go_up(xml_hdl);
+          xml_go_up(xml_hdl);
+          continue;
+        }
+
+        xml_go_up(xml_hdl);
+      }
+
+      if(xml_goto_nth_element_inside(xml_hdl, "overlap", 0))
+      {
+        return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+      }
+      else
+      {
+        if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+        {
+          return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        }
+
+        cdsa_param.overlap = atoi(result);
+        if((cdsa_param.overlap < 1) || (cdsa_param.overlap > 5))
+        {
+          xml_go_up(xml_hdl);
+          xml_go_up(xml_hdl);
+          continue;
+        }
+
+        xml_go_up(xml_hdl);
+      }
+
+      if(xml_goto_nth_element_inside(xml_hdl, "window_func", 0))
+      {
+        return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+      }
+      else
+      {
+        if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+        {
+          return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        }
+
+        cdsa_param.window_func = atoi(result);
+        if((cdsa_param.window_func < 0) || (cdsa_param.window_func > 12))
+        {
+          xml_go_up(xml_hdl);
+          xml_go_up(xml_hdl);
+          continue;
+        }
+
+        xml_go_up(xml_hdl);
+      }
+
+      if(xml_goto_nth_element_inside(xml_hdl, "max_voltage", 0))
+      {
+        return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+      }
+      else
+      {
+        if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+        {
+          return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        }
+
+        cdsa_param.max_voltage = atof(result);
+        if((cdsa_param.max_voltage < 1.0e-7) || (cdsa_param.max_voltage > 1.0e5))
+        {
+          xml_go_up(xml_hdl);
+          xml_go_up(xml_hdl);
+          continue;
+        }
+
+        xml_go_up(xml_hdl);
+      }
+
+      if(xml_goto_nth_element_inside(xml_hdl, "max_pwr", 0))
+      {
+        return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+      }
+      else
+      {
+        if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+        {
+          return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        }
+
+        cdsa_param.max_pwr = atoi(result);
+        if((cdsa_param.max_pwr < -159) || (cdsa_param.max_pwr > 160))
+        {
+          xml_go_up(xml_hdl);
+          xml_go_up(xml_hdl);
+          continue;
+        }
+
+        xml_go_up(xml_hdl);
+      }
+
+      if(xml_goto_nth_element_inside(xml_hdl, "min_pwr", 0))
+      {
+        return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+      }
+      else
+      {
+        if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+        {
+          return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        }
+
+        cdsa_param.min_pwr = atoi(result);
+        if((cdsa_param.min_pwr < -160) || (cdsa_param.min_pwr > 159))
+        {
+          xml_go_up(xml_hdl);
+          xml_go_up(xml_hdl);
+          continue;
+        }
+
+        xml_go_up(xml_hdl);
+      }
+
+      if(xml_goto_nth_element_inside(xml_hdl, "log", 0))
+      {
+        return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+      }
+      else
+      {
+        if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+        {
+          return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        }
+
+        cdsa_param.log = atoi(result);
+        if((cdsa_param.log < 0) || (cdsa_param.log > 1))
+        {
+          xml_go_up(xml_hdl);
+          xml_go_up(xml_hdl);
+          continue;
+        }
+
+        xml_go_up(xml_hdl);
+      }
+
+      if(xml_goto_nth_element_inside(xml_hdl, "power_voltage", 0))
+      {
+        return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+      }
+      else
+      {
+        if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+        {
+          return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        }
+
+        cdsa_param.power_voltage = atoi(result);
+        if((cdsa_param.power_voltage < 0) || (cdsa_param.power_voltage > 1))
+        {
+          xml_go_up(xml_hdl);
+          xml_go_up(xml_hdl);
+          continue;
+        }
+
+        xml_go_up(xml_hdl);
+      }
+
+      if((!files_open) || (!signalcomps) || (live_stream_active))
+      {
+        xml_go_up(xml_hdl);
+        continue;
+      }
+
+      if(cdsa_param.signalcomp->ecg_filter != NULL)
+      {
+        xml_go_up(xml_hdl);
+        continue;
+      }
+
+      if(cdsa_param.signalcomp->edfhdr->edfparam[cdsa_param.signalcomp->edfsignal[0]].sf_int < 30)
+      {
+        xml_go_up(xml_hdl);
+        continue;
+      }
+
+      if(cdsa_param.signalcomp->edfhdr->recording_len_sec < 30)
+      {
+        xml_go_up(xml_hdl);
+        continue;
+      }
+
+      for(j=0; j<MAXCDSADOCKS; j++)
+      {
+        if(cdsa_dock[j] == NULL)
+        {
+          UI_cdsa_window wndw(this, cdsa_param.signalcomp, j, &cdsa_param);
+          break;
+        }
+      }
 
       xml_go_up(xml_hdl);
     }

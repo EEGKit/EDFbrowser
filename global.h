@@ -314,7 +314,7 @@ struct signalcompblock{
         struct zratio_filter_settings *zratio_filter;
         double zratio_crossoverfreq;
         int spectr_dialog[MAXSPECTRUMDIALOGS];
-        int cdsa_dock[MAXCDSADOCKS];
+        int cdsa_idx[MAXCDSADOCKS];
         int avg_dialog[MAXAVERAGECURVEDIALOGS];
         int zscoredialog[MAXZSCOREDIALOGS];
         int annot_created_by_rect_draw_active;
