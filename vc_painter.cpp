@@ -34,7 +34,7 @@ void ViewCurve::drawCurve_stage_2(QPainter *painter, int w_width, int w_height, 
   int i, j, k, x_pix=0, x_tmp,
       signalcomps,
       baseline,
-      m_pagetime,
+      m_pagetime=10,
       vert_ruler_offset,
       vertical_distance,
       marker_x,
@@ -43,7 +43,7 @@ void ViewCurve::drawCurve_stage_2(QPainter *painter, int w_width, int w_height, 
       font_pixel_height=20,
       font_pixel_width=12;
 
-  char *viewbuf,
+  char *viewbuf=NULL,
        string[600]="",
        str2[32]="",
        str3[128]="",
@@ -292,6 +292,15 @@ void ViewCurve::drawCurve_stage_2(QPainter *painter, int w_width, int w_height, 
           ruler_pen->setColor(big_ruler_color);
           painter->setPen(*ruler_pen);
           painter->drawLine(x_pix, 0, x_pix, h);
+          if(ll_elapsed_time < 0LL)
+          {
+            snprintf(str4, 1024, "%i", ((int)((ll_elapsed_time - time_ppixel) / TIME_DIMENSION)) % 60);
+          }
+          else
+          {
+            snprintf(str4, 1024, "%i", ((int)((ll_elapsed_time + time_ppixel) / TIME_DIMENSION)) % 60);
+          }
+          painter->drawText(x_pix + 2, 20 * h_scaling, str4);
           ruler_pen->setColor(small_ruler_color);
           painter->setPen(*ruler_pen);
         }
