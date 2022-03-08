@@ -382,7 +382,9 @@ void UI_Mainwindow::save_file()
 
 void UI_Mainwindow::save_session()
 {
-  int i, j, k, hdr_idx=0, sigcomp_idx=0, use_index=0;
+  int i, j, k, hdr_idx=0, sigcomp_idx=0, use_index=0, present=0, position=0;
+
+  QAction *act=NULL;
 
   if(!files_open)
   {
@@ -797,6 +799,54 @@ void UI_Mainwindow::save_session()
   fprintf(pro_file, "</" PROGRAM_NAME "_session>\n");
 
   fclose(pro_file);
+
+  for(i=0, present=0; i<MAX_RECENTFILES; i++)
+  {
+//    printf("mainwindow.cpp: load_session(): recent_session_path[i]: ->%s<-\nsession_path: ->%s<-\n", recent_session_path[i], session_path);  //FIXME
+
+    if(!strcmp(&recent_session_path[i][0], session_path))
+    {
+      present = 1;
+
+      position = i;
+
+      break;
+    }
+  }
+
+  if(present)
+  {
+    for(i=position; i>0; i--)
+    {
+      strlcpy(&recent_session_path[i][0], &recent_session_path[i-1][0], MAX_PATH_LENGTH);
+    }
+  }
+  else
+  {
+    for(i=MAX_RECENTFILES-1; i>0; i--)
+    {
+      strlcpy(&recent_session_path[i][0], &recent_session_path[i-1][0], MAX_PATH_LENGTH);
+    }
+  }
+
+  strlcpy(&recent_session_path[0][0], session_path, MAX_PATH_LENGTH);
+
+  recent_session_menu->clear();
+
+  for(i=0; i<MAX_RECENTFILES; i++)
+  {
+    if(recent_session_path[i][0] == 0)
+    {
+      break;
+    }
+    act = new QAction(QString::fromLocal8Bit(&recent_session_path[i][0]), recent_session_menu);
+    act->setData(QVariant(i));
+    recent_session_menu->addAction(act);
+  }
+  recent_session_menu->addSeparator();
+  act = new QAction("Clear list", recent_session_menu);
+  act->setData(QVariant(MAX_RECENTFILES));
+  recent_session_menu->addAction(act);
 }
 
 
