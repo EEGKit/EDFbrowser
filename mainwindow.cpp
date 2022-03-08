@@ -210,6 +210,7 @@ void UI_Mainwindow::open_stream()
 //     shift_page_down_Act->setEnabled(false);
     printmenu->setEnabled(false);
     recent_filesmenu->setEnabled(false);
+    recent_session_menu->setEnabled(false);
     playback_file_Act->setEnabled(false);
 
     live_stream_timer->start(live_stream_update_interval);
@@ -891,6 +892,10 @@ void UI_Mainwindow::load_session()
     act->setData(QVariant(i));
     recent_session_menu->addAction(act);
   }
+  recent_session_menu->addSeparator();
+  act = new QAction("Clear list", recent_session_menu);
+  act->setData(QVariant(MAX_RECENTFILES));
+  recent_session_menu->addAction(act);
 
   err = read_session_file(session_path);
 
@@ -2131,6 +2136,10 @@ void UI_Mainwindow::open_new_file()
     act->setData(QVariant(i));
     recent_filesmenu->addAction(act);
   }
+  recent_filesmenu->addSeparator();
+  act = new QAction("Clear list", recent_filesmenu);
+  act->setData(QVariant(MAX_RECENTFILES));
+  recent_filesmenu->addAction(act);
 
   present = 0;
 
@@ -3132,6 +3141,7 @@ void UI_Mainwindow::close_all_files()
   shift_page_down_Act->setEnabled(true);
   printmenu->setEnabled(true);
   recent_filesmenu->setEnabled(true);
+  recent_session_menu->setEnabled(true);
   playback_file_Act->setEnabled(true);
 
   if(annotations_edited)
@@ -4320,21 +4330,54 @@ long long UI_Mainwindow::get_long_time(char *str)
 
 void UI_Mainwindow::recent_file_action_func(QAction *action)
 {
-  strlcpy(path, &recent_file_path[action->data().toInt()][0], MAX_PATH_LENGTH);
+  int i, idx=-1;
 
-  cmdlineargument = 1;
+  idx = action->data().toInt();
 
-  open_new_file();
+  if(idx == MAX_RECENTFILES)
+  {
+    recent_filesmenu->clear();
+
+    for(i=0; i<MAX_RECENTFILES; i++)
+    {
+      recent_file_path[i][0] = 0;
+    }
+
+    return;
+  }
+
+  if(idx < MAX_RECENTFILES)
+  {
+    strlcpy(path, &recent_file_path[idx][0], MAX_PATH_LENGTH);
+
+    cmdlineargument = 1;
+
+    open_new_file();
+  }
 }
 
 
 void UI_Mainwindow::recent_session_action_func(QAction *action)
 {
-  int i, button_nr=0, err, present=0, position=0;
+  int i, button_nr=0, err, present=0, position=0, idx=-1;
 
   char session_path[MAX_PATH_LENGTH]="";
 
   QAction *act=NULL;
+
+  idx = action->data().toInt();
+
+  if(idx == MAX_RECENTFILES)
+  {
+    recent_session_menu->clear();
+
+    for(i=0; i<MAX_RECENTFILES; i++)
+    {
+      recent_session_path[i][0] = 0;
+    }
+
+    return;
+  }
 
   if(annotations_edited)
   {
@@ -4364,7 +4407,7 @@ void UI_Mainwindow::recent_session_action_func(QAction *action)
 
   close_all_files();
 
-  strlcpy(session_path, &recent_session_path[action->data().toInt()][0], MAX_PATH_LENGTH);
+  strlcpy(session_path, &recent_session_path[idx][0], MAX_PATH_LENGTH);
   if(!strcmp(session_path, ""))
   {
     return;
@@ -4415,6 +4458,10 @@ void UI_Mainwindow::recent_session_action_func(QAction *action)
     act->setData(QVariant(i));
     recent_session_menu->addAction(act);
   }
+  recent_session_menu->addSeparator();
+  act = new QAction("Clear list", recent_session_menu);
+  act->setData(QVariant(MAX_RECENTFILES));
+  recent_session_menu->addAction(act);
 
   err = read_session_file(session_path);
 

@@ -534,6 +534,11 @@ void UI_Mainwindow::read_recent_file_settings()
         act->setData(QVariant(i));
         recent_filesmenu->addAction(act);
       }
+
+      recent_filesmenu->addSeparator();
+      act = new QAction("Clear list", recent_filesmenu);
+      act->setData(QVariant(MAX_RECENTFILES));
+      recent_filesmenu->addAction(act);
     }
 
     xml_go_up(xml_hdl);
@@ -598,6 +603,11 @@ void UI_Mainwindow::read_recent_file_settings()
         act->setData(QVariant(i));
         recent_session_menu->addAction(act);
       }
+
+      recent_session_menu->addSeparator();
+      act = new QAction("Clear list", recent_session_menu);
+      act->setData(QVariant(MAX_RECENTFILES));
+      recent_session_menu->addAction(act);
     }
 
     xml_go_up(xml_hdl);
