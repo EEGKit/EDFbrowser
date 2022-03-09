@@ -280,7 +280,7 @@ void ViewCurve::drawCurve_stage_2(QPainter *painter, int w_width, int w_height, 
         }
         else
         {
-          painter->drawLine(x_pix, 0, x_pix, 4);
+          painter->drawLine(x_pix, 0, x_pix, 4 * h_scaling);
         }
       }
 
@@ -306,11 +306,11 @@ void ViewCurve::drawCurve_stage_2(QPainter *painter, int w_width, int w_height, 
         }
         if(printing)
         {
-          painter->drawLine(x_pix, 0, x_pix, 7 * printsize_y_factor);
+          painter->drawLine(x_pix, 0, x_pix, 8 * printsize_y_factor);
         }
         else
         {
-          painter->drawLine(x_pix, 0, x_pix, 7);
+          painter->drawLine(x_pix, 0, x_pix, 8 * h_scaling);
         }
       }
 
@@ -333,7 +333,7 @@ void ViewCurve::drawCurve_stage_2(QPainter *painter, int w_width, int w_height, 
         }
         else
         {
-          painter->drawLine(x_pix, 0, x_pix, 4);
+          painter->drawLine(x_pix, 0, x_pix, 4 * h_scaling);
         }
       }
 
@@ -345,16 +345,34 @@ void ViewCurve::drawCurve_stage_2(QPainter *painter, int w_width, int w_height, 
           ruler_pen->setColor(big_ruler_color);
           painter->setPen(*ruler_pen);
           painter->drawLine(x_pix, 0, x_pix, h);
+          if(ll_elapsed_time < 0LL)
+          {
+            if(!(((int)((ll_elapsed_time - time_ppixel) / TIME_DIMENSION)) % 5))
+            {
+              snprintf(str4, 1024, "%i", ((int)((ll_elapsed_time - time_ppixel) / TIME_DIMENSION)) % 60);
+
+              painter->drawText(x_pix + 2, 20 * h_scaling, str4);
+            }
+          }
+          else
+          {
+            if(!(((int)((ll_elapsed_time + time_ppixel) / TIME_DIMENSION)) % 5))
+            {
+              snprintf(str4, 1024, "%i", ((int)((ll_elapsed_time + time_ppixel) / TIME_DIMENSION)) % 60);
+
+              painter->drawText(x_pix + 2, 20 * h_scaling, str4);
+            }
+          }
           ruler_pen->setColor(small_ruler_color);
           painter->setPen(*ruler_pen);
         }
         if(printing)
         {
-          painter->drawLine(x_pix, 0, x_pix, 7 * printsize_y_factor);
+          painter->drawLine(x_pix, 0, x_pix, 8 * printsize_y_factor);
         }
         else
         {
-          painter->drawLine(x_pix, 0, x_pix, 7);
+          painter->drawLine(x_pix, 0, x_pix, 8 * h_scaling);
         }
       }
 
@@ -377,7 +395,7 @@ void ViewCurve::drawCurve_stage_2(QPainter *painter, int w_width, int w_height, 
         }
         else
         {
-          painter->drawLine(x_pix, 0, x_pix, 4);
+          painter->drawLine(x_pix, 0, x_pix, 4 * h_scaling);
         }
       }
 
@@ -389,16 +407,34 @@ void ViewCurve::drawCurve_stage_2(QPainter *painter, int w_width, int w_height, 
           ruler_pen->setColor(big_ruler_color);
           painter->setPen(*ruler_pen);
           painter->drawLine(x_pix, 0, x_pix, h);
+          if(ll_elapsed_time < 0LL)
+          {
+            if(!(((int)((ll_elapsed_time - time_ppixel) / TIME_DIMENSION)) % 10))
+            {
+              snprintf(str4, 1024, "%i", ((int)((ll_elapsed_time - time_ppixel) / TIME_DIMENSION)) % 60);
+
+              painter->drawText(x_pix + 2, 20 * h_scaling, str4);
+            }
+          }
+          else
+          {
+            if(!(((int)((ll_elapsed_time + time_ppixel) / TIME_DIMENSION)) % 10))
+            {
+              snprintf(str4, 1024, "%i", ((int)((ll_elapsed_time + time_ppixel) / TIME_DIMENSION)) % 60);
+
+              painter->drawText(x_pix + 2, 20 * h_scaling, str4);
+            }
+          }
           ruler_pen->setColor(small_ruler_color);
           painter->setPen(*ruler_pen);
         }
         if(printing)
         {
-          painter->drawLine(x_pix, 0, x_pix, 7 * printsize_y_factor);
+          painter->drawLine(x_pix, 0, x_pix, 8 * printsize_y_factor);
         }
         else
         {
-          painter->drawLine(x_pix, 0, x_pix, 7);
+          painter->drawLine(x_pix, 0, x_pix, 8 * h_scaling);
         }
       }
 
@@ -421,7 +457,7 @@ void ViewCurve::drawCurve_stage_2(QPainter *painter, int w_width, int w_height, 
         }
         else
         {
-          painter->drawLine(x_pix, 0, x_pix, 4);
+          painter->drawLine(x_pix, 0, x_pix, 4 * h_scaling);
         }
       }
 
@@ -433,16 +469,29 @@ void ViewCurve::drawCurve_stage_2(QPainter *painter, int w_width, int w_height, 
           ruler_pen->setColor(big_ruler_color);
           painter->setPen(*ruler_pen);
           painter->drawLine(x_pix, 0, x_pix, h);
+          if(ll_elapsed_time < 0LL)
+          {
+//            printf("ll_elapsed_time: %lli    time_ppixel: %lli    result:%i\n", ll_elapsed_time, time_ppixel, ((int)((ll_elapsed_time - time_ppixel) / TIME_DIMENSION)) % 60);
+
+            snprintf(str4, 1024, "%i", ((int)((ll_elapsed_time - time_ppixel) / (TIME_DIMENSION * 60))) % 60);
+          }
+          else
+          {
+//            printf("ll_elapsed_time: %lli    time_ppixel: %lli    result:%i\n", ll_elapsed_time, time_ppixel, ((int)((ll_elapsed_time + time_ppixel) / TIME_DIMENSION)) % 60);
+
+            snprintf(str4, 1024, "%i", ((int)((ll_elapsed_time + time_ppixel) / (TIME_DIMENSION * 60))) % 60);
+          }
+          painter->drawText(x_pix + 2, 20 * h_scaling, str4);
           ruler_pen->setColor(small_ruler_color);
           painter->setPen(*ruler_pen);
         }
         if(printing)
         {
-          painter->drawLine(x_pix, 0, x_pix, 7 * printsize_y_factor);
+          painter->drawLine(x_pix, 0, x_pix, 8 * printsize_y_factor);
         }
         else
         {
-          painter->drawLine(x_pix, 0, x_pix, 7);
+          painter->drawLine(x_pix, 0, x_pix, 8 * h_scaling);
         }
       }
 
@@ -465,7 +514,7 @@ void ViewCurve::drawCurve_stage_2(QPainter *painter, int w_width, int w_height, 
         }
         else
         {
-          painter->drawLine(x_pix, 0, x_pix, 4);
+          painter->drawLine(x_pix, 0, x_pix, 4 * h_scaling);
         }
       }
 
@@ -477,16 +526,29 @@ void ViewCurve::drawCurve_stage_2(QPainter *painter, int w_width, int w_height, 
           ruler_pen->setColor(big_ruler_color);
           painter->setPen(*ruler_pen);
           painter->drawLine(x_pix, 0, x_pix, h);
+          if(ll_elapsed_time < 0LL)
+          {
+//            printf("ll_elapsed_time: %lli    time_ppixel: %lli    result:%i\n", ll_elapsed_time, time_ppixel, ((int)((ll_elapsed_time - time_ppixel) / TIME_DIMENSION)) % 3600);
+
+            snprintf(str4, 1024, "%i", ((int)((ll_elapsed_time - time_ppixel) / (TIME_DIMENSION * 3600))) % 24);
+          }
+          else
+          {
+//            printf("ll_elapsed_time: %lli    time_ppixel: %lli    result:%i\n", ll_elapsed_time, time_ppixel, ((int)((ll_elapsed_time + time_ppixel) / TIME_DIMENSION)) % 3600);
+
+            snprintf(str4, 1024, "%i", ((int)((ll_elapsed_time + time_ppixel) / (TIME_DIMENSION * 3600))) % 24);
+          }
+          painter->drawText(x_pix + 2, 20 * h_scaling, str4);
           ruler_pen->setColor(small_ruler_color);
           painter->setPen(*ruler_pen);
         }
         if(printing)
         {
-          painter->drawLine(x_pix, 0, x_pix, 7 * printsize_y_factor);
+          painter->drawLine(x_pix, 0, x_pix, 8 * printsize_y_factor);
         }
         else
         {
-          painter->drawLine(x_pix, 0, x_pix, 7);
+          painter->drawLine(x_pix, 0, x_pix, 8 * h_scaling);
         }
       }
 
@@ -509,7 +571,7 @@ void ViewCurve::drawCurve_stage_2(QPainter *painter, int w_width, int w_height, 
         }
         else
         {
-          painter->drawLine(x_pix, 0, x_pix, 4);
+          painter->drawLine(x_pix, 0, x_pix, 4 * h_scaling);
         }
       }
 
@@ -526,11 +588,11 @@ void ViewCurve::drawCurve_stage_2(QPainter *painter, int w_width, int w_height, 
         }
         if(printing)
         {
-          painter->drawLine(x_pix, 0, x_pix, 7 * printsize_y_factor);
+          painter->drawLine(x_pix, 0, x_pix, 8 * printsize_y_factor);
         }
         else
         {
-          painter->drawLine(x_pix, 0, x_pix, 7);
+          painter->drawLine(x_pix, 0, x_pix, 8 * h_scaling);
         }
       }
 
