@@ -566,6 +566,7 @@ UI_Mainwindow::UI_Mainwindow()
 
   sessionmenu = new QMenu(this);
   sessionmenu->setTitle("Session");
+  sessionmenu->addAction("View saved sessions", this, SLOT(view_session()));
   sessionmenu->addAction(save_session_act);
   sessionmenu->addSeparator();
   sessionmenu->addAction(load_session_act);

@@ -74,6 +74,7 @@
 #include "save_montage_dialog.h"
 #include "load_montage_dialog.h"
 #include "view_montage_dialog.h"
+#include "view_session_dialog.h"
 #include "show_actual_montage_dialog.h"
 #include "print_to_edf.h"
 #include "pagetime_dialog.h"
@@ -659,6 +660,7 @@ private slots:
   void save_montage();
   void load_montage();
   void view_montage();
+  void view_session();
   void show_this_montage();
   void show_help();
   void show_kb_shortcuts();

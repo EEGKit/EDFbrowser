@@ -4564,6 +4564,12 @@ void UI_Mainwindow::show_this_montage()
 }
 
 
+void UI_Mainwindow::view_session()
+{
+  UI_ViewSessionwindow view_ses(this);
+}
+
+
 void UI_Mainwindow::print_to_edf()
 {
   print_screen_to_edf(this);

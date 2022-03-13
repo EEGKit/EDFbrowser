@@ -3,7 +3,7 @@
 *
 * Author: Teunis van Beelen
 *
-* Copyright (C) 2007 - 2022 Teunis van Beelen
+* Copyright (C) 2022 Teunis van Beelen
 *
 * Email: teuniz@protonmail.com
 *
@@ -25,28 +25,28 @@
 */
 
 
-#include "view_montage_dialog.h"
+#include "view_session_dialog.h"
 
 
 
-UI_ViewMontagewindow::UI_ViewMontagewindow(QWidget *w_parent)
+UI_ViewSessionwindow::UI_ViewSessionwindow(QWidget *w_parent)
 {
   mainwindow = (UI_Mainwindow *)w_parent;
 
-  mtg_path[0] = 0;
-  mtg_dir[0] = 0;
+  session_path[0] = 0;
+  session_dir[0] = 0;
 
-  if(mainwindow->recent_montagedir[0]!=0)
+  if(mainwindow->recent_sessiondir[0]!=0)
   {
-    strlcpy(mtg_dir, mainwindow->recent_montagedir, MAX_PATH_LENGTH);
+    strlcpy(session_dir, mainwindow->recent_sessiondir, MAX_PATH_LENGTH);
   }
 
-  ViewMontageDialog = new QDialog;
-  ViewMontageDialog->setMinimumSize(500 * mainwindow->w_scaling, 300 * mainwindow->h_scaling);
-  ViewMontageDialog->setWindowTitle("View montage");
-  ViewMontageDialog->setModal(true);
-  ViewMontageDialog->setAttribute(Qt::WA_DeleteOnClose, true);
-  ViewMontageDialog->setSizeGripEnabled(true);
+  ViewSessionDialog = new QDialog;
+  ViewSessionDialog->setMinimumSize(500 * mainwindow->w_scaling, 300 * mainwindow->h_scaling);
+  ViewSessionDialog->setWindowTitle("View session");
+  ViewSessionDialog->setModal(true);
+  ViewSessionDialog->setAttribute(Qt::WA_DeleteOnClose, true);
+  ViewSessionDialog->setSizeGripEnabled(true);
 
   t_model = new QStandardItemModel(this);
 
@@ -60,7 +60,7 @@ UI_ViewMontagewindow::UI_ViewMontagewindow(QWidget *w_parent)
   tree->setAlternatingRowColors(true);
 
   SelectButton = new QPushButton;
-  SelectButton->setText("Select montage");
+  SelectButton->setText("Select session");
 
   CloseButton = new QPushButton;
   CloseButton->setText("Close");
@@ -75,20 +75,20 @@ UI_ViewMontagewindow::UI_ViewMontagewindow(QWidget *w_parent)
   vlayout1->addSpacing(20);
   vlayout1->addLayout(hlayout1);
 
-  ViewMontageDialog->setLayout(vlayout1);
+  ViewSessionDialog->setLayout(vlayout1);
 
-  QObject::connect(CloseButton,  SIGNAL(clicked()), ViewMontageDialog, SLOT(close()));
+  QObject::connect(CloseButton,  SIGNAL(clicked()), ViewSessionDialog, SLOT(close()));
   QObject::connect(SelectButton, SIGNAL(clicked()), this,              SLOT(SelectButtonClicked()));
 
-  ViewMontageDialog->exec();
+  ViewSessionDialog->exec();
 }
 
 
 
 
-void UI_ViewMontagewindow::SelectButtonClicked()
+void UI_ViewSessionwindow::SelectButtonClicked()
 {
-  int r,
+  int i, j, r,
       signalcomps_read=0,
       signals_read,
       signal_cnt,
@@ -110,13 +110,23 @@ void UI_ViewMontagewindow::SelectButtonClicked()
       plif_powerlinefrequency,
       plif_linear_threshold,
       n_taps,
-      idx_used=0;
+      idx_used=0,
+      use_relative_path=-1,
+      ref_file=0,
+      timesync_mode=0,
+      hdr_idx=0,
+      sigcomp_idx=0,
+      min_hz=0,
+      max_hz=0,
+      segment_len=0,
+      block_len=0;
 
   char result[XML_STRBUFLEN]="",
        composition_txt[2048]="",
        label[256]="",
        str2[2048]="",
-       str3[64]="";
+       str3[64]="",
+       edf_path[2048]="";
 
   double frequency,
          frequency2,
@@ -131,21 +141,23 @@ void UI_ViewMontagewindow::SelectButtonClicked()
   QStandardItem *parentItem,
                 *signalItem,
                 *filterItem,
-                *firfilterItem;
+                *firfilterItem,
+                *hypnogramItem,
+                *cdsaItem;
 
   struct xml_handle *xml_hdl;
 
 
-  strlcpy(mtg_path, QFileDialog::getOpenFileName(0, "Choose a montage", QString::fromLocal8Bit(mtg_dir), "Montage files (*.mtg *.MTG)").toLocal8Bit().data(), MAX_PATH_LENGTH);
+  strlcpy(session_path, QFileDialog::getOpenFileName(0, "Choose a session", QString::fromLocal8Bit(session_dir), "Session files (*.esf *.ESF)").toLocal8Bit().data(), MAX_PATH_LENGTH);
 
-  if(!strcmp(mtg_path, ""))
+  if(!strcmp(session_path, ""))
   {
     return;
   }
 
-  get_directory_from_path(mtg_dir, mtg_path, MAX_PATH_LENGTH);
+  get_directory_from_path(session_dir, session_path, MAX_PATH_LENGTH);
 
-  xml_hdl = xml_get_handle(mtg_path);
+  xml_hdl = xml_get_handle(session_path);
   if(xml_hdl==NULL)
   {
     QMessageBox messagewindow(QMessageBox::Critical, "Error", "Can not open file for reading.");
@@ -153,19 +165,136 @@ void UI_ViewMontagewindow::SelectButtonClicked()
     return;
   }
 
-  if(strcmp(xml_hdl->elementname[xml_hdl->level], PROGRAM_NAME "_montage"))
+  if(strcmp(xml_hdl->elementname[xml_hdl->level], PROGRAM_NAME "_session"))
   {
-    QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file.");
-    messagewindow.exec();
-    xml_close(xml_hdl);
+    view_session_format_error(__FILE__, __LINE__, xml_hdl);
     return;
   }
 
-  ViewMontageDialog->setWindowTitle(mtg_path);
+  ViewSessionDialog->setWindowTitle(session_path);
 
   t_model->clear();
 
   parentItem = t_model->invisibleRootItem();
+
+  if(xml_goto_nth_element_inside(xml_hdl, "relative_path", 0))
+  {
+    view_session_format_error(__FILE__, __LINE__, xml_hdl);
+    return;
+  }
+  if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+  {
+    view_session_format_error(__FILE__, __LINE__, xml_hdl);
+    return;
+  }
+  use_relative_path = atoi(result);
+  if((use_relative_path < 0) || (use_relative_path > 1))
+  {
+    view_session_format_error(__FILE__, __LINE__, xml_hdl);
+    return;
+  }
+  if(use_relative_path)
+  {
+    parentItem->appendRow(new QStandardItem("paths are relative"));
+  }
+  else
+  {
+    parentItem->appendRow(new QStandardItem("paths are absolute"));
+  }
+  xml_go_up(xml_hdl);
+
+  if(xml_goto_nth_element_inside(xml_hdl, "ref_file", 0))
+  {
+    view_session_format_error(__FILE__, __LINE__, xml_hdl);
+    return;
+  }
+  if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+  {
+    view_session_format_error(__FILE__, __LINE__, xml_hdl);
+    return;
+  }
+  ref_file = atoi(result);
+  if(ref_file < 0)
+  {
+    view_session_format_error(__FILE__, __LINE__, xml_hdl);
+    return;
+  }
+  xml_go_up(xml_hdl);
+
+  if(xml_goto_nth_element_inside(xml_hdl, "timesync_mode", 0))
+  {
+    view_session_format_error(__FILE__, __LINE__, xml_hdl);
+    return;
+  }
+  if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+  {
+    view_session_format_error(__FILE__, __LINE__, xml_hdl);
+    return;
+  }
+  timesync_mode = atoi(result);
+  if((timesync_mode < 0) || (timesync_mode > 3))
+  {
+    view_session_format_error(__FILE__, __LINE__, xml_hdl);
+    return;
+  }
+  switch(timesync_mode)
+  {
+    case VIEWTIME_SYNCED_OFFSET   : parentItem->appendRow(new QStandardItem("Timesync mode: offset (sync start of file)"));
+                                    break;
+    case VIEWTIME_SYNCED_ABSOLUT  : parentItem->appendRow(new QStandardItem("Timesync mode: absolute (sync clocktime"));
+                                    break;
+    case VIEWTIME_UNSYNCED        : parentItem->appendRow(new QStandardItem("Timesync mode: no synchronization"));
+                                    break;
+    case VIEWTIME_USER_DEF_SYNCED : parentItem->appendRow(new QStandardItem("Timesync mode: user defined synchronization"));
+                                    break;
+  }
+  xml_go_up(xml_hdl);
+
+  if(xml_goto_nth_element_inside(xml_hdl, "pagetime", 0))
+  {
+    view_session_format_error(__FILE__, __LINE__, xml_hdl);
+    return;
+  }
+  if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+  {
+    view_session_format_error(__FILE__, __LINE__, xml_hdl);
+    return;
+  }
+  timescale = atof(result);
+  timescale /= TIME_DIMENSION;
+  snprintf(composition_txt, 2048, "Timescale: %f seconds", timescale);
+  remove_trailing_zeros(composition_txt);
+  parentItem->appendRow(new QStandardItem(composition_txt));
+  xml_go_up(xml_hdl);
+
+  if(xml_goto_nth_element_inside(xml_hdl, "edf_files", 0))
+  {
+    view_session_format_error(__FILE__, __LINE__, xml_hdl);
+    return;
+  }
+  for(i=0; i<MAXFILES; i++)
+  {
+    if(xml_goto_nth_element_inside(xml_hdl, "file", i))
+    {
+      break;
+    }
+    if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+    {
+      view_session_format_error(__FILE__, __LINE__, xml_hdl);
+      return;
+    }
+    if(i == ref_file)
+    {
+      snprintf(edf_path, 2048, "File (reference): %s", result);
+    }
+    else
+    {
+      snprintf(edf_path, 2048, "File: %s", result);
+    }
+    parentItem->appendRow(new QStandardItem(edf_path));
+    xml_go_up(xml_hdl);
+  }
+  xml_go_up(xml_hdl);
 
   for(signalcomps=0; ; signalcomps++)
   {
@@ -182,42 +311,45 @@ void UI_ViewMontagewindow::SelectButtonClicked()
       break;
     }
 
-    if(xml_goto_nth_element_inside(xml_hdl, "num_of_signals", 0))
+    if(xml_goto_nth_element_inside(xml_hdl, "file", 0))
     {
-      QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file.");
-      messagewindow.exec();
-      xml_close(xml_hdl);
+      view_session_format_error(__FILE__, __LINE__, xml_hdl);
       return;
     }
     if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
     {
-      QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file.");
-      messagewindow.exec();
-      xml_close(xml_hdl);
+      view_session_format_error(__FILE__, __LINE__, xml_hdl);
+      return;
+    }
+    snprintf(edf_path, 2048, "File: %s", result);
+    xml_go_up(xml_hdl);
+
+    if(xml_goto_nth_element_inside(xml_hdl, "num_of_signals", 0))
+    {
+      view_session_format_error(__FILE__, __LINE__, xml_hdl);
+      return;
+    }
+    if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+    {
+      view_session_format_error(__FILE__, __LINE__, xml_hdl);
       return;
     }
     signal_cnt = atoi(result);
     if((signal_cnt<1)||(signal_cnt>256))
     {
-      QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file.");
-      messagewindow.exec();
-      xml_close(xml_hdl);
+      view_session_format_error(__FILE__, __LINE__, xml_hdl);
       return;
     }
 
     xml_go_up(xml_hdl);
     if(xml_goto_nth_element_inside(xml_hdl, "voltpercm", 0))
     {
-      QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file.");
-      messagewindow.exec();
-      xml_close(xml_hdl);
+      view_session_format_error(__FILE__, __LINE__, xml_hdl);
       return;
     }
     if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
     {
-      QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file.");
-      messagewindow.exec();
-      xml_close(xml_hdl);
+      view_session_format_error(__FILE__, __LINE__, xml_hdl);
       return;
     }
     voltpercm = atof(result);
@@ -225,16 +357,12 @@ void UI_ViewMontagewindow::SelectButtonClicked()
     xml_go_up(xml_hdl);
     if(xml_goto_nth_element_inside(xml_hdl, "screen_offset", 0))
     {
-      QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file.");
-      messagewindow.exec();
-      xml_close(xml_hdl);
+      view_session_format_error(__FILE__, __LINE__, xml_hdl);
       return;
     }
     if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
     {
-      QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file.");
-      messagewindow.exec();
-      xml_close(xml_hdl);
+      view_session_format_error(__FILE__, __LINE__, xml_hdl);
       return;
     }
     screen_offset = atoi(result);
@@ -244,9 +372,7 @@ void UI_ViewMontagewindow::SelectButtonClicked()
     {
       if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
       {
-        QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file.");
-        messagewindow.exec();
-        xml_close(xml_hdl);
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
         return;
       }
       polarity = atoi(result);
@@ -259,16 +385,12 @@ void UI_ViewMontagewindow::SelectButtonClicked()
 
     if(xml_goto_nth_element_inside(xml_hdl, "color", 0))
     {
-      QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file.");
-      messagewindow.exec();
-      xml_close(xml_hdl);
+      view_session_format_error(__FILE__, __LINE__, xml_hdl);
       return;
     }
     if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
     {
-      QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file.");
-      messagewindow.exec();
-      xml_close(xml_hdl);
+      view_session_format_error(__FILE__, __LINE__, xml_hdl);
       return;
     }
     color = atoi(result);
@@ -278,9 +400,7 @@ void UI_ViewMontagewindow::SelectButtonClicked()
     {
       if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
       {
-        QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file.");
-        messagewindow.exec();
-        xml_close(xml_hdl);
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
         return;
       }
       spike_filter_cnt = atoi(result);
@@ -291,9 +411,7 @@ void UI_ViewMontagewindow::SelectButtonClicked()
     {
       if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
       {
-        QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file.");
-        messagewindow.exec();
-        xml_close(xml_hdl);
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
         return;
       }
       filter_cnt = atoi(result);
@@ -304,9 +422,7 @@ void UI_ViewMontagewindow::SelectButtonClicked()
     {
       if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
       {
-        QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file.");
-        messagewindow.exec();
-        xml_close(xml_hdl);
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
         return;
       }
       ravg_filter_cnt = atoi(result);
@@ -317,9 +433,7 @@ void UI_ViewMontagewindow::SelectButtonClicked()
     {
       if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
       {
-        QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file.");
-        messagewindow.exec();
-        xml_close(xml_hdl);
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
         return;
       }
       fidfilter_cnt = atoi(result);
@@ -332,9 +446,7 @@ void UI_ViewMontagewindow::SelectButtonClicked()
     {
       if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
       {
-        QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file.");
-        messagewindow.exec();
-        xml_close(xml_hdl);
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
         return;
       }
       if(result[0] != 0)
@@ -352,24 +464,18 @@ void UI_ViewMontagewindow::SelectButtonClicked()
 
       if(xml_goto_nth_element_inside(xml_hdl, "signal", signals_read))
       {
-        QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file.");
-        messagewindow.exec();
-        xml_close(xml_hdl);
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
         return;
       }
 
       if(xml_goto_nth_element_inside(xml_hdl, "factor", 0))
       {
-        QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file.");
-        messagewindow.exec();
-        xml_close(xml_hdl);
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
         return;
       }
       if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
       {
-        QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file.");
-        messagewindow.exec();
-        xml_close(xml_hdl);
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
         return;
       }
       factor[signals_read] = atof(result);
@@ -379,9 +485,7 @@ void UI_ViewMontagewindow::SelectButtonClicked()
       {
         if(xml_goto_nth_element_inside(xml_hdl, "edfindex", 0))
         {
-          QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file.");
-          messagewindow.exec();
-          xml_close(xml_hdl);
+          view_session_format_error(__FILE__, __LINE__, xml_hdl);
           return;
         }
 
@@ -389,9 +493,7 @@ void UI_ViewMontagewindow::SelectButtonClicked()
       }
       if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
       {
-        QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file.");
-        messagewindow.exec();
-        xml_close(xml_hdl);
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
         return;
       }
       if(idx_used)
@@ -492,6 +594,8 @@ void UI_ViewMontagewindow::SelectButtonClicked()
                              break;
     }
 
+    signalItem->appendRow(new QStandardItem(edf_path));
+
     signalItem->appendRow(new QStandardItem(composition_txt));
 
     filterItem = new QStandardItem("Filters");
@@ -504,24 +608,18 @@ void UI_ViewMontagewindow::SelectButtonClicked()
     {
       if(xml_goto_nth_element_inside(xml_hdl, "spike_filter", filters_read))
       {
-        QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file. (filter)");
-        messagewindow.exec();
-        xml_close(xml_hdl);
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
         return;
       }
 
       if(xml_goto_nth_element_inside(xml_hdl, "velocity", 0))
       {
-        QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file. (velocity)");
-        messagewindow.exec();
-        xml_close(xml_hdl);
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
         return;
       }
       if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
       {
-        QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file.");
-        messagewindow.exec();
-        xml_close(xml_hdl);
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
         return;
       }
       velocity = atof(result);
@@ -531,16 +629,12 @@ void UI_ViewMontagewindow::SelectButtonClicked()
       xml_go_up(xml_hdl);
       if(xml_goto_nth_element_inside(xml_hdl, "holdoff", 0))
       {
-        QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file. (holdoff)");
-        messagewindow.exec();
-        xml_close(xml_hdl);
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
         return;
       }
       if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
       {
-        QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file.");
-        messagewindow.exec();
-        xml_close(xml_hdl);
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
         return;
       }
       holdoff = atoi(result);
@@ -563,24 +657,18 @@ void UI_ViewMontagewindow::SelectButtonClicked()
     {
       if(xml_goto_nth_element_inside(xml_hdl, "filter", filters_read))
       {
-        QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file. (filter)");
-        messagewindow.exec();
-        xml_close(xml_hdl);
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
         return;
       }
 
       if(xml_goto_nth_element_inside(xml_hdl, "LPF", 0))
       {
-        QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file. (LPF)");
-        messagewindow.exec();
-        xml_close(xml_hdl);
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
         return;
       }
       if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
       {
-        QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file.");
-        messagewindow.exec();
-        xml_close(xml_hdl);
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
         return;
       }
       islpf = atoi(result);
@@ -588,16 +676,12 @@ void UI_ViewMontagewindow::SelectButtonClicked()
       xml_go_up(xml_hdl);
       if(xml_goto_nth_element_inside(xml_hdl, "frequency", 0))
       {
-        QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file. (frequency)");
-        messagewindow.exec();
-        xml_close(xml_hdl);
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
         return;
       }
       if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
       {
-        QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file.");
-        messagewindow.exec();
-        xml_close(xml_hdl);
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
         return;
       }
       frequency = atof(result);
@@ -623,24 +707,18 @@ void UI_ViewMontagewindow::SelectButtonClicked()
     {
       if(xml_goto_nth_element_inside(xml_hdl, "ravg_filter", filters_read))
       {
-        QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file. (filter)");
-        messagewindow.exec();
-        xml_close(xml_hdl);
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
         return;
       }
 
       if(xml_goto_nth_element_inside(xml_hdl, "type", 0))
       {
-        QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file. (type)");
-        messagewindow.exec();
-        xml_close(xml_hdl);
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
         return;
       }
       if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
       {
-        QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file.");
-        messagewindow.exec();
-        xml_close(xml_hdl);
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
         return;
       }
       type = atoi(result);
@@ -648,16 +726,12 @@ void UI_ViewMontagewindow::SelectButtonClicked()
       xml_go_up(xml_hdl);
       if(xml_goto_nth_element_inside(xml_hdl, "size", 0))
       {
-        QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file. (size)");
-        messagewindow.exec();
-        xml_close(xml_hdl);
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
         return;
       }
       if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
       {
-        QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file.");
-        messagewindow.exec();
-        xml_close(xml_hdl);
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
         return;
       }
       size = atoi(result);
@@ -682,24 +756,18 @@ void UI_ViewMontagewindow::SelectButtonClicked()
     {
       if(xml_goto_nth_element_inside(xml_hdl, "fidfilter", filters_read))
       {
-        QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file. (fidfilter)");
-        messagewindow.exec();
-        xml_close(xml_hdl);
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
         return;
       }
 
       if(xml_goto_nth_element_inside(xml_hdl, "type", 0))
       {
-        QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file. (type)");
-        messagewindow.exec();
-        xml_close(xml_hdl);
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
         return;
       }
       if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
       {
-        QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file.");
-        messagewindow.exec();
-        xml_close(xml_hdl);
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
         return;
       }
       type = atoi(result);
@@ -707,16 +775,12 @@ void UI_ViewMontagewindow::SelectButtonClicked()
       xml_go_up(xml_hdl);
       if(xml_goto_nth_element_inside(xml_hdl, "frequency", 0))
       {
-        QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file. (frequency)");
-        messagewindow.exec();
-        xml_close(xml_hdl);
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
         return;
       }
       if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
       {
-        QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file.");
-        messagewindow.exec();
-        xml_close(xml_hdl);
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
         return;
       }
       frequency = atof(result);
@@ -724,16 +788,12 @@ void UI_ViewMontagewindow::SelectButtonClicked()
       xml_go_up(xml_hdl);
       if(xml_goto_nth_element_inside(xml_hdl, "frequency2", 0))
       {
-        QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file. (frequency2)");
-        messagewindow.exec();
-        xml_close(xml_hdl);
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
         return;
       }
       if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
       {
-        QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file.");
-        messagewindow.exec();
-        xml_close(xml_hdl);
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
         return;
       }
       frequency2 = atof(result);
@@ -741,16 +801,12 @@ void UI_ViewMontagewindow::SelectButtonClicked()
       xml_go_up(xml_hdl);
       if(xml_goto_nth_element_inside(xml_hdl, "ripple", 0))
       {
-        QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file. (ripple)");
-        messagewindow.exec();
-        xml_close(xml_hdl);
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
         return;
       }
       if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
       {
-        QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file.");
-        messagewindow.exec();
-        xml_close(xml_hdl);
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
         return;
       }
       ripple = atof(result);
@@ -758,16 +814,12 @@ void UI_ViewMontagewindow::SelectButtonClicked()
       xml_go_up(xml_hdl);
       if(xml_goto_nth_element_inside(xml_hdl, "order", 0))
       {
-        QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file. (order)");
-        messagewindow.exec();
-        xml_close(xml_hdl);
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
         return;
       }
       if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
       {
-        QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file.");
-        messagewindow.exec();
-        xml_close(xml_hdl);
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
         return;
       }
       order = atoi(result);
@@ -775,16 +827,12 @@ void UI_ViewMontagewindow::SelectButtonClicked()
       xml_go_up(xml_hdl);
       if(xml_goto_nth_element_inside(xml_hdl, "model", 0))
       {
-        QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file. (model)");
-        messagewindow.exec();
-        xml_close(xml_hdl);
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
         return;
       }
       if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
       {
-        QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file.");
-        messagewindow.exec();
-        xml_close(xml_hdl);
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
         return;
       }
       model = atoi(result);
@@ -878,24 +926,18 @@ void UI_ViewMontagewindow::SelectButtonClicked()
     {
       if(xml_goto_nth_element_inside(xml_hdl, "plf", 0))
       {
-        QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file.");
-        messagewindow.exec();
-        xml_close(xml_hdl);
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
         return;
       }
       if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
       {
-        QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file.");
-        messagewindow.exec();
-        xml_close(xml_hdl);
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
         return;
       }
       plif_powerlinefrequency = atoi(result);
       if((plif_powerlinefrequency != 0) && (plif_powerlinefrequency != 1))
       {
-        QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file.");
-        messagewindow.exec();
-        xml_close(xml_hdl);
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
         return;
       }
       plif_powerlinefrequency *= 10;
@@ -904,24 +946,18 @@ void UI_ViewMontagewindow::SelectButtonClicked()
 
       if(xml_goto_nth_element_inside(xml_hdl, "linear_threshold", 0))
       {
-        QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file.");
-        messagewindow.exec();
-        xml_close(xml_hdl);
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
         return;
       }
       if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
       {
-        QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file.");
-        messagewindow.exec();
-        xml_close(xml_hdl);
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
         return;
       }
       plif_linear_threshold = atoi(result);
       if((plif_linear_threshold < 10) || (plif_linear_threshold > 200))
       {
-        QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file.");
-        messagewindow.exec();
-        xml_close(xml_hdl);
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
         return;
       }
       xml_go_up(xml_hdl);
@@ -937,25 +973,18 @@ void UI_ViewMontagewindow::SelectButtonClicked()
     {
       if(xml_goto_nth_element_inside(xml_hdl, "size", 0))
       {
-        snprintf(str2, 2048, "There seems to be an error in this montage file.\nFile: %s line: %i", __FILE__, __LINE__);
-        QMessageBox messagewindow(QMessageBox::Critical, "Error", str2);
-        messagewindow.exec();
-        xml_close(xml_hdl);
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
         return;
       }
       if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
       {
-        QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file.");
-        messagewindow.exec();
-        xml_close(xml_hdl);
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
         return;
       }
       n_taps = atoi(result);
       if((n_taps < 2) || (n_taps > 1000))
       {
-        QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file.");
-        messagewindow.exec();
-        xml_close(xml_hdl);
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
         return;
       }
 
@@ -965,17 +994,12 @@ void UI_ViewMontagewindow::SelectButtonClicked()
       {
         if(xml_goto_nth_element_inside(xml_hdl, "tap", r))
         {
-          snprintf(str2, 2048, "There seems to be an error in this montage file.\nFile: %s line: %i", __FILE__, __LINE__);
-          QMessageBox messagewindow(QMessageBox::Critical, "Error", str2);
-          messagewindow.exec();
-          xml_close(xml_hdl);
+          view_session_format_error(__FILE__, __LINE__, xml_hdl);
           return;
         }
         if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
         {
-          QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file.");
-          messagewindow.exec();
-          xml_close(xml_hdl);
+          view_session_format_error(__FILE__, __LINE__, xml_hdl);
           return;
         }
         fir_vars[r] = atof(result);
@@ -1003,16 +1027,12 @@ void UI_ViewMontagewindow::SelectButtonClicked()
     {
       if(xml_goto_nth_element_inside(xml_hdl, "type", 0))
       {
-        QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file.");
-        messagewindow.exec();
-        xml_close(xml_hdl);
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
         return;
       }
       if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
       {
-        QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file.");
-        messagewindow.exec();
-        xml_close(xml_hdl);
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
         return;
       }
       type = atoi(result);
@@ -1032,16 +1052,12 @@ void UI_ViewMontagewindow::SelectButtonClicked()
     {
       if(xml_goto_nth_element_inside(xml_hdl, "type", 0))
       {
-        QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file.");
-        messagewindow.exec();
-        xml_close(xml_hdl);
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
         return;
       }
       if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
       {
-        QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file.");
-        messagewindow.exec();
-        xml_close(xml_hdl);
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
         return;
       }
       type = atoi(result);
@@ -1052,16 +1068,12 @@ void UI_ViewMontagewindow::SelectButtonClicked()
       {
         if(xml_goto_nth_element_inside(xml_hdl, "crossoverfreq", 0))
         {
-          QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file.");
-          messagewindow.exec();
-          xml_close(xml_hdl);
+          view_session_format_error(__FILE__, __LINE__, xml_hdl);
           return;
         }
         if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
         {
-          QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file.");
-          messagewindow.exec();
-          xml_close(xml_hdl);
+          view_session_format_error(__FILE__, __LINE__, xml_hdl);
           return;
         }
         d_tmp = atof(result);
@@ -1080,25 +1092,241 @@ void UI_ViewMontagewindow::SelectButtonClicked()
 
   xml_goto_root(xml_hdl);
 
-  if(!(xml_goto_nth_element_inside(xml_hdl, "pagetime", 0)))
+  for(i=0; i<MAXHYPNOGRAMDOCKS; i++)
   {
-    if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+    if(xml_goto_nth_element_inside(xml_hdl, "hypnogram", i))
     {
-      QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file.");
-      messagewindow.exec();
-      xml_close(xml_hdl);
+      break;
+    }
+
+    hypnogramItem = new QStandardItem("hypnogram");
+
+    parentItem->appendRow(hypnogramItem);
+
+    if(xml_goto_nth_element_inside(xml_hdl, "hdr_idx", 0))
+    {
+      view_session_format_error(__FILE__, __LINE__, xml_hdl);
       return;
     }
-    timescale = atof(result);
-    timescale /= TIME_DIMENSION;
-    snprintf(composition_txt, 2048, "Timescale: %f seconds", timescale);
-    remove_trailing_zeros(composition_txt);
-    parentItem->appendRow(new QStandardItem(composition_txt));
+    else
+    {
+      if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+      {
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
+        return;
+      }
+
+      hdr_idx = atoi(result);
+      if(hdr_idx < 0)
+      {
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
+        return;
+      }
+
+      snprintf(str2, 2048, "File index: %i", hdr_idx + 1);
+      hypnogramItem->appendRow(new QStandardItem(str2));
+
+      xml_go_up(xml_hdl);
+    }
+
+    for(j=0; j<HYPNOGRAM_STAGENUM; j++)
+    {
+      if(xml_goto_nth_element_inside(xml_hdl, "stage_name", j))
+      {
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
+        return;
+      }
+
+      if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+      {
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
+        return;
+      }
+
+      snprintf(str2, 2048, "Stage %i name: %s", j + 1, result);
+
+      xml_go_up(xml_hdl);
+
+      if(xml_goto_nth_element_inside(xml_hdl, "annot_name", j))
+      {
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
+        return;
+      }
+
+      if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+      {
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
+        return;
+      }
+
+      strlcat(str2, "   Annotation: ", 2048);
+      strlcat(str2, result, 2048);
+      hypnogramItem->appendRow(new QStandardItem(str2));
+
+      xml_go_up(xml_hdl);
+    }
+
+    xml_go_up(xml_hdl);
+  }
+
+  for(i=0; i<MAXCDSADOCKS; i++)
+  {
+    if(xml_goto_nth_element_inside(xml_hdl, "cdsa", i))
+    {
+      break;
+    }
+
+    cdsaItem = new QStandardItem("CDSA");
+
+    parentItem->appendRow(cdsaItem);
+
+    if(xml_goto_nth_element_inside(xml_hdl, "sigcomp_idx", 0))
+    {
+      view_session_format_error(__FILE__, __LINE__, xml_hdl);
+      return;
+    }
+    else
+    {
+      if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+      {
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
+        return;
+      }
+
+      sigcomp_idx = atoi(result);
+      if(sigcomp_idx < 0)
+      {
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
+        return;
+      }
+
+      snprintf(str2, 2048, "Signal index: %i", sigcomp_idx + 1);
+      cdsaItem->appendRow(new QStandardItem(str2));
+
+      xml_go_up(xml_hdl);
+    }
+
+    if(xml_goto_nth_element_inside(xml_hdl, "min_hz", 0))
+    {
+      view_session_format_error(__FILE__, __LINE__, xml_hdl);
+      return;
+    }
+    else
+    {
+      if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+      {
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
+        return;
+      }
+
+      min_hz = atoi(result);
+      if(min_hz < 0)
+      {
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
+        return;
+      }
+
+      snprintf(str2, 2048, "Lower frequency bin: %i Hz", min_hz);
+      cdsaItem->appendRow(new QStandardItem(str2));
+
+      xml_go_up(xml_hdl);
+    }
+
+    if(xml_goto_nth_element_inside(xml_hdl, "max_hz", 0))
+    {
+      view_session_format_error(__FILE__, __LINE__, xml_hdl);
+      return;
+    }
+    else
+    {
+      if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+      {
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
+        return;
+      }
+
+      max_hz = atoi(result);
+      if(max_hz < 0)
+      {
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
+        return;
+      }
+
+      snprintf(str2, 2048, "Upper frequency bin: %i Hz", max_hz);
+      cdsaItem->appendRow(new QStandardItem(str2));
+
+      xml_go_up(xml_hdl);
+    }
+
+    if(xml_goto_nth_element_inside(xml_hdl, "segment_len", 0))
+    {
+      view_session_format_error(__FILE__, __LINE__, xml_hdl);
+      return;
+    }
+    else
+    {
+      if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+      {
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
+        return;
+      }
+
+      segment_len = atoi(result);
+      if(segment_len < 1)
+      {
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
+        return;
+      }
+
+      snprintf(str2, 2048, "Segment len: %i seconds", segment_len);
+      cdsaItem->appendRow(new QStandardItem(str2));
+
+      xml_go_up(xml_hdl);
+    }
+
+    if(xml_goto_nth_element_inside(xml_hdl, "block_len", 0))
+    {
+      view_session_format_error(__FILE__, __LINE__, xml_hdl);
+      return;
+    }
+    else
+    {
+      if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+      {
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
+        return;
+      }
+
+      block_len = atoi(result);
+      if(block_len < 1)
+      {
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
+        return;
+      }
+
+      snprintf(str2, 2048, "Segment len: %i seconds", block_len);
+      cdsaItem->appendRow(new QStandardItem(str2));
+
+      xml_go_up(xml_hdl);
+    }
   }
 
   xml_close(xml_hdl);
 
   tree->expandAll();
+}
+
+
+int UI_ViewSessionwindow::view_session_format_error(const char *file_name, int line_number, struct xml_handle *hdl)
+{
+  char str[2048]="";
+
+  snprintf(str, 2048, "There seems to be an error in this session file.\nFile: %s\nline: %i", file_name, line_number);
+
+  QMessageBox messagewindow(QMessageBox::Critical, "Error", str);
+  messagewindow.exec();
+  xml_close(hdl);
+  return 0;
 }
 
 
