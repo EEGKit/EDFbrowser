@@ -60,16 +60,14 @@ void UI_Mainwindow::exit_program()
 
 void UI_Mainwindow::closeEvent(QCloseEvent *cl_event)
 {
-  int i,
-      button_nr=0;
-
+  int i, button_nr=0;
 
   if(annotations_edited)
   {
     QMessageBox messagewindow;
     messagewindow.setText("There are unsaved annotations,\n are you sure you want to quit?");
     messagewindow.setIcon(QMessageBox::Question);
-    messagewindow.setStandardButtons(QMessageBox::Cancel | QMessageBox::Close);
+    messagewindow.setStandardButtons(QMessageBox::Cancel | QMessageBox::Discard);
     messagewindow.setDefaultButton(QMessageBox::Cancel);
     button_nr = messagewindow.exec();
   }
@@ -77,69 +75,69 @@ void UI_Mainwindow::closeEvent(QCloseEvent *cl_event)
   if(button_nr == QMessageBox::Cancel)
   {
     cl_event->ignore();
+
+    return;
   }
-  else
+
+  exit_in_progress = 1;
+
+  for(i=0; i<MAXSPECTRUMDIALOGS; i++)
   {
-    exit_in_progress = 1;
-
-    for(i=0; i<MAXSPECTRUMDIALOGS; i++)
+    if(spectrumdialog[i] != NULL)
     {
-      if(spectrumdialog[i] != NULL)
-      {
-        delete spectrumdialog[i];
+      delete spectrumdialog[i];
 
-        spectrumdialog[i] = NULL;
-      }
+      spectrumdialog[i] = NULL;
     }
-
-    for(i=0; i<MAXCDSADOCKS; i++)
-    {
-      if(cdsa_dock[i] != NULL)
-      {
-        delete cdsa_dock[i];
-
-        cdsa_dock[i] = NULL;
-      }
-    }
-
-    for(i=0; i<MAXAVERAGECURVEDIALOGS; i++)
-    {
-      if(averagecurvedialog[i] != NULL)
-      {
-        delete averagecurvedialog[i];
-
-        averagecurvedialog[i] = NULL;
-      }
-    }
-
-    for(i=0; i<MAXZSCOREDIALOGS; i++)
-    {
-      if(zscoredialog[i] != NULL)
-      {
-        delete zscoredialog[i];
-
-        zscoredialog[i] = NULL;
-      }
-    }
-
-    annotations_edited = 0;
-
-    close_all_files();
-
-    window_width_sav_rest = width();
-    window_height_sav_rest = height();
-
-    write_settings();
-
-    free(spectrum_colorbar);
-    free(zoomhistory);
-    free(import_annotations_var);
-    free(export_annotations_var);
-    free(video_player);
-    free(annot_filter);
-
-    cl_event->accept();
   }
+
+  for(i=0; i<MAXCDSADOCKS; i++)
+  {
+    if(cdsa_dock[i] != NULL)
+    {
+      delete cdsa_dock[i];
+
+      cdsa_dock[i] = NULL;
+    }
+  }
+
+  for(i=0; i<MAXAVERAGECURVEDIALOGS; i++)
+  {
+    if(averagecurvedialog[i] != NULL)
+    {
+      delete averagecurvedialog[i];
+
+      averagecurvedialog[i] = NULL;
+    }
+  }
+
+  for(i=0; i<MAXZSCOREDIALOGS; i++)
+  {
+    if(zscoredialog[i] != NULL)
+    {
+      delete zscoredialog[i];
+
+      zscoredialog[i] = NULL;
+    }
+  }
+
+  annotations_edited = 0;
+
+  close_all_files();
+
+  window_width_sav_rest = width();
+  window_height_sav_rest = height();
+
+  write_settings();
+
+  free(spectrum_colorbar);
+  free(zoomhistory);
+  free(import_annotations_var);
+  free(export_annotations_var);
+  free(video_player);
+  free(annot_filter);
+
+  cl_event->accept();
 }
 
 
@@ -382,7 +380,7 @@ void UI_Mainwindow::save_file()
 
 void UI_Mainwindow::save_session()
 {
-  int i, j, k, hdr_idx=0, sigcomp_idx=0, use_index=0, present=0, position=0;
+  int i, j, k, hdr_idx=0, sigcomp_idx=0, use_index=0, present=0, position=0, button_nr=0;
 
   QAction *act=NULL;
 
@@ -396,6 +394,22 @@ void UI_Mainwindow::save_session()
        path_relative[MAX_PATH_LENGTH]="";
 
   FILE *pro_file=NULL;
+
+  if(annotations_edited)
+  {
+    QMessageBox messagewindow;
+    messagewindow.setText("There are unsaved annotations which will not be stored in the session.\n"
+                          "It's strongly recommended you save them first.");
+    messagewindow.setIcon(QMessageBox::Question);
+    messagewindow.setStandardButtons(QMessageBox::Cancel | QMessageBox::Discard);
+    messagewindow.setDefaultButton(QMessageBox::Cancel);
+    button_nr = messagewindow.exec();
+  }
+
+  if(button_nr == QMessageBox::Cancel)
+  {
+    return;
+  }
 
   strlcpy(session_path, recent_sessiondir, MAX_PATH_LENGTH);
   strlcat(session_path, "/my_session.esf", MAX_PATH_LENGTH);
@@ -863,7 +877,7 @@ void UI_Mainwindow::load_session()
     QMessageBox messagewindow;
     messagewindow.setText("There are unsaved annotations,\n are you sure you want to close this file?");
     messagewindow.setIcon(QMessageBox::Question);
-    messagewindow.setStandardButtons(QMessageBox::Cancel | QMessageBox::Close);
+    messagewindow.setStandardButtons(QMessageBox::Cancel | QMessageBox::Discard);
     messagewindow.setDefaultButton(QMessageBox::Cancel);
     button_nr = messagewindow.exec();
   }
@@ -3170,9 +3184,22 @@ void UI_Mainwindow::close_file_action_func(QAction *action)
 
 void UI_Mainwindow::close_all_files()
 {
-  int i, j,
-      button_nr=0,
-      inst_num=0;
+  int i, j, button_nr=0, inst_num=0;
+
+  if(annotations_edited)
+  {
+    QMessageBox messagewindow;
+    messagewindow.setText("There are unsaved annotations,\n are you sure you want to close this file?");
+    messagewindow.setIcon(QMessageBox::Question);
+    messagewindow.setStandardButtons(QMessageBox::Cancel | QMessageBox::Discard);
+    messagewindow.setDefaultButton(QMessageBox::Cancel);
+    button_nr = messagewindow.exec();
+  }
+
+  if(button_nr == QMessageBox::Cancel)
+  {
+    return;
+  }
 
   toolbar_stats.active = 0;
   nav_toolbar_label->setText("");
@@ -3193,21 +3220,6 @@ void UI_Mainwindow::close_all_files()
   recent_filesmenu->setEnabled(true);
   recent_session_menu->setEnabled(true);
   playback_file_Act->setEnabled(true);
-
-  if(annotations_edited)
-  {
-    QMessageBox messagewindow;
-    messagewindow.setText("There are unsaved annotations,\n are you sure you want to close this file?");
-    messagewindow.setIcon(QMessageBox::Question);
-    messagewindow.setStandardButtons(QMessageBox::Cancel | QMessageBox::Close);
-    messagewindow.setDefaultButton(QMessageBox::Cancel);
-    button_nr = messagewindow.exec();
-  }
-
-  if(button_nr == QMessageBox::Cancel)
-  {
-    return;
-  }
 
   save_session_act->setEnabled(false);
 
@@ -4434,7 +4446,7 @@ void UI_Mainwindow::recent_session_action_func(QAction *action)
     QMessageBox messagewindow;
     messagewindow.setText("There are unsaved annotations,\n are you sure you want to close this file?");
     messagewindow.setIcon(QMessageBox::Question);
-    messagewindow.setStandardButtons(QMessageBox::Cancel | QMessageBox::Close);
+    messagewindow.setStandardButtons(QMessageBox::Cancel | QMessageBox::Discard);
     messagewindow.setDefaultButton(QMessageBox::Cancel);
     button_nr = messagewindow.exec();
   }
