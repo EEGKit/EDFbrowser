@@ -119,14 +119,16 @@ void UI_ViewSessionwindow::SelectButtonClicked()
       min_hz=0,
       max_hz=0,
       segment_len=0,
-      block_len=0;
+      block_len=0,
+      overlap=1;
 
   char result[XML_STRBUFLEN]="",
        composition_txt[2048]="",
        label[256]="",
        str2[2048]="",
        str3[64]="",
-       edf_path[2048]="";
+       edf_path[2048]="",
+       e_file_path[MAXFILES][MAX_PATH_LENGTH];
 
   double frequency,
          frequency2,
@@ -147,6 +149,10 @@ void UI_ViewSessionwindow::SelectButtonClicked()
 
   struct xml_handle *xml_hdl;
 
+  for(i=0; i<MAXFILES; i++)
+  {
+    e_file_path[i][0] = 0;
+  }
 
   strlcpy(session_path, QFileDialog::getOpenFileName(0, "Choose a session", QString::fromLocal8Bit(session_dir), "Session files (*.esf *.ESF)").toLocal8Bit().data(), MAX_PATH_LENGTH);
 
@@ -241,7 +247,7 @@ void UI_ViewSessionwindow::SelectButtonClicked()
   {
     case VIEWTIME_SYNCED_OFFSET   : parentItem->appendRow(new QStandardItem("Timesync mode: offset (sync start of file)"));
                                     break;
-    case VIEWTIME_SYNCED_ABSOLUT  : parentItem->appendRow(new QStandardItem("Timesync mode: absolute (sync clocktime"));
+    case VIEWTIME_SYNCED_ABSOLUT  : parentItem->appendRow(new QStandardItem("Timesync mode: absolute (sync clocktime)"));
                                     break;
     case VIEWTIME_UNSYNCED        : parentItem->appendRow(new QStandardItem("Timesync mode: no synchronization"));
                                     break;
@@ -283,6 +289,8 @@ void UI_ViewSessionwindow::SelectButtonClicked()
       view_session_format_error(__FILE__, __LINE__, xml_hdl);
       return;
     }
+    strlcpy(e_file_path[i], result, MAX_PATH_LENGTH);
+
     if(i == ref_file)
     {
       snprintf(edf_path, 2048, "File (reference): %s", result);
@@ -1123,7 +1131,7 @@ void UI_ViewSessionwindow::SelectButtonClicked()
         return;
       }
 
-      snprintf(str2, 2048, "File index: %i", hdr_idx + 1);
+      snprintf(str2, 2048, "File: %s", e_file_path[hdr_idx]);
       hypnogramItem->appendRow(new QStandardItem(str2));
 
       xml_go_up(xml_hdl);
@@ -1305,6 +1313,45 @@ void UI_ViewSessionwindow::SelectButtonClicked()
       }
 
       snprintf(str2, 2048, "Segment len: %i seconds", block_len);
+      cdsaItem->appendRow(new QStandardItem(str2));
+
+      xml_go_up(xml_hdl);
+    }
+
+    if(xml_goto_nth_element_inside(xml_hdl, "overlap", 0))
+    {
+      view_session_format_error(__FILE__, __LINE__, xml_hdl);
+      return;
+    }
+    else
+    {
+      if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+      {
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
+        return;
+      }
+
+      overlap = atoi(result);
+      if(overlap < 1)
+      {
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
+        return;
+      }
+
+      switch(overlap)
+      {
+        case 1 : strlcpy(str2, "Overlap: 0%", 2048);
+                 break;
+        case 2 : strlcpy(str2, "Overlap: 50%", 2048);
+                 break;
+        case 3 : strlcpy(str2, "Overlap: 67%", 2048);
+                 break;
+        case 4 : strlcpy(str2, "Overlap: 75%", 2048);
+                 break;
+        case 5 : strlcpy(str2, "Overlap: 80%", 2048);
+                 break;
+        default :strlcpy(str2, "Overlap: ??%", 2048);
+      }
       cdsaItem->appendRow(new QStandardItem(str2));
 
       xml_go_up(xml_hdl);
