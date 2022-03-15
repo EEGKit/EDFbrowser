@@ -3144,20 +3144,9 @@ void UI_Mainwindow::close_file_action_func(QAction *action)
     annotations_dock[file_n] = NULL;
   }
 
-  if((file_n == sel_viewtime) && (files_open > 1))
+  if(file_n == sel_viewtime)
   {
-    if(file_n > 0)
-    {
-      sel_viewtime = 0;
-    }
-    else
-    {
-      sel_viewtime = 1;
-    }
-
-    sel_viewtime_act[sel_viewtime]->setChecked(true);
-
-    setMainwindowTitle(edfheaderlist[sel_viewtime]);
+    sel_viewtime = 0;
   }
 
   delete sel_viewtime_act[file_n];
@@ -3169,9 +3158,18 @@ void UI_Mainwindow::close_file_action_func(QAction *action)
     annotations_dock[i] = annotations_dock[i + 1];
 
     sel_viewtime_act[i] = sel_viewtime_act[i + 1];
+
+    if((i + 1) == sel_viewtime)
+    {
+      sel_viewtime--;
+    }
   }
 
   files_open--;
+
+  sel_viewtime_act[sel_viewtime]->setChecked(true);
+
+  setMainwindowTitle(edfheaderlist[sel_viewtime]);
 
   setup_viewbuf();
 
