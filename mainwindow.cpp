@@ -697,6 +697,8 @@ void UI_Mainwindow::save_session()
 
         fprintf(pro_file, "    <signalnum>%i</signalnum>\n", settings.signalnr);
 
+        fprintf(pro_file, "    <dashboard>%i</dashboard>\n", settings.dashboard);
+
         fprintf(pro_file, "    <amp>%i</amp>\n", settings.amp);
 
         fprintf(pro_file, "    <log_min_sl>%i</log_min_sl>\n", settings.log_min_sl);
@@ -712,6 +714,14 @@ void UI_Mainwindow::save_session()
         fprintf(pro_file, "    <sqrt>%i</sqrt>\n", settings.sqrt);
 
         fprintf(pro_file, "    <colorbar>%i</colorbar>\n", settings.colorbar);
+
+        fprintf(pro_file, "    <blocksize_predefined>%i</blocksize_predefined>\n", settings.blocksize_predefined);
+
+        fprintf(pro_file, "    <dftblocksize>%i</dftblocksize>\n", settings.dftblocksize);
+
+        fprintf(pro_file, "    <window_type>%i</window_type>\n", settings.window_type);
+
+        fprintf(pro_file, "    <overlap>%i</overlap>\n", settings.overlap);
 
         fprintf(pro_file, "    <maxvalue>%.10e</maxvalue>\n", settings.maxvalue);
 

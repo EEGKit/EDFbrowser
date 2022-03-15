@@ -1630,6 +1630,8 @@ int UI_LoadMontagewindow::LoadButtonClicked()
 
   struct spectrumdocksettings settings[MAXSPECTRUMDOCKS];
 
+  memset(&settings, 0, sizeof(struct spectrumdocksettings));
+
   for(i=0; i<MAXSPECTRUMDOCKS; i++)
   {
     settings[i].signalnr = -1;

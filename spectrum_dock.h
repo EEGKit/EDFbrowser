@@ -56,24 +56,27 @@ class UI_Mainwindow;
 
 
 struct spectrumdocksettings{
-                             int signalnr;
-                             int span;
-                             int center;
-                             int amp;
-                             int log_min_sl;
-                             int wheel;
-                             int log;
-                             int sqrt;
-                             int colorbar;
-                             double maxvalue;
-                             double maxvalue_sqrt;
-                             double maxvalue_vlog;
-                             double maxvalue_sqrt_vlog;
-                             double minvalue_vlog;
-                             double minvalue_sqrt_vlog;
-                           };
-
-
+  int signalnr;
+  int dashboard;
+  int span;
+  int center;
+  int amp;
+  int log_min_sl;
+  int wheel;
+  int log;
+  int sqrt;
+  int colorbar;
+  int blocksize_predefined;
+  int dftblocksize;
+  int window_type;
+  int overlap;
+  double maxvalue;
+  double maxvalue_sqrt;
+  double maxvalue_vlog;
+  double maxvalue_sqrt_vlog;
+  double minvalue_vlog;
+  double minvalue_sqrt_vlog;
+};
 
 
 class UI_SpectrumDockWindow : public QObject

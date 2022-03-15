@@ -125,7 +125,8 @@ void UI_ViewSessionwindow::SelectButtonClicked()
       log=0,
       power_voltage=0,
       max_pwr=0,
-      min_pwr=0;
+      min_pwr=0,
+      dftblocksize=0;
 
   long long viewtime=0,
             timescale=0;
@@ -152,6 +153,7 @@ void UI_ViewSessionwindow::SelectButtonClicked()
                 *signalItem,
                 *filterItem,
                 *firfilterItem,
+                *powerspectrumdockItem,
                 *hypnogramItem,
                 *cdsaItem;
 
@@ -1143,6 +1145,166 @@ void UI_ViewSessionwindow::SelectButtonClicked()
 
   xml_goto_root(xml_hdl);
 
+  for(i=0; i<MAXSPECTRUMDOCKS; i++)
+  {
+    if(xml_goto_nth_element_inside(xml_hdl, "powerspectrumdock", i))
+    {
+      break;
+    }
+
+    powerspectrumdockItem = new QStandardItem("Power Spectrum");
+
+    parentItem->appendRow(powerspectrumdockItem);
+
+    if(xml_goto_nth_element_inside(xml_hdl, "signalnum", 0))
+    {
+      view_session_format_error(__FILE__, __LINE__, xml_hdl);
+      return;
+    }
+    else
+    {
+      if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+      {
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
+        return;
+      }
+
+      sigcomp_idx = atoi(result);
+      if(sigcomp_idx < 0)
+      {
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
+        return;
+      }
+
+      snprintf(str2, 2048, "Signal index: %i", sigcomp_idx + 1);
+      powerspectrumdockItem->appendRow(new QStandardItem(str2));
+
+      xml_go_up(xml_hdl);
+    }
+
+    if(xml_goto_nth_element_inside(xml_hdl, "dftblocksize", 0))
+    {
+      view_session_format_error(__FILE__, __LINE__, xml_hdl);
+      return;
+    }
+    else
+    {
+      if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+      {
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
+        return;
+      }
+
+      dftblocksize = atoi(result);
+      if(dftblocksize < 1)
+      {
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
+        return;
+      }
+
+      snprintf(str2, 2048, "FFT blocksize: %i samples", dftblocksize);
+      powerspectrumdockItem->appendRow(new QStandardItem(str2));
+
+      xml_go_up(xml_hdl);
+    }
+
+    if(xml_goto_nth_element_inside(xml_hdl, "overlap", 0))
+    {
+      view_session_format_error(__FILE__, __LINE__, xml_hdl);
+      return;
+    }
+    else
+    {
+      if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+      {
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
+        return;
+      }
+
+      overlap = atoi(result);
+      if(overlap < 1)
+      {
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
+        return;
+      }
+
+      switch(overlap)
+      {
+        case 1 : powerspectrumdockItem->appendRow(new QStandardItem("Overlap: 0%"));
+                 break;
+        case 2 : powerspectrumdockItem->appendRow(new QStandardItem("Overlap: 50%"));
+                 break;
+        case 3 : powerspectrumdockItem->appendRow(new QStandardItem("Overlap: 67%"));
+                 break;
+        case 4 : powerspectrumdockItem->appendRow(new QStandardItem("Overlap: 75%"));
+                 break;
+        case 5 : powerspectrumdockItem->appendRow(new QStandardItem("Overlap: 80%"));
+                 break;
+        default : powerspectrumdockItem->appendRow(new QStandardItem("Overlap: ??%"));
+                 break;
+      }
+
+      xml_go_up(xml_hdl);
+    }
+
+    if(xml_goto_nth_element_inside(xml_hdl, "window_type", 0))
+    {
+      view_session_format_error(__FILE__, __LINE__, xml_hdl);
+      return;
+    }
+    else
+    {
+      if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+      {
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
+        return;
+      }
+
+      window_func = atoi(result);
+      if((window_func < 0) || (window_func > 12))
+      {
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
+        return;
+      }
+
+      switch(window_func)
+      {
+        case FFT_WNDW_TYPE_RECT                  : powerspectrumdockItem->appendRow(new QStandardItem("FFT window function: None"));
+                break;
+        case FFT_WNDW_TYPE_HAMMING               : powerspectrumdockItem->appendRow(new QStandardItem("FFT window function: Hamming"));
+                break;
+        case FFT_WNDW_TYPE_4TERM_BLACKMANHARRIS  : powerspectrumdockItem->appendRow(new QStandardItem("FFT window function: 4-term Blackman-Harris"));
+                break;
+        case FFT_WNDW_TYPE_7TERM_BLACKMANHARRIS  : powerspectrumdockItem->appendRow(new QStandardItem("FFT window function: 7-term Blackman-Harris"));
+                break;
+        case FFT_WNDW_TYPE_NUTTALL3B             : powerspectrumdockItem->appendRow(new QStandardItem("FFT window function: Nuttall3b"));
+                break;
+        case FFT_WNDW_TYPE_NUTTALL4C             : powerspectrumdockItem->appendRow(new QStandardItem("FFT window function: Nuttall4c"));
+                break;
+        case FFT_WNDW_TYPE_HANN                  : powerspectrumdockItem->appendRow(new QStandardItem("FFT window function: Hann"));
+                break;
+        case FFT_WNDW_TYPE_HFT223D               : powerspectrumdockItem->appendRow(new QStandardItem("FFT window function: HFT223D"));
+                break;
+        case FFT_WNDW_TYPE_HFT95                 : powerspectrumdockItem->appendRow(new QStandardItem("FFT window function: HFT95"));
+                break;
+        case FFT_WNDW_TYPE_KAISER_A2             : powerspectrumdockItem->appendRow(new QStandardItem("FFT window function: Kaiser2"));
+                break;
+        case FFT_WNDW_TYPE_KAISER_A3             : powerspectrumdockItem->appendRow(new QStandardItem("FFT window function: Kaiser3"));
+                break;
+        case FFT_WNDW_TYPE_KAISER_A4             : powerspectrumdockItem->appendRow(new QStandardItem("FFT window function: Kaiser4"));
+                break;
+        case FFT_WNDW_TYPE_KAISER_A5             : powerspectrumdockItem->appendRow(new QStandardItem("FFT window function: Kaiser5"));
+                break;
+        default                                  : powerspectrumdockItem->appendRow(new QStandardItem("FFT window function: ??"));
+                break;
+      }
+
+      xml_go_up(xml_hdl);
+    }
+
+    xml_go_up(xml_hdl);
+  }
+
   for(i=0; i<MAXHYPNOGRAMDOCKS; i++)
   {
     if(xml_goto_nth_element_inside(xml_hdl, "hypnogram", i))
@@ -1504,7 +1666,7 @@ void UI_ViewSessionwindow::SelectButtonClicked()
 
         max_pwr = atoi(result);
 
-        snprintf(str2, 2048, "Max. level: %i", max_pwr);
+        snprintf(str2, 2048, "Max. level: %idB", max_pwr);
 
         cdsaItem->appendRow(new QStandardItem(str2));
 
@@ -1526,7 +1688,7 @@ void UI_ViewSessionwindow::SelectButtonClicked()
 
         min_pwr = atoi(result);
 
-        snprintf(str2, 2048, "Min. level: %i", min_pwr);
+        snprintf(str2, 2048, "Min. level: %idB", min_pwr);
 
         cdsaItem->appendRow(new QStandardItem(str2));
 
@@ -1551,7 +1713,7 @@ void UI_ViewSessionwindow::SelectButtonClicked()
 
         max_voltage = atof(result);
 
-        snprintf(str2, 2048, "Max. level: %f", max_voltage);
+        snprintf(str2, 2048, "Max. level: %e", max_voltage);
 
         cdsaItem->appendRow(new QStandardItem(str2));
 

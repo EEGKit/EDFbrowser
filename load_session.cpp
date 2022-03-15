@@ -78,6 +78,10 @@ int UI_Mainwindow::read_session_file(const char *path_session)
 
   struct signalcompblock *newsignalcomp=NULL;
 
+  struct spectrumdocksettings settings[MAXSPECTRUMDOCKS];
+
+  memset(&settings, 0, sizeof(struct spectrumdocksettings));
+
   struct hypnogram_dock_param_struct hypnogram_param;
 
   memset(&hypnogram_param, 0, sizeof(struct hypnogram_dock_param_struct));
@@ -99,16 +103,16 @@ int UI_Mainwindow::read_session_file(const char *path_session)
 
   if(strcmp(xml_hdl->elementname[xml_hdl->level], PROGRAM_NAME "_session"))
   {
-    return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+    return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
   }
 
   if(xml_goto_nth_element_inside(xml_hdl, "relative_path", 0))
   {
-    return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+    return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
   }
   if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
   {
-    return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+    return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
   }
   use_relative_path = atoi(result);
   if((use_relative_path < 0) || (use_relative_path > 1))
@@ -119,7 +123,7 @@ int UI_Mainwindow::read_session_file(const char *path_session)
 
   if(xml_goto_nth_element_inside(xml_hdl, "edf_files", 0))
   {
-    return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+    return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
   }
 
   for(i=0; i<MAXFILES; i++)
@@ -130,7 +134,7 @@ int UI_Mainwindow::read_session_file(const char *path_session)
     }
     if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
     {
-      return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+      return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
     }
 
     cmdlineargument = 0;
@@ -160,7 +164,7 @@ int UI_Mainwindow::read_session_file(const char *path_session)
     {
 //      printf("read_session_file(): error: %i\n", rc_file_open_err);  //FIXME
 
-      return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+      return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
     }
 
     xml_go_up(xml_hdl);
@@ -174,7 +178,7 @@ int UI_Mainwindow::read_session_file(const char *path_session)
     }
     if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
     {
-      return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+      return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
     }
     edfheaderlist[i]->viewtime = atoll(result);
 
@@ -185,11 +189,11 @@ int UI_Mainwindow::read_session_file(const char *path_session)
 
   if(xml_goto_nth_element_inside(xml_hdl, "ref_file", 0))
   {
-    return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+    return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
   }
   if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
   {
-    return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+    return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
   }
   sel_viewtime = atoi(result);
   if((sel_viewtime < 0) || (sel_viewtime >= files_open))
@@ -201,11 +205,11 @@ int UI_Mainwindow::read_session_file(const char *path_session)
 
   if(xml_goto_nth_element_inside(xml_hdl, "timesync_mode", 0))
   {
-    return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+    return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
   }
   if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
   {
-    return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+    return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
   }
   viewtime_sync = atoi(result);
   if((viewtime_sync < 0) || (viewtime_sync > 3))
@@ -228,11 +232,11 @@ int UI_Mainwindow::read_session_file(const char *path_session)
 
   if(xml_goto_nth_element_inside(xml_hdl, "pagetime", 0))
   {
-    return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+    return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
   }
   if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
   {
-    return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+    return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
   }
   pagetime = atoll(result);
   if(pagetime < 10000LL)
@@ -1409,6 +1413,8 @@ int UI_Mainwindow::read_session_file(const char *path_session)
     signalcomps_read++;
   }
 
+  newsignalcomp = NULL;
+
   xml_goto_root(xml_hdl);
 
   videopath[0] = 0;
@@ -1419,7 +1425,7 @@ int UI_Mainwindow::read_session_file(const char *path_session)
   {
     if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
     {
-      return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+      return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
     }
     if(use_relative_path)
     {
@@ -1439,7 +1445,7 @@ int UI_Mainwindow::read_session_file(const char *path_session)
     {
       if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
       {
-        return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
       }
       session_video_seek = atoi(result);
       if(session_video_seek < 0)
@@ -1452,8 +1458,6 @@ int UI_Mainwindow::read_session_file(const char *path_session)
 
   xml_goto_root(xml_hdl);
 
-  struct spectrumdocksettings settings[MAXSPECTRUMDOCKS];
-
   for(i=0; i<MAXSPECTRUMDOCKS; i++)
   {
     settings[i].signalnr = -1;
@@ -1465,13 +1469,13 @@ int UI_Mainwindow::read_session_file(const char *path_session)
     {
       if(xml_goto_nth_element_inside(xml_hdl, "signalnum", 0))
       {
-        return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
       }
       else
       {
         if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
         {
-          return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+          return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
         }
 
         settings[i].signalnr = atoi(result);
@@ -1479,15 +1483,31 @@ int UI_Mainwindow::read_session_file(const char *path_session)
         xml_go_up(xml_hdl);
       }
 
-      if(xml_goto_nth_element_inside(xml_hdl, "amp", 0))
+      if(xml_goto_nth_element_inside(xml_hdl, "dashboard", 0))
       {
-        return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
       }
       else
       {
         if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
         {
-          return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+          return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
+        }
+
+        settings[i].dashboard = atoi(result);
+
+        xml_go_up(xml_hdl);
+      }
+
+      if(xml_goto_nth_element_inside(xml_hdl, "amp", 0))
+      {
+        return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
+      }
+      else
+      {
+        if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+        {
+          return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
         }
 
         settings[i].amp = atoi(result);
@@ -1503,7 +1523,7 @@ int UI_Mainwindow::read_session_file(const char *path_session)
       {
         if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
         {
-          return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+          return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
         }
 
         settings[i].log_min_sl = atoi(result);
@@ -1513,13 +1533,13 @@ int UI_Mainwindow::read_session_file(const char *path_session)
 
       if(xml_goto_nth_element_inside(xml_hdl, "wheel", 0))
       {
-        return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
       }
       else
       {
         if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
         {
-          return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+          return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
         }
 
         settings[i].wheel = atoi(result);
@@ -1529,13 +1549,13 @@ int UI_Mainwindow::read_session_file(const char *path_session)
 
       if(xml_goto_nth_element_inside(xml_hdl, "span", 0))
       {
-        return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
       }
       else
       {
         if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
         {
-          return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+          return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
         }
 
         settings[i].span = atoi(result);
@@ -1545,13 +1565,13 @@ int UI_Mainwindow::read_session_file(const char *path_session)
 
       if(xml_goto_nth_element_inside(xml_hdl, "center", 0))
       {
-        return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
       }
       else
       {
         if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
         {
-          return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+          return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
         }
 
         settings[i].center = atoi(result);
@@ -1561,13 +1581,13 @@ int UI_Mainwindow::read_session_file(const char *path_session)
 
       if(xml_goto_nth_element_inside(xml_hdl, "log", 0))
       {
-        return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
       }
       else
       {
         if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
         {
-          return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+          return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
         }
 
         settings[i].log = atoi(result);
@@ -1577,13 +1597,13 @@ int UI_Mainwindow::read_session_file(const char *path_session)
 
       if(xml_goto_nth_element_inside(xml_hdl, "sqrt", 0))
       {
-        return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
       }
       else
       {
         if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
         {
-          return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+          return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
         }
 
         settings[i].sqrt = atoi(result);
@@ -1593,13 +1613,13 @@ int UI_Mainwindow::read_session_file(const char *path_session)
 
       if(xml_goto_nth_element_inside(xml_hdl, "colorbar", 0))
       {
-        return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
       }
       else
       {
         if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
         {
-          return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+          return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
         }
 
         settings[i].colorbar = atoi(result);
@@ -1607,15 +1627,95 @@ int UI_Mainwindow::read_session_file(const char *path_session)
         xml_go_up(xml_hdl);
       }
 
-      if(xml_goto_nth_element_inside(xml_hdl, "maxvalue", 0))
+      if(xml_goto_nth_element_inside(xml_hdl, "blocksize_predefined", 0))
       {
-        return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
       }
       else
       {
         if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
         {
-          return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+          return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
+        }
+
+        settings[i].blocksize_predefined = atoi(result);
+        if((settings[i].blocksize_predefined < 0) || (settings[i].blocksize_predefined > 9))
+        {
+          return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
+        }
+
+        xml_go_up(xml_hdl);
+      }
+
+      if(xml_goto_nth_element_inside(xml_hdl, "dftblocksize", 0))
+      {
+        return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
+      }
+      else
+      {
+        if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+        {
+          return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
+        }
+
+        settings[i].dftblocksize = atoi(result);
+        if(settings[i].dftblocksize < 2)
+        {
+          return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
+        }
+
+        xml_go_up(xml_hdl);
+      }
+
+      if(xml_goto_nth_element_inside(xml_hdl, "overlap", 0))
+      {
+        return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
+      }
+      else
+      {
+        if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+        {
+          return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
+        }
+
+        settings[i].overlap = atoi(result);
+        if((settings[i].overlap < 1) || (settings[i].overlap > 5))
+        {
+          return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
+        }
+
+        xml_go_up(xml_hdl);
+      }
+
+      if(xml_goto_nth_element_inside(xml_hdl, "window_type", 0))
+      {
+        return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
+      }
+      else
+      {
+        if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+        {
+          return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
+        }
+
+        settings[i].window_type = atoi(result);
+        if((settings[i].window_type < 0) || (settings[i].window_type > 12))
+        {
+          return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
+        }
+
+        xml_go_up(xml_hdl);
+      }
+
+      if(xml_goto_nth_element_inside(xml_hdl, "maxvalue", 0))
+      {
+        return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
+      }
+      else
+      {
+        if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+        {
+          return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
         }
 
         settings[i].maxvalue = atof(result);
@@ -1625,13 +1725,13 @@ int UI_Mainwindow::read_session_file(const char *path_session)
 
       if(xml_goto_nth_element_inside(xml_hdl, "maxvalue_sqrt", 0))
       {
-        return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
       }
       else
       {
         if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
         {
-          return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+          return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
         }
 
         settings[i].maxvalue_sqrt = atof(result);
@@ -1641,13 +1741,13 @@ int UI_Mainwindow::read_session_file(const char *path_session)
 
       if(xml_goto_nth_element_inside(xml_hdl, "maxvalue_vlog", 0))
       {
-        return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
       }
       else
       {
         if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
         {
-          return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+          return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
         }
 
         settings[i].maxvalue_vlog = atof(result);
@@ -1657,13 +1757,13 @@ int UI_Mainwindow::read_session_file(const char *path_session)
 
       if(xml_goto_nth_element_inside(xml_hdl, "maxvalue_sqrt_vlog", 0))
       {
-        return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
       }
       else
       {
         if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
         {
-          return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+          return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
         }
 
         settings[i].maxvalue_sqrt_vlog = atof(result);
@@ -1673,13 +1773,13 @@ int UI_Mainwindow::read_session_file(const char *path_session)
 
       if(xml_goto_nth_element_inside(xml_hdl, "minvalue_vlog", 0))
       {
-        return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
       }
       else
       {
         if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
         {
-          return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+          return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
         }
 
         settings[i].minvalue_vlog = atof(result);
@@ -1689,13 +1789,13 @@ int UI_Mainwindow::read_session_file(const char *path_session)
 
       if(xml_goto_nth_element_inside(xml_hdl, "minvalue_sqrt_vlog", 0))
       {
-        return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
       }
       else
       {
         if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
         {
-          return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+          return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
         }
 
         settings[i].minvalue_sqrt_vlog = atof(result);
@@ -1721,13 +1821,13 @@ int UI_Mainwindow::read_session_file(const char *path_session)
 
       if(xml_goto_nth_element_inside(xml_hdl, "instance_num", 0))
       {
-        return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
       }
       else
       {
         if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
         {
-          return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+          return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
         }
 
         hypnogram_param.instance_num = atoi(result);
@@ -1743,13 +1843,13 @@ int UI_Mainwindow::read_session_file(const char *path_session)
 
       if(xml_goto_nth_element_inside(xml_hdl, "hdr_idx", 0))
       {
-        return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
       }
       else
       {
         if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
         {
-          return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+          return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
         }
 
         hdr_idx = atoi(result);
@@ -1769,12 +1869,12 @@ int UI_Mainwindow::read_session_file(const char *path_session)
       {
         if(xml_goto_nth_element_inside(xml_hdl, "stage_name", j))
         {
-          return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+          return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
         }
 
         if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
         {
-          return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+          return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
         }
 
         strlcpy(hypnogram_param.stage_name[j], result, 32);
@@ -1786,12 +1886,12 @@ int UI_Mainwindow::read_session_file(const char *path_session)
       {
         if(xml_goto_nth_element_inside(xml_hdl, "annot_name", j))
         {
-          return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+          return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
         }
 
         if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
         {
-          return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+          return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
         }
 
         strlcpy(hypnogram_param.annot_name[j], result, 32);
@@ -1825,13 +1925,13 @@ int UI_Mainwindow::read_session_file(const char *path_session)
 
       if(xml_goto_nth_element_inside(xml_hdl, "instance_num", 0))
       {
-        return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
       }
       else
       {
         if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
         {
-          return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+          return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
         }
 
         cdsa_param.instance_num = atoi(result);
@@ -1847,13 +1947,13 @@ int UI_Mainwindow::read_session_file(const char *path_session)
 
       if(xml_goto_nth_element_inside(xml_hdl, "sigcomp_idx", 0))
       {
-        return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
       }
       else
       {
         if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
         {
-          return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+          return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
         }
 
         sigcomp_idx = atoi(result);
@@ -1871,13 +1971,13 @@ int UI_Mainwindow::read_session_file(const char *path_session)
 
       if(xml_goto_nth_element_inside(xml_hdl, "min_hz", 0))
       {
-        return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
       }
       else
       {
         if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
         {
-          return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+          return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
         }
 
         cdsa_param.min_hz = atoi(result);
@@ -1893,13 +1993,13 @@ int UI_Mainwindow::read_session_file(const char *path_session)
 
       if(xml_goto_nth_element_inside(xml_hdl, "max_hz", 0))
       {
-        return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
       }
       else
       {
         if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
         {
-          return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+          return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
         }
 
         cdsa_param.max_hz = atoi(result);
@@ -1915,13 +2015,13 @@ int UI_Mainwindow::read_session_file(const char *path_session)
 
       if(xml_goto_nth_element_inside(xml_hdl, "segment_len", 0))
       {
-        return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
       }
       else
       {
         if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
         {
-          return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+          return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
         }
 
         cdsa_param.segment_len = atoi(result);
@@ -1937,13 +2037,13 @@ int UI_Mainwindow::read_session_file(const char *path_session)
 
       if(xml_goto_nth_element_inside(xml_hdl, "block_len", 0))
       {
-        return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
       }
       else
       {
         if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
         {
-          return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+          return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
         }
 
         cdsa_param.block_len = atoi(result);
@@ -1959,13 +2059,13 @@ int UI_Mainwindow::read_session_file(const char *path_session)
 
       if(xml_goto_nth_element_inside(xml_hdl, "overlap", 0))
       {
-        return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
       }
       else
       {
         if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
         {
-          return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+          return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
         }
 
         cdsa_param.overlap = atoi(result);
@@ -1981,13 +2081,13 @@ int UI_Mainwindow::read_session_file(const char *path_session)
 
       if(xml_goto_nth_element_inside(xml_hdl, "window_func", 0))
       {
-        return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
       }
       else
       {
         if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
         {
-          return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+          return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
         }
 
         cdsa_param.window_func = atoi(result);
@@ -2003,13 +2103,13 @@ int UI_Mainwindow::read_session_file(const char *path_session)
 
       if(xml_goto_nth_element_inside(xml_hdl, "max_voltage", 0))
       {
-        return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
       }
       else
       {
         if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
         {
-          return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+          return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
         }
 
         cdsa_param.max_voltage = atof(result);
@@ -2025,13 +2125,13 @@ int UI_Mainwindow::read_session_file(const char *path_session)
 
       if(xml_goto_nth_element_inside(xml_hdl, "max_pwr", 0))
       {
-        return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
       }
       else
       {
         if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
         {
-          return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+          return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
         }
 
         cdsa_param.max_pwr = atoi(result);
@@ -2047,13 +2147,13 @@ int UI_Mainwindow::read_session_file(const char *path_session)
 
       if(xml_goto_nth_element_inside(xml_hdl, "min_pwr", 0))
       {
-        return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
       }
       else
       {
         if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
         {
-          return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+          return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
         }
 
         cdsa_param.min_pwr = atoi(result);
@@ -2069,13 +2169,13 @@ int UI_Mainwindow::read_session_file(const char *path_session)
 
       if(xml_goto_nth_element_inside(xml_hdl, "log", 0))
       {
-        return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
       }
       else
       {
         if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
         {
-          return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+          return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
         }
 
         cdsa_param.log = atoi(result);
@@ -2091,13 +2191,13 @@ int UI_Mainwindow::read_session_file(const char *path_session)
 
       if(xml_goto_nth_element_inside(xml_hdl, "power_voltage", 0))
       {
-        return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
       }
       else
       {
         if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
         {
-          return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+          return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
         }
 
         cdsa_param.power_voltage = atoi(result);

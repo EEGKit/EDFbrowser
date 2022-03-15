@@ -546,12 +546,16 @@ void UI_SpectrumDockWindow::setsettings(struct spectrumdocksettings sett)
   settings = sett;
 
   set_settings = 1;
+
+  dashboard = settings.dashboard;
 }
 
 
 void UI_SpectrumDockWindow::getsettings(struct spectrumdocksettings *sett)
 {
   sett->signalnr = signal_nr;
+
+  sett->dashboard = dashboard;
 
   sett->amp = amplitudeSlider->value();
 
@@ -589,6 +593,14 @@ void UI_SpectrumDockWindow::getsettings(struct spectrumdocksettings *sett)
   {
     sett->colorbar = 0;
   }
+
+  sett->blocksize_predefined = dftsz_box->currentIndex();
+
+  sett->dftblocksize = dftblocksize;
+
+  sett->window_type = window_type;
+
+  sett->overlap = overlap;
 
   sett->maxvalue = maxvalue;
 
@@ -1674,6 +1686,41 @@ void UI_SpectrumDockWindow::update_curve()
     if((flywheel_value >= 10) && (flywheel_value <= 100000))
     {
       flywheel_value = settings.wheel;
+    }
+
+    window_type = settings.window_type;
+    mainwindow->spectrumdock_window = window_type;
+    windowBox->setCurrentIndex(mainwindow->spectrumdock_window);
+
+    overlap = settings.overlap;
+    mainwindow->spectrumdock_overlap = overlap - 1;
+    overlap_box->setCurrentIndex(mainwindow->spectrumdock_overlap);
+
+    mainwindow->spectrumdock_blocksize_predefined = settings.blocksize_predefined;
+
+    mainwindow->spectrumdock_blocksize_userdefined = settings.dftblocksize;
+
+    dftsz_box->setCurrentIndex(settings.blocksize_predefined);
+
+    if(mainwindow->spectrumdock_blocksize_predefined)
+    {
+      dftsz_spinbox->setMaximum(10000000);
+
+      dftsz_spinbox->setValue(dftsz_range[mainwindow->spectrumdock_blocksize_predefined]);
+
+      dftblocksize = dftsz_range[mainwindow->spectrumdock_blocksize_predefined];
+
+      dftsz_spinbox->setEnabled(false);
+    }
+    else
+    {
+      dftsz_spinbox->setMaximum(1000);
+
+      dftsz_spinbox->setValue(mainwindow->spectrumdock_blocksize_userdefined);
+
+      dftblocksize = mainwindow->spectrumdock_blocksize_userdefined;
+
+      dftsz_spinbox->setEnabled(true);
     }
   }
 
