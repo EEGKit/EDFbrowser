@@ -127,6 +127,9 @@ void UI_ViewSessionwindow::SelectButtonClicked()
       max_pwr=0,
       min_pwr=0;
 
+  long long viewtime=0,
+            timescale=0;
+
   char result[XML_STRBUFLEN]="",
        composition_txt[2048]="",
        label[256]="",
@@ -139,7 +142,6 @@ void UI_ViewSessionwindow::SelectButtonClicked()
          frequency2,
          voltpercm,
          ripple,
-         timescale,
          d_tmp,
          velocity,
          factor[MAXSIGNALS],
@@ -272,11 +274,14 @@ void UI_ViewSessionwindow::SelectButtonClicked()
     view_session_format_error(__FILE__, __LINE__, xml_hdl);
     return;
   }
-  timescale = atof(result);
-  timescale /= TIME_DIMENSION;
-  snprintf(composition_txt, 2048, "Timescale: %f seconds", timescale);
-  remove_trailing_zeros(composition_txt);
-  parentItem->appendRow(new QStandardItem(composition_txt));
+  timescale = atoll(result);
+  snprintf(str2, 2048, "Timescale: %i:%02i:%02i.%04i",
+                       ((int)(timescale / TIME_DIMENSION)) / 3600,
+                       (((int)(timescale / TIME_DIMENSION)) % 3600) / 60,
+                       ((int)(timescale / TIME_DIMENSION)) % 60,
+                       ((int)(timescale % TIME_DIMENSION)) / 1000);
+  remove_trailing_zeros(str2);
+  parentItem->appendRow(new QStandardItem(str2));
   xml_go_up(xml_hdl);
 
   if(xml_goto_nth_element_inside(xml_hdl, "edf_files", 0))
@@ -306,6 +311,38 @@ void UI_ViewSessionwindow::SelectButtonClicked()
       snprintf(edf_path, 2048, "File: %s", result);
     }
     parentItem->appendRow(new QStandardItem(edf_path));
+    xml_go_up(xml_hdl);
+
+    if(xml_goto_nth_element_inside(xml_hdl, "viewtime", 0))
+    {
+      view_session_format_error(__FILE__, __LINE__, xml_hdl);
+      return;
+    }
+    if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+    {
+      view_session_format_error(__FILE__, __LINE__, xml_hdl);
+      return;
+    }
+    viewtime = atoll(result);
+    if(viewtime < 0)
+    {
+      viewtime *= -1;
+      snprintf(str2, 2048, "File position: -%i:%02i:%02i.%04i",
+                           ((int)(viewtime / TIME_DIMENSION)) / 3600,
+                           (((int)(viewtime / TIME_DIMENSION)) % 3600) / 60,
+                           ((int)(viewtime / TIME_DIMENSION)) % 60,
+                           ((int)(viewtime % TIME_DIMENSION)) / 1000);
+    }
+    else
+    {
+      snprintf(str2, 2048, "File position: %i:%02i:%02i.%04i",
+                           ((int)(viewtime / TIME_DIMENSION)) / 3600,
+                           (((int)(viewtime / TIME_DIMENSION)) % 3600) / 60,
+                           ((int)(viewtime / TIME_DIMENSION)) % 60,
+                           ((int)(viewtime % TIME_DIMENSION)) / 1000);
+    }
+    remove_trailing_zeros(str2);
+    parentItem->appendRow(new QStandardItem(str2));
     xml_go_up(xml_hdl);
   }
   xml_go_up(xml_hdl);
