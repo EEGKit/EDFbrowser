@@ -120,7 +120,12 @@ void UI_ViewSessionwindow::SelectButtonClicked()
       max_hz=0,
       segment_len=0,
       block_len=0,
-      overlap=1;
+      overlap=1,
+      window_func=0,
+      log=0,
+      power_voltage=0,
+      max_pwr=0,
+      min_pwr=0;
 
   char result[XML_STRBUFLEN]="",
        composition_txt[2048]="",
@@ -138,7 +143,8 @@ void UI_ViewSessionwindow::SelectButtonClicked()
          d_tmp,
          velocity,
          factor[MAXSIGNALS],
-         fir_vars[1000];
+         fir_vars[1000],
+         max_voltage=0;
 
   QStandardItem *parentItem,
                 *signalItem,
@@ -1286,7 +1292,7 @@ void UI_ViewSessionwindow::SelectButtonClicked()
         return;
       }
 
-      snprintf(str2, 2048, "Segment len: %i seconds", segment_len);
+      snprintf(str2, 2048, "Segment length: %i seconds", segment_len);
       cdsaItem->appendRow(new QStandardItem(str2));
 
       xml_go_up(xml_hdl);
@@ -1312,7 +1318,7 @@ void UI_ViewSessionwindow::SelectButtonClicked()
         return;
       }
 
-      snprintf(str2, 2048, "Segment len: %i seconds", block_len);
+      snprintf(str2, 2048, "Block length: %i seconds", block_len);
       cdsaItem->appendRow(new QStandardItem(str2));
 
       xml_go_up(xml_hdl);
@@ -1340,22 +1346,214 @@ void UI_ViewSessionwindow::SelectButtonClicked()
 
       switch(overlap)
       {
-        case 1 : strlcpy(str2, "Overlap: 0%", 2048);
+        case 1 : cdsaItem->appendRow(new QStandardItem("Overlap: 0%"));
                  break;
-        case 2 : strlcpy(str2, "Overlap: 50%", 2048);
+        case 2 : cdsaItem->appendRow(new QStandardItem("Overlap: 50%"));
                  break;
-        case 3 : strlcpy(str2, "Overlap: 67%", 2048);
+        case 3 : cdsaItem->appendRow(new QStandardItem("Overlap: 67%"));
                  break;
-        case 4 : strlcpy(str2, "Overlap: 75%", 2048);
+        case 4 : cdsaItem->appendRow(new QStandardItem("Overlap: 75%"));
                  break;
-        case 5 : strlcpy(str2, "Overlap: 80%", 2048);
+        case 5 : cdsaItem->appendRow(new QStandardItem("Overlap: 80%"));
                  break;
-        default :strlcpy(str2, "Overlap: ??%", 2048);
+        default : cdsaItem->appendRow(new QStandardItem("Overlap: ??%"));
+                 break;
       }
-      cdsaItem->appendRow(new QStandardItem(str2));
 
       xml_go_up(xml_hdl);
     }
+
+    if(xml_goto_nth_element_inside(xml_hdl, "window_func", 0))
+    {
+      view_session_format_error(__FILE__, __LINE__, xml_hdl);
+      return;
+    }
+    else
+    {
+      if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+      {
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
+        return;
+      }
+
+      window_func = atoi(result);
+      if((window_func < 0) || (window_func > 12))
+      {
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
+        return;
+      }
+
+      switch(window_func)
+      {
+        case FFT_WNDW_TYPE_RECT                  : cdsaItem->appendRow(new QStandardItem("FFT window function: None"));
+                break;
+        case FFT_WNDW_TYPE_HAMMING               : cdsaItem->appendRow(new QStandardItem("FFT window function: Hamming"));
+                break;
+        case FFT_WNDW_TYPE_4TERM_BLACKMANHARRIS  : cdsaItem->appendRow(new QStandardItem("FFT window function: 4-term Blackman-Harris"));
+                break;
+        case FFT_WNDW_TYPE_7TERM_BLACKMANHARRIS  : cdsaItem->appendRow(new QStandardItem("FFT window function: 7-term Blackman-Harris"));
+                break;
+        case FFT_WNDW_TYPE_NUTTALL3B             : cdsaItem->appendRow(new QStandardItem("FFT window function: Nuttall3b"));
+                break;
+        case FFT_WNDW_TYPE_NUTTALL4C             : cdsaItem->appendRow(new QStandardItem("FFT window function: Nuttall4c"));
+                break;
+        case FFT_WNDW_TYPE_HANN                  : cdsaItem->appendRow(new QStandardItem("FFT window function: Hann"));
+                break;
+        case FFT_WNDW_TYPE_HFT223D               : cdsaItem->appendRow(new QStandardItem("FFT window function: HFT223D"));
+                break;
+        case FFT_WNDW_TYPE_HFT95                 : cdsaItem->appendRow(new QStandardItem("FFT window function: HFT95"));
+                break;
+        case FFT_WNDW_TYPE_KAISER_A2             : cdsaItem->appendRow(new QStandardItem("FFT window function: Kaiser2"));
+                break;
+        case FFT_WNDW_TYPE_KAISER_A3             : cdsaItem->appendRow(new QStandardItem("FFT window function: Kaiser3"));
+                break;
+        case FFT_WNDW_TYPE_KAISER_A4             : cdsaItem->appendRow(new QStandardItem("FFT window function: Kaiser4"));
+                break;
+        case FFT_WNDW_TYPE_KAISER_A5             : cdsaItem->appendRow(new QStandardItem("FFT window function: Kaiser5"));
+                break;
+        default                                  : cdsaItem->appendRow(new QStandardItem("FFT window function: ??"));
+                break;
+      }
+
+      xml_go_up(xml_hdl);
+    }
+
+    if(xml_goto_nth_element_inside(xml_hdl, "log", 0))
+    {
+      view_session_format_error(__FILE__, __LINE__, xml_hdl);
+      return;
+    }
+    else
+    {
+      if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+      {
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
+        return;
+      }
+
+      log = atoi(result);
+      if((log < 0) || (log > 1))
+      {
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
+        return;
+      }
+
+      if(log)
+      {
+        cdsaItem->appendRow(new QStandardItem("Logarithmic: yes"));
+      }
+      else
+      {
+        cdsaItem->appendRow(new QStandardItem("Logarithmic: no"));
+      }
+
+      xml_go_up(xml_hdl);
+    }
+
+    if(log)
+    {
+      if(xml_goto_nth_element_inside(xml_hdl, "max_pwr", 0))
+      {
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
+        return;
+      }
+      else
+      {
+        if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+        {
+          view_session_format_error(__FILE__, __LINE__, xml_hdl);
+          return;
+        }
+
+        max_pwr = atoi(result);
+
+        snprintf(str2, 2048, "Max. level: %i", max_pwr);
+
+        cdsaItem->appendRow(new QStandardItem(str2));
+
+        xml_go_up(xml_hdl);
+      }
+
+      if(xml_goto_nth_element_inside(xml_hdl, "min_pwr", 0))
+      {
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
+        return;
+      }
+      else
+      {
+        if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+        {
+          view_session_format_error(__FILE__, __LINE__, xml_hdl);
+          return;
+        }
+
+        min_pwr = atoi(result);
+
+        snprintf(str2, 2048, "Min. level: %i", min_pwr);
+
+        cdsaItem->appendRow(new QStandardItem(str2));
+
+        xml_go_up(xml_hdl);
+      }
+
+    }
+    else
+    {
+      if(xml_goto_nth_element_inside(xml_hdl, "max_voltage", 0))
+      {
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
+        return;
+      }
+      else
+      {
+        if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+        {
+          view_session_format_error(__FILE__, __LINE__, xml_hdl);
+          return;
+        }
+
+        max_voltage = atof(result);
+
+        snprintf(str2, 2048, "Max. level: %f", max_voltage);
+
+        cdsaItem->appendRow(new QStandardItem(str2));
+
+        xml_go_up(xml_hdl);
+      }
+    }
+
+    if(xml_goto_nth_element_inside(xml_hdl, "power_voltage", 0))
+    {
+      view_session_format_error(__FILE__, __LINE__, xml_hdl);
+      return;
+    }
+    else
+    {
+      if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+      {
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
+        return;
+      }
+
+      power_voltage = atoi(result);
+      if((power_voltage < 0) || (power_voltage > 1))
+      {
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
+        return;
+      }
+
+      if(power_voltage)
+      {
+        cdsaItem->appendRow(new QStandardItem("Power: yes"));
+      }
+      else
+      {
+        cdsaItem->appendRow(new QStandardItem("Power: no"));
+      }
+
+      xml_go_up(xml_hdl);
+    }
+
   }
 
   xml_close(xml_hdl);
