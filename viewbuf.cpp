@@ -774,7 +774,7 @@ void UI_Mainwindow::setup_viewbuf()
   {
     viewtime_string[0] = 0;
 
-    if(viewtime_indicator_type == 2)
+    if(viewtime_indicator_type == VIEWTIME_INDICATOR_TYPE_DATE_REAL_RELATIVE)
     {
       l_temp = (edfheaderlist[sel_viewtime]->viewtime + edfheaderlist[sel_viewtime]->starttime_offset) / TIME_DIMENSION;
       l_temp += edfheaderlist[sel_viewtime]->utc_starttime;
@@ -783,9 +783,10 @@ void UI_Mainwindow::setup_viewbuf()
       snprintf(viewtime_string, 128, "%2i-%s ", date_time_str.day, date_time_str.month_str);
     }
 
-    if((edfheaderlist[sel_viewtime]->viewtime + edfheaderlist[sel_viewtime]->starttime_offset)>=0LL)
+//    if((edfheaderlist[sel_viewtime]->viewtime + edfheaderlist[sel_viewtime]->starttime_offset)>=0LL)
+    if((edfheaderlist[sel_viewtime]->viewtime)>=0LL)
     {
-      if(viewtime_indicator_type > 0)
+      if(viewtime_indicator_type != VIEWTIME_INDICATOR_TYPE_RELATIVE)
       {
         snprintf(viewtime_string + strlen(viewtime_string), 128 - strlen(viewtime_string), "%2i:%02i:%02i.%04i (",
                 (int)((((edfheaderlist[sel_viewtime]->l_starttime + edfheaderlist[sel_viewtime]->viewtime + edfheaderlist[sel_viewtime]->starttime_offset) / TIME_DIMENSION)/ 3600LL) % 24LL),
@@ -800,7 +801,7 @@ void UI_Mainwindow::setup_viewbuf()
               (int)((edfheaderlist[sel_viewtime]->viewtime / TIME_DIMENSION) % 60LL),
               (int)((edfheaderlist[sel_viewtime]->viewtime % TIME_DIMENSION) / 1000LL));
 
-      if(viewtime_indicator_type > 0)
+      if(viewtime_indicator_type != VIEWTIME_INDICATOR_TYPE_RELATIVE)
       {
         snprintf(viewtime_string + strlen(viewtime_string), 128 - strlen(viewtime_string), ")");
       }
@@ -813,7 +814,7 @@ void UI_Mainwindow::setup_viewbuf()
         l_temp += (86400LL * TIME_DIMENSION);
       }
 
-      if(viewtime_indicator_type > 0)
+      if(viewtime_indicator_type != VIEWTIME_INDICATOR_TYPE_RELATIVE)
       {
         snprintf(viewtime_string + strlen(viewtime_string), 128 - strlen(viewtime_string), "%2i:%02i:%02i.%04i (",
                 (int)((((l_temp) / TIME_DIMENSION)/ 3600LL) % 24LL),
@@ -830,7 +831,7 @@ void UI_Mainwindow::setup_viewbuf()
               (int)((l_temp / TIME_DIMENSION) % 60LL),
               (int)((l_temp % TIME_DIMENSION) / 1000LL));
 
-      if(viewtime_indicator_type > 0)
+      if(viewtime_indicator_type != VIEWTIME_INDICATOR_TYPE_RELATIVE)
       {
         snprintf(viewtime_string + strlen(viewtime_string), 128 - strlen(viewtime_string), ")");
       }

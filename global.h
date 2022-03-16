@@ -104,6 +104,10 @@
 #define VIDEO_STATUS_PAUSED      (17)
 #define VIDEO_STATUS_ENDED       (18)
 
+#define VIEWTIME_INDICATOR_TYPE_RELATIVE             (0)
+#define VIEWTIME_INDICATOR_TYPE_REAL_RELATIVE        (1)
+#define VIEWTIME_INDICATOR_TYPE_DATE_REAL_RELATIVE   (2)
+
 #define RC_CMD_LIST          (0)
 #define RC_CMD_IDN           (1)
 #define RC_CMD_QUIT          (2)

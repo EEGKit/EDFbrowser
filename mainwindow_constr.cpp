@@ -77,7 +77,7 @@ UI_Mainwindow::UI_Mainwindow()
   w_scaling = 1;
   h_scaling = 1;
 
-  viewtime_indicator_type = 1;
+  viewtime_indicator_type = VIEWTIME_INDICATOR_TYPE_REAL_RELATIVE;
 
   mainwindow_title_type = 1;
 
