@@ -1428,11 +1428,11 @@ void UI_Annotationswindow::annotation_selected(QListWidgetItem * item, int cente
 
   if(centered)
   {
-    mainwindow->set_viewtime(annot->onset - (mainwindow->pagetime / 2));
+    mainwindow->set_viewtime((annot->onset - edf_hdr->starttime_offset) - (mainwindow->pagetime / 2));
   }
   else
   {
-    mainwindow->set_viewtime(annot->onset);
+    mainwindow->set_viewtime(annot->onset - edf_hdr->starttime_offset);
   }
 }
 
