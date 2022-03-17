@@ -377,6 +377,8 @@ void UI_ZScoreWindow::startButtonClicked()
   struct signalcompblock *signalcomp=NULL;
 
 
+  curve1->clear();
+
   crossoverfreq = crossoverSpinbox->value();
   mainwindow->z_score_var.crossoverfreq = crossoverfreq;
 
