@@ -783,7 +783,6 @@ void UI_Mainwindow::setup_viewbuf()
       snprintf(viewtime_string, 128, "%2i-%s ", date_time_str.day, date_time_str.month_str);
     }
 
-//    if((edfheaderlist[sel_viewtime]->viewtime + edfheaderlist[sel_viewtime]->starttime_offset)>=0LL)
     if((edfheaderlist[sel_viewtime]->viewtime)>=0LL)
     {
       if(viewtime_indicator_type != VIEWTIME_INDICATOR_TYPE_RELATIVE)
