@@ -80,7 +80,7 @@ int UI_Mainwindow::read_session_file(const char *path_session)
 
   struct spectrumdocksettings settings[MAXSPECTRUMDOCKS];
 
-  memset(&settings, 0, sizeof(struct spectrumdocksettings));
+  memset(settings, 0, sizeof(struct spectrumdocksettings[MAXSPECTRUMDOCKS]));
 
   struct hypnogram_dock_param_struct hypnogram_param;
 
