@@ -345,6 +345,8 @@ void UI_SaveMontagewindow::SaveButtonClicked()
 
         fprintf(mtgfile, "    <signalnum>%i</signalnum>\n", settings.signalnr);
 
+        fprintf(mtgfile, "    <dashboard>%i</dashboard>\n", settings.dashboard);
+
         fprintf(mtgfile, "    <amp>%i</amp>\n", settings.amp);
 
         fprintf(mtgfile, "    <log_min_sl>%i</log_min_sl>\n", settings.log_min_sl);
@@ -360,6 +362,14 @@ void UI_SaveMontagewindow::SaveButtonClicked()
         fprintf(mtgfile, "    <sqrt>%i</sqrt>\n", settings.sqrt);
 
         fprintf(mtgfile, "    <colorbar>%i</colorbar>\n", settings.colorbar);
+
+        fprintf(mtgfile, "    <blocksize_predefined>%i</blocksize_predefined>\n", settings.blocksize_predefined);
+
+        fprintf(mtgfile, "    <dftblocksize>%i</dftblocksize>\n", settings.dftblocksize);
+
+        fprintf(mtgfile, "    <window_type>%i</window_type>\n", settings.window_type);
+
+        fprintf(mtgfile, "    <overlap>%i</overlap>\n", settings.overlap);
 
         fprintf(mtgfile, "    <maxvalue>%.10f</maxvalue>\n", settings.maxvalue);
 

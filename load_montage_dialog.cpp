@@ -201,7 +201,7 @@ int UI_LoadMontagewindow::LoadButtonClicked()
 
   if(strcmp(xml_hdl->elementname[xml_hdl->level], PROGRAM_NAME "_montage"))
   {
-    return format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+    return format_error(__FILE__, __LINE__, NULL, xml_hdl);
   }
 
 ////////////////////////////////////////////
@@ -1611,13 +1611,15 @@ int UI_LoadMontagewindow::LoadButtonClicked()
     signalcomps_read++;
   }
 
+  newsignalcomp = NULL;
+
   xml_goto_root(xml_hdl);
 
   if(!(xml_goto_nth_element_inside(xml_hdl, "pagetime", 0)))
   {
     if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
     {
-      return format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+      return format_error(__FILE__, __LINE__, NULL, xml_hdl);
     }
     mainwindow->pagetime = atoll(result);
     if(mainwindow->pagetime < 10000LL)
@@ -1630,7 +1632,7 @@ int UI_LoadMontagewindow::LoadButtonClicked()
 
   struct spectrumdocksettings settings[MAXSPECTRUMDOCKS];
 
-  memset(&settings, 0, sizeof(struct spectrumdocksettings));
+  memset(settings, 0, sizeof(struct spectrumdocksettings[MAXSPECTRUMDOCKS]));
 
   for(i=0; i<MAXSPECTRUMDOCKS; i++)
   {
@@ -1643,13 +1645,13 @@ int UI_LoadMontagewindow::LoadButtonClicked()
     {
       if(xml_goto_nth_element_inside(xml_hdl, "signalnum", 0))
       {
-        return format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        return format_error(__FILE__, __LINE__, NULL, xml_hdl);
       }
       else
       {
         if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
         {
-          return format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+          return format_error(__FILE__, __LINE__, NULL, xml_hdl);
         }
 
         settings[i].signalnr = atoi(result);
@@ -1657,15 +1659,27 @@ int UI_LoadMontagewindow::LoadButtonClicked()
         xml_go_up(xml_hdl);
       }
 
+      if(!xml_goto_nth_element_inside(xml_hdl, "dashboard", 0))
+      {
+        if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+        {
+          return format_error(__FILE__, __LINE__, NULL, xml_hdl);
+        }
+
+        settings[i].dashboard = atoi(result);
+
+        xml_go_up(xml_hdl);
+      }
+
       if(xml_goto_nth_element_inside(xml_hdl, "amp", 0))
       {
-        return format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        return format_error(__FILE__, __LINE__, NULL, xml_hdl);
       }
       else
       {
         if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
         {
-          return format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+          return format_error(__FILE__, __LINE__, NULL, xml_hdl);
         }
 
         settings[i].amp = atoi(result);
@@ -1681,7 +1695,7 @@ int UI_LoadMontagewindow::LoadButtonClicked()
       {
         if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
         {
-          return format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+          return format_error(__FILE__, __LINE__, NULL, xml_hdl);
         }
 
         settings[i].log_min_sl = atoi(result);
@@ -1691,13 +1705,13 @@ int UI_LoadMontagewindow::LoadButtonClicked()
 
       if(xml_goto_nth_element_inside(xml_hdl, "wheel", 0))
       {
-        return format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        return format_error(__FILE__, __LINE__, NULL, xml_hdl);
       }
       else
       {
         if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
         {
-          return format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+          return format_error(__FILE__, __LINE__, NULL, xml_hdl);
         }
 
         settings[i].wheel = atoi(result);
@@ -1707,13 +1721,13 @@ int UI_LoadMontagewindow::LoadButtonClicked()
 
       if(xml_goto_nth_element_inside(xml_hdl, "span", 0))
       {
-        return format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        return format_error(__FILE__, __LINE__, NULL, xml_hdl);
       }
       else
       {
         if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
         {
-          return format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+          return format_error(__FILE__, __LINE__, NULL, xml_hdl);
         }
 
         settings[i].span = atoi(result);
@@ -1723,13 +1737,13 @@ int UI_LoadMontagewindow::LoadButtonClicked()
 
       if(xml_goto_nth_element_inside(xml_hdl, "center", 0))
       {
-        return format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        return format_error(__FILE__, __LINE__, NULL, xml_hdl);
       }
       else
       {
         if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
         {
-          return format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+          return format_error(__FILE__, __LINE__, NULL, xml_hdl);
         }
 
         settings[i].center = atoi(result);
@@ -1739,13 +1753,13 @@ int UI_LoadMontagewindow::LoadButtonClicked()
 
       if(xml_goto_nth_element_inside(xml_hdl, "log", 0))
       {
-        return format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        return format_error(__FILE__, __LINE__, NULL, xml_hdl);
       }
       else
       {
         if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
         {
-          return format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+          return format_error(__FILE__, __LINE__, NULL, xml_hdl);
         }
 
         settings[i].log = atoi(result);
@@ -1755,13 +1769,13 @@ int UI_LoadMontagewindow::LoadButtonClicked()
 
       if(xml_goto_nth_element_inside(xml_hdl, "sqrt", 0))
       {
-        return format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        return format_error(__FILE__, __LINE__, NULL, xml_hdl);
       }
       else
       {
         if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
         {
-          return format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+          return format_error(__FILE__, __LINE__, NULL, xml_hdl);
         }
 
         settings[i].sqrt = atoi(result);
@@ -1771,13 +1785,13 @@ int UI_LoadMontagewindow::LoadButtonClicked()
 
       if(xml_goto_nth_element_inside(xml_hdl, "colorbar", 0))
       {
-        return format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        return format_error(__FILE__, __LINE__, NULL, xml_hdl);
       }
       else
       {
         if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
         {
-          return format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+          return format_error(__FILE__, __LINE__, NULL, xml_hdl);
         }
 
         settings[i].colorbar = atoi(result);
@@ -1785,15 +1799,87 @@ int UI_LoadMontagewindow::LoadButtonClicked()
         xml_go_up(xml_hdl);
       }
 
+      settings[i].blocksize_predefined = 0;
+
+      if(!xml_goto_nth_element_inside(xml_hdl, "blocksize_predefined", 0))
+      {
+        if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+        {
+          return format_error(__FILE__, __LINE__, NULL, xml_hdl);
+        }
+
+        settings[i].blocksize_predefined = atoi(result);
+        if((settings[i].blocksize_predefined < 0) || (settings[i].blocksize_predefined > 9))
+        {
+          return format_error(__FILE__, __LINE__, NULL, xml_hdl);
+        }
+
+        xml_go_up(xml_hdl);
+      }
+
+      settings[i].dftblocksize = 200;
+
+      if(!xml_goto_nth_element_inside(xml_hdl, "dftblocksize", 0))
+      {
+        if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+        {
+          return format_error(__FILE__, __LINE__, NULL, xml_hdl);
+        }
+
+        settings[i].dftblocksize = atoi(result);
+        if(settings[i].dftblocksize < 2)
+        {
+          return format_error(__FILE__, __LINE__, NULL, xml_hdl);
+        }
+
+        xml_go_up(xml_hdl);
+      }
+
+      settings[i].overlap = 1;
+
+      if(!xml_goto_nth_element_inside(xml_hdl, "overlap", 0))
+      {
+        if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+        {
+          return format_error(__FILE__, __LINE__, NULL, xml_hdl);
+        }
+
+        settings[i].overlap = atoi(result);
+        if((settings[i].overlap < 1) || (settings[i].overlap > 5))
+        {
+          return format_error(__FILE__, __LINE__, NULL, xml_hdl);
+        }
+
+        xml_go_up(xml_hdl);
+      }
+
+      settings[i].window_type = 0;
+
+      if(!xml_goto_nth_element_inside(xml_hdl, "window_type", 0))
+      {
+        if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+        {
+          return format_error(__FILE__, __LINE__, NULL, xml_hdl);
+        }
+
+        settings[i].window_type = atoi(result);
+        if((settings[i].window_type < 0) || (settings[i].window_type > 12))
+        {
+          return format_error(__FILE__, __LINE__, NULL, xml_hdl);
+        }
+
+        xml_go_up(xml_hdl);
+      }
+
       if(xml_goto_nth_element_inside(xml_hdl, "maxvalue", 0))
       {
-        return format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        return format_error(__FILE__, __LINE__, NULL, xml_hdl);
       }
       else
       {
         if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
         {
-          return format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+          return format_error(__FILE__, __LINE__, NULL, xml_hdl);
         }
 
         settings[i].maxvalue = atof(result);
@@ -1803,13 +1889,13 @@ int UI_LoadMontagewindow::LoadButtonClicked()
 
       if(xml_goto_nth_element_inside(xml_hdl, "maxvalue_sqrt", 0))
       {
-        return format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        return format_error(__FILE__, __LINE__, NULL, xml_hdl);
       }
       else
       {
         if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
         {
-          return format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+          return format_error(__FILE__, __LINE__, NULL, xml_hdl);
         }
 
         settings[i].maxvalue_sqrt = atof(result);
@@ -1819,13 +1905,13 @@ int UI_LoadMontagewindow::LoadButtonClicked()
 
       if(xml_goto_nth_element_inside(xml_hdl, "maxvalue_vlog", 0))
       {
-        return format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        return format_error(__FILE__, __LINE__, NULL, xml_hdl);
       }
       else
       {
         if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
         {
-          return format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+          return format_error(__FILE__, __LINE__, NULL, xml_hdl);
         }
 
         settings[i].maxvalue_vlog = atof(result);
@@ -1835,13 +1921,13 @@ int UI_LoadMontagewindow::LoadButtonClicked()
 
       if(xml_goto_nth_element_inside(xml_hdl, "maxvalue_sqrt_vlog", 0))
       {
-        return format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        return format_error(__FILE__, __LINE__, NULL, xml_hdl);
       }
       else
       {
         if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
         {
-          return format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+          return format_error(__FILE__, __LINE__, NULL, xml_hdl);
         }
 
         settings[i].maxvalue_sqrt_vlog = atof(result);
@@ -1851,13 +1937,13 @@ int UI_LoadMontagewindow::LoadButtonClicked()
 
       if(xml_goto_nth_element_inside(xml_hdl, "minvalue_vlog", 0))
       {
-        return format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        return format_error(__FILE__, __LINE__, NULL, xml_hdl);
       }
       else
       {
         if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
         {
-          return format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+          return format_error(__FILE__, __LINE__, NULL, xml_hdl);
         }
 
         settings[i].minvalue_vlog = atof(result);
@@ -1867,13 +1953,13 @@ int UI_LoadMontagewindow::LoadButtonClicked()
 
       if(xml_goto_nth_element_inside(xml_hdl, "minvalue_sqrt_vlog", 0))
       {
-        return format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+        return format_error(__FILE__, __LINE__, NULL, xml_hdl);
       }
       else
       {
         if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
         {
-          return format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+          return format_error(__FILE__, __LINE__, NULL, xml_hdl);
         }
 
         settings[i].minvalue_sqrt_vlog = atof(result);
