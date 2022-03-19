@@ -3289,6 +3289,12 @@ void ViewCurve::Z_scoringButton()
     return;
   }
 
+  if(mainwindow->signalcomp[signal_nr]->edfhdr->edfparam[mainwindow->signalcomp[signal_nr]->edfsignal[0]].sf_int < 100)
+  {
+    QMessageBox::critical(this, "Error", "Samplerate must be an integer >= 100Hz");
+    return;
+  }
+
   for(i=0; i<MAXZSCOREDIALOGS; i++)
   {
     if(mainwindow->zscoredialog[i] == NULL)
