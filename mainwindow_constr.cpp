@@ -339,6 +339,8 @@ UI_Mainwindow::UI_Mainwindow()
 
   session_relative_paths = 0;
 
+  video_pause_requested = 0;
+
   cdsa_segmentlen = 30;
   cdsa_blocklen = 2;
   cdsa_overlap = 5;

@@ -54,7 +54,7 @@ void UI_Mainwindow::start_stop_video()
   if(video_player->status != VIDEO_STATUS_STOPPED)
   {
     stop_video_generic(0);
-
+    video_pause_requested = 0;
     return;
   }
 
@@ -69,6 +69,7 @@ void UI_Mainwindow::start_stop_video()
   {
     msgbox.setText("Can not open a video during a live stream.");
     msgbox.exec();
+    video_pause_requested = 0;
     return;
   }
 
@@ -76,6 +77,7 @@ void UI_Mainwindow::start_stop_video()
   {
     msgbox.setText("There is already a video running.");
     msgbox.exec();
+    video_pause_requested = 0;
     return;
   }
 
@@ -83,6 +85,7 @@ void UI_Mainwindow::start_stop_video()
   {
     msgbox.setText("Put some signals on the screen first.");
     msgbox.exec();
+    video_pause_requested = 0;
     return;
   }
 
@@ -90,6 +93,7 @@ void UI_Mainwindow::start_stop_video()
 //   {
 //     msgbox.setText("Close the annotation editor first.");
 //     msgbox.exec();
+//     video_pause_requested = 0;
 //     return;
 //   }
 
@@ -101,6 +105,7 @@ void UI_Mainwindow::start_stop_video()
 
   if(!strcmp(videopath, ""))
   {
+    video_pause_requested = 0;
     return;
   }
 
@@ -116,7 +121,11 @@ void UI_Mainwindow::start_stop_video()
                    " \nAssume video starttime equals EDF/BDF starttime?\n ");
     msgbox.setStandardButtons(QMessageBox::Yes | QMessageBox::Cancel);
     msgbox.setDefaultButton(QMessageBox::Yes);
-    if(msgbox.exec() == QMessageBox::Cancel)  return;
+    if(msgbox.exec() == QMessageBox::Cancel)
+    {
+      video_pause_requested = 0;
+      return;
+    }
 
     video_player->utc_starttime = edfheaderlist[sel_viewtime]->utc_starttime;
   }
@@ -135,6 +144,7 @@ void UI_Mainwindow::start_stop_video()
   {
     msgbox.setText("The video registration and the EDF/BDF registration do not overlap (in time)");
     msgbox.exec();
+    video_pause_requested = 0;
     return;
   }
 
@@ -142,6 +152,7 @@ void UI_Mainwindow::start_stop_video()
   {
     msgbox.setText("The video registration and the EDF/BDF registration do not overlap (in time)");
     msgbox.exec();
+    video_pause_requested = 0;
     return;
   }
 
@@ -271,6 +282,8 @@ void UI_Mainwindow::start_stop_video()
 
         msgbox.close();
 
+        video_pause_requested = 0;
+
         return;
       }
       else
@@ -319,6 +332,7 @@ void UI_Mainwindow::start_stop_video()
 #endif
     msgbox.setStandardButtons(QMessageBox::Close);
     msgbox.exec();
+    video_pause_requested = 0;
     return;
   }
 
@@ -454,21 +468,53 @@ void UI_Mainwindow::video_poll_timer_func()
             {
               mpr_write("volume 255\n");
 
-              video_player->status = VIDEO_STATUS_PLAYING;
-
               faster_Act->setVisible(true);
 
               slower_Act->setVisible(true);
 
               if(session_start_video && (session_video_seek > 0))
               {
+                video_player->status = VIDEO_STATUS_STARTUP_6;
+
                 video_player_seek(session_video_seek);
+
+                session_video_seek = 0;
+
+                repeat = 5;
+              }
+              else
+              {
+                video_player->status = VIDEO_STATUS_PLAYING;
+
+                video_pause_requested = 0;
 
                 session_video_seek = 0;
 
                 session_start_video = 0;
               }
             }
+            else if(video_player->status == VIDEO_STATUS_STARTUP_6)
+              {
+                if(repeat)
+                {
+                  repeat--;
+                }
+                else
+                {
+                  video_player->status = VIDEO_STATUS_PLAYING;
+
+                  if(session_start_video && video_pause_requested)
+                  {
+                    video_player_toggle_pause();
+                  }
+
+                  video_pause_requested = 0;
+
+                  session_video_seek = 0;
+
+                  session_start_video = 0;
+                }
+              }
 
     video_player->cntdwn_timer = 5000;
 
@@ -600,7 +646,11 @@ void UI_Mainwindow::video_player_seek(int sec)
 {
   char str[512];
 
-  if((video_player->status != VIDEO_STATUS_PLAYING) && (video_player->status != VIDEO_STATUS_PAUSED))  return;
+  if(((video_player->status != VIDEO_STATUS_PLAYING) && (video_player->status != VIDEO_STATUS_PAUSED)) &&
+    (!(session_start_video && (session_video_seek > 0) && (video_player->status == VIDEO_STATUS_STARTUP_6))))
+  {
+    return;
+  }
 
   sec += video_player->starttime_diff;
 
@@ -655,6 +705,7 @@ void UI_Mainwindow::stop_video_generic(int stop_reason)
 {
   QEventLoop evlp;
 
+  video_pause_requested = 0;
 
   faster_Act->setVisible(false);
 

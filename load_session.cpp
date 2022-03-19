@@ -149,7 +149,6 @@ int UI_Mainwindow::read_session_file(const char *path_session)
       strlcat(path, "/", MAX_PATH_LENGTH);
       strlcat(path, result, MAX_PATH_LENGTH);
       sanitize_path(path);
-//      printf("path: ->%s<-\npath_session: ->%s<-\nfile: ->%s<-\n", path, path_session, result);  //FIXME
     }
     else
     {
@@ -162,8 +161,6 @@ int UI_Mainwindow::read_session_file(const char *path_session)
 
     if(rc_file_open_err)
     {
-//      printf("read_session_file(): error: %i\n", rc_file_open_err);  //FIXME
-
       return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
     }
 
@@ -304,8 +301,6 @@ int UI_Mainwindow::read_session_file(const char *path_session)
       {
         strlcpy(path, result, MAX_PATH_LENGTH);
       }
-
-//      printf("path: ->%s<-\npath_session: ->%s<-\nfile: ->%s<-\n", path, path_session, result);  //FIXME
 
       if(!strcmp(edfheaderlist[n]->filename, path))
       {
@@ -1421,6 +1416,8 @@ int UI_Mainwindow::read_session_file(const char *path_session)
 
   session_video_seek = 0;
 
+  video_pause_requested = 0;
+
   if(!xml_goto_nth_element_inside(xml_hdl, "video_file", 0))
   {
     if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
@@ -1433,7 +1430,6 @@ int UI_Mainwindow::read_session_file(const char *path_session)
       strlcat(videopath, "/", MAX_PATH_LENGTH);
       strlcat(videopath, result, MAX_PATH_LENGTH);
       sanitize_path(videopath);
-//      printf("videopath: ->%s<-\npath_session: ->%s<-\nfile: ->%s<-\n", videopath, path_session, result);  //FIXME
     }
     else
     {
@@ -1451,6 +1447,20 @@ int UI_Mainwindow::read_session_file(const char *path_session)
       if(session_video_seek < 0)
       {
         session_video_seek = 0;
+      }
+      xml_go_up(xml_hdl);
+    }
+
+    if(!xml_goto_nth_element_inside(xml_hdl, "paused", 0))
+    {
+      if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+      {
+        return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
+      }
+      video_pause_requested = atoi(result);
+      if((video_pause_requested < 0) || (video_pause_requested > 1))
+      {
+        video_pause_requested = 0;
       }
       xml_go_up(xml_hdl);
     }

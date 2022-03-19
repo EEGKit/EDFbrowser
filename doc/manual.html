@@ -979,11 +979,16 @@
 <p>
   You can save an EDFbrowser session for later use. This is particularly useful when you need to open<br>
   <b>multiple</b> files and want to keep the state of the montages (including filters), file position, timesync mode,<br>
-  hypnograms, CDSAs, video, etc. (the annotation editor is not included)<br>
+  hypnograms, CDSAs, video, etc.<br>
+  When loading a previously saved session, all files opened (if any), will be closed. Then the file(s) which were<br>
+  saved in the session file will be opened. Then, the montage/signals will be added to the screen including any filters.<br>
+  <br>
   The session file will have the extension .esf (EDFbrowser Session File).<br>
   When saving a session, <b>absolute</b> paths or <b>relative</b> paths can be used.<br>
   The default is to use the absolute paths but you can change this in Settings -> Options -> Other<br>
   This setting is evaluated only when saving a session, not when loading a session.<br>
+  So, changing the setting between absolute and relative paths does not affect previously saved sessions.<br>
+  <br>
   Pay attention, both ways of storing the paths have their advantages and disadvantages. If you want to share your files<br>
   including the session file, with other people, than you should use relative paths and make sure that all files are<br>
   on a local drive and on the same partition and/or station. Ideally, put all files in the same directory.<br>
@@ -994,7 +999,8 @@
   Note: The settings in Settings -> options are not in included in the session file.<br>
   Changing one of those settings might still affect a session in some way.<br>
   <br>
-  Alternatively, you can use a <a href="#Montages">montage</a> instead of a session. Montages can be re-used for different recordings (of the same type).<br>
+  Alternatively, you can use a <a href="#Montages">montage</a> instead of a session. Montages can be applied to different<br>
+  recordings (of the same type).<br>
 </p>
 
 <p><br></p>

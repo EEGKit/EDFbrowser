@@ -269,7 +269,8 @@ public:
       window_height_sav_rest,
       session_start_video,
       session_video_seek,
-      session_relative_paths;
+      session_relative_paths,
+      video_pause_requested;
 
 volatile int rc_cmd_in_progress;
 

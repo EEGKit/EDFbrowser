@@ -672,7 +672,6 @@ void UI_Mainwindow::save_session()
     {
       get_relative_path_from_absolut_paths(path_relative, session_path, videopath, MAX_PATH_LENGTH);
       xml_fwrite_encode_entity(pro_file, path_relative);
-//      printf("src1: ->%s<-\nsrc2: ->%s<-\ndest: ->%s<-\n", session_path, videopath, path_relative);  //FIXME
     }
     else
     {
@@ -681,6 +680,15 @@ void UI_Mainwindow::save_session()
     fprintf(pro_file, "</video_file>\n");
 
     fprintf(pro_file, "  <video_seek>%i</video_seek>\n", video_player->fpos);
+
+    if(video_player->status == VIDEO_STATUS_PAUSED)
+    {
+      fprintf(pro_file, "  <paused>1</paused>\n");
+    }
+    else
+    {
+      fprintf(pro_file, "  <paused>0</paused>\n");
+    }
   }
 
   struct spectrumdocksettings settings;
