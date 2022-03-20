@@ -30,13 +30,13 @@
 #include "z_score_dialog.h"
 
 
-#define ZSCORE_EPOCH_LEN 2
-#define ZSCORE_F0 0.5
-#define ZSCORE_F1 3.0
-#define ZSCORE_F3 12.0
-#define ZSCORE_F4 25.0
+#define ZSCORE_EPOCH_LEN   (2)
+#define ZSCORE_F0          (0.5)
+#define ZSCORE_F1          (3.0)
+#define ZSCORE_F3         (12.0)
+#define ZSCORE_F4         (25.0)
 
-#define ZSCORE_ERRORLEVEL 5.0
+#define ZSCORE_ERRORLEVEL  (5.0)
 
 
 
@@ -437,16 +437,15 @@ void UI_ZScoreWindow::startButtonClicked()
     return;
   }
 
-  f2 = crossoverfreq / freqstep;
-
-  f0 = ZSCORE_F0 / freqstep;
+  f0 = (ZSCORE_F0 / freqstep) + 0.5;
   if(f0 < 1)
   {
     f0 = 1;
   }
-  f1 = ZSCORE_F1 / freqstep;
-  f3 = ZSCORE_F3 / freqstep;
-  f4 = ZSCORE_F4 / freqstep;
+  f1 = (ZSCORE_F1 / freqstep) + 0.5;
+  f2 = (crossoverfreq / freqstep) + 0.5;
+  f3 = (ZSCORE_F3 / freqstep) + 0.5;
+  f4 = (ZSCORE_F4 / freqstep) + 0.5;
 
   fft_inputbuf = (double *)malloc(sizeof(double) * dftblocksize);
   if(fft_inputbuf == NULL)
@@ -472,7 +471,6 @@ void UI_ZScoreWindow::startButtonClicked()
   {
     free(zscore_epoch_buf);
   }
-
   zscore_epoch_buf = (double *)calloc(1, sizeof(double) * epochs);
   if(zscore_epoch_buf == NULL)
   {
