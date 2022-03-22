@@ -130,11 +130,11 @@ private:
          maxvalue_sqrt_vlog,
          minvalue_vlog,
          minvalue_sqrt_vlog,
-         *buf1,
-         *buf2,
-         *buf3,
-         *buf4,
-         *buf5;
+         *buf1_fft_input,
+         *buf2_psd,
+         *buf3_amp,
+         *buf4_psd_log,
+         *buf5_amp_log;
 
   char *viewbuf,
        signallabel[1024],

@@ -48,11 +48,11 @@ UI_FreqSpectrumWindow::UI_FreqSpectrumWindow(struct signalcompblock *signal_comp
 
   fft_data = NULL;
 
-  buf1 = NULL;
-  buf2 = NULL;
-  buf3 = NULL;
-  buf4 = NULL;
-  buf5 = NULL;
+  buf1_fft_input = NULL;
+  buf2_psd = NULL;
+  buf3_amp = NULL;
+  buf4_psd_log = NULL;
+  buf5_amp_log = NULL;
 
   busy = 0;
 
@@ -643,8 +643,8 @@ void UI_FreqSpectrumWindow::print_to_txt()
 
   for(i=0; i<fft_data->sz_out; i++)
   {
-//    fprintf(outputfile, "%.16f\t%.16f\n", freqstep * i, buf2[i]);
-    fprintf(outputfile, "%e\t%e\n", freqstep * i, buf2[i]);
+//    fprintf(outputfile, "%.16f\t%.16f\n", freqstep * i, buf2_psd[i]);
+    fprintf(outputfile, "%e\t%e\n", freqstep * i, buf2_psd[i]);
   }
 
   fclose (outputfile);
@@ -758,22 +758,22 @@ void UI_FreqSpectrumWindow::sliderMoved(int)
 //              "log_minslider->value():    %i\n",
 //              maxvalue_sqrt_vlog, flywheel_value, amplitudeSlider->value(), minvalue_sqrt_vlog, log_minslider->value());
 
-      curve1->drawCurve(buf5 + startstep, stopstep - startstep, (maxvalue_sqrt_vlog * ((double)flywheel_value / 1000.0) * (double)amplitudeSlider->value()) / 1000.0, minvalue_sqrt_vlog * (double)log_minslider->value() / 1000.0);
+      curve1->drawCurve(buf5_amp_log + startstep, stopstep - startstep, (maxvalue_sqrt_vlog * ((double)flywheel_value / 1000.0) * (double)amplitudeSlider->value()) / 1000.0, minvalue_sqrt_vlog * (double)log_minslider->value() / 1000.0);
     }
     else  /* only amplitude checked */
     {
-      curve1->drawCurve(buf3 + startstep, stopstep - startstep, (maxvalue_sqrt * ((double)flywheel_value / 1000.0) * (double)amplitudeSlider->value()) / 1000.0, 0.0);
+      curve1->drawCurve(buf3_amp + startstep, stopstep - startstep, (maxvalue_sqrt * ((double)flywheel_value / 1000.0) * (double)amplitudeSlider->value()) / 1000.0, 0.0);
     }
   }
   else
   {
     if(mainwindow->spectrum_vlog)  /* only log checked (power spectral density) */
     {
-      curve1->drawCurve(buf4 + startstep, stopstep - startstep, (maxvalue_vlog * ((double)flywheel_value / 1000.0) * (double)amplitudeSlider->value()) / 1000.0, minvalue_vlog * (double)log_minslider->value() / 1000.0);
+      curve1->drawCurve(buf4_psd_log + startstep, stopstep - startstep, (maxvalue_vlog * ((double)flywheel_value / 1000.0) * (double)amplitudeSlider->value()) / 1000.0, minvalue_vlog * (double)log_minslider->value() / 1000.0);
     }
     else  /* amplitude & log both not checked (power spectral density) */
     {
-      curve1->drawCurve(buf2 + startstep, stopstep - startstep, (maxvalue * ((double)flywheel_value / 1000.0) * (double)amplitudeSlider->value()) / 1000.0, 0.0);
+      curve1->drawCurve(buf2_psd + startstep, stopstep - startstep, (maxvalue * ((double)flywheel_value / 1000.0) * (double)amplitudeSlider->value()) / 1000.0, 0.0);
     }
   }
 
@@ -829,15 +829,15 @@ void UI_FreqSpectrumWindow::run()
           unsigned char four[4];
         } var;
 
-  if((first_run) || (buf1 == NULL))
+  if((first_run) || (buf1_fft_input == NULL))
   {
     first_run = 0;
 
     fft_inputbufsize = samples;
 
-    free(buf1);
-    buf1 = (double *)malloc(sizeof(double) * fft_inputbufsize + 16);
-    if(buf1 == NULL)
+    free(buf1_fft_input);
+    buf1_fft_input = (double *)malloc(sizeof(double) * fft_inputbufsize + 16);
+    if(buf1_fft_input == NULL)
     {
       malloc_err = 1;
       return;
@@ -993,7 +993,7 @@ void UI_FreqSpectrumWindow::run()
 
       if(s>=signalcomp->sample_start)
       {
-        buf1[samples++] = dig_value * signalcomp->edfhdr->edfparam[signalcomp->edfsignal[0]].bitvalue;
+        buf1_fft_input[samples++] = dig_value * signalcomp->edfhdr->edfparam[signalcomp->edfsignal[0]].bitvalue;
       }
     }
 
@@ -1017,75 +1017,75 @@ void UI_FreqSpectrumWindow::run()
   }  // end of first_run
 
   free_fft_wrap(fft_data);
-  fft_data = fft_wrap_create(buf1, fft_inputbufsize, dftblocksize, window_type, overlap);
+  fft_data = fft_wrap_create(buf1_fft_input, fft_inputbufsize, dftblocksize, window_type, overlap);
   if(fft_data == NULL)
   {
-//     printf("buf1: %p   fft_inputbufsize: %i   dftblocksize: %i   window_type: %i\n",
-//            buf1, fft_inputbufsize, dftblocksize, window_type);
+//     printf("buf1_fft_input: %p   fft_inputbufsize: %i   dftblocksize: %i   window_type: %i\n",
+//            buf1_fft_input, fft_inputbufsize, dftblocksize, window_type);
 
     malloc_err = 3;
-    free(buf1);
-    buf1 = NULL;
+    free(buf1_fft_input);
+    buf1_fft_input = NULL;
     return;
   }
 
   freqstep = samplefreq / (double)fft_data->dft_sz;
 
-  free(buf2);
-  buf2 = (double *)calloc(1, sizeof(double) * fft_data->sz_out);
-  if(buf2 == NULL)
+  free(buf2_psd);
+  buf2_psd = (double *)calloc(1, sizeof(double) * fft_data->sz_out);
+  if(buf2_psd == NULL)
   {
     malloc_err = 4;
-    free(buf1);
-    buf1 = NULL;
+    free(buf1_fft_input);
+    buf1_fft_input = NULL;
     free_fft_wrap(fft_data);
     fft_data = NULL;
     return;
   }
 
-  free(buf3);
-  buf3 = (double *)malloc(sizeof(double) * fft_data->sz_out);
-  if(buf3 == NULL)
+  free(buf3_amp);
+  buf3_amp = (double *)malloc(sizeof(double) * fft_data->sz_out);
+  if(buf3_amp == NULL)
   {
     malloc_err = 5;
-    free(buf1);
-    free(buf2);
-    buf1 = NULL;
-    buf2 = NULL;
+    free(buf1_fft_input);
+    free(buf2_psd);
+    buf1_fft_input = NULL;
+    buf2_psd = NULL;
     free_fft_wrap(fft_data);
     fft_data = NULL;
     return;
   }
 
-  free(buf4);
-  buf4 = (double *)malloc(sizeof(double) * fft_data->sz_out);
-  if(buf4 == NULL)
+  free(buf4_psd_log);
+  buf4_psd_log = (double *)malloc(sizeof(double) * fft_data->sz_out);
+  if(buf4_psd_log == NULL)
   {
     malloc_err = 6;
-    free(buf1);
-    free(buf2);
-    free(buf3);
-    buf1 = NULL;
-    buf2 = NULL;
-    buf3 = NULL;
+    free(buf1_fft_input);
+    free(buf2_psd);
+    free(buf3_amp);
+    buf1_fft_input = NULL;
+    buf2_psd = NULL;
+    buf3_amp = NULL;
     free_fft_wrap(fft_data);
     fft_data = NULL;
     return;
   }
 
-  free(buf5);
-  buf5 = (double *)malloc(sizeof(double) * fft_data->sz_out);
-  if(buf5 == NULL)
+  free(buf5_amp_log);
+  buf5_amp_log = (double *)malloc(sizeof(double) * fft_data->sz_out);
+  if(buf5_amp_log == NULL)
   {
     malloc_err = 7;
-    free(buf1);
-    free(buf2);
-    free(buf3);
-    free(buf4);
-    buf1 = NULL;
-    buf2 = NULL;
-    buf3 = NULL;
-    buf4 = NULL;
+    free(buf1_fft_input);
+    free(buf2_psd);
+    free(buf3_amp);
+    free(buf4_psd_log);
+    buf1_fft_input = NULL;
+    buf2_psd = NULL;
+    buf3_amp = NULL;
+    buf4_psd_log = NULL;
     free_fft_wrap(fft_data);
     fft_data = NULL;
     return;
@@ -1105,7 +1105,7 @@ void UI_FreqSpectrumWindow::run()
 
   for(i=0; i<samples; i++)
   {
-    power1 += (buf1[i] * buf1[i]);
+    power1 += (buf1_fft_input[i] * buf1_fft_input[i]);
   }
 #endif
 
@@ -1122,62 +1122,62 @@ void UI_FreqSpectrumWindow::run()
 
   for(i=0; i<fft_data->sz_out; i++)
   {
-    buf2[i] = fft_data->buf_out[i] / samplefreq;  /* amplitude & log both not checked (power spectral density) */
+    buf2_psd[i] = fft_data->buf_out[i] / samplefreq;  /* amplitude & log both not checked (power spectral density) */
 
 #ifdef CHECK_POWERSPECTRUM
-    power2 += buf2[i];
+    power2 += buf2_psd[i];
 #endif
 
-    buf3[i] = sqrt(buf2[i] * freqstep);  /* only amplitude checked */
+    buf3_amp[i] = sqrt(buf2_psd[i] * freqstep);  /* only amplitude checked */
 
-    if(buf2[i] <= SPECT_LOG_MINIMUM)
+    if(buf2_psd[i] <= SPECT_LOG_MINIMUM)
     {
-      buf4[i] = log10(SPECT_LOG_MINIMUM);
+      buf4_psd_log[i] = log10(SPECT_LOG_MINIMUM);
     }
     else
     {
-      buf4[i] = log10(buf2[i]);  /* only log checked (power spectral density) */
+      buf4_psd_log[i] = log10(buf2_psd[i]);  /* only log checked (power spectral density) */
     }
 
-    if(buf3[i] <= SPECT_LOG_MINIMUM)
+    if(buf3_amp[i] <= SPECT_LOG_MINIMUM)
     {
-      buf5[i] = log10(SPECT_LOG_MINIMUM);
+      buf5_amp_log[i] = log10(SPECT_LOG_MINIMUM);
     }
     else
     {
-      buf5[i] = log10(buf3[i]);  /* amplitude & log both checked */
+      buf5_amp_log[i] = log10(buf3_amp[i]);  /* amplitude & log both checked */
     }
 
     if(i)  // don't use the dc-bin for the autogain of the screen
     {
-      if(buf2[i] > maxvalue)
+      if(buf2_psd[i] > maxvalue)
       {
-        maxvalue = buf2[i];
+        maxvalue = buf2_psd[i];
       }
 
-      if(buf3[i] > maxvalue_sqrt)
+      if(buf3_amp[i] > maxvalue_sqrt)
       {
-        maxvalue_sqrt = buf3[i];
+        maxvalue_sqrt = buf3_amp[i];
       }
 
-      if(buf4[i] > maxvalue_vlog)
+      if(buf4_psd_log[i] > maxvalue_vlog)
       {
-        maxvalue_vlog = buf4[i];
+        maxvalue_vlog = buf4_psd_log[i];
       }
 
-      if(buf5[i] > maxvalue_sqrt_vlog)
+      if(buf5_amp_log[i] > maxvalue_sqrt_vlog)
       {
-        maxvalue_sqrt_vlog = buf5[i];
+        maxvalue_sqrt_vlog = buf5_amp_log[i];
       }
 
-      if((buf4[i] < minvalue_vlog) && (buf4[i] >= SPECT_LOG_MINIMUM_LOG))
+      if((buf4_psd_log[i] < minvalue_vlog) && (buf4_psd_log[i] >= SPECT_LOG_MINIMUM_LOG))
       {
-        minvalue_vlog = buf4[i];
+        minvalue_vlog = buf4_psd_log[i];
       }
 
-      if((buf5[i] < minvalue_sqrt_vlog) && (buf5[i] >= SPECT_LOG_MINIMUM_LOG))
+      if((buf5_amp_log[i] < minvalue_sqrt_vlog) && (buf5_amp_log[i] >= SPECT_LOG_MINIMUM_LOG))
       {
-        minvalue_sqrt_vlog = buf5[i];
+        minvalue_sqrt_vlog = buf5_amp_log[i];
       }
     }
   }
@@ -1352,16 +1352,16 @@ UI_FreqSpectrumWindow::~UI_FreqSpectrumWindow()
     SpectrumDialog->close();
   }
 
-  free(buf1);
-  free(buf2);
-  free(buf3);
-  free(buf4);
-  free(buf5);
-  buf1 = NULL;
-  buf2 = NULL;
-  buf3 = NULL;
-  buf4 = NULL;
-  buf5 = NULL;
+  free(buf1_fft_input);
+  free(buf2_psd);
+  free(buf3_amp);
+  free(buf4_psd_log);
+  free(buf5_amp_log);
+  buf1_fft_input = NULL;
+  buf2_psd = NULL;
+  buf3_amp = NULL;
+  buf4_psd_log = NULL;
+  buf5_amp_log = NULL;
 
   free_fft_wrap(fft_data);
   fft_data = NULL;

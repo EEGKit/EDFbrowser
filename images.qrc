@@ -34,5 +34,6 @@
     <file>images/darkmagenta_icon_16x16.png</file>
     <file>images/green_icon_16x16.png</file>
     <file>images/white_icon_16x16.png</file>
+    <file>images/delete_16x16.png</file>
 </qresource>
 </RCC>

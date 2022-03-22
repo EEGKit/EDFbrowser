@@ -149,15 +149,18 @@ void UI_ViewSessionwindow::SelectButtonClicked()
          fir_vars[1000],
          max_voltage=0;
 
+  FILE *f_test=NULL;
+
   QStandardItem *parentItem,
                 *signalItem,
                 *filterItem,
                 *firfilterItem,
                 *powerspectrumdockItem,
                 *hypnogramItem,
-                *cdsaItem;
+                *cdsaItem,
+                *tmp_item=NULL;
 
-  struct xml_handle *xml_hdl;
+  struct xml_handle *xml_hdl=NULL;
 
   for(i=0; i<MAXFILES; i++)
   {
@@ -176,8 +179,7 @@ void UI_ViewSessionwindow::SelectButtonClicked()
   xml_hdl = xml_get_handle(session_path);
   if(xml_hdl==NULL)
   {
-    QMessageBox messagewindow(QMessageBox::Critical, "Error", "Can not open file for reading.");
-    messagewindow.exec();
+    QMessageBox::critical(NULL, "Error", "Can not open file for reading.");
     return;
   }
 
@@ -312,7 +314,21 @@ void UI_ViewSessionwindow::SelectButtonClicked()
     {
       snprintf(edf_path, 2048, "File: %s", result);
     }
-    parentItem->appendRow(new QStandardItem(edf_path));
+
+    f_test = fopeno(result, "rb");
+    if(f_test == NULL)
+    {
+      strlcat(edf_path, "  (not found!)", 2048);
+      tmp_item = new QStandardItem(edf_path);
+      tmp_item->setIcon(QIcon(":/images/delete_16x16"));
+      parentItem->appendRow(tmp_item);
+    }
+    else
+    {
+      fclose(f_test);
+      f_test = NULL;
+      parentItem->appendRow(new QStandardItem(edf_path));
+    }
     xml_go_up(xml_hdl);
 
     if(xml_goto_nth_element_inside(xml_hdl, "viewtime", 0))
