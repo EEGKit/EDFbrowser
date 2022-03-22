@@ -137,7 +137,8 @@ void UI_ViewSessionwindow::SelectButtonClicked()
        str2[2048]="",
        str3[64]="",
        edf_path[2048]="",
-       e_file_path[MAXFILES][MAX_PATH_LENGTH];
+       e_file_path[MAXFILES][MAX_PATH_LENGTH],
+       path_r[MAX_PATH_LENGTH]="";
 
   double frequency,
          frequency2,
@@ -315,12 +316,24 @@ void UI_ViewSessionwindow::SelectButtonClicked()
       snprintf(edf_path, 2048, "File: %s", result);
     }
 
-    f_test = fopeno(result, "rb");
+    if(use_relative_path)
+    {
+      get_directory_from_path(path_r, session_path, MAX_PATH_LENGTH);
+      strlcat(path_r, "/", MAX_PATH_LENGTH);
+      strlcat(path_r, result, MAX_PATH_LENGTH);
+      sanitize_path(path_r);
+      f_test = fopeno(path_r, "rb");
+    }
+    else
+    {
+      f_test = fopeno(result, "rb");
+    }
+
     if(f_test == NULL)
     {
       strlcat(edf_path, "  (not found!)", 2048);
       tmp_item = new QStandardItem(edf_path);
-      tmp_item->setIcon(QIcon(":/images/delete_16x16"));
+      tmp_item->setIcon(QIcon(":/images/delete_16x16.png"));
       parentItem->appendRow(tmp_item);
     }
     else
@@ -611,55 +624,55 @@ void UI_ViewSessionwindow::SelectButtonClicked()
     switch(color)
     {
       case Qt::white       : strlcat(composition_txt, "white", 2048);
-                             signalItem->setIcon(QIcon(":/images/white_icon_16x16"));
+                             signalItem->setIcon(QIcon(":/images/white_icon_16x16.png"));
                              break;
       case Qt::black       : strlcat(composition_txt, "black", 2048);
-                             signalItem->setIcon(QIcon(":/images/black_icon_16x16"));
+                             signalItem->setIcon(QIcon(":/images/black_icon_16x16.png"));
                              break;
       case Qt::red         : strlcat(composition_txt, "red", 2048);
-                             signalItem->setIcon(QIcon(":/images/red_icon_16x16"));
+                             signalItem->setIcon(QIcon(":/images/red_icon_16x16.png"));
                              break;
       case Qt::darkRed     : strlcat(composition_txt, "dark red", 2048);
-                             signalItem->setIcon(QIcon(":/images/darkred_icon_16x16"));
+                             signalItem->setIcon(QIcon(":/images/darkred_icon_16x16.png"));
                              break;
       case Qt::green       : strlcat(composition_txt, "green", 2048);
-                             signalItem->setIcon(QIcon(":/images/green_icon_16x16"));
+                             signalItem->setIcon(QIcon(":/images/green_icon_16x16.png"));
                              break;
       case Qt::darkGreen   : strlcat(composition_txt, "dark green", 2048);
-                             signalItem->setIcon(QIcon(":/images/darkgreen_icon_16x16"));
+                             signalItem->setIcon(QIcon(":/images/darkgreen_icon_16x16.png"));
                              break;
       case Qt::blue        : strlcat(composition_txt, "blue", 2048);
-                             signalItem->setIcon(QIcon(":/images/blue_icon_16x16"));
+                             signalItem->setIcon(QIcon(":/images/blue_icon_16x16.png"));
                              break;
       case Qt::darkBlue    : strlcat(composition_txt, "dark blue", 2048);
-                             signalItem->setIcon(QIcon(":/images/darkblue_icon_16x16"));
+                             signalItem->setIcon(QIcon(":/images/darkblue_icon_16x16.png"));
                              break;
       case Qt::cyan        : strlcat(composition_txt, "cyan", 2048);
-                             signalItem->setIcon(QIcon(":/images/cyan_icon_16x16"));
+                             signalItem->setIcon(QIcon(":/images/cyan_icon_16x16.png"));
                              break;
       case Qt::darkCyan    : strlcat(composition_txt, "dark cyan", 2048);
-                             signalItem->setIcon(QIcon(":/images/darkcyan_icon_16x16"));
+                             signalItem->setIcon(QIcon(":/images/darkcyan_icon_16x16.png"));
                              break;
       case Qt::magenta     : strlcat(composition_txt, "magenta", 2048);
-                             signalItem->setIcon(QIcon(":/images/magenta_icon_16x16"));
+                             signalItem->setIcon(QIcon(":/images/magenta_icon_16x16.png"));
                              break;
       case Qt::darkMagenta : strlcat(composition_txt, "dark magenta", 2048);
-                             signalItem->setIcon(QIcon(":/images/darkmagenta_icon_16x16"));
+                             signalItem->setIcon(QIcon(":/images/darkmagenta_icon_16x16.png"));
                              break;
       case Qt::yellow      : strlcat(composition_txt, "yellow", 2048);
-                             signalItem->setIcon(QIcon(":/images/yellow_icon_16x16"));
+                             signalItem->setIcon(QIcon(":/images/yellow_icon_16x16.png"));
                              break;
       case Qt::darkYellow  : strlcat(composition_txt, "dark yellow", 2048);
-                             signalItem->setIcon(QIcon(":/images/darkyellow_icon_16x16"));
+                             signalItem->setIcon(QIcon(":/images/darkyellow_icon_16x16.png"));
                              break;
       case Qt::gray        : strlcat(composition_txt, "gray", 2048);
-                             signalItem->setIcon(QIcon(":/images/gray_icon_16x16"));
+                             signalItem->setIcon(QIcon(":/images/gray_icon_16x16.png"));
                              break;
       case Qt::darkGray    : strlcat(composition_txt, "dark gray", 2048);
-                             signalItem->setIcon(QIcon(":/images/darkgray_icon_16x16"));
+                             signalItem->setIcon(QIcon(":/images/darkgray_icon_16x16.png"));
                              break;
       case Qt::lightGray   : strlcat(composition_txt, "light gray", 2048);
-                             signalItem->setIcon(QIcon(":/images/lightgray_icon_16x16"));
+                             signalItem->setIcon(QIcon(":/images/lightgray_icon_16x16.png"));
                              break;
     }
 
