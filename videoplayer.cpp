@@ -377,7 +377,7 @@ void UI_Mainwindow::start_stop_video()
 
 void UI_Mainwindow::video_poll_timer_func()
 {
-  int i, p, err, len, vpos=0;
+  int i, p=0, err=0, len, vpos=0;
 
   static int repeat=0;
 
@@ -569,18 +569,13 @@ void UI_Mainwindow::video_poll_timer_func()
 #endif
   if((video_player->status == VIDEO_STATUS_PLAYING) || (video_player->status == VIDEO_STATUS_PAUSED))
   {
-    if(!strncmp(buf, "> ", 2))
+    for(p=0; p<len; p++)
     {
-      p = 2;
+      if((buf[p] != '>') && (buf[p] != ' '))
+      {
+        break;
+      }
     }
-    else if(!strncmp(buf, "> > ", 4))
-      {
-        p = 4;
-      }
-      else
-      {
-        p = 0;
-      }
 
     if((len > (p + 2)) && (buf[len-1] == '\n'))
     {
