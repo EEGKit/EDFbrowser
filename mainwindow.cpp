@@ -667,7 +667,9 @@ void UI_Mainwindow::save_session()
 
   if((video_player->status == VIDEO_STATUS_PLAYING) || (video_player->status == VIDEO_STATUS_PAUSED))
   {
-    fprintf(pro_file, "  <video_file>");
+    fprintf(pro_file, "  <video>\n");
+
+    fprintf(pro_file, "    <file>");
     if(session_relative_paths)
     {
       get_relative_path_from_absolut_paths(path_relative, session_path, videopath, MAX_PATH_LENGTH);
@@ -677,18 +679,25 @@ void UI_Mainwindow::save_session()
     {
       xml_fwrite_encode_entity(pro_file, videopath);
     }
-    fprintf(pro_file, "</video_file>\n");
+    fprintf(pro_file, "</file>\n");
 
-    fprintf(pro_file, "  <video_seek>%i</video_seek>\n", video_player->fpos);
+#ifdef Q_OS_WIN32
+    __mingw_fprintf(pro_file, "    <starttime>%lli</starttime>\n", video_player->utc_starttime);
+#else
+    fprintf(pro_file, "    <starttime>%lli</starttime>\n", video_player->utc_starttime);
+#endif
+    fprintf(pro_file, "    <seek>%i</seek>\n", video_player->fpos);
 
     if(video_player->status == VIDEO_STATUS_PAUSED)
     {
-      fprintf(pro_file, "  <paused>1</paused>\n");
+      fprintf(pro_file, "    <paused>1</paused>\n");
     }
     else
     {
-      fprintf(pro_file, "  <paused>0</paused>\n");
+      fprintf(pro_file, "    <paused>0</paused>\n");
     }
+
+    fprintf(pro_file, "  </video>\n");
   }
 
   struct spectrumdocksettings settings;

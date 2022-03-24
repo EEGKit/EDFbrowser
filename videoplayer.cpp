@@ -28,7 +28,7 @@
 #include "mainwindow.h"
 
 
-// #define DEBUG_VIDEOPLAYER
+//#define DEBUG_VIDEOPLAYER
 
 #ifdef DEBUG_VIDEOPLAYER
   FILE *debug_vpr;
@@ -111,23 +111,30 @@ void UI_Mainwindow::start_stop_video()
 
   get_directory_from_path(recent_video_opendir, videopath, MAX_PATH_LENGTH);
 
-  video_player->utc_starttime = parse_date_time_stamp(videopath);
-
-  if(video_player->utc_starttime < 0LL)
+  if(!session_start_video)
   {
-    msgbox.setIcon(QMessageBox::Warning);
-    msgbox.setWindowTitle("Warning");
-    msgbox.setText(" \nCannot find startdate and starttime in video filename.\n"
-                   " \nAssume video starttime equals EDF/BDF starttime?\n ");
-    msgbox.setStandardButtons(QMessageBox::Yes | QMessageBox::Cancel);
-    msgbox.setDefaultButton(QMessageBox::Yes);
-    if(msgbox.exec() == QMessageBox::Cancel)
-    {
-      video_pause_requested = 0;
-      return;
-    }
+    video_player->utc_starttime = parse_date_time_stamp(videopath);
 
-    video_player->utc_starttime = edfheaderlist[sel_viewtime]->utc_starttime;
+    if(video_player->utc_starttime < 0LL)
+    {
+      msgbox.setIcon(QMessageBox::Warning);
+      msgbox.setWindowTitle("Warning");
+      msgbox.setText(" \nCannot find startdate and starttime in video filename.\n"
+                     " \nAssume video starttime equals EDF/BDF starttime?\n ");
+      msgbox.setStandardButtons(QMessageBox::Yes | QMessageBox::Cancel);
+      msgbox.setDefaultButton(QMessageBox::Yes);
+      if(msgbox.exec() == QMessageBox::Cancel)
+      {
+        video_pause_requested = 0;
+        return;
+      }
+
+      video_player->utc_starttime = edfheaderlist[sel_viewtime]->utc_starttime;
+    }
+  }
+  else
+  {
+    video_player->utc_starttime = session_video_starttime;
   }
 
   video_player->stop_det_counter = 0;
@@ -385,21 +392,24 @@ void UI_Mainwindow::video_poll_timer_func()
 
   if(video_player->cntdwn_timer <= 0)
   {
+#ifdef DEBUG_VIDEOPLAYER
+    fprintf(debug_vpr, "edfbr_cntdwn_timer: <0\n");
+#endif
     stop_video_generic(2);
 
     return;
   }
-
 #ifdef DEBUG_VIDEOPLAYER
     fprintf(debug_vpr, "edfbr_status: %i\n", video_player->status);
 #endif
-
   len = mpr_read(buf, 4095);
 
   if((len < 1) && (video_player->status == VIDEO_STATUS_PLAYING))
   {
     video_poll_timer->start(video_player->poll_timer);
-
+#ifdef DEBUG_VIDEOPLAYER
+    fprintf(debug_vpr, "edfbr_poll_timer_set & no message & return\n");
+#endif
     return;
   }
 
@@ -412,7 +422,9 @@ void UI_Mainwindow::video_poll_timer_func()
       mpr_write("clear\n");
 
       video_player->status = VIDEO_STATUS_STARTUP_2;
-
+#ifdef DEBUG_VIDEOPLAYER
+      fprintf(debug_vpr, "edfbr_status_changed: %i\n", video_player->status);
+#endif
       repeat = 3;
     }
     else if(video_player->status == VIDEO_STATUS_STARTUP_2)
@@ -432,7 +444,9 @@ void UI_Mainwindow::video_poll_timer_func()
           mpr_write(buf);
 
           video_player->status = VIDEO_STATUS_STARTUP_3;
-
+#ifdef DEBUG_VIDEOPLAYER
+          fprintf(debug_vpr, "edfbr_status_changed: %i\n", video_player->status);
+#endif
           repeat = 5;
         }
       }
@@ -447,7 +461,9 @@ void UI_Mainwindow::video_poll_timer_func()
             mpr_write("vzoom 0.25\n");
 
             video_player->status = VIDEO_STATUS_STARTUP_4;
-
+#ifdef DEBUG_VIDEOPLAYER
+            fprintf(debug_vpr, "edfbr_status_changed: %i\n", video_player->status);
+#endif
             repeat = 5;
           }
         }
@@ -462,35 +478,52 @@ void UI_Mainwindow::video_poll_timer_func()
               mpr_write("vzoom 0.25\n");
 
               video_player->status = VIDEO_STATUS_STARTUP_5;
+#ifdef DEBUG_VIDEOPLAYER
+              fprintf(debug_vpr, "edfbr_status_changed: %i\n", video_player->status);
+#endif
+              repeat = 5;
             }
           }
           else if(video_player->status == VIDEO_STATUS_STARTUP_5)
             {
-              mpr_write("volume 255\n");
-
-              faster_Act->setVisible(true);
-
-              slower_Act->setVisible(true);
-
-              if(session_start_video && (session_video_seek > 0))
+              if(repeat)
               {
-                video_player->status = VIDEO_STATUS_STARTUP_6;
-
-                video_player_seek(session_video_seek);
-
-                session_video_seek = 0;
-
-                repeat = 5;
+                repeat--;
               }
               else
               {
-                video_player->status = VIDEO_STATUS_PLAYING;
+                mpr_write("volume 255\n");
 
-                video_pause_requested = 0;
+                faster_Act->setVisible(true);
 
-                session_video_seek = 0;
+                slower_Act->setVisible(true);
 
-                session_start_video = 0;
+                if(session_start_video && (session_video_seek > 0))
+                {
+                  video_player->status = VIDEO_STATUS_STARTUP_6;
+#ifdef DEBUG_VIDEOPLAYER
+                  fprintf(debug_vpr, "edfbr_status_changed: %i\n", video_player->status);
+#endif
+                  video_player_seek(session_video_seek);
+
+                  session_video_seek = 0;
+
+                  repeat = 5;
+                }
+                else
+                {
+                  video_player->status = VIDEO_STATUS_PLAYING;
+#ifdef DEBUG_VIDEOPLAYER
+                  fprintf(debug_vpr, "edfbr_status_changed: %i\n", video_player->status);
+#endif
+                  video_pause_requested = 0;
+
+                  session_video_seek = 0;
+
+                  session_start_video = 0;
+
+                  mpr_write("get_time\n");
+                }
               }
             }
             else if(video_player->status == VIDEO_STATUS_STARTUP_6)
@@ -502,7 +535,9 @@ void UI_Mainwindow::video_poll_timer_func()
                 else
                 {
                   video_player->status = VIDEO_STATUS_PLAYING;
-
+#ifdef DEBUG_VIDEOPLAYER
+                  fprintf(debug_vpr, "edfbr_status_changed: %i\n", video_player->status);
+#endif
                   if(session_start_video && video_pause_requested)
                   {
                     video_player_toggle_pause();
@@ -513,26 +548,39 @@ void UI_Mainwindow::video_poll_timer_func()
                   session_video_seek = 0;
 
                   session_start_video = 0;
+
+                  mpr_write("get_time\n");
                 }
               }
 
     video_player->cntdwn_timer = 5000;
-
+#ifdef DEBUG_VIDEOPLAYER
+    fprintf(debug_vpr, "edfbr_cntdwn_timer set\n");
+#endif
     video_poll_timer->start(video_player->poll_timer);
-
+#ifdef DEBUG_VIDEOPLAYER
+    fprintf(debug_vpr, "edfbr_poll_timer set\n");
+#endif
     return;
   }
 
+#ifdef DEBUG_VIDEOPLAYER
+    fprintf(debug_vpr, "edfbr_poll_timer_checking...\n");
+#endif
   if((video_player->status == VIDEO_STATUS_PLAYING) || (video_player->status == VIDEO_STATUS_PAUSED))
   {
     if(!strncmp(buf, "> ", 2))
     {
       p = 2;
     }
-    else
-    {
-      p = 0;
-    }
+    else if(!strncmp(buf, "> > ", 4))
+      {
+        p = 4;
+      }
+      else
+      {
+        p = 0;
+      }
 
     if((len > (p + 2)) && (buf[len-1] == '\n'))
     {
@@ -861,7 +909,7 @@ int UI_Mainwindow::mpr_read(char *buf, int sz)
 
   if(n > 0)
   {
-    fprintf(debug_vpr, "vlc: %s ", buf);
+    fprintf(debug_vpr, "vlc: %i bytes: %s ", n, buf);
 
     for(int i=0; i<n; i++)
     {

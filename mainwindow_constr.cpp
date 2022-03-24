@@ -335,6 +335,8 @@ UI_Mainwindow::UI_Mainwindow()
 
   session_start_video = 0;
 
+  session_video_starttime = 0;
+
   session_video_seek = 0;
 
   session_relative_paths = 0;

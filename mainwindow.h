@@ -275,7 +275,8 @@ public:
 volatile int rc_cmd_in_progress;
 
 long long annot_editor_user_button_epoch_len,
-          hypnogram_epoch_len_threshold;
+          hypnogram_epoch_len_threshold,
+          session_video_starttime;
 
   QColor hrvdock_trace_color,
          annot_list_edited_txt_color;

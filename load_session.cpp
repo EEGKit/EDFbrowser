@@ -1416,54 +1416,87 @@ int UI_Mainwindow::read_session_file(const char *path_session)
 
   session_video_seek = 0;
 
+  session_video_starttime = 0;
+
   video_pause_requested = 0;
 
-  if(!xml_goto_nth_element_inside(xml_hdl, "video_file", 0))
+  if(!xml_goto_nth_element_inside(xml_hdl, "video", 0))
   {
-    if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+    if(xml_goto_nth_element_inside(xml_hdl, "file", 0))
     {
       return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
     }
-    if(use_relative_path)
-    {
-      get_directory_from_path(videopath, path_session, MAX_PATH_LENGTH);
-      strlcat(videopath, "/", MAX_PATH_LENGTH);
-      strlcat(videopath, result, MAX_PATH_LENGTH);
-      sanitize_path(videopath);
-    }
     else
     {
-      strlcpy(videopath, result, MAX_PATH_LENGTH);
+      if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+      {
+        return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
+      }
+      if(use_relative_path)
+      {
+        get_directory_from_path(videopath, path_session, MAX_PATH_LENGTH);
+        strlcat(videopath, "/", MAX_PATH_LENGTH);
+        strlcat(videopath, result, MAX_PATH_LENGTH);
+        sanitize_path(videopath);
+      }
+      else
+      {
+        strlcpy(videopath, result, MAX_PATH_LENGTH);
+      }
+      xml_go_up(xml_hdl);
+
+      if(xml_goto_nth_element_inside(xml_hdl, "starttime", 0))
+      {
+        return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
+      }
+      else
+      {
+        if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+        {
+          return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
+        }
+        session_video_starttime = atoll(result);
+        xml_go_up(xml_hdl);
+      }
+
+      if(xml_goto_nth_element_inside(xml_hdl, "seek", 0))
+      {
+        return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
+      }
+      else
+      {
+        if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+        {
+          return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
+        }
+        session_video_seek = atoi(result);
+        if(session_video_seek < 0)
+        {
+          session_video_seek = 0;
+        }
+        xml_go_up(xml_hdl);
+      }
+
+      if(xml_goto_nth_element_inside(xml_hdl, "paused", 0))
+      {
+        return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
+      }
+      else
+      {
+        if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+        {
+          return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
+        }
+        video_pause_requested = atoi(result);
+        if((video_pause_requested < 0) || (video_pause_requested > 1))
+        {
+          video_pause_requested = 0;
+        }
+        xml_go_up(xml_hdl);
+      }
     }
+
     xml_go_up(xml_hdl);
-
-    if(!xml_goto_nth_element_inside(xml_hdl, "video_seek", 0))
-    {
-      if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
-      {
-        return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
-      }
-      session_video_seek = atoi(result);
-      if(session_video_seek < 0)
-      {
-        session_video_seek = 0;
-      }
-      xml_go_up(xml_hdl);
-    }
-
-    if(!xml_goto_nth_element_inside(xml_hdl, "paused", 0))
-    {
-      if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
-      {
-        return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
-      }
-      video_pause_requested = atoi(result);
-      if((video_pause_requested < 0) || (video_pause_requested > 1))
-      {
-        video_pause_requested = 0;
-      }
-      xml_go_up(xml_hdl);
-    }
   }
 
   xml_goto_root(xml_hdl);
