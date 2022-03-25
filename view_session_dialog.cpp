@@ -1900,7 +1900,7 @@ void UI_ViewSessionwindow::SelectButtonClicked()
         return;
       }
 
-      snprintf(str2, 2048, "Position: %i sec.", video_seek);
+      snprintf(str2, 2048, "Position: %i:%02i:%02i", video_seek / 3600, (video_seek % 3600) / 60, video_seek % 60);
 
       videoItem->appendRow(new QStandardItem(str2));
 
