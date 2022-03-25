@@ -126,10 +126,12 @@ void UI_ViewSessionwindow::SelectButtonClicked()
       power_voltage=0,
       max_pwr=0,
       min_pwr=0,
-      dftblocksize=0;
+      dftblocksize=0,
+      video_seek=0;
 
   long long viewtime=0,
-            timescale=0;
+            timescale=0,
+            utc_starttime=0;
 
   char result[XML_STRBUFLEN]="",
        composition_txt[2048]="",
@@ -138,7 +140,8 @@ void UI_ViewSessionwindow::SelectButtonClicked()
        str3[64]="",
        edf_path[2048]="",
        e_file_path[MAXFILES][MAX_PATH_LENGTH],
-       path_r[MAX_PATH_LENGTH]="";
+       path_r[MAX_PATH_LENGTH]="",
+       video_path[2048]="";
 
   double frequency,
          frequency2,
@@ -156,12 +159,15 @@ void UI_ViewSessionwindow::SelectButtonClicked()
                 *signalItem,
                 *filterItem,
                 *firfilterItem,
+                *videoItem,
                 *powerspectrumdockItem,
                 *hypnogramItem,
                 *cdsaItem,
                 *tmp_item=NULL;
 
   struct xml_handle *xml_hdl=NULL;
+
+  struct date_time_struct dt;
 
   for(i=0; i<MAXFILES; i++)
   {
@@ -1782,11 +1788,161 @@ void UI_ViewSessionwindow::SelectButtonClicked()
       xml_go_up(xml_hdl);
     }
 
+      xml_go_up(xml_hdl);
+  }
+
+  video_path[0] = 0;
+
+  if(!xml_goto_nth_element_inside(xml_hdl, "video", 0))
+  {
+    videoItem = new QStandardItem("Video");
+
+    parentItem->appendRow(videoItem);
+
+    if(xml_goto_nth_element_inside(xml_hdl, "file", 0))
+    {
+      view_session_format_error(__FILE__, __LINE__, xml_hdl);
+      return;
+    }
+    else
+    {
+      if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+      {
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
+        return;
+      }
+
+      if(strlen(result) < 5)
+      {
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
+        return;
+      }
+
+      snprintf(video_path, 2048, "Video: %s", result);
+
+      if(use_relative_path)
+      {
+        get_directory_from_path(path_r, session_path, MAX_PATH_LENGTH);
+        strlcat(path_r, "/", MAX_PATH_LENGTH);
+        strlcat(path_r, result, MAX_PATH_LENGTH);
+        sanitize_path(path_r);
+        f_test = fopeno(path_r, "rb");
+      }
+      else
+      {
+        f_test = fopeno(result, "rb");
+      }
+
+      if(f_test == NULL)
+      {
+        strlcat(video_path, "  (not found!)", 2048);
+        tmp_item = new QStandardItem(video_path);
+        tmp_item->setIcon(QIcon(":/images/delete_16x16.png"));
+        videoItem->appendRow(tmp_item);
+      }
+      else
+      {
+        fclose(f_test);
+        f_test = NULL;
+        videoItem->appendRow(new QStandardItem(video_path));
+      }
+
+      xml_go_up(xml_hdl);
+    }
+
+    if(xml_goto_nth_element_inside(xml_hdl, "starttime", 0))
+    {
+      view_session_format_error(__FILE__, __LINE__, xml_hdl);
+      return;
+    }
+    else
+    {
+      if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+      {
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
+        return;
+      }
+
+      utc_starttime = atoll(result);
+      if((utc_starttime < 0) || (utc_starttime > 16725225600))
+      {
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
+        return;
+      }
+
+      utc_to_date_time(utc_starttime, &dt);
+
+      snprintf(str2, 2048, "Start: %i-%s-%04i %02i:%02i:%02i",
+                        dt.day, dt.month_str, dt.year, dt.hour, dt.minute, dt.second);
+
+      videoItem->appendRow(new QStandardItem(str2));
+
+      xml_go_up(xml_hdl);
+    }
+
+    if(xml_goto_nth_element_inside(xml_hdl, "seek", 0))
+    {
+      view_session_format_error(__FILE__, __LINE__, xml_hdl);
+      return;
+    }
+    else
+    {
+      if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+      {
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
+        return;
+      }
+
+      video_seek = atoi(result);
+      if((video_seek < 0) || (video_seek > 3000000))
+      {
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
+        return;
+      }
+
+      snprintf(str2, 2048, "Position: %i sec.", video_seek);
+
+      videoItem->appendRow(new QStandardItem(str2));
+
+      xml_go_up(xml_hdl);
+    }
+
+    if(xml_goto_nth_element_inside(xml_hdl, "paused", 0))
+    {
+      view_session_format_error(__FILE__, __LINE__, xml_hdl);
+      return;
+    }
+    else
+    {
+      if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+      {
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
+        return;
+      }
+
+      if(!strcmp(result, "0"))
+      {
+        videoItem->appendRow(new QStandardItem("Paused: no"));
+      }
+      else if(!strcmp(result, "1"))
+        {
+          videoItem->appendRow(new QStandardItem("Paused: yes"));
+        }
+        else
+        {
+          view_session_format_error(__FILE__, __LINE__, xml_hdl);
+          return;
+        }
+
+      xml_go_up(xml_hdl);
+    }
+
+    xml_go_up(xml_hdl);
   }
 
   xml_close(xml_hdl);
 
-  tree->expandAll();
+//  tree->expandAll();
 }
 
 
