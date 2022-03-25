@@ -977,7 +977,16 @@ void ViewCurve::drawCurve_stage_2(QPainter *painter, int w_width, int w_height, 
       }
       else if(!signalcomps)
         {
-          painter->drawText(w / 2, h / 2, "NO SIGNALS ADDED");
+          if(mainwindow->files_open == 1)
+          {
+            snprintf(str4, 1024, "A FILE IS OPENED BUT NO SIGNALS ARE ADDED TO THE SCREEN");
+          }
+          else
+          {
+            snprintf(str4, 1024, "%i FILES ARE OPENED BUT NO SIGNALS ARE ADDED TO THE SCREEN", mainwindow->files_open);
+          }
+
+          painter->drawText(w * 0.4, h / 2, str4);
         }
     }
 
