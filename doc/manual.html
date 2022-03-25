@@ -140,7 +140,7 @@
   In order for EDFbrowser to be able to start a video, the <a href="https://www.videolan.org/">VLC mediaplayer</a> must be installed on your system.<br>
   On windows: make sure VLC is installed in: C:\Program Files\VideoLAN\VLC\ or C:\Program Files (x86)\VideoLAN\VLC\<br><br>
 
-  Open an EDF or BDF file and select/setup your montage as usual. Then press Ctrl-Shift-v (or go to File -> Start video)<br>
+  Open an EDF or BDF file and select/setup your montage as usual. Then press Ctrl-Shift-v (or go to File -&gt; Start video)<br>
   to select a video. After the video has started, you can use the slider on the bottom to change the file position or<br>
   use page-up/page-down.<br><br>
 
@@ -368,7 +368,7 @@
   When a file contains annotations (sometimes called events), the annotation window will appear.<br>
   Just click on one of the annotations to jump to that position in the file.<br>
   The annotation marker will appear either at the start or the middle of the page,<br>
-  depending on an option that is in Settings -> Options -> Other.<br>
+  depending on an option that is in Settings -&gt; Options -&gt; Other.<br>
   <br>
   The annotation window is dockable. You can change the size of the window, but also the position.<br>
   You can make the window floating as well by dragging it with the mouse. After closing<br>
@@ -390,7 +390,7 @@
 <br>
   By right-clicking on an annotation in the annotationlist, you can perform several operations on the annotations.<br>
   It's possible to filter groups of annotations. You can select if these filter operations take place on the annotations list<br>
-  only or also on the waveform window. This option is in Settings -> Options -> Other.<br>
+  only or also on the waveform window. This option is in Settings -&gt; Options -&gt; Other.<br>
   Right-click on an annotation marker in the plotting window in order to select it (the color will change) in the annotation list,<br>
   or to perform waveform averaging.<br>
 </p>
@@ -442,14 +442,14 @@
 
   When a crosshair is activated, the onsettime field will or will not be updated when navigating through the file,<br>
   depending on a setting in the options menu ("Auto update annotation-editor onsettime").<br>
-  You'll find this setting in: Settings -> Options -> Annotation editor.<br><br>
+  You'll find this setting in: Settings -&gt; Options -&gt; Annotation editor.<br><br>
 
   Keeping the shift-key pressed when left-clicking on an annotation in the wavefom window,<br>
   will prevent the annotation from moving (i.e. the onset time will not be modified).<br>
   The annotation will only be selected and made visible in the annotations list.<br><br>
 
   It's possible to enable and configure up to eight user buttons which can be used to quickly create annotations.<br>
-  This can be done in: Settings -> Options -> Annotation editor.<br>
+  This can be done in: Settings -&gt; Options -&gt; Annotation editor.<br>
   You can freely assign any name to a user button. The name will be used as the description of the annotation.<br>
   You can setup which actions will be performed when clicking on a user button:<br>
   - set the description<br>
@@ -459,10 +459,10 @@
   Keyboard shortcuts for the user buttons are: Ctrl + 1, Ctrl + 2, Ctrl + 3, etc.<br><br>
 
   Note: It's possible to let the viewtime automatically stay on an integer multiple of the page /epoch time when using the user buttons to create annotations.<br>
-  I.e. the viewtime and pagetime will allways be at the epoch boundary. This can be setup in: Settings -> Options -> Annotation editor.<br><br>
+  I.e. the viewtime and pagetime will allways be at the epoch boundary. This can be setup in: Settings -&gt; Options -&gt; Annotation editor.<br><br>
 
   Note: It's possible to let advance the viewtime automatically when using the user buttons to create annotations.<br>
-  I.e. the viewtime will advance with the selected page / epoch time when clicking on a user button. This can be setup in: Settings -> Options -> Annotation editor.<br><br>
+  I.e. the viewtime will advance with the selected page / epoch time when clicking on a user button. This can be setup in: Settings -&gt; Options -&gt; Annotation editor.<br><br>
 
   Signal linked annotations can be created by using a suffix "@@" followed by the signal label in the annotation description.<br>
   e.g.: "sleep spindle@@C3-A2"<br><br>
@@ -472,7 +472,7 @@
   After drawing the rectangle over the part of the signal of interest, a menu will popup which will allow you to select one of up to eight<br>
   predefined annotation descriptions. After selecting one of them, a signal linked annotation will be created with the specified description,<br>
   onset and duration will be set according to the rectangle drawn.<br>
-  You can setup the predefined descriptions in: Settings -> Options -> Annotation editor.<br><br>
+  You can setup the predefined descriptions in: Settings -&gt; Options -&gt; Annotation editor.<br><br>
 
   Note: The annotation editor will limit the precision of the onset-time of the annotations to 1 milliSecond.
 </p>
@@ -706,7 +706,7 @@
   You will be able to select one of the signals on your screen as the source for the QRS detector.<br>
   The selected signal must have a samplerate of at least 200 Hz and must have a physical dimension (unit)specified in uV, mV or V.<br>
   The detector will process the whole file and it will import the R-peaks as annotations.<br>
-  The label "R-peak" is used by default for the annotations but this can be changed in the settings (Settings -> Options).<br>
+  The label "R-peak" is used by default for the annotations but this can be changed in the settings (Settings -&gt; Options).<br>
   Also, the heart rate will be plotted in a separate window. Right-click on the plot to access some settings for the plot.<br>
   The annotations can be exported to different formats using the <a href="#Export_annotations">Export annotations tool</a>.<br>
 <br>
@@ -876,7 +876,7 @@
   You can use a floating ruler for measurements. Leftclick on the signallabel of the signal<br>
   of interest. A small dialog will appear. Click on "Ruler". A floating ruler will appear.<br>
   Drag and drop the ruler with the left mousebutton. Rightclick to remove the ruler or press the "Esc" key.<br>
-  In Settings -> Options -> Other you can enable or disable a property of the ruler that will adjust the width<br>
+  In Settings -&gt; Options -&gt; Other you can enable or disable a property of the ruler that will adjust the width<br>
   of the ruler automatically in such a way that only integer numbers for "Hz" will be shown.
 </p>
 
@@ -985,7 +985,7 @@
   <br>
   The session file will have the extension .esf (EDFbrowser Session File).<br>
   When saving a session, <b>absolute</b> paths or <b>relative</b> paths can be used.<br>
-  The default is to use the absolute paths but you can change this in Settings -> Options -> Other<br>
+  The default is to use the absolute paths but you can change this in Settings -&gt; Options -&gt; Other<br>
   This setting is evaluated only when saving a session, not when loading a session.<br>
   So, changing the setting between absolute and relative paths does not affect previously saved sessions.<br>
   <br>
@@ -996,13 +996,13 @@
   with all file locations you have access to, including network drives. Also, when using absolute paths, you can move the<br>
   .esf file to another directory (on the same computer!) without breaking anything.<br>
   <br>
-  Note: The settings in Settings -> options are not in included in the session file.<br>
+  Note: The settings in Settings -&gt; options are not in included in the session file.<br>
   Changing one of those settings might still affect a session in some way.<br>
   <br>
   Alternatively, you can use a <a href="#Montages">montage</a> instead of a session. Montages can be applied to different<br>
   recordings (of the same type).<br>
   <br>
-  If you want to check the details of a saved session, you can do this by using: Session -> View saved sessions<br>
+  If you want to check the details of a saved session, you can do this by using: Session -&gt; View saved sessions<br>
   It will show you the settings stored in the session file. It also checks if the file paths are still valid.<br>
 </p>
 
@@ -1118,7 +1118,7 @@
   - the value for digital maximum is lower than or equal to digital minimum<br>
   - the value for physical maximum equals physical minimum<br>
 <br>
-  Do as follows: In EDFbrowser go to Tools -> Header editor. Select the file. Now click on the<br>
+  Do as follows: In EDFbrowser go to Tools -&gt; Header editor. Select the file. Now click on the<br>
   "save" button (you don't need to edit the content manually). Close the header editor.<br>
   Now open the file in the usual way.
 </p>
@@ -1765,7 +1765,7 @@
 <br>
   Note: If a file cannot be opened with EDFbrowser because of invalid characters in the header<br>
   (the EDF format allows 7-bit ascii characters only), you can repair the non-compliant file with the <a href="#Header_editor">header editor</a>.<br>
-  In EDFbrowser go to Tools -> Header editor. Select the file. Now click on the "save" button<br>
+  In EDFbrowser go to Tools -&gt; Header editor. Select the file. Now click on the "save" button<br>
   (do not edit the content!). Close the header editor. Now open the file in EDFbrowser.
 </p>
 
@@ -1972,7 +1972,7 @@
   In case of connection problems, check your firewall settings.<br>
   <br>
   By default, the remote control port will be configured as a <a href="https://en.wikipedia.org/wiki/Localhost">loopback port</a> and will not be accessible from your network.<br>
-  You can make the remote control port publicly accessible by enabling it in Settings -> Options -> Other.<br>
+  You can make the remote control port publicly accessible by enabling it in Settings -&gt; Options -&gt; Other.<br>
   However, this is not recommended and can be a potential security issue.<br>
   <br>
   Command list: parameters in angle brackets are mandatory and must be replaced with actual values<br>
