@@ -4,6 +4,13 @@
 
  - Added the option to save and load a session.
 
+ - Z-EEG: fixed a bug that potentialy could cause a segfault (crash).
+
+ - Filter dialog: when selecting a bandpass- or bandstopfilter, when editing a value for a frequency,
+   do not change the value for the other frequency. (The old behaviour was done so in order to always keep
+   legal values i.e. F2 must always be higher than F1, but this behaviour is annoying when editing these
+   values). Now, the check F2 > F1 will be performed when hitting the "Apply" button.
+
 
  version 1.91      February 4, 2022
  --------------
