@@ -75,14 +75,14 @@ QListWidget    *list;
 QComboBox      *typebox,
                *modelbox;
 
-QDoubleSpinBox *freqbox,
+QDoubleSpinBox *freq1box,
                *ripplebox,
                *freq2box;
 
 QSpinBox       *orderbox;
 
 QLabel         *typeboxlabel,
-               *freqboxlabel,
+               *freqbox1label,
                *freqbox2label,
                *orderboxlabel,
                *modelboxlabel,
@@ -112,7 +112,7 @@ char *filter_spec,
 private slots:
 
 void ApplyButtonClicked();
-void frequencyboxvaluechanged(double);
+void freq1boxvaluechanged(double);
 void orderboxvaluechanged(int);
 void filtertypeboxvaluechanged(int);
 void filtermodelboxvaluechanged(int);

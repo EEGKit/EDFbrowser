@@ -24,26 +24,6 @@
 ***************************************************************************
 */
 
-/*
-
-type:
-
-0 : highpass
-1 : lowpass
-2 : notch
-3 : bandpass
-4 : bandstop
-
-model:
-
-0 : Butterworth
-1 : Chebyshev
-2 : Bessel
-3 : moving average
-
-0 : resonator
-
-*/
 
 #define FILTERTYPE_HIGHPASS  (0)
 #define FILTERTYPE_LOWPASS   (1)
@@ -52,6 +32,7 @@ model:
 #define FILTERTYPE_BANDSTOP  (4)
 
 #define FILTERMODEL_BUTTERWORTH    (0)
+#define FILTERMODEL_RESONATOR      (0)
 #define FILTERMODEL_CHEBYSHEV      (1)
 #define FILTERMODEL_BESSEL         (2)
 #define FILTERMODEL_MOVINGAVERAGE  (3)
@@ -90,8 +71,8 @@ UI_FilterDialog::UI_FilterDialog(QWidget *w_parent)
   typeboxlabel = new QLabel;
   typeboxlabel->setText("Type");
 
-  freqboxlabel = new QLabel;
-  freqboxlabel->setText("Frequency");
+  freqbox1label = new QLabel;
+  freqbox1label->setText("Frequency");
 
   freqbox2label = new QLabel;
   freqbox2label->setText("Frequency 2");
@@ -116,12 +97,12 @@ UI_FilterDialog::UI_FilterDialog(QWidget *w_parent)
   typebox->addItem("Bandpass");
   typebox->addItem("Bandstop");
 
-  freqbox = new QDoubleSpinBox;
-  freqbox->setDecimals(6);
-  freqbox->setSuffix(" Hz");
-  freqbox->setMinimum(0.0001);
-  freqbox->setMaximum(100000000.0);
-  freqbox->setValue(1.0);
+  freq1box = new QDoubleSpinBox;
+  freq1box->setDecimals(6);
+  freq1box->setSuffix(" Hz");
+  freq1box->setMinimum(0.0001);
+  freq1box->setMaximum(100000000.0);
+  freq1box->setValue(1.0);
 
   freq2box = new QDoubleSpinBox;
   freq2box->setDecimals(6);
@@ -193,8 +174,8 @@ UI_FilterDialog::UI_FilterDialog(QWidget *w_parent)
 
   QVBoxLayout *vlayout4 = new QVBoxLayout;
   vlayout4->addStretch(1000);
-  vlayout4->addWidget(freqboxlabel);
-  vlayout4->addWidget(freqbox);
+  vlayout4->addWidget(freqbox1label);
+  vlayout4->addWidget(freq1box);
   vlayout4->addWidget(orderboxlabel);
   vlayout4->addWidget(orderbox);
 
@@ -239,7 +220,7 @@ UI_FilterDialog::UI_FilterDialog(QWidget *w_parent)
 
   QObject::connect(ApplyButton,  SIGNAL(clicked()),                this,         SLOT(ApplyButtonClicked()));
   QObject::connect(CancelButton, SIGNAL(clicked()),                filterdialog, SLOT(close()));
-  QObject::connect(freqbox,      SIGNAL(valueChanged(double)),     this,         SLOT(frequencyboxvaluechanged(double)));
+  QObject::connect(freq1box,     SIGNAL(valueChanged(double)),     this,         SLOT(freq1boxvaluechanged(double)));
   QObject::connect(typebox,      SIGNAL(currentIndexChanged(int)), this,         SLOT(filtertypeboxvaluechanged(int)));
   QObject::connect(orderbox,     SIGNAL(valueChanged(int)),        this,         SLOT(orderboxvaluechanged(int)));
   QObject::connect(modelbox,     SIGNAL(currentIndexChanged(int)), this,         SLOT(filtermodelboxvaluechanged(int)));
@@ -291,7 +272,12 @@ void UI_FilterDialog::updatecurve(void)
 
   if((type == FILTERTYPE_BANDPASS) || (type == FILTERTYPE_BANDSTOP))
   {
-    frequency = frequency2 * (freqbox->value() / freq2box->value());
+    if(freq1box->value() > (freq2box->value() * 0.91))
+    {
+      return;
+    }
+
+    frequency = frequency2 * (freq1box->value() / freq2box->value());
   }
 
   spec_str_1[0] = 0;
@@ -424,9 +410,9 @@ void UI_FilterDialog::filtermodelboxvaluechanged(int model)
 
   last_model = model;
 
-  freqboxlabel->setText("Frequency");
-  freqboxlabel->setVisible(true);
-  freqbox->setVisible(true);
+  freqbox1label->setText("Frequency");
+  freqbox1label->setVisible(true);
+  freq1box->setVisible(true);
 
   if(type != FILTERTYPE_NOTCH)
   {
@@ -488,9 +474,9 @@ void UI_FilterDialog::filtermodelboxvaluechanged(int model)
     orderlabel->setVisible(true);
     orderlabel->setText("  ");
     ordervaluelabel->setVisible(false);
-    freqboxlabel->setVisible(false);
+    freqbox1label->setVisible(false);
     freqbox2label->setVisible(false);
-    freqbox->setVisible(false);
+    freq1box->setVisible(false);
     ripplebox->setVisible(false);
     orderboxlabel->setText("Samples");
     orderbox->setMaximum(10000);
@@ -520,7 +506,7 @@ void UI_FilterDialog::orderboxvaluechanged(int order)
 
   if(type == FILTERTYPE_NOTCH)
   {
-    snprintf(str, 256, "%f Hz", freqbox->value() / orderbox->value());
+    snprintf(str, 256, "%f Hz", freq1box->value() / orderbox->value());
     remove_trailing_zeros(str);
     ordervaluelabel->setText(str);
     ordervaluelabel->setVisible(true);
@@ -571,7 +557,7 @@ void UI_FilterDialog::orderboxvaluechanged(int order)
     {
       orderlabel->setVisible(false);
       ordervaluelabel->setVisible(false);
-      freqboxlabel->setVisible(false);
+      freqbox1label->setVisible(false);
     }
   }
 
@@ -597,7 +583,7 @@ void UI_FilterDialog::filtertypeboxvaluechanged(int type)
     orderbox->setValue(last_qfactor);
     orderbox->setVisible(true);
     orderlabel->setText("-3 dB bandwidth:");
-    snprintf(str, 256, "%f Hz", freqbox->value() / orderbox->value());
+    snprintf(str, 256, "%f Hz", freq1box->value() / orderbox->value());
     remove_trailing_zeros(str);
     ordervaluelabel->setText(str);
     ordervaluelabel->setVisible(true);
@@ -695,11 +681,11 @@ void UI_FilterDialog::filtertypeboxvaluechanged(int type)
 
   if((type == FILTERTYPE_BANDPASS) || (type == FILTERTYPE_BANDSTOP))
   {
-    freqboxlabel->setText("Frequency 1");
-    freqboxlabel->setVisible(true);
+    freqbox1label->setText("Frequency 1");
+    freqbox1label->setVisible(true);
     freqbox2label->setText("Frequency 2");
     freqbox2label->setVisible(true);
-    freqbox->setVisible(true);
+    freq1box->setVisible(true);
     freq2box->setVisible(true);
   }
   else
@@ -711,12 +697,12 @@ void UI_FilterDialog::filtertypeboxvaluechanged(int type)
     {
       orderlabel->setVisible(false);
       ordervaluelabel->setVisible(false);
-      freqboxlabel->setVisible(false);
+      freqbox1label->setVisible(false);
     }
     else
     {
-      freqboxlabel->setText("Frequency");
-      freqboxlabel->setVisible(true);
+      freqbox1label->setText("Frequency");
+      freqbox1label->setVisible(true);
     }
   }
 
@@ -727,18 +713,18 @@ void UI_FilterDialog::filtertypeboxvaluechanged(int type)
 }
 
 
-void UI_FilterDialog::frequencyboxvaluechanged(double value)
+void UI_FilterDialog::freq1boxvaluechanged(double)
 {
   char str[256];
 
-  if(freq2box->value() < (value * 1.12))
-  {
-    freq2box->setValue(value * 1.12);
-  }
+//   if(freq2box->value() < (value * 1.12))
+//   {
+//     freq2box->setValue(value * 1.12);
+//   }
 
   if(typebox->currentIndex() == FILTERTYPE_NOTCH)
   {
-    snprintf(str, 256, "%f Hz", freqbox->value() / orderbox->value());
+    snprintf(str, 256, "%f Hz", freq1box->value() / orderbox->value());
     remove_trailing_zeros(str);
     ordervaluelabel->setText(str);
   }
@@ -747,16 +733,16 @@ void UI_FilterDialog::frequencyboxvaluechanged(double value)
 }
 
 
-void UI_FilterDialog::freq2boxvaluechanged(double value)
+void UI_FilterDialog::freq2boxvaluechanged(double)
 {
-  QObject::disconnect(freqbox, SIGNAL(valueChanged(double)), this, SLOT(frequencyboxvaluechanged(double)));
-
-  if(freqbox->value() > (value * 0.9))
-  {
-    freqbox->setValue(value * 0.9);
-  }
-
-  QObject::connect(freqbox, SIGNAL(valueChanged(double)), this, SLOT(frequencyboxvaluechanged(double)));
+//   QObject::disconnect(freq1box, SIGNAL(valueChanged(double)), this, SLOT(freq1boxvaluechanged(double)));
+//
+//   if(freq1box->value() > (value * 0.9))
+//   {
+//     freq1box->setValue(value * 0.9);
+//   }
+//
+//   QObject::connect(freq1box, SIGNAL(valueChanged(double)), this, SLOT(freq1boxvaluechanged(double)));
 
   updatecurve();
 }
@@ -769,7 +755,7 @@ void UI_FilterDialog::ApplyButtonClicked()
       model,
       order;
 
-  double frequency,
+  double frequency1,
          frequency2,
          ripple;
 
@@ -789,7 +775,7 @@ void UI_FilterDialog::ApplyButtonClicked()
     return;
   }
 
-  frequency = freqbox->value();
+  frequency1 = freq1box->value();
 
   frequency2 = freq2box->value();
 
@@ -825,7 +811,7 @@ void UI_FilterDialog::ApplyButtonClicked()
 
       if((type == FILTERTYPE_HIGHPASS) || (type == FILTERTYPE_LOWPASS) || (type == FILTERTYPE_NOTCH))
       {
-        if(frequency >= mainwindow->signalcomp[s]->edfhdr->edfparam[mainwindow->signalcomp[s]->edfsignal[0]].sf_f / 2.0)
+        if(frequency1 >= mainwindow->signalcomp[s]->edfhdr->edfparam[mainwindow->signalcomp[s]->edfsignal[0]].sf_f / 2.0)
         {
           QMessageBox messagewindow(QMessageBox::Critical, "Error",
                                     "The frequency of the filter(s) must be less than: samplerate / 2");
@@ -851,17 +837,17 @@ void UI_FilterDialog::ApplyButtonClicked()
     {
       if(model == FILTERMODEL_BUTTERWORTH)
       {
-        snprintf(spec_str_1, 256, "HpBu%i/%f", order, frequency);
+        snprintf(spec_str_1, 256, "HpBu%i/%f", order, frequency1);
       }
 
       if(model == FILTERMODEL_CHEBYSHEV)
       {
-        snprintf(spec_str_1, 256, "HpCh%i/%f/%f", order, ripple, frequency);
+        snprintf(spec_str_1, 256, "HpCh%i/%f/%f", order, ripple, frequency1);
       }
 
       if(model == FILTERMODEL_BESSEL)
       {
-        snprintf(spec_str_1, 256, "HpBe%i/%f", order, frequency);
+        snprintf(spec_str_1, 256, "HpBe%i/%f", order, frequency1);
       }
     }
 
@@ -869,40 +855,40 @@ void UI_FilterDialog::ApplyButtonClicked()
     {
       if(model == FILTERMODEL_BUTTERWORTH)
       {
-        snprintf(spec_str_1, 256, "LpBu%i/%f", order, frequency);
+        snprintf(spec_str_1, 256, "LpBu%i/%f", order, frequency1);
       }
 
       if(model == FILTERMODEL_CHEBYSHEV)
       {
-        snprintf(spec_str_1, 256, "LpCh%i/%f/%f", order, ripple, frequency);
+        snprintf(spec_str_1, 256, "LpCh%i/%f/%f", order, ripple, frequency1);
       }
 
       if(model == FILTERMODEL_BESSEL)
       {
-        snprintf(spec_str_1, 256, "LpBe%i/%f", order, frequency);
+        snprintf(spec_str_1, 256, "LpBe%i/%f", order, frequency1);
       }
     }
 
     if(type == FILTERTYPE_NOTCH)
     {
-      snprintf(spec_str_1, 256, "BsRe/%i/%f", order, frequency);
+      snprintf(spec_str_1, 256, "BsRe/%i/%f", order, frequency1);
     }
 
     if(type == FILTERTYPE_BANDPASS)
     {
       if(model == FILTERMODEL_BUTTERWORTH)
       {
-        snprintf(spec_str_1, 256, "BpBu%i/%f-%f", order, frequency, frequency2);
+        snprintf(spec_str_1, 256, "BpBu%i/%f-%f", order, frequency1, frequency2);
       }
 
       if(model == FILTERMODEL_CHEBYSHEV)
       {
-        snprintf(spec_str_1, 256, "BpCh%i/%f/%f-%f", order, ripple, frequency, frequency2);
+        snprintf(spec_str_1, 256, "BpCh%i/%f/%f-%f", order, ripple, frequency1, frequency2);
       }
 
       if(model == FILTERMODEL_BESSEL)
       {
-        snprintf(spec_str_1, 256, "BpBe%i/%f-%f", order, frequency, frequency2);
+        snprintf(spec_str_1, 256, "BpBe%i/%f-%f", order, frequency1, frequency2);
       }
     }
 
@@ -910,17 +896,17 @@ void UI_FilterDialog::ApplyButtonClicked()
     {
       if(model == FILTERMODEL_BUTTERWORTH)
       {
-        snprintf(spec_str_1, 256, "BsBu%i/%f-%f", order, frequency, frequency2);
+        snprintf(spec_str_1, 256, "BsBu%i/%f-%f", order, frequency1, frequency2);
       }
 
       if(model == FILTERMODEL_CHEBYSHEV)
       {
-        snprintf(spec_str_1, 256, "BsCh%i/%f/%f-%f", order, ripple, frequency, frequency2);
+        snprintf(spec_str_1, 256, "BsCh%i/%f/%f-%f", order, ripple, frequency1, frequency2);
       }
 
       if(model == FILTERMODEL_BESSEL)
       {
-        snprintf(spec_str_1, 256, "BsBe%i/%f-%f", order, frequency, frequency2);
+        snprintf(spec_str_1, 256, "BsBe%i/%f-%f", order, frequency1, frequency2);
       }
     }
 
@@ -952,7 +938,7 @@ void UI_FilterDialog::ApplyButtonClicked()
       mainwindow->signalcomp[s]->fidbuf[mainwindow->signalcomp[s]->fidfilter_cnt] = fid_run_newbuf(mainwindow->signalcomp[s]->fid_run[mainwindow->signalcomp[s]->fidfilter_cnt]);
       mainwindow->signalcomp[s]->fidbuf2[mainwindow->signalcomp[s]->fidfilter_cnt] = fid_run_newbuf(mainwindow->signalcomp[s]->fid_run[mainwindow->signalcomp[s]->fidfilter_cnt]);
 
-      mainwindow->signalcomp[s]->fidfilter_freq[mainwindow->signalcomp[s]->fidfilter_cnt] = frequency;
+      mainwindow->signalcomp[s]->fidfilter_freq[mainwindow->signalcomp[s]->fidfilter_cnt] = frequency1;
 
       mainwindow->signalcomp[s]->fidfilter_freq2[mainwindow->signalcomp[s]->fidfilter_cnt] = frequency2;
 

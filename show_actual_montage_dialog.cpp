@@ -390,7 +390,7 @@ UI_ShowActualMontagewindow::UI_ShowActualMontagewindow(QWidget *w_parent)
 
   tree->setModel(t_model);
 
-  tree->expandAll();
+//  tree->expandAll();
 
   ShowMontageDialog->exec();
 }
