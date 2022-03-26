@@ -45,6 +45,8 @@ UI_FilterDialog::UI_FilterDialog(QWidget *w_parent)
 {
   int i;
 
+  char str[256]="";
+
   QListWidgetItem *item;
 
   arraysize = 400;
@@ -154,12 +156,18 @@ UI_FilterDialog::UI_FilterDialog(QWidget *w_parent)
     item = new QListWidgetItem;
     if(mainwindow->signalcomp[i]->alias[0] != 0)
     {
-      item->setText(mainwindow->signalcomp[i]->alias);
+      strlcpy(str, mainwindow->signalcomp[i]->alias, 256);
     }
     else
     {
-      item->setText(mainwindow->signalcomp[i]->signallabel);
+      strlcpy(str, mainwindow->signalcomp[i]->signallabel, 256);
     }
+
+    snprintf(str + strlen(str), 256 - strlen(str), "  (%f",
+             mainwindow->signalcomp[i]->edfhdr->edfparam[mainwindow->signalcomp[i]->edfsignal[0]].sf_f);
+    remove_trailing_zeros(str);
+    strlcat(str, "Hz)", 256);
+    item->setText(str);
     item->setData(Qt::UserRole, QVariant(i));
     list->addItem(item);
   }
