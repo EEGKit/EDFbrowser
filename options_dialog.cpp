@@ -3129,7 +3129,7 @@ void UI_OptionsDialog::loadColorSchema_Dark()
 
   mainwindow->maincurve->signal_color = Qt::yellow;
 
-  mainwindow->maincurve->crosshair_1.color = Qt::red;
+  mainwindow->maincurve->crosshair_1.color = Qt::yellow;
 
   mainwindow->maincurve->crosshair_2.color = Qt::cyan;
 

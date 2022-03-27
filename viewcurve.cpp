@@ -135,7 +135,7 @@ ViewCurve::ViewCurve(QWidget *w_parent) : QWidget(w_parent)
   crosshair_1.dot_sz = 4;
   crosshair_2.dot_sz = 4;
 
-  crosshair_1.color = Qt::red;
+  crosshair_1.color = Qt::yellow;
   crosshair_2.color = Qt::cyan;
 
   blackwhite_printing = 1;
