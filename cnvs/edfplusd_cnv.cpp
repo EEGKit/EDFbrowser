@@ -411,6 +411,8 @@ void UI_EDFDwindow::SelectFileButton()
           {
             cnt += fprintf(outputfile, ".%07i", (int)((annot_ptr->onset - new_hdr_timestamp) % TIME_DIMENSION));
 
+            fflush(outputfile);
+
             fseeko(outputfile, -1LL, SEEK_CUR);
 
             while(fgetc(outputfile)=='0')
@@ -583,6 +585,8 @@ void UI_EDFDwindow::SelectFileButton()
       if(annot_ptr->onset%TIME_DIMENSION)
       {
         cnt += fprintf(outputfile, ".%07i", (int)((annot_ptr->onset - new_hdr_timestamp) % TIME_DIMENSION));
+
+        fflush(outputfile);
 
         fseeko(outputfile, -1LL, SEEK_CUR);
 
