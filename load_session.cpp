@@ -630,7 +630,7 @@ int UI_Mainwindow::read_session_file(const char *path_session)
       xml_go_up(xml_hdl);
     }
 
-    if(skip)  continue;
+    if(skip || (!newsignalcomp))  continue;
 
     remove_trailing_spaces(newsignalcomp->signallabel);
     newsignalcomp->signallabellen = strlen(newsignalcomp->signallabel);

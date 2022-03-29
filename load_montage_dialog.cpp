@@ -723,7 +723,7 @@ int UI_LoadMontagewindow::LoadButtonClicked()
       xml_go_up(xml_hdl);
     }
 
-    if(skip)  continue;
+    if(skip || (!newsignalcomp))  continue;
 
     remove_trailing_spaces(newsignalcomp->signallabel);
     newsignalcomp->signallabellen = strlen(newsignalcomp->signallabel);

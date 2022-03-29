@@ -2298,12 +2298,11 @@ void UI_Mainwindow::open_new_file()
       {
         if((path[i] == '/')||(path[i] == '\\'))
         {
+          recent_opendir[i] = 0;
           break;
         }
       }
     }
-
-    recent_opendir[i] = 0;
 
     EDFfileCheck EDFfilechecker;
 
@@ -4840,7 +4839,7 @@ struct signalcompblock * UI_Mainwindow::create_signalcomp_copy(struct signalcomp
     if(newsignalcomp->spike_filter == NULL)
     {
       QMessageBox::critical(this, "Error", "malloc() error");
-      free(signalcomp);
+      free(newsignalcomp);
       return NULL;
     }
   }
@@ -4851,7 +4850,7 @@ struct signalcompblock * UI_Mainwindow::create_signalcomp_copy(struct signalcomp
     if(newsignalcomp->plif_ecg_filter == NULL)
     {
       QMessageBox::critical(this, "Error", "malloc() error");
-      free(signalcomp);
+      free(newsignalcomp);
       return NULL;
     }
   }
@@ -4864,7 +4863,7 @@ struct signalcompblock * UI_Mainwindow::create_signalcomp_copy(struct signalcomp
     if(newsignalcomp->filter[i] == NULL)
     {
       QMessageBox::critical(this, "Error", "malloc() error");
-      free(signalcomp);
+      free(newsignalcomp);
       return NULL;
     }
   }
@@ -4875,7 +4874,7 @@ struct signalcompblock * UI_Mainwindow::create_signalcomp_copy(struct signalcomp
     if(newsignalcomp->ravg_filter[i] == NULL)
     {
       QMessageBox::critical(this, "Error", "malloc() error");
-      free(signalcomp);
+      free(newsignalcomp);
       return NULL;
     }
   }
@@ -4886,7 +4885,7 @@ struct signalcompblock * UI_Mainwindow::create_signalcomp_copy(struct signalcomp
     if(newsignalcomp->fir_filter == NULL)
     {
       QMessageBox::critical(this, "Error", "malloc() error");
-      free(signalcomp);
+      free(newsignalcomp);
       return NULL;
     }
   }
@@ -4983,7 +4982,7 @@ struct signalcompblock * UI_Mainwindow::create_signalcomp_copy(struct signalcomp
     {
       QMessageBox::critical(this, "Error", err);
       free(err);
-      free(signalcomp);
+      free(newsignalcomp);
       return NULL;
     }
 

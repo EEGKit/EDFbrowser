@@ -58,6 +58,7 @@ struct edfhdrblock * EDFfileCheck::check_edf_file(FILE *inputfile, char *txt_str
   if(edfhdr==NULL)
   {
     snprintf(txt_string, txt_len, "Memory allocation error. (edfhdr)");
+    free(edf_hdr);
     return NULL;
   }
 
