@@ -404,7 +404,7 @@ void trim_spaces(char *str)
 }
 
 
-
+/* removes trailing zero's from one or more occurrences of a decimal fraction in a string */
 void remove_trailing_zeros(char *str)
 {
   int i, j,

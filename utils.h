@@ -45,6 +45,7 @@ extern "C" {
 void remove_trailing_spaces(char *);
 void remove_leading_spaces(char *);
 void trim_spaces(char *);
+/* removes trailing zero's from one or more occurrences of a decimal fraction in a string */
 void remove_trailing_zeros(char *);
 void convert_trailing_zeros_to_spaces(char *);
 
