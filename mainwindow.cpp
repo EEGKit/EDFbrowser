@@ -2090,7 +2090,7 @@ void UI_Mainwindow::open_new_file()
 {
   FILE *newfile=NULL;
 
-  int i, len, present, position, button_nr=0;
+  int i, len, present, position, button_nr=0, err=0;
 
   char str[2048]="";
 
@@ -2248,12 +2248,26 @@ void UI_Mainwindow::open_new_file()
   {
     len = strlen(path);
 
-    if((strcmp(path + (len - 4), ".edf"))
-       &&(strcmp(path + (len - 4), ".EDF"))
-       &&(strcmp(path + (len - 4), ".rec"))
-       &&(strcmp(path + (len - 4), ".REC"))
-       &&(strcmp(path + (len - 4), ".bdf"))
-       &&(strcmp(path + (len - 4), ".BDF")))
+    err = 0;
+
+    if(len < 4)
+    {
+      err = 1;
+    }
+    else
+    {
+      if((strcmp(path + (len - 4), ".edf"))
+         &&(strcmp(path + (len - 4), ".EDF"))
+         &&(strcmp(path + (len - 4), ".rec"))
+         &&(strcmp(path + (len - 4), ".REC"))
+         &&(strcmp(path + (len - 4), ".bdf"))
+         &&(strcmp(path + (len - 4), ".BDF")))
+      {
+        err = 1;
+      }
+    }
+
+    if(err)
     {
       if(rc_file_open_requested)
       {
@@ -2261,7 +2275,7 @@ void UI_Mainwindow::open_new_file()
       }
       else
       {
-        snprintf(str, 2048, "File has an unknown extension:  \"%s\"", path + (len - 4));
+        snprintf(str, 2048, "File has an unknown extension:\n \n%s", path);
 
         QMessageBox::critical(this, "Error", QString::fromLocal8Bit(str));
       }
@@ -2280,7 +2294,7 @@ void UI_Mainwindow::open_new_file()
       }
       else
       {
-        snprintf(str, 2048, "Cannot open file for reading:\n\"%s\"\n"
+        snprintf(str, 2048, "Cannot open file for reading:\n \n%s\n \n"
                             "Check if you have the right permissions.", path);
         QMessageBox::critical(this, "Error", QString::fromLocal8Bit(str));
       }
@@ -2290,19 +2304,7 @@ void UI_Mainwindow::open_new_file()
       return;
     }
 
-    strlcpy(recent_opendir, path, MAX_PATH_LENGTH);
-
-    if(len)
-    {
-      for(i=len-1; i>=0; i--)
-      {
-        if((path[i] == '/')||(path[i] == '\\'))
-        {
-          recent_opendir[i] = 0;
-          break;
-        }
-      }
-    }
+    get_directory_from_path(recent_opendir, path, MAX_PATH_LENGTH);
 
     EDFfileCheck EDFfilechecker;
 
