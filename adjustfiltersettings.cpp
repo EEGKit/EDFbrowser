@@ -276,16 +276,14 @@ void AdjustFilterSettings::loadFilterSettings(void)
 
     snprintf(txtbuf + strlen(txtbuf), 2048, " %f", frequency1);
 
-    remove_trailing_zeros(txtbuf);
-
     if((type == FILTERTYPE_BANDPASS) || (type == FILTERTYPE_BANDSTOP))
     {
       snprintf(txtbuf + strlen(txtbuf), 2048, " - %f", frequency2);
-
-      remove_trailing_zeros(txtbuf);
     }
 
     strlcat(txtbuf, " Hz", 2048);
+
+    remove_trailing_zeros(txtbuf);
 
     filterbox->addItem(txtbuf);
 

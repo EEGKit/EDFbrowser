@@ -558,20 +558,16 @@ void UI_MANSCAN2EDFwindow::SelectFileButton()
 
     if(segment_properties->hpf > 0.0001)
     {
-      snprintf(scratchpad + strlen(scratchpad), MAX_PATH_LENGTH - strlen(scratchpad), "HP:%f", segment_properties->hpf);
+      snprintf(scratchpad + strlen(scratchpad), MAX_PATH_LENGTH - strlen(scratchpad), "HP:%fHz ", segment_properties->hpf);
 
       remove_trailing_zeros(scratchpad);
-
-      strlcat(scratchpad, "Hz ", MAX_PATH_LENGTH);
     }
 
     if(segment_properties->lpf > 0.0001)
     {
-      snprintf(scratchpad + strlen(scratchpad), MAX_PATH_LENGTH - strlen(scratchpad), "LP:%f", segment_properties->lpf);
+      snprintf(scratchpad + strlen(scratchpad), MAX_PATH_LENGTH - strlen(scratchpad), "LP:%fHz ", segment_properties->lpf);
 
       remove_trailing_zeros(scratchpad);
-
-      strlcat(scratchpad, "Hz ", MAX_PATH_LENGTH);
     }
 
     for(i=0; i<chns; i++)

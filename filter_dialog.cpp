@@ -163,10 +163,9 @@ UI_FilterDialog::UI_FilterDialog(QWidget *w_parent)
       strlcpy(str, mainwindow->signalcomp[i]->signallabel, 256);
     }
 
-    snprintf(str + strlen(str), 256 - strlen(str), "  (%f",
+    snprintf(str + strlen(str), 256 - strlen(str), "  (%f Hz)",
              mainwindow->signalcomp[i]->edfhdr->edfparam[mainwindow->signalcomp[i]->edfsignal[0]].sf_f);
     remove_trailing_zeros(str);
-    strlcat(str, "Hz)", 256);
     item->setText(str);
     item->setData(Qt::UserRole, QVariant(i));
     list->addItem(item);
