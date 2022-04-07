@@ -92,7 +92,7 @@ UI_cdsa_window::UI_cdsa_window(QWidget *w_parent, struct signalcompblock *signal
   blocklen_spinbox->setMinimum(1);
   blocklen_spinbox->setMaximum(10);
   blocklen_spinbox->setValue(mainwindow->cdsa_blocklen);
-  blocklen_spinbox->setToolTip("FFT block size in seconds, FFT resolution in Herz is the inverse of this value");
+  blocklen_spinbox->setToolTip("FFT block size in seconds, FFT resolution in Hertz is the inverse of this value");
 
   overlap_combobox = new QComboBox;
   overlap_combobox->addItem(" 0 %");
@@ -216,7 +216,7 @@ UI_cdsa_window::UI_cdsa_window(QWidget *w_parent, struct signalcompblock *signal
   flayout->addRow("Segment length", segmentlen_spinbox);
   flayout->labelForField(segmentlen_spinbox)->setToolTip("Time resolution of the CDSA");
   flayout->addRow("Block length", blocklen_spinbox);
-  flayout->labelForField(blocklen_spinbox)->setToolTip("FFT block size in seconds, FFT resolution in Herz is the inverse of this value");
+  flayout->labelForField(blocklen_spinbox)->setToolTip("FFT block size in seconds, FFT resolution in Hertz is the inverse of this value");
   flayout->addRow("Overlap", overlap_combobox);
   flayout->labelForField(overlap_combobox)->setToolTip("Percentage of an FFT block that will overlap the next FFT block");
   flayout->addRow("Window", windowfunc_combobox);
