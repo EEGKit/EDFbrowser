@@ -947,7 +947,7 @@ int UI_NK2EDFwindow::convert_nk2edf(FILE *inputfile, FILE *outputfile, FILE *pnt
     }
     scratchpad[4] = 0;
     temp = atoi(scratchpad);
-    if((temp<1970)||(temp>9999))  error = 1;
+    if((temp<1985)||(temp>=2085))  error = 1;
     for(i=0; i<4; i++)
     {
       if((scratchpad[i]<'0')||(scratchpad[i]>'9'))
