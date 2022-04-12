@@ -908,6 +908,8 @@ int UI_NK2EDFwindow::convert_nk2edf(FILE *inputfile, FILE *outputfile, FILE *pnt
 
     for(i=0; i<80-p; i++)  fputc(' ', outputfile);
 
+    fseeko(outputfile, 0x0058, SEEK_SET);
+
     if(fwrite("Startdate ", 10, 1, outputfile)!=1)
     {
       return 3;
@@ -1175,6 +1177,7 @@ int UI_NK2EDFwindow::convert_nk2edf(FILE *inputfile, FILE *outputfile, FILE *pnt
     }
     for(i=0; i<p; i++)  fputc(' ', outputfile);
   }
+  fseeko(outputfile, 0x00a8, SEEK_SET);
 
   fseeko(inputfile, (long long)(0x0016 + offset), SEEK_SET);
   temp = fgetc(inputfile);
