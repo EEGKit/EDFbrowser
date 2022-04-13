@@ -33,6 +33,7 @@
 #include <string.h>
 
 #include "global.h"
+#include "utc_date_time.h"
 
 
 #ifdef __cplusplus
@@ -42,6 +43,8 @@ extern "C" {
 int edfplus_annotation_get_tal_timestamp_digit_cnt(struct edfhdrblock *);
 int edfplus_annotation_get_tal_timestamp_decimal_cnt(struct edfhdrblock *);
 int strip_types_from_label(char *);
+int utc_to_edf_startdate(long long, char *);
+int to_edf_startdate(int, int, int, char *);
 
 #ifdef __cplusplus
 } /* extern "C" */

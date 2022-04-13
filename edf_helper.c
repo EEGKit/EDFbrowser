@@ -28,7 +28,11 @@
 
 #include "edf_helper.h"
 
-static const char edf_label_types[7][32]=
+
+#define EDF_LABEL_TYPE_NUM  (7)
+
+
+static const char edf_label_types[EDF_LABEL_TYPE_NUM][32]=
 {
   "EEG             ",
   "ECG             ",
@@ -123,14 +127,14 @@ int strip_types_from_label(char *label)
     return 0;
   }
 
-  for(type=0; type<7; type++)
+  for(type=0; type<EDF_LABEL_TYPE_NUM; type++)
   {
     if(!strncmp(label, edf_label_types[type], 4))
     {
       break;
     }
   }
-  if(type == 7)
+  if(type == EDF_LABEL_TYPE_NUM)
   {
     return 0;
   }
@@ -152,6 +156,73 @@ int strip_types_from_label(char *label)
 
   return (type + 1);
 }
+
+
+int utc_to_edf_startdate(long long utc_time, char *dest)
+{
+  struct date_time_struct dt;
+
+  utc_to_date_time(utc_time, &dt);
+
+  if((dt.year >= 1985) && (dt.year <= 2084))
+  {
+    snprintf(dest, 12, "%02i-%.3s-%04i", dt.day, dt.month_str, dt.year);
+
+    return 0;
+  }
+  else
+  {
+    return -1;
+  }
+}
+
+
+int to_edf_startdate(int day, int month, int year, char *dest)
+{
+  char month_str[4]="";
+
+  if((year < 1985) || (year > 2084) ||
+     (month < 1)   || (month > 12)  ||
+     (day < 1)     || (day > 31))
+  {
+    return -1;
+  }
+
+  switch(month)
+  {
+    case  1 : strlcpy(month_str, "JAN", 4);
+              break;
+    case  2 : strlcpy(month_str, "FEB", 4);
+              break;
+    case  3 : strlcpy(month_str, "MAR", 4);
+              break;
+    case  4 : strlcpy(month_str, "APR", 4);
+              break;
+    case  5 : strlcpy(month_str, "MAY", 4);
+              break;
+    case  6 : strlcpy(month_str, "JUN", 4);
+              break;
+    case  7 : strlcpy(month_str, "JUL", 4);
+              break;
+    case  8 : strlcpy(month_str, "AUG", 4);
+              break;
+    case  9 : strlcpy(month_str, "SEP", 4);
+              break;
+    case 10 : strlcpy(month_str, "OCT", 4);
+              break;
+    case 11 : strlcpy(month_str, "NOV", 4);
+              break;
+    case 12 : strlcpy(month_str, "DEC", 4);
+              break;
+    default : strlcpy(month_str, "ERR", 4);
+              break;
+  }
+
+  snprintf(dest, 12, "%02i-%.3s-%04i", day, month_str, year);
+
+  return 0;
+}
+
 
 
 
