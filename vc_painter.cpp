@@ -175,7 +175,10 @@ void ViewCurve::drawCurve_stage_2(QPainter *painter, int w_width, int w_height, 
                   if(strlen(chp) > 2)
                   {
                     chp += 2;
-                    strip_types_from_label(chp);
+                    if(mainwindow->strip_label_types)
+                    {
+                      strip_types_from_label(chp);
+                    }
                     trim_spaces(chp);
 
                     for(k=0; k<signalcomps; k++)
@@ -774,7 +777,10 @@ void ViewCurve::drawCurve_stage_2(QPainter *painter, int w_width, int w_height, 
                 if(strlen(chp) > 2)
                 {
                   chp += 2;
-                  strip_types_from_label(chp);
+                  if(mainwindow->strip_label_types)
+                  {
+                    strip_types_from_label(chp);
+                  }
                   trim_spaces(chp);
 
                   for(k=0; k<signalcomps; k++)

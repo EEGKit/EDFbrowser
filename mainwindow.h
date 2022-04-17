@@ -254,6 +254,7 @@ public:
       dig_min_max_overflow_warning_showed,
       options_dialog_idx,
       edf_debug,
+      strip_label_types,
       default_amplitude_physmax_div,
       default_amplitude_use_physmax_div,
       rc_host_server_port,

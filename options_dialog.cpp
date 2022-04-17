@@ -1155,6 +1155,27 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   flayout4_1->labelForField(hlayout_tmp)->setToolTip("Show the file offset of objects like header fields, annotations, etc.");
   checkbox4_11->setToolTip("Show the file offset of objects like header fields, annotations, etc.");
 
+  checkbox4_15 = new QCheckBox;
+  checkbox4_15->setTristate(false);
+  if(mainwindow->strip_label_types)
+  {
+    checkbox4_15->setCheckState(Qt::Checked);
+  }
+  else
+  {
+    checkbox4_15->setCheckState(Qt::Unchecked);
+  }
+  hlayout_tmp = new QHBoxLayout;
+  hlayout_tmp->setAlignment(Qt::AlignCenter);
+  hlayout_tmp->addWidget(checkbox4_15);
+  hlayout_tmp->addStretch(1000);
+  flayout4_1->addRow("Strip label types", hlayout_tmp);
+  QObject::connect(checkbox4_15, SIGNAL(stateChanged(int)), this, SLOT(checkbox4_15Clicked(int)));
+  flayout4_1->labelForField(hlayout_tmp)->setToolTip("If enabled, the type prefix of a signal will be stripped from the label e.g. EEG FP1 becomes FP1, ECG V2 becomes V2\n"
+                                                     "Remove and re-load the signals in order to take the changes into effect.");
+  checkbox4_15->setToolTip("If enabled, the type prefix of a signal will be stripped from the label e.g. EEG FP1 becomes FP1, ECG V2 becomes V2\n"
+                           "Remove and re-load the signals in order to take the changes into effect.");
+
   QFormLayout *flayout4_2 = new QFormLayout;
   flayout4_2->setSpacing(20);
 
@@ -2049,6 +2070,19 @@ void UI_OptionsDialog::checkbox4_11Clicked(int state)
   else
   {
     mainwindow->edf_debug = 0;
+  }
+}
+
+
+void UI_OptionsDialog::checkbox4_15Clicked(int state)
+{
+  if(state==Qt::Checked)
+  {
+    mainwindow->strip_label_types = 1;
+  }
+  else
+  {
+    mainwindow->strip_label_types = 0;
   }
 }
 

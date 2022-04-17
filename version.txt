@@ -1,4 +1,11 @@
 
+ version 1.93      to be defined
+ --------------
+
+ - Made the label type stripping optional, it can be enabled or disabled in Settings -> Options -> Other
+   Default is enabled e.g. EEG FP1 becomes FP1, ECG V2 becomes V2.
+
+
  version 1.92      March 27, 2022
  --------------
 

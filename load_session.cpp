@@ -619,7 +619,10 @@ int UI_Mainwindow::read_session_file(const char *path_session)
         }
       }
       strlcpy(str, newsignalcomp->edfhdr->edfparam[newsignalcomp->edfsignal[signals_read]].label, 128);
-      newsignalcomp->signallabel_type_stripped = strip_types_from_label(str);
+      if(strip_label_types)
+      {
+        newsignalcomp->signallabel_type_stripped = strip_types_from_label(str);
+      }
       strlcat(newsignalcomp->signallabel, str, 512);
       remove_trailing_spaces(newsignalcomp->signallabel);
       strlcat(newsignalcomp->signallabel, " ", 512);

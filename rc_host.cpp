@@ -713,7 +713,10 @@ int UI_Mainwindow::process_rc_cmd_signal(const char *cmd_args, int *cmds_parsed_
 
       if(!files_open)  return 205;
       if(signalcomps >= MAXSIGNALS)  return 205;
-      strip_types_from_label(str1);
+      if(strip_label_types)
+      {
+        strip_types_from_label(str1);
+      }
       trim_spaces(str1);
 
       if(is_integer_number(ptr))
@@ -737,7 +740,10 @@ int UI_Mainwindow::process_rc_cmd_signal(const char *cmd_args, int *cmds_parsed_
       {
         if(edfheaderlist[file_num]->edfparam[i].annotation)  continue;
         strlcpy(str2, edfheaderlist[file_num]->edfparam[i].label, 1024);
-        strip_types_from_label(str2);
+        if(strip_label_types)
+        {
+          strip_types_from_label(str2);
+        }
         trim_spaces(str2);
         if(!strcmp(str2, str1))
         {
@@ -773,8 +779,11 @@ int UI_Mainwindow::process_rc_cmd_signal(const char *cmd_args, int *cmds_parsed_
           newsignalcomp->sensitivity = newsignalcomp->edfhdr->edfparam[i].bitvalue / ((double)newsignalcomp->voltpercm * y_pixelsizefactor);
 
           strlcpy(newsignalcomp->signallabel, newsignalcomp->edfhdr->edfparam[i].label, 256);
-          newsignalcomp->signallabel_type_stripped = strip_types_from_label(newsignalcomp->signallabel);
-          remove_trailing_spaces(newsignalcomp->signallabel);
+          if(strip_label_types)
+          {
+            newsignalcomp->signallabel_type_stripped = strip_types_from_label(newsignalcomp->signallabel);
+          }
+          trim_spaces(newsignalcomp->signallabel);
 
           newsignalcomp->file_duration = newsignalcomp->edfhdr->long_data_record_duration * newsignalcomp->edfhdr->datarecords;
 

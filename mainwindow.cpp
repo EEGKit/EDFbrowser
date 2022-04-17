@@ -5332,7 +5332,10 @@ int UI_Mainwindow::get_signalcomp_number(const char *label)
        str2[512]="";
 
   strlcpy(str1, label, 512);
-  strip_types_from_label(str1);
+  if(strip_label_types)
+  {
+    strip_types_from_label(str1);
+  }
   trim_spaces(str1);
 
   for(i=0; i<signalcomps; i++)

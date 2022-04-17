@@ -359,9 +359,12 @@ void UI_Signalswindow::DisplayCompButtonClicked()
           }
         }
         strlcpy(str2, newsignalcomp->edfhdr->edfparam[j].label, 128);
-        newsignalcomp->signallabel_type_stripped = strip_types_from_label(str2);
+        if(mainwindow->strip_label_types)
+        {
+          newsignalcomp->signallabel_type_stripped = strip_types_from_label(str2);
+        }
         strlcat(newsignalcomp->signallabel, str2, 512);
-        remove_trailing_spaces(newsignalcomp->signallabel);
+        trim_spaces(newsignalcomp->signallabel);
         strlcat(newsignalcomp->signallabel, " ", 512);
 
         if(mainwindow->default_amplitude_use_physmax_div)
@@ -480,8 +483,11 @@ void UI_Signalswindow::DisplayButtonClicked()
     newsignalcomp->sensitivity = newsignalcomp->edfhdr->edfparam[s].bitvalue / ((double)newsignalcomp->voltpercm * mainwindow->y_pixelsizefactor);
 
     strlcpy(newsignalcomp->signallabel, newsignalcomp->edfhdr->edfparam[s].label, 256);
-    newsignalcomp->signallabel_type_stripped = strip_types_from_label(newsignalcomp->signallabel);
-    remove_trailing_spaces(newsignalcomp->signallabel);
+    if(mainwindow->strip_label_types)
+    {
+      newsignalcomp->signallabel_type_stripped = strip_types_from_label(newsignalcomp->signallabel);
+    }
+    trim_spaces(newsignalcomp->signallabel);
 
     newsignalcomp->file_duration = newsignalcomp->edfhdr->long_data_record_duration * newsignalcomp->edfhdr->datarecords;
 

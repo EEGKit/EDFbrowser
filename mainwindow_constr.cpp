@@ -161,6 +161,8 @@ UI_Mainwindow::UI_Mainwindow()
 
   edf_debug = 0;
 
+  strip_label_types = 1;
+
   window_width_sav_rest = 0;
   window_height_sav_rest = 0;
 
