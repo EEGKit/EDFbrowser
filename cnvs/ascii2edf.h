@@ -41,8 +41,8 @@
 #include "mainwindow.h"
 
 
-#define ASCII_MAX_EDF_SIGNALS   (512)
-#define ASCII_MAX_LINE_LEN     (2048)
+#define ASCII_MAX_EDF_SIGNALS     (640)
+#define ASCII_MAX_LINE_LEN       (4096)
 
 
 class UI_Mainwindow;

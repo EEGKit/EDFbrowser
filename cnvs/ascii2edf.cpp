@@ -300,16 +300,16 @@ void UI_ASCII2EDFapp::gobuttonpressed()
       edf_signal,
       len;
 
-  char path[MAX_PATH_LENGTH],
-       txt_string[ASCII_MAX_LINE_LEN],
-       str[256],
-       line[ASCII_MAX_LINE_LEN],
-       *buf,
-       scratchpad[128],
-       outputfilename[MAX_PATH_LENGTH];
+  char path[MAX_PATH_LENGTH]="",
+       txt_string[ASCII_MAX_LINE_LEN]="",
+       str[256]="",
+       line[ASCII_MAX_LINE_LEN]="",
+       *buf=NULL,
+       scratchpad[128]="",
+       outputfilename[MAX_PATH_LENGTH]="";
 
-  FILE *inputfile,
-       *outputfile;
+  FILE *inputfile=NULL,
+       *outputfile=NULL;
 
 
 
@@ -450,7 +450,7 @@ void UI_ASCII2EDFapp::gobuttonpressed()
     }
   }
 
-  if(i>ASCII_MAX_LINE_LEN)
+  if(i >= (ASCII_MAX_LINE_LEN - 2))
   {
     QMessageBox messagewindow(QMessageBox::Critical, "Error", "Too many characters in a line.");
     messagewindow.exec();
