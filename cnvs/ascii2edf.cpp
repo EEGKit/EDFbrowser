@@ -72,11 +72,11 @@ UI_ASCII2EDFapp::UI_ASCII2EDFapp(QWidget *w_parent, char *recent_dir, char *save
   SeparatorLineEdit->setText("tab");
 
   NumcolumnsSpinbox = new QSpinBox;
-  NumcolumnsSpinbox->setRange(1,256);
+  NumcolumnsSpinbox->setRange(1,MAXSIGNALS);
   NumcolumnsSpinbox->setValue(1);
 
   DatastartSpinbox = new QSpinBox;
-  DatastartSpinbox->setRange(1,100);
+  DatastartSpinbox->setRange(1,4096);
   DatastartSpinbox->setValue(1);
 
   SamplefreqSpinbox = new QDoubleSpinBox;
@@ -98,7 +98,7 @@ UI_ASCII2EDFapp::UI_ASCII2EDFapp(QWidget *w_parent, char *recent_dir, char *save
   autoPhysicalMaximumCheckbox = new QCheckBox;
   autoPhysicalMaximumCheckbox->setTristate(false);
   autoPhysicalMaximumCheckbox->setCheckState(Qt::Unchecked);
-  autoPhysicalMaximumCheckbox->setToolTip("For EEG and ECG, leave this setting unchecked and use 3000uV as physical maximum for EEG and 6000uV as physicalmaximum for ECG");
+  autoPhysicalMaximumCheckbox->setToolTip("For EEG and ECG, leave this setting unchecked and use 3000uV as physical maximum for EEG and 6000uV as physical maximum for ECG");
 
   SignalsTablewidget = new QTableWidget;
   SignalsTablewidget->setSelectionMode(QAbstractItemView::NoSelection);
@@ -108,10 +108,13 @@ UI_ASCII2EDFapp::UI_ASCII2EDFapp(QWidget *w_parent, char *recent_dir, char *save
   ((QCheckBox *)SignalsTablewidget->cellWidget(0, 0))->setCheckState(Qt::Checked);
   SignalsTablewidget->setCellWidget(0, 1, new QLineEdit);
   ((QLineEdit *)SignalsTablewidget->cellWidget(0, 1))->setMaxLength(16);
+  ((QLineEdit *)SignalsTablewidget->cellWidget(0, 1))->setText("chan. 1");
   SignalsTablewidget->setCellWidget(0, 2, new QLineEdit);
   ((QLineEdit *)SignalsTablewidget->cellWidget(0, 2))->setMaxLength(7);
+  ((QLineEdit *)SignalsTablewidget->cellWidget(0, 2))->setText("3000");
   SignalsTablewidget->setCellWidget(0, 3, new QLineEdit);
   ((QLineEdit *)SignalsTablewidget->cellWidget(0, 3))->setMaxLength(8);
+  ((QLineEdit *)SignalsTablewidget->cellWidget(0, 3))->setText("uV");
   SignalsTablewidget->setCellWidget(0, 4, new QDoubleSpinBox);
   ((QDoubleSpinBox *)SignalsTablewidget->cellWidget(0, 4))->setDecimals(4);
   ((QDoubleSpinBox *)SignalsTablewidget->cellWidget(0, 4))->setRange(0.0001,1000000.0);
@@ -132,7 +135,7 @@ UI_ASCII2EDFapp::UI_ASCII2EDFapp(QWidget *w_parent, char *recent_dir, char *save
   GoButton->setText("Start");
 
   CloseButton = new QPushButton;
-  CloseButton->setText("Cancel");
+  CloseButton->setText("Close");
 
   SaveButton = new QPushButton;
   SaveButton->setText("Save");
@@ -233,6 +236,8 @@ void UI_ASCII2EDFapp::numofcolumnschanged(int cnt)
 {
   int i;
 
+  char str[256]="";
+
   if(cnt>columns)
   {
     SignalsTablewidget->setRowCount(cnt);
@@ -243,8 +248,11 @@ void UI_ASCII2EDFapp::numofcolumnschanged(int cnt)
       ((QCheckBox *)SignalsTablewidget->cellWidget(i, 0))->setCheckState(Qt::Checked);
       SignalsTablewidget->setCellWidget(i, 1, new QLineEdit);
       ((QLineEdit *)SignalsTablewidget->cellWidget(i, 1))->setMaxLength(16);
+      snprintf(str, 256, "chan. %i", i + 1);
+      ((QLineEdit *)SignalsTablewidget->cellWidget(i, 1))->setText(str);
       SignalsTablewidget->setCellWidget(i, 2, new QLineEdit);
       ((QLineEdit *)SignalsTablewidget->cellWidget(i, 2))->setMaxLength(7);
+      ((QLineEdit *)SignalsTablewidget->cellWidget(i, 2))->setText("3000");
       if(autoPhysicalMaximum)
       {
         ((QLineEdit *)SignalsTablewidget->cellWidget(i, 2))->setEnabled(false);
@@ -255,6 +263,7 @@ void UI_ASCII2EDFapp::numofcolumnschanged(int cnt)
       }
       SignalsTablewidget->setCellWidget(i, 3, new QLineEdit);
       ((QLineEdit *)SignalsTablewidget->cellWidget(i, 3))->setMaxLength(8);
+      ((QLineEdit *)SignalsTablewidget->cellWidget(i, 3))->setText("uV");
       SignalsTablewidget->setCellWidget(i, 4, new QDoubleSpinBox);
       ((QDoubleSpinBox *)SignalsTablewidget->cellWidget(i, 4))->setDecimals(4);
       ((QDoubleSpinBox *)SignalsTablewidget->cellWidget(i, 4))->setRange(0.0001,1000000.0);
@@ -467,7 +476,7 @@ void UI_ASCII2EDFapp::gobuttonpressed()
 
     for(j=0; j<10; j++)  qApp->processEvents();
 
-    for(i=0; i<ASCII_MAX_EDF_SIGNALS; i++)
+    for(i=0; i<MAXSIGNALS; i++)
     {
       physmax[i] = 0.00001;
     }

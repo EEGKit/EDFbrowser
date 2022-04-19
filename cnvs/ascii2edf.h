@@ -41,8 +41,7 @@
 #include "mainwindow.h"
 
 
-#define ASCII_MAX_EDF_SIGNALS     (640)
-#define ASCII_MAX_LINE_LEN       (4096)
+#define ASCII_MAX_LINE_LEN       (16384)
 
 
 class UI_Mainwindow;
@@ -95,15 +94,15 @@ char separator,
 int edfsignals,
     startline,
     columns,
-    column_enabled[ASCII_MAX_EDF_SIGNALS],
+    column_enabled[MAXSIGNALS],
     autoPhysicalMaximum,
     edf_format;
 
 double samplefrequency,
        datrecduration,
-       sensitivity[ASCII_MAX_EDF_SIGNALS],
-       value[ASCII_MAX_EDF_SIGNALS],
-       physmax[ASCII_MAX_EDF_SIGNALS];
+       sensitivity[MAXSIGNALS],
+       value[MAXSIGNALS],
+       physmax[MAXSIGNALS];
 
 
 int check_input(void);
