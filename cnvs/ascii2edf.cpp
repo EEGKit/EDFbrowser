@@ -1394,7 +1394,7 @@ void UI_ASCII2EDFapp::loadbuttonpressed()
     return;
   }
   temp = atoi(result);
-  if((temp<1)||(temp>256))
+  if((temp<1)||(temp>MAXSIGNALS))
   {
     QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this template.");
     messagewindow.exec();
