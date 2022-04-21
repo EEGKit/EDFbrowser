@@ -85,7 +85,10 @@ QPushButton   *GoButton,
               *CloseButton,
               *SaveButton,
               *LoadButton,
-              *helpButton;
+              *helpButton,
+              *setAllButton,
+              *setAllCheckedButton,
+              *setAllUncheckedButton;
 
 char separator,
      *recent_opendir,
@@ -114,6 +117,9 @@ void gobuttonpressed();
 void savebuttonpressed();
 void loadbuttonpressed();
 void helpbuttonpressed();
+void setallbuttonpressed();
+void setallcheckedbuttonpressed();
+void setalluncheckedbuttonpressed();
 void autoPhysicalMaximumCheckboxChanged(int);
 };
 

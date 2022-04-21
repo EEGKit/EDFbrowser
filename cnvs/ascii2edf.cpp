@@ -148,6 +148,18 @@ UI_ASCII2EDFapp::UI_ASCII2EDFapp(QWidget *w_parent, char *recent_dir, char *save
   helpButton = new QPushButton;
   helpButton->setText("Help");
 
+  setAllButton = new QPushButton;
+  setAllButton->setText("Copy row 1 to all other rows");
+  setAllButton->setToolTip("Set parameters for all rows equal to row 1");
+
+  setAllCheckedButton = new QPushButton;
+  setAllCheckedButton->setText("Set all checked");
+  setAllCheckedButton->setToolTip("Set all rows checked");
+
+  setAllUncheckedButton = new QPushButton;
+  setAllUncheckedButton->setText("Set all unchecked");
+  setAllUncheckedButton->setToolTip("Set all rows unchecked");
+
   QFormLayout *flayout1 = new QFormLayout;
   flayout1->addRow("Column separator", SeparatorLineEdit);
   flayout1->addRow("Number of columns", NumcolumnsSpinbox);
@@ -177,6 +189,15 @@ UI_ASCII2EDFapp::UI_ASCII2EDFapp(QWidget *w_parent, char *recent_dir, char *save
   hlayout2->addStretch(300);
   hlayout2->addWidget(LoadButton);
 
+  QHBoxLayout *hlayout3 = new QHBoxLayout;
+  hlayout3->addStretch(100);
+  hlayout3->addWidget(setAllCheckedButton);
+  hlayout3->addStretch(100);
+  hlayout3->addWidget(setAllUncheckedButton);
+  hlayout3->addStretch(100);
+  hlayout3->addWidget(setAllButton);
+  hlayout3->addStretch(1000);
+
   QVBoxLayout *vlayout1 = new QVBoxLayout;
   vlayout1->addSpacing(10);
   vlayout1->addLayout(hlayout1);
@@ -184,6 +205,7 @@ UI_ASCII2EDFapp::UI_ASCII2EDFapp(QWidget *w_parent, char *recent_dir, char *save
   vlayout1->addLayout(flayout2);
   vlayout1->addSpacing(20);
   vlayout1->addWidget(SignalsTablewidget, 1000);
+  vlayout1->addLayout(hlayout3);
   vlayout1->addSpacing(30);
   vlayout1->addLayout(hlayout2);
 
@@ -199,6 +221,9 @@ UI_ASCII2EDFapp::UI_ASCII2EDFapp(QWidget *w_parent, char *recent_dir, char *save
   QObject::connect(SaveButton,                  SIGNAL(clicked()),         this,            SLOT(savebuttonpressed()));
   QObject::connect(LoadButton,                  SIGNAL(clicked()),         this,            SLOT(loadbuttonpressed()));
   QObject::connect(helpButton,                  SIGNAL(clicked()),         this,            SLOT(helpbuttonpressed()));
+  QObject::connect(setAllButton,                SIGNAL(clicked()),         this,            SLOT(setallbuttonpressed()));
+  QObject::connect(setAllCheckedButton,         SIGNAL(clicked()),         this,            SLOT(setallcheckedbuttonpressed()));
+  QObject::connect(setAllUncheckedButton,       SIGNAL(clicked()),         this,            SLOT(setalluncheckedbuttonpressed()));
   QObject::connect(autoPhysicalMaximumCheckbox, SIGNAL(stateChanged(int)), this,            SLOT(autoPhysicalMaximumCheckboxChanged(int)));
 
   ascii2edfDialog->exec();
@@ -1847,6 +1872,63 @@ int UI_ASCII2EDFapp::check_input(void)
   }
 
   return 0;
+}
+
+
+void UI_ASCII2EDFapp::setallbuttonpressed()
+{
+  int i, rows;
+
+  double multiplier=1;
+
+  char phys_max[32]="",
+       phys_dim[32]="";
+
+  rows = SignalsTablewidget->rowCount();
+
+  if(rows < 2)  return;
+
+  strlcpy(phys_max, ((QLineEdit *)SignalsTablewidget->cellWidget(0, 2))->text().toLatin1().data(), 32);
+  strlcpy(phys_dim, ((QLineEdit *)SignalsTablewidget->cellWidget(0, 3))->text().toLatin1().data(), 32);
+
+  multiplier = ((QDoubleSpinBox *)SignalsTablewidget->cellWidget(0, 4))->value();
+
+  for(i=1; i<rows; i++)
+  {
+    ((QLineEdit *)SignalsTablewidget->cellWidget(i, 2))->setText(phys_max);
+    ((QLineEdit *)SignalsTablewidget->cellWidget(i, 3))->setText(phys_dim);
+    ((QDoubleSpinBox *)SignalsTablewidget->cellWidget(i, 4))->setValue(multiplier);
+  }
+}
+
+
+void UI_ASCII2EDFapp::setallcheckedbuttonpressed()
+{
+  int i, rows;
+
+  rows = SignalsTablewidget->rowCount();
+
+  if(rows < 1)  return;
+
+  for(i=0; i<rows; i++)
+  {
+    ((QCheckBox *)SignalsTablewidget->cellWidget(i, 0))->setCheckState(Qt::Checked);
+  }
+}
+
+
+void UI_ASCII2EDFapp::setalluncheckedbuttonpressed()
+{
+  int i, rows;
+
+  rows = SignalsTablewidget->rowCount();
+
+  if(rows < 1)  return;
+
+  for(i=0; i<rows; i++)
+  {
+    ((QCheckBox *)SignalsTablewidget->cellWidget(i, 0))->setCheckState(Qt::Unchecked);
+  }
 }
 
 
