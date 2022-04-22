@@ -262,6 +262,7 @@ public:
       rc_file_open_requested,
       rc_file_open_err,
       rc_load_mtg_err,
+      rc_load_session_err,
       rc_load_mtg_file_num,
       rc_err_queue_idx,
       rc_err_queue[RC_ERR_QUEUE_SZ],
@@ -456,6 +457,7 @@ private:
   char path[MAX_PATH_LENGTH],
        videopath[MAX_PATH_LENGTH],
        montagepath[MAX_PATH_LENGTH],
+       session_path[MAX_PATH_LENGTH],
        recent_file_path[MAX_RECENTFILES][MAX_PATH_LENGTH],
        option_str[MAX_PATH_LENGTH];
 
@@ -587,6 +589,7 @@ private:
   int parse_rc_command(const char *, char [CMD_MAX_SUB_CMDS][CMD_PARSE_STR_LEN], int *, char *, int);
   int process_rc_cmd_file(const char *, int *, int);
   int process_rc_cmd_montage(const char *, int *, int);
+  int process_rc_cmd_session(const char *, int *, int);
   int process_rc_cmd_signal(const char *, int *, int);
   int process_rc_cmd_timescale(const char *, int *, int);
   int process_rc_cmd_viewtime(const char *, int *, int);

@@ -138,8 +138,11 @@
 #define RC_CMD_SYSTEM       (27)
 #define RC_CMD_LOCKED       (28)
 #define RC_CMD_MODE         (29)
+#define RC_CMD_SESSION      (30)
+#define RC_CMD_PLAY         (31)
+#define RC_CMD_STOP         (32)
 
-#define RC_CMD_LIST_SZ      (30)
+#define RC_CMD_LIST_SZ      (33)
 #define RC_CMD_QUERY    (1 << 8)
 #define RC_ERR_QUEUE_SZ     (64)
 

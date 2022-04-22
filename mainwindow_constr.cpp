@@ -325,6 +325,8 @@ UI_Mainwindow::UI_Mainwindow()
 
   rc_load_mtg_err = 0;
 
+  rc_load_session_err = 0;
+
   rc_load_mtg_file_num = 0;
 
   rc_err_queue_idx = 0;
@@ -1212,6 +1214,7 @@ UI_Mainwindow::UI_Mainwindow()
   recent_video_opendir[0] = 0;
   recent_sessiondir[0] = 0;
   montagepath[0] = 0;
+  session_path[0] = 0;
   option_str[0] = 0;
 
   for(i=0; i<MAX_RECENTFILES; i++)

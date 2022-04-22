@@ -62,7 +62,10 @@ const char rc_cmd_key_lst[RC_CMD_LIST_SZ][32]=
   "REFERENCE",  /* 26 */
   "SYSTEM",     /* 27 */
   "LOCKED",     /* 28 */
-  "MODE"        /* 29 */
+  "MODE",       /* 29 */
+  "SESSION",    /* 30 */
+  "PLAY",       /* 31 */
+  "STOP"        /* 32 */
 };
 
 
@@ -280,7 +283,10 @@ void UI_Mainwindow::rc_host_sock_rxdata_handler()
               "*OPC?\n"
               "FILe:OPEn <path>\n"
               "FILe:CLOse:ALL\n"
+              "FILe:PLAy\n"
+              "FILe:STOp\n"
               "MONtage:LOAd <path>\n"
+              "SESsion:LOAd <path>\n"
               "SIGnal:ADD:LABel <label> <file number>\n"
               "SIGnal:AMPlitude:ALL <units>\n"
               "SIGnal:AMPlitude:LABel <label> <units>\n"
@@ -372,6 +378,16 @@ void UI_Mainwindow::rc_host_sock_rxdata_handler()
     if((cmds_parsed_key[0] & RC_CMD_MASK) == RC_CMD_MONTAGE)
     {
       err = process_rc_cmd_montage(cmd_args, cmds_parsed_key, n_sub_cmds);
+      if(err)
+      {
+        register_rc_err(err);
+      }
+      continue;
+    }
+
+    if((cmds_parsed_key[0] & RC_CMD_MASK) == RC_CMD_SESSION)
+    {
+      err = process_rc_cmd_session(cmd_args, cmds_parsed_key, n_sub_cmds);
       if(err)
       {
         register_rc_err(err);
@@ -625,6 +641,34 @@ int UI_Mainwindow::process_rc_cmd_file(const char *cmd_args, int *cmds_parsed_ke
         return 202;
       }
     }
+    else if(cmds_parsed_key[1] == RC_CMD_PLAY)
+      {
+        if(n_sub_cmds == 2)
+        {
+          if((!files_open) || live_stream_active)  return 205;
+
+          playback_file();
+          return 0;
+        }
+        else
+        {
+          return 202;
+        }
+      }
+      else if(cmds_parsed_key[1] == RC_CMD_STOP)
+        {
+          if(n_sub_cmds == 2)
+          {
+            if((!files_open) || live_stream_active)  return 205;
+
+            stop_playback();
+            return 0;
+          }
+          else
+          {
+            return 202;
+          }
+        }
 
   return 202;
 }
@@ -659,7 +703,7 @@ int UI_Mainwindow::process_rc_cmd_montage(const char *cmd_args, int *cmds_parsed
     }
 
     file_num = atoi(ptr);
-    if((file_num < 1) || (file_num > 32))
+    if((file_num < 1) || (file_num > MAXFILES))
     {
       return 208;
     }
@@ -676,6 +720,27 @@ int UI_Mainwindow::process_rc_cmd_montage(const char *cmd_args, int *cmds_parsed
     UI_LoadMontagewindow load_mtg(this, montagepath);
     montagepath[0] = 0;
     return rc_load_mtg_err;
+  }
+
+  return 202;
+}
+
+
+int UI_Mainwindow::process_rc_cmd_session(const char *cmd_args, int *cmds_parsed_key, int n_sub_cmds)
+{
+  rc_load_session_err = 0;
+
+  if(n_sub_cmds < 2)
+  {
+    return 202;
+  }
+
+  if((n_sub_cmds == 2) && (cmds_parsed_key[1] == RC_CMD_LOAD))
+  {
+    strlcpy(session_path, cmd_args, MAX_PATH_LENGTH);
+    load_session();
+    session_path[0] = 0;
+    return rc_load_session_err;
   }
 
   return 202;

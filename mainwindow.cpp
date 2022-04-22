@@ -390,7 +390,7 @@ void UI_Mainwindow::save_session()
     return;
   }
 
-  char session_path[MAX_PATH_LENGTH]="",
+  char session_path_tmp[MAX_PATH_LENGTH]="",
        path_relative[MAX_PATH_LENGTH]="";
 
   FILE *pro_file=NULL;
@@ -411,27 +411,27 @@ void UI_Mainwindow::save_session()
     return;
   }
 
-  strlcpy(session_path, recent_sessiondir, MAX_PATH_LENGTH);
-  strlcat(session_path, "/my_session.esf", MAX_PATH_LENGTH);
+  strlcpy(session_path_tmp, recent_sessiondir, MAX_PATH_LENGTH);
+  strlcat(session_path_tmp, "/my_session.esf", MAX_PATH_LENGTH);
 
-  strlcpy(session_path, QFileDialog::getSaveFileName(0, "Save session", QString::fromLocal8Bit(session_path), "Session files (*.esf *.ESF)").toLocal8Bit().data(), MAX_PATH_LENGTH);
+  strlcpy(session_path_tmp, QFileDialog::getSaveFileName(0, "Save session", QString::fromLocal8Bit(session_path_tmp), "Session files (*.esf *.ESF)").toLocal8Bit().data(), MAX_PATH_LENGTH);
 
-  if(!strcmp(session_path, ""))
+  if(!strcmp(session_path_tmp, ""))
   {
     return;
   }
 
-  if(strlen(session_path) > 4)
+  if(strlen(session_path_tmp) > 4)
   {
-    if(strcmp(session_path + strlen(session_path) - 4, ".esf"))
+    if(strcmp(session_path_tmp + strlen(session_path_tmp) - 4, ".esf"))
     {
-      strlcat(session_path, ".esf", MAX_PATH_LENGTH);
+      strlcat(session_path_tmp, ".esf", MAX_PATH_LENGTH);
     }
   }
 
-  get_directory_from_path(recent_sessiondir, session_path, MAX_PATH_LENGTH);
+  get_directory_from_path(recent_sessiondir, session_path_tmp, MAX_PATH_LENGTH);
 
-  pro_file = fopeno(session_path, "wb");
+  pro_file = fopeno(session_path_tmp, "wb");
   if(pro_file==NULL)
   {
     QMessageBox::critical(this, "Error", "Cannot create session file for writing.");
@@ -448,9 +448,9 @@ void UI_Mainwindow::save_session()
     fprintf(pro_file, "    <file>");
     if(session_relative_paths)
     {
-      get_relative_path_from_absolut_paths(path_relative, session_path, edfheaderlist[i]->filename, MAX_PATH_LENGTH);
+      get_relative_path_from_absolut_paths(path_relative, session_path_tmp, edfheaderlist[i]->filename, MAX_PATH_LENGTH);
       xml_fwrite_encode_entity(pro_file, path_relative);
-//      printf("src1: ->%s<-\nsrc2: ->%s<-\ndest: ->%s<-\n", session_path, edfheaderlist[i]->filename, path_relative);  //FIXME
+//      printf("src1: ->%s<-\nsrc2: ->%s<-\ndest: ->%s<-\n", session_path_tmp, edfheaderlist[i]->filename, path_relative);  //FIXME
     }
     else
     {
@@ -486,9 +486,9 @@ void UI_Mainwindow::save_session()
 
     if(session_relative_paths)
     {
-      get_relative_path_from_absolut_paths(path_relative, session_path, signalcomp[i]->edfhdr->filename, MAX_PATH_LENGTH);
+      get_relative_path_from_absolut_paths(path_relative, session_path_tmp, signalcomp[i]->edfhdr->filename, MAX_PATH_LENGTH);
       xml_fwrite_encode_entity(pro_file, path_relative);
-//      printf("src1: ->%s<-\nsrc2: ->%s<-\ndest: ->%s<-\n", session_path, signalcomp[i]->edfhdr->filename, path_relative);  //FIXME
+//      printf("src1: ->%s<-\nsrc2: ->%s<-\ndest: ->%s<-\n", session_path_tmp, signalcomp[i]->edfhdr->filename, path_relative);  //FIXME
     }
     else
     {
@@ -672,7 +672,7 @@ void UI_Mainwindow::save_session()
     fprintf(pro_file, "    <file>");
     if(session_relative_paths)
     {
-      get_relative_path_from_absolut_paths(path_relative, session_path, videopath, MAX_PATH_LENGTH);
+      get_relative_path_from_absolut_paths(path_relative, session_path_tmp, videopath, MAX_PATH_LENGTH);
       xml_fwrite_encode_entity(pro_file, path_relative);
     }
     else
@@ -843,9 +843,9 @@ void UI_Mainwindow::save_session()
 
   for(i=0, present=0; i<MAX_RECENTFILES; i++)
   {
-//    printf("mainwindow.cpp: load_session(): recent_session_path[i]: ->%s<-\nsession_path: ->%s<-\n", recent_session_path[i], session_path);  //FIXME
+//    printf("mainwindow.cpp: load_session(): recent_session_path[i]: ->%s<-\nsession_path_tmp: ->%s<-\n", recent_session_path[i], session_path_tmp);  //FIXME
 
-    if(!strcmp(&recent_session_path[i][0], session_path))
+    if(!strcmp(&recent_session_path[i][0], session_path_tmp))
     {
       present = 1;
 
@@ -870,7 +870,7 @@ void UI_Mainwindow::save_session()
     }
   }
 
-  strlcpy(&recent_session_path[0][0], session_path, MAX_PATH_LENGTH);
+  strlcpy(&recent_session_path[0][0], session_path_tmp, MAX_PATH_LENGTH);
 
   recent_session_menu->clear();
 
@@ -895,32 +895,42 @@ void UI_Mainwindow::load_session()
 {
   int i, button_nr=0, err, present=0, position=0;
 
-  char session_path[MAX_PATH_LENGTH]="";
-
   QAction *act=NULL;
 
-  if(annotations_edited)
+  if(rc_cmd_in_progress)
   {
-    QMessageBox messagewindow;
-    messagewindow.setText("There are unsaved annotations,\n are you sure you want to close this file?");
-    messagewindow.setIcon(QMessageBox::Question);
-    messagewindow.setStandardButtons(QMessageBox::Cancel | QMessageBox::Discard);
-    messagewindow.setDefaultButton(QMessageBox::Cancel);
-    button_nr = messagewindow.exec();
+    if(!strlen(session_path))
+    {
+      return;
+    }
   }
-  else if(files_open)
+  else
+  {
+    session_path[0] = 0;
+
+    if(annotations_edited)
     {
       QMessageBox messagewindow;
-      messagewindow.setText("This will close all files, continue?");
+      messagewindow.setText("There are unsaved annotations,\n are you sure you want to close this file?");
       messagewindow.setIcon(QMessageBox::Question);
-      messagewindow.setStandardButtons(QMessageBox::Cancel | QMessageBox::Close);
+      messagewindow.setStandardButtons(QMessageBox::Cancel | QMessageBox::Discard);
       messagewindow.setDefaultButton(QMessageBox::Cancel);
       button_nr = messagewindow.exec();
     }
+    else if(files_open)
+      {
+        QMessageBox messagewindow;
+        messagewindow.setText("This will close all files, continue?");
+        messagewindow.setIcon(QMessageBox::Question);
+        messagewindow.setStandardButtons(QMessageBox::Cancel | QMessageBox::Close);
+        messagewindow.setDefaultButton(QMessageBox::Cancel);
+        button_nr = messagewindow.exec();
+      }
 
-  if(button_nr == QMessageBox::Cancel)
-  {
-    return;
+    if(button_nr == QMessageBox::Cancel)
+    {
+      return;
+    }
   }
 
   annotations_edited = 0;
@@ -931,11 +941,14 @@ void UI_Mainwindow::load_session()
 
   close_all_files();
 
-  strlcpy(session_path, QFileDialog::getOpenFileName(0, "Load session", QString::fromLocal8Bit(recent_sessiondir), "Session files (*.esf *.ESF)").toLocal8Bit().data(), MAX_PATH_LENGTH);
-
-  if(!strcmp(session_path, ""))
+  if(!rc_cmd_in_progress)
   {
-    return;
+    strlcpy(session_path, QFileDialog::getOpenFileName(0, "Load session", QString::fromLocal8Bit(recent_sessiondir), "Session files (*.esf *.ESF)").toLocal8Bit().data(), MAX_PATH_LENGTH);
+
+    if(!strcmp(session_path, ""))
+    {
+      return;
+    }
   }
 
   get_directory_from_path(recent_sessiondir, session_path, MAX_PATH_LENGTH);
@@ -4449,7 +4462,7 @@ void UI_Mainwindow::recent_session_action_func(QAction *action)
 {
   int i, button_nr=0, err, present=0, position=0, idx=-1;
 
-  char session_path[MAX_PATH_LENGTH]="";
+  char session_path_tmp[MAX_PATH_LENGTH]="";
 
   QAction *act=NULL;
 
@@ -4495,19 +4508,19 @@ void UI_Mainwindow::recent_session_action_func(QAction *action)
 
   close_all_files();
 
-  strlcpy(session_path, &recent_session_path[idx][0], MAX_PATH_LENGTH);
-  if(!strcmp(session_path, ""))
+  strlcpy(session_path_tmp, &recent_session_path[idx][0], MAX_PATH_LENGTH);
+  if(!strcmp(session_path_tmp, ""))
   {
     return;
   }
 
-  get_directory_from_path(recent_sessiondir, session_path, MAX_PATH_LENGTH);
+  get_directory_from_path(recent_sessiondir, session_path_tmp, MAX_PATH_LENGTH);
 
   for(i=0, present=0; i<MAX_RECENTFILES; i++)
   {
-//    printf("mainwindow.cpp: load_session(): recent_session_path[i]: ->%s<-\nsession_path: ->%s<-\n", recent_session_path[i], session_path);  //FIXME
+//    printf("mainwindow.cpp: load_session(): recent_session_path[i]: ->%s<-\nsession_path_tmp: ->%s<-\n", recent_session_path[i], session_path_tmp);  //FIXME
 
-    if(!strcmp(&recent_session_path[i][0], session_path))
+    if(!strcmp(&recent_session_path[i][0], session_path_tmp))
     {
       present = 1;
 
@@ -4532,7 +4545,7 @@ void UI_Mainwindow::recent_session_action_func(QAction *action)
     }
   }
 
-  strlcpy(&recent_session_path[0][0], session_path, MAX_PATH_LENGTH);
+  strlcpy(&recent_session_path[0][0], session_path_tmp, MAX_PATH_LENGTH);
 
   recent_session_menu->clear();
 
@@ -4551,7 +4564,7 @@ void UI_Mainwindow::recent_session_action_func(QAction *action)
   act->setData(QVariant(MAX_RECENTFILES));
   recent_session_menu->addAction(act);
 
-  err = read_session_file(session_path);
+  err = read_session_file(session_path_tmp);
 
   if(err)
   {

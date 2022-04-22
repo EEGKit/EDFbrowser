@@ -95,10 +95,17 @@ int UI_Mainwindow::read_session_file(const char *path_session)
   xml_hdl = xml_get_handle(path_session);
   if(xml_hdl==NULL)
   {
-    snprintf(scratchpad, 2048, "Can not open session file:\n%s", path_session);
-    QMessageBox messagewindow(QMessageBox::Critical, "Error", QString::fromLocal8Bit(scratchpad));
-    messagewindow.exec();
-    return -1;
+    if(rc_cmd_in_progress)
+    {
+      return 105;
+    }
+    else
+    {
+      snprintf(scratchpad, 2048, "Can not open session file:\n%s", path_session);
+      QMessageBox messagewindow(QMessageBox::Critical, "Error", QString::fromLocal8Bit(scratchpad));
+      messagewindow.exec();
+      return -1;
+    }
   }
 
   if(strcmp(xml_hdl->elementname[xml_hdl->level], PROGRAM_NAME "_session"))
@@ -258,8 +265,11 @@ int UI_Mainwindow::read_session_file(const char *path_session)
     newsignalcomp = (struct signalcompblock *)calloc(1, sizeof(struct signalcompblock));
     if(newsignalcomp==NULL)
     {
-      QMessageBox messagewindow(QMessageBox::Critical, "Error", "Internal error: Memory allocation error:\n\"new signal composition\"");
-      messagewindow.exec();
+      if(!rc_cmd_in_progress)
+      {
+        QMessageBox messagewindow(QMessageBox::Critical, "Error", "Internal error: Memory allocation error:\n\"new signal composition\"");
+        messagewindow.exec();
+      }
       return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
     }
 
@@ -746,9 +756,12 @@ int UI_Mainwindow::read_session_file(const char *path_session)
 
       if(err_ptr != NULL)
       {
-        snprintf(str2, 512, "%s\nFile: %s line: %i", err_ptr, __FILE__, __LINE__);
-        QMessageBox messagewindow(QMessageBox::Critical, "Error", str2);
-        messagewindow.exec();
+        if(!rc_cmd_in_progress)
+        {
+          snprintf(str2, 512, "%s\nFile: %s line: %i", err_ptr, __FILE__, __LINE__);
+          QMessageBox messagewindow(QMessageBox::Critical, "Error", str2);
+          messagewindow.exec();
+        }
         free(err_ptr);
         return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
       }
@@ -911,9 +924,12 @@ int UI_Mainwindow::read_session_file(const char *path_session)
 
       if(frequency >= newsignalcomp->edfhdr->edfparam[newsignalcomp->edfsignal[0]].sf_f / 2.0)
       {
-        snprintf(str2, 512, "There seems to be an error in this montage file.\nThe frequency of the filter(s) must be less than: samplerate / 2\nFile: %s line: %i", __FILE__, __LINE__);
-        QMessageBox messagewindow(QMessageBox::Critical, "Error", str2);
-        messagewindow.exec();
+        if(!rc_cmd_in_progress)
+        {
+          snprintf(str2, 512, "There seems to be an error in this montage file.\nThe frequency of the filter(s) must be less than: samplerate / 2\nFile: %s line: %i", __FILE__, __LINE__);
+          QMessageBox messagewindow(QMessageBox::Critical, "Error", str2);
+          messagewindow.exec();
+        }
         return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
       }
 
@@ -921,9 +937,12 @@ int UI_Mainwindow::read_session_file(const char *path_session)
       {
         if(frequency2 >= newsignalcomp->edfhdr->edfparam[newsignalcomp->edfsignal[0]].sf_f / 2.0)
         {
-          snprintf(str2, 512, "There seems to be an error in this montage file.\nThe frequency of the filter(s) must be less than: samplerate / 2\nFile: %s line: %i", __FILE__, __LINE__);
-          QMessageBox messagewindow(QMessageBox::Critical, "Error", str2);
-          messagewindow.exec();
+          if(!rc_cmd_in_progress)
+          {
+            snprintf(str2, 512, "There seems to be an error in this montage file.\nThe frequency of the filter(s) must be less than: samplerate / 2\nFile: %s line: %i", __FILE__, __LINE__);
+            QMessageBox messagewindow(QMessageBox::Critical, "Error", str2);
+            messagewindow.exec();
+          }
           return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
         }
       }
@@ -1052,8 +1071,11 @@ int UI_Mainwindow::read_session_file(const char *path_session)
 
       if(err_ptr != NULL)
       {
-        QMessageBox messagewindow(QMessageBox::Critical, "Error", err_ptr);
-        messagewindow.exec();
+        if(!rc_cmd_in_progress)
+        {
+          QMessageBox messagewindow(QMessageBox::Critical, "Error", err_ptr);
+          messagewindow.exec();
+        }
         free(err_ptr);
         return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
       }
@@ -1140,20 +1162,26 @@ int UI_Mainwindow::read_session_file(const char *path_session)
         newsignalcomp->plif_ecg_filter = plif_create_subtract_filter(sf, plif_powerlinefrequency, dthreshold);
         if(newsignalcomp->plif_ecg_filter == NULL)
         {
-          snprintf(str2, 512, "A memory allocation error occurred when creating a powerline interference removal filter.\n"
-                        "File: %s line: %i", __FILE__, __LINE__);
-          QMessageBox messagewindow(QMessageBox::Critical, "Error", str2);
-          messagewindow.exec();
+          if(!rc_cmd_in_progress)
+          {
+            snprintf(str2, 512, "A memory allocation error occurred when creating a powerline interference removal filter.\n"
+                          "File: %s line: %i", __FILE__, __LINE__);
+            QMessageBox messagewindow(QMessageBox::Critical, "Error", str2);
+            messagewindow.exec();
+          }
           return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
         }
 
         newsignalcomp->plif_ecg_filter_sav = plif_create_subtract_filter(sf, plif_powerlinefrequency, dthreshold);
         if(newsignalcomp->plif_ecg_filter_sav == NULL)
         {
-          snprintf(str2, 512, "A memory allocation error occurred when creating a powerline interference removal filter.\n"
-                        "File: %s line: %i", __FILE__, __LINE__);
-          QMessageBox messagewindow(QMessageBox::Critical, "Error", str2);
-          messagewindow.exec();
+          if(!rc_cmd_in_progress)
+          {
+            snprintf(str2, 512, "A memory allocation error occurred when creating a powerline interference removal filter.\n"
+                          "File: %s line: %i", __FILE__, __LINE__);
+            QMessageBox messagewindow(QMessageBox::Critical, "Error", str2);
+            messagewindow.exec();
+          }
           return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
         }
 
@@ -1244,9 +1272,12 @@ int UI_Mainwindow::read_session_file(const char *path_session)
                                                           sense);
             if(newsignalcomp->ecg_filter == NULL)
             {
-              snprintf(str2, 512, "Could not create an ECG filter.\nFile: %s line: %i", __FILE__, __LINE__);
-              QMessageBox messagewindow(QMessageBox::Critical, "Error", str2);
-              messagewindow.exec();
+              if(!rc_cmd_in_progress)
+              {
+                snprintf(str2, 512, "Could not create an ECG filter.\nFile: %s line: %i", __FILE__, __LINE__);
+                QMessageBox messagewindow(QMessageBox::Critical, "Error", str2);
+                messagewindow.exec();
+              }
               return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
             }
 
@@ -1304,9 +1335,12 @@ int UI_Mainwindow::read_session_file(const char *path_session)
 
           if(newsignalcomp->zratio_filter == NULL)
           {
-            snprintf(str2, 512, "A memory allocation error occurred when creating a Z-ratio filter.\nFile: %s line: %i", __FILE__, __LINE__);
-            QMessageBox messagewindow(QMessageBox::Critical, "Error", str2);
-            messagewindow.exec();
+            if(!rc_cmd_in_progress)
+            {
+              snprintf(str2, 512, "A memory allocation error occurred when creating a Z-ratio filter.\nFile: %s line: %i", __FILE__, __LINE__);
+              QMessageBox messagewindow(QMessageBox::Critical, "Error", str2);
+              messagewindow.exec();
+            }
             return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
           }
 
@@ -2395,8 +2429,20 @@ int UI_Mainwindow::session_format_error(const char *file_name, int line_number, 
               snprintf(str, 2048, "There seems to be an error in this session file.\nFile: %s\nline: %i", file_name, line_number);
             }
 
-  QMessageBox messagewindow(QMessageBox::Critical, "Error", str);
-  messagewindow.exec();
+  if(!rc_cmd_in_progress)
+  {
+    QMessageBox messagewindow(QMessageBox::Critical, "Error", str);
+    messagewindow.exec();
+  }
+  else
+  {
+    printf("%s\n", str);
+    rc_load_session_err = rc_file_open_err;
+    if(!rc_load_session_err)
+    {
+      rc_load_session_err = 108;
+    }
+  }
   free(sigcomp);
   xml_close(hdl);
   return 0;
