@@ -893,6 +893,11 @@ UI_Mainwindow::UI_Mainwindow()
   AmplitudeGroup->addAction(amp_50000);
   connect(AmplitudeGroup, SIGNAL(triggered(QAction *)), this, SLOT(set_amplitude(QAction *)));
 
+  math_func_menu = new QMenu(this);
+  math_func_menu->setTitle("&Math");
+  math_func_menu->addAction("New", this, SLOT(add_new_math_func()));
+  math_func_menu->addAction("Remove all", this, SLOT(remove_all_math_funcs()));
+
   filtermenu = new QMenu(this);
   filtermenu->setTitle("&Filter");
   filtermenu->addAction("New", this, SLOT(add_new_filter()));
@@ -907,13 +912,9 @@ UI_Mainwindow::UI_Mainwindow()
   filtermenu->addSeparator();
   filtermenu->addAction("Spike", this, SLOT(add_spike_filter()));
   filtermenu->addAction("Remove all spike filters", this, SLOT(remove_all_spike_filters()));
+  filtermenu->addSeparator();
+  filtermenu->addMenu(math_func_menu);
   menubar->addMenu(filtermenu);
-
-  math_func_menu = new QMenu(this);
-  math_func_menu->setTitle("&Math");
-  math_func_menu->addAction("New", this, SLOT(add_new_math_func()));
-  math_func_menu->addAction("Remove all", this, SLOT(remove_all_math_funcs()));
-  menubar->addMenu(math_func_menu);
 
   load_predefined_mtg_act[0] = new QAction("Empty", this);
   load_predefined_mtg_act[0]->setShortcut(Qt::Key_F1);

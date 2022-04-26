@@ -1505,7 +1505,7 @@ void UI_Mainwindow::set_viewtime(long long new_viewtime)
 
 void UI_Mainwindow::add_new_filter()
 {
-  if(!files_open)  return;
+  if(!signalcomps)  return;
 
   UI_FilterDialog filterdialog(this);
 }
@@ -1513,7 +1513,7 @@ void UI_Mainwindow::add_new_filter()
 
 void UI_Mainwindow::add_plif_ecg_filter()
 {
-  if(!files_open)  return;
+  if(!signalcomps)  return;
 
   UI_PLIF_ECG_filter_dialog plifecgfilterdialog(this);
 }
@@ -1521,7 +1521,7 @@ void UI_Mainwindow::add_plif_ecg_filter()
 
 void UI_Mainwindow::add_fir_filter()
 {
-  if(!files_open)  return;
+  if(!signalcomps)  return;
 
   UI_FIRFilterDialog firfilterdialog(recent_opendir, recent_savedir, this);
 }
@@ -1529,7 +1529,7 @@ void UI_Mainwindow::add_fir_filter()
 
 void UI_Mainwindow::add_spike_filter()
 {
-  if(!files_open)  return;
+  if(!signalcomps)  return;
 
   UI_SpikeFilterDialog spikefilterdialog(this);
 }
@@ -1537,7 +1537,7 @@ void UI_Mainwindow::add_spike_filter()
 
 void UI_Mainwindow::add_new_math_func()
 {
-  if(!files_open)  return;
+  if(!signalcomps)  return;
 
   UI_MATH_func_dialog mathfuncdialog(this);
 }
