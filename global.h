@@ -66,6 +66,7 @@
 #define MAXFILES                            (32)
 #define MAXSIGNALS                         (640)
 #define MAXFILTERS                          (16)
+#define MAXMATHFUNCS                        (16)
 #define TIME_DIMENSION                (10000000LL)
 #define MAX_ANNOTATION_LEN                 (512)
 #define MAX_UNIQUE_ANNOTATIONS              (64)
@@ -158,6 +159,7 @@
 #include "filt/spike_filter.h"
 #include "filt/z_ratio_filter.h"
 #include "third_party/fidlib/fidlib.h"
+#include "filt/math_func.h"
 
 
 struct edfparamblock{
@@ -277,12 +279,16 @@ struct signalcompblock{
         char physdimension_bu[9];
         int color;
         int filter_cnt;
+        int math_func_cnt_before;
+        int math_func_cnt_after;
         int samples_in_prefilterbuf;
         long long prefilter_starttime;
         int prefilter_reset_sample;
         double filterpreset_a[MAXFILTERS];
         double filterpreset_b[MAXFILTERS];
         struct filter_settings *filter[MAXFILTERS];
+        struct math_func_settings *math_func_before[MAXMATHFUNCS];
+        struct math_func_settings *math_func_after[MAXMATHFUNCS];
         int max_dig_value;
         int min_dig_value;
         int fidfilter_cnt;

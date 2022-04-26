@@ -114,6 +114,7 @@ HEADERS += run_qrs_detector.h
 HEADERS += hrv_dock.h
 HEADERS += unify_resolution.h
 HEADERS += rename_annots_dialog.h
+HEADERS += math_f_dialog.h
 
 HEADERS += cnvs/ascii_export.h
 HEADERS += cnvs/ascii2edf.h
@@ -145,6 +146,7 @@ HEADERS += filt/pt_qrs.h
 HEADERS += filt/ravg_filter.h
 HEADERS += filt/spike_filter.h
 HEADERS += filt/z_ratio_filter.h
+HEADERS += filt/math_func.h
 
 HEADERS += third_party/fidlib/fidlib.h
 HEADERS += third_party/fidlib/fidmkf.h
@@ -229,6 +231,7 @@ SOURCES += run_qrs_detector.cpp
 SOURCES += hrv_dock.cpp
 SOURCES += unify_resolution.cpp
 SOURCES += rename_annots_dialog.cpp
+SOURCES += math_f_dialog.cpp
 
 SOURCES += cnvs/ascii_export.cpp
 SOURCES += cnvs/ascii2edf.cpp
@@ -260,6 +263,7 @@ SOURCES += filt/pt_qrs.c
 SOURCES += filt/ravg_filter.c
 SOURCES += filt/spike_filter.c
 SOURCES += filt/z_ratio_filter.c
+SOURCES += filt/math_func.c
 
 SOURCES += third_party/fidlib/fidlib.c
 

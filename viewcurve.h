@@ -66,6 +66,7 @@
 #include "filt/ravg_filter.h"
 #include "filt/ecg_filter.h"
 #include "filt/z_ratio_filter.h"
+#include "filt/math_func.h"
 
 #include "third_party/fidlib/fidlib.h"
 

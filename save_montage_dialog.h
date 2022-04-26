@@ -44,12 +44,13 @@
 #include "spectrum_dock.h"
 #include "utils.h"
 
-
-
+#include "filt/filter.h"
+#include "filt/ravg_filter.h"
+#include "filt/spike_filter.h"
+#include "filt/math_func.h"
 
 
 class UI_Mainwindow;
-
 
 
 class UI_SaveMontagewindow : public QObject

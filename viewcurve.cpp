@@ -1940,6 +1940,11 @@ void ViewCurve::drawCurve_stage_1(QPainter *painter, int w_width, int w_height, 
           dig_value = run_spike_filter(dig_value, signalcomp[i]->spike_filter);
         }
 
+        for(k=0; k<signalcomp[i]->math_func_cnt_before; k++)
+        {
+          dig_value = run_math_func(dig_value, signalcomp[i]->math_func_before[k]);
+        }
+
         for(k=0; k<signalcomp[i]->filter_cnt; k++)
         {
           if(s==signalcomp[i]->sample_start)
@@ -2025,6 +2030,11 @@ void ViewCurve::drawCurve_stage_1(QPainter *painter, int w_width, int w_height, 
           }
 
           dig_value = run_fir_filter(dig_value, signalcomp[i]->fir_filter);
+        }
+
+        for(k=0; k<signalcomp[i]->math_func_cnt_after; k++)
+        {
+          dig_value = run_math_func(dig_value, signalcomp[i]->math_func_after[k]);
         }
 
         if(signalcomp[i]->plif_ecg_filter)
@@ -2477,6 +2487,11 @@ void drawCurve_stage_1_thread::run()
         dig_value = run_spike_filter(dig_value, signalcomp->spike_filter);
       }
 
+      for(k=0; k<signalcomp->math_func_cnt_before; k++)
+      {
+        dig_value = run_math_func(dig_value, signalcomp->math_func_before[k]);
+      }
+
       for(k=0; k<signalcomp->filter_cnt; k++)
       {
         if(s==signalcomp->sample_start)
@@ -2562,6 +2577,11 @@ void drawCurve_stage_1_thread::run()
         }
 
         dig_value = run_fir_filter(dig_value, signalcomp->fir_filter);
+      }
+
+      for(k=0; k<signalcomp->math_func_cnt_after; k++)
+      {
+        dig_value = run_math_func(dig_value, signalcomp->math_func_after[k]);
       }
 
       if(signalcomp->plif_ecg_filter)

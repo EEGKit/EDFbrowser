@@ -1273,7 +1273,9 @@ void UI_ExportFilteredSignalsWindow::populate_tree_view()
   QStandardItem *parentItem,
                 *signalItem,
                 *filterItem,
-                *firfilterItem;
+                *firfilterItem,
+                *math_item_before=NULL,
+                *math_item_after=NULL;
 
   t_model->clear();
 
@@ -1348,6 +1350,25 @@ void UI_ExportFilteredSignalsWindow::populate_tree_view()
     }
 
     parentItem->appendRow(signalItem);
+
+    if(mainwindow->signalcomp[i]->math_func_cnt_before)
+    {
+      math_item_before = new QStandardItem("Math functions (before filtering)");
+
+      signalItem->appendRow(math_item_before);
+
+      for(j=0; j<mainwindow->signalcomp[i]->math_func_cnt_before; j++)
+      {
+        if(mainwindow->signalcomp[i]->math_func_before[j]->func == MATH_FUNC_SQUARE)
+        {
+          math_item_before->appendRow(new QStandardItem("Math function: Square"));
+        }
+        else if(mainwindow->signalcomp[i]->math_func_before[j]->func == MATH_FUNC_SQRT)
+          {
+            math_item_before->appendRow(new QStandardItem("Math function: Square Root"));
+          }
+      }
+    }
 
     filterItem = new QStandardItem("Filters");
 
@@ -1511,6 +1532,25 @@ void UI_ExportFilteredSignalsWindow::populate_tree_view()
         snprintf(txtbuf, 2048, " %.20f ", fir_filter_tap(k, mainwindow->signalcomp[i]->fir_filter));
 
         firfilterItem->appendRow(new QStandardItem(txtbuf));
+      }
+    }
+
+    if(mainwindow->signalcomp[i]->math_func_cnt_after)
+    {
+      math_item_after = new QStandardItem("Math functions (after filtering)");
+
+      signalItem->appendRow(math_item_after);
+
+      for(j=0; j<mainwindow->signalcomp[i]->math_func_cnt_after; j++)
+      {
+        if(mainwindow->signalcomp[i]->math_func_after[j]->func == MATH_FUNC_SQUARE)
+        {
+          math_item_after->appendRow(new QStandardItem("Math function: Square"));
+        }
+        else if(mainwindow->signalcomp[i]->math_func_after[j]->func == MATH_FUNC_SQRT)
+          {
+            math_item_after->appendRow(new QStandardItem("Math function: Square Root"));
+          }
       }
     }
 

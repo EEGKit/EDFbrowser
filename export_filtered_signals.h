@@ -45,6 +45,12 @@
 #include "edf_helper.h"
 #include "filteredblockread.h"
 
+#include "filt/filter.h"
+#include "filt/ravg_filter.h"
+#include "filt/spike_filter.h"
+#include "filt/math_func.h"
+
+#include "third_party/fidlib/fidlib.h"
 
 
 class UI_Mainwindow;

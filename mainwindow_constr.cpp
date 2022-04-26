@@ -909,11 +909,11 @@ UI_Mainwindow::UI_Mainwindow()
   filtermenu->addAction("Remove all spike filters", this, SLOT(remove_all_spike_filters()));
   menubar->addMenu(filtermenu);
 
-//   math_func_menu = new QMenu(this);
-//   math_func_menu->setTitle("&Math");
-//   math_func_menu->addAction("New", this, SLOT(add_new_math_func()));
-//   math_func_menu->addAction("Remove all", this, SLOT(remove_all_math_funcs()));
-//   menubar->addMenu(math_func_menu);
+  math_func_menu = new QMenu(this);
+  math_func_menu->setTitle("&Math");
+  math_func_menu->addAction("New", this, SLOT(add_new_math_func()));
+  math_func_menu->addAction("Remove all", this, SLOT(remove_all_math_funcs()));
+  menubar->addMenu(math_func_menu);
 
   load_predefined_mtg_act[0] = new QAction("Empty", this);
   load_predefined_mtg_act[0]->setShortcut(Qt::Key_F1);

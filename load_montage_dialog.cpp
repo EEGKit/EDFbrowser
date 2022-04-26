@@ -116,8 +116,13 @@ int UI_LoadMontagewindow::LoadButtonClicked()
       signals_read,
       signal_cnt,
       filters_read,
+      math_funcs_before_read,
+      math_funcs_after_read,
+      math_func,
       spike_filter_cnt=0,
       filter_cnt=0,
+      math_func_cnt_before=0,
+      math_func_cnt_after=0,
       ravg_filter_cnt=0,
       fidfilter_cnt=0,
       order=1,
@@ -295,6 +300,20 @@ int UI_LoadMontagewindow::LoadButtonClicked()
 
       mainwindow->signalcomp[k]->filter_cnt = 0;
 
+      for(i=0; i<mainwindow->signalcomp[k]->math_func_cnt_before; i++)
+      {
+        free_math_func(mainwindow->signalcomp[k]->math_func_before[i]);
+      }
+
+      mainwindow->signalcomp[k]->math_func_cnt_before = 0;
+
+      for(i=0; i<mainwindow->signalcomp[k]->math_func_cnt_after; i++)
+      {
+        free_math_func(mainwindow->signalcomp[k]->math_func_after[i]);
+      }
+
+      mainwindow->signalcomp[k]->math_func_cnt_after = 0;
+
       for(i=0; i<mainwindow->signalcomp[k]->ravg_filter_cnt; i++)
       {
         free_ravg_filter(mainwindow->signalcomp[k]->ravg_filter[i]);
@@ -408,6 +427,8 @@ int UI_LoadMontagewindow::LoadButtonClicked()
     newsignalcomp->hasoffsettracking = 0;
     newsignalcomp->hasgaintracking = 0;
     newsignalcomp->screen_offset = 0;
+    newsignalcomp->math_func_cnt_before = 0;
+    newsignalcomp->math_func_cnt_after = 0;
     newsignalcomp->filter_cnt = 0;
     newsignalcomp->ravg_filter_cnt = 0;
     newsignalcomp->plif_ecg_filter = NULL;
@@ -487,6 +508,32 @@ int UI_LoadMontagewindow::LoadButtonClicked()
 
     xml_go_up(xml_hdl);
 
+    if(!(xml_goto_nth_element_inside(xml_hdl, "math_func_cnt_before", 0)))
+    {
+      if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+      {
+        return format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+      }
+      math_func_cnt_before = atoi(result);
+      if(math_func_cnt_before < 0)  math_func_cnt_before = 0;
+      if(math_func_cnt_before > MAXMATHFUNCS)  math_func_cnt_before = MAXMATHFUNCS;
+
+      xml_go_up(xml_hdl);
+    }
+
+    if(!(xml_goto_nth_element_inside(xml_hdl, "math_func_cnt_after", 0)))
+    {
+      if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+      {
+        return format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+      }
+      math_func_cnt_after = atoi(result);
+      if(math_func_cnt_after < 0)  math_func_cnt_after = 0;
+      if(math_func_cnt_after > MAXMATHFUNCS)  math_func_cnt_after = MAXMATHFUNCS;
+
+      xml_go_up(xml_hdl);
+    }
+
     if(!(xml_goto_nth_element_inside(xml_hdl, "filter_cnt", 0)))
     {
       if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
@@ -507,7 +554,7 @@ int UI_LoadMontagewindow::LoadButtonClicked()
         return format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
       }
       spike_filter_cnt = atoi(result);
-      if(spike_filter_cnt < 0)  filter_cnt = 0;
+      if(spike_filter_cnt < 0)  spike_filter_cnt = 0;
       if(spike_filter_cnt > 1)  spike_filter_cnt = 1;
 
       xml_go_up(xml_hdl);
@@ -520,7 +567,7 @@ int UI_LoadMontagewindow::LoadButtonClicked()
         return format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
       }
       ravg_filter_cnt = atoi(result);
-      if(ravg_filter_cnt < 0)  filter_cnt = 0;
+      if(ravg_filter_cnt < 0)  ravg_filter_cnt = 0;
       if(ravg_filter_cnt > MAXFILTERS)  ravg_filter_cnt = MAXFILTERS;
 
       xml_go_up(xml_hdl);
@@ -778,6 +825,70 @@ int UI_LoadMontagewindow::LoadButtonClicked()
       newsignalcomp->spike_filter_velocity = velocity;
 
       newsignalcomp->spike_filter_holdoff = holdoff;
+
+      xml_go_up(xml_hdl);
+      xml_go_up(xml_hdl);
+    }
+
+    for(math_funcs_before_read=0; math_funcs_before_read<math_func_cnt_before; math_funcs_before_read++)
+    {
+      if(xml_goto_nth_element_inside(xml_hdl, "math_func_before", math_funcs_before_read))
+      {
+        return format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+      }
+
+      if(xml_goto_nth_element_inside(xml_hdl, "func", 0))
+      {
+        return format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+      }
+      if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+      {
+        return format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+      }
+      math_func = atoi(result);
+      if((math_func < 1) || (math_func > 2))
+      {
+        return format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+      }
+
+      newsignalcomp->math_func_before[newsignalcomp->math_func_cnt_before] = create_math_func(math_func);
+      if(newsignalcomp->math_func_before[newsignalcomp->math_func_cnt_before] == NULL)
+      {
+        return format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+      }
+      newsignalcomp->math_func_cnt_before++;
+
+      xml_go_up(xml_hdl);
+      xml_go_up(xml_hdl);
+    }
+
+    for(math_funcs_after_read=0; math_funcs_after_read<math_func_cnt_after; math_funcs_after_read++)
+    {
+      if(xml_goto_nth_element_inside(xml_hdl, "math_func_after", math_funcs_after_read))
+      {
+        return format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+      }
+
+      if(xml_goto_nth_element_inside(xml_hdl, "func", 0))
+      {
+        return format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+      }
+      if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+      {
+        return format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+      }
+      math_func = atoi(result);
+      if((math_func < 1) || (math_func > 2))
+      {
+        return format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+      }
+
+      newsignalcomp->math_func_after[newsignalcomp->math_func_cnt_after] = create_math_func(math_func);
+      if(newsignalcomp->math_func_after[newsignalcomp->math_func_cnt_after] == NULL)
+      {
+        return format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+      }
+      newsignalcomp->math_func_cnt_after++;
 
       xml_go_up(xml_hdl);
       xml_go_up(xml_hdl);

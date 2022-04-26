@@ -3,7 +3,7 @@
 *
 * Author: Teunis van Beelen
 *
-* Copyright (C) 2007 - 2022 Teunis van Beelen
+* Copyright (C) 2022 Teunis van Beelen
 *
 * Email: teuniz@protonmail.com
 *
@@ -25,68 +25,43 @@
 */
 
 
+#ifndef math_func_INCLUDED
+#define math_func_INCLUDED
 
 
-#ifndef LOADMONTAGEFORM1_H
-#define LOADMONTAGEFORM1_H
-
-
-
-#include "qt_headers.h"
-
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-#include "global.h"
-#include "mainwindow.h"
-#include "xml.h"
-#include "utc_date_time.h"
-#include "utils.h"
-#include "spectrum_dock.h"
-#include "edf_helper.h"
-
-#include "filt/filter.h"
-#include "filt/plif_ecg_subtract_filter.h"
-#include "filt/spike_filter.h"
-
-#include "third_party/fidlib/fidlib.h"
+#include <stdio.h>
+#include <math.h>
 
 
-class UI_Mainwindow;
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#define MATH_FUNC_NONE      (0)
+#define MATH_FUNC_SQUARE    (1)
+#define MATH_FUNC_SQRT      (2)
 
 
-class UI_LoadMontagewindow : public QObject
-{
-  Q_OBJECT
-
-public:
-  UI_LoadMontagewindow(QWidget *parent, char *path = NULL);
-
-  UI_Mainwindow *mainwindow;
-
-
-private:
-
-  QDialog      *LoadMontageDialog;
-
-  QListWidget  *filelist;
-
-  QPushButton  *CloseButton,
-               *LoadButton;
-
-  char mtg_path[MAX_PATH_LENGTH];
-
-  int format_error(const char *, int , struct signalcompblock *, struct xml_handle *);
-
-private slots:
-
-  int LoadButtonClicked();
-
+struct math_func_settings{
+  int func;
 };
 
+struct math_func_settings * create_math_func(int);
+double run_math_func(double, struct math_func_settings *);
+void free_math_func(struct math_func_settings *);
+
+#ifdef __cplusplus
+} /* extern "C" */
+#endif
 
 
-#endif // LOADMONTAGEFORM1_H
+#endif
+
+
+
+
+
 
 

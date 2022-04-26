@@ -181,6 +181,10 @@ void UI_SaveMontagewindow::SaveButtonClicked()
         fprintf(mtgfile, "    <spike_filter_cnt>%i</spike_filter_cnt>\n", 0);
       }
 
+      fprintf(mtgfile, "    <math_func_cnt_before>%i</math_func_cnt_before>\n", mainwindow->signalcomp[i]->math_func_cnt_before);
+
+      fprintf(mtgfile, "    <math_func_cnt_after>%i</math_func_cnt_after>\n", mainwindow->signalcomp[i]->math_func_cnt_after);
+
       fprintf(mtgfile, "    <filter_cnt>%i</filter_cnt>\n", mainwindow->signalcomp[i]->filter_cnt);
 
       fprintf(mtgfile, "    <fidfilter_cnt>%i</fidfilter_cnt>\n", mainwindow->signalcomp[i]->fidfilter_cnt);
@@ -218,6 +222,15 @@ void UI_SaveMontagewindow::SaveButtonClicked()
         fprintf(mtgfile, "      <holdoff>%i</holdoff>\n", mainwindow->signalcomp[i]->spike_filter_holdoff);
 
         fprintf(mtgfile, "    </spike_filter>\n");
+      }
+
+      for(j=0; j<mainwindow->signalcomp[i]->math_func_cnt_before; j++)
+      {
+        fprintf(mtgfile, "    <math_func_before>\n");
+
+        fprintf(mtgfile, "      <func>%i</func>\n", mainwindow->signalcomp[i]->math_func_before[j]->func);
+
+        fprintf(mtgfile, "    </math_func_before>\n");
       }
 
       for(j=0; j<mainwindow->signalcomp[i]->filter_cnt; j++)
@@ -275,6 +288,15 @@ void UI_SaveMontagewindow::SaveButtonClicked()
         }
 
         fprintf(mtgfile, "    </fir_filter>\n");
+      }
+
+      for(j=0; j<mainwindow->signalcomp[i]->math_func_cnt_after; j++)
+      {
+        fprintf(mtgfile, "    <math_func_after>\n");
+
+        fprintf(mtgfile, "      <func>%i</func>\n", mainwindow->signalcomp[i]->math_func_after[j]->func);
+
+        fprintf(mtgfile, "    </math_func_after>\n");
       }
 
       if(mainwindow->signalcomp[i]->plif_ecg_filter != NULL)

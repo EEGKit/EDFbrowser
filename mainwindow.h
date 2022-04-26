@@ -108,6 +108,7 @@
 #include "run_qrs_detector.h"
 #include "hrv_dock.h"
 #include "unify_resolution.h"
+#include "math_f_dialog.h"
 
 #include "cnvs/ascii_export.h"
 #include "cnvs/ascii2edf.h"
@@ -136,6 +137,7 @@
 #include "filt/ravg_filter.h"
 #include "filt/spike_filter.h"
 #include "filt/z_ratio_filter.h"
+#include "filt/math_func.h"
 
 #include "third_party/fidlib/fidlib.h"
 
@@ -444,7 +446,7 @@ private:
                *helpmenu,
                *printmenu,
                *filtermenu,
-//               *math_func_menu,
+               *math_func_menu,
                *timemenu,
                *windowmenu,
                *recent_filesmenu,
@@ -648,8 +650,8 @@ private slots:
   void remove_all_plif_ecg_filters();
   void remove_all_fir_filters();
   void remove_all_spike_filters();
-//  void add_new_math_func();
-//  void remove_all_math_funcs();
+  void add_new_math_func();
+  void remove_all_math_funcs();
   void jump_to_dialog();
   void jump_to_start();
   void jump_to_end();

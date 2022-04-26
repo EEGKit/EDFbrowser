@@ -95,6 +95,8 @@ void UI_ViewMontagewindow::SelectButtonClicked()
       filters_read,
       color,
       filter_cnt=0,
+      math_func_cnt_before=0,
+      math_func_cnt_after=0,
       spike_filter_cnt=0,
       ravg_filter_cnt=0,
       fidfilter_cnt=0,
@@ -273,6 +275,38 @@ void UI_ViewMontagewindow::SelectButtonClicked()
     }
     color = atoi(result);
     xml_go_up(xml_hdl);
+
+    if(!(xml_goto_nth_element_inside(xml_hdl, "math_func_cnt_before", 0)))
+    {
+      if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+      {
+        QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file.");
+        messagewindow.exec();
+        xml_close(xml_hdl);
+        return;
+      }
+      math_func_cnt_before = atoi(result);
+      if(math_func_cnt_before < 0)  math_func_cnt_before = 0;
+      if(math_func_cnt_before > MAXMATHFUNCS)  math_func_cnt_before = MAXMATHFUNCS;
+
+      xml_go_up(xml_hdl);
+    }
+
+    if(!(xml_goto_nth_element_inside(xml_hdl, "math_func_cnt_after", 0)))
+    {
+      if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+      {
+        QMessageBox messagewindow(QMessageBox::Critical, "Error", "There seems to be an error in this montage file.");
+        messagewindow.exec();
+        xml_close(xml_hdl);
+        return;
+      }
+      math_func_cnt_after = atoi(result);
+      if(math_func_cnt_after < 0)  math_func_cnt_after = 0;
+      if(math_func_cnt_after > MAXMATHFUNCS)  math_func_cnt_after = MAXMATHFUNCS;
+
+      xml_go_up(xml_hdl);
+    }
 
     if(!(xml_goto_nth_element_inside(xml_hdl, "spike_filter_cnt", 0)))
     {

@@ -1535,14 +1535,47 @@ void UI_Mainwindow::add_spike_filter()
 }
 
 
-// void UI_Mainwindow::add_new_math_func()
-// {
-// }
+void UI_Mainwindow::add_new_math_func()
+{
+  if(!files_open)  return;
+
+  UI_MATH_func_dialog mathfuncdialog(this);
+}
 
 
-// void UI_Mainwindow::remove_all_math_funcs()
-// {
-// }
+void UI_Mainwindow::remove_all_math_funcs()
+{
+  int i, j,
+      update_scr=0;
+
+  if(!files_open)  return;
+
+  for(i=0; i<signalcomps; i++)
+  {
+    for(j=0; j<signalcomp[i]->math_func_cnt_before; j++)
+    {
+      free_math_func(signalcomp[i]->math_func_before[j]);
+
+      update_scr = 1;
+    }
+
+    signalcomp[i]->math_func_cnt_before = 0;
+
+    for(j=0; j<signalcomp[i]->math_func_cnt_after; j++)
+    {
+      free_math_func(signalcomp[i]->math_func_after[j]);
+
+      update_scr = 1;
+    }
+
+    signalcomp[i]->math_func_cnt_after = 0;
+  }
+
+  if(update_scr)
+  {
+    setup_viewbuf();
+  }
+}
 
 
 void UI_Mainwindow::zoomback()
@@ -2906,6 +2939,8 @@ void UI_Mainwindow::remove_all_signals()
   maincurve->crosshair_1.moving = 0;
   maincurve->crosshair_2.moving = 0;
 
+  remove_all_math_funcs();
+
   remove_all_filters();
 
   remove_all_spike_filters();
@@ -2921,11 +2956,8 @@ void UI_Mainwindow::remove_all_signals()
 
   signalcomps = 0;
 
-  if(viewbuf!=NULL)
-  {
-    free(viewbuf);
-    viewbuf = NULL;
-  }
+  free(viewbuf);
+  viewbuf = NULL;
 
   slidertoolbar->setEnabled(false);
   positionslider->blockSignals(true);
@@ -5240,6 +5272,20 @@ void UI_Mainwindow::remove_signalcomp(int signal_nr)
     maincurve->ruler_active = 0;
     maincurve->ruler_moving = 0;
   }
+
+  for(j=0; j<signalcomp[signal_nr]->math_func_cnt_before; j++)
+  {
+    free_math_func(signalcomp[signal_nr]->math_func_before[j]);
+  }
+
+  signalcomp[signal_nr]->math_func_cnt_before = 0;
+
+  for(j=0; j<signalcomp[signal_nr]->math_func_cnt_after; j++)
+  {
+    free_math_func(signalcomp[signal_nr]->math_func_after[j]);
+  }
+
+  signalcomp[signal_nr]->math_func_cnt_after = 0;
 
   for(j=0; j<signalcomp[signal_nr]->filter_cnt; j++)
   {

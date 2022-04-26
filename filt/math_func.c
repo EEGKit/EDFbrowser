@@ -3,7 +3,7 @@
 *
 * Author: Teunis van Beelen
 *
-* Copyright (C) 2007 - 2022 Teunis van Beelen
+* Copyright (C) 2022 Teunis van Beelen
 *
 * Email: teuniz@protonmail.com
 *
@@ -25,59 +25,71 @@
 */
 
 
+#include "math_func.h"
 
 
-#ifndef SHOWACTUALMONTAGEFORM1_H
-#define SHOWACTUALMONTAGEFORM1_H
-
-
-
-#include "qt_headers.h"
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-#include "global.h"
-#include "mainwindow.h"
-#include "utils.h"
-
-#include "filt/filter.h"
-#include "filt/ravg_filter.h"
-#include "filt/spike_filter.h"
-#include "filt/math_func.h"
-
-#include "third_party/fidlib/fidlib.h"
-
-
-class UI_Mainwindow;
-
-
-class UI_ShowActualMontagewindow : public QObject
+struct math_func_settings * create_math_func(int func_f)
 {
-  Q_OBJECT
+  struct math_func_settings *st;
 
-public:
-  UI_ShowActualMontagewindow(QWidget *parent);
+  st = (struct math_func_settings *) calloc(1, sizeof(struct math_func_settings));
+  if(st==NULL)  return NULL;
 
-  UI_Mainwindow *mainwindow;
+  st->func = func_f;
 
-private:
-
-  QDialog      *ShowMontageDialog;
-
-  QPushButton  *CloseButton;
-
-  QBoxLayout   *box;
-
-  QTreeView    *tree;
-
-  QStandardItemModel *t_model;
-
-};
+  return st;
+}
 
 
+void free_math_func(struct math_func_settings *st)
+{
+  free(st);
+}
 
-#endif // SHOWACTUALMONTAGEFORM1_H
+
+double run_math_func(double val, struct math_func_settings *st)
+{
+  if(st->func == MATH_FUNC_SQUARE)
+  {
+    if(val < 0)
+    {
+      return (-val * val);
+    }
+    else
+    {
+      return (val * val);
+    }
+  }
+  else if(st->func == MATH_FUNC_SQRT)
+    {
+      if(val < 0)
+        {
+          return (-sqrt(-val));
+        }
+        else
+        {
+          return sqrt(val);
+        }
+    }
+    else if(st->func == MATH_FUNC_NONE)
+      {
+        return val;
+      }
+
+  return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

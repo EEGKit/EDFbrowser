@@ -3,7 +3,7 @@
 *
 * Author: Teunis van Beelen
 *
-* Copyright (C) 2007 - 2022 Teunis van Beelen
+* Copyright (C) 2022 Teunis van Beelen
 *
 * Email: teuniz@protonmail.com
 *
@@ -26,67 +26,69 @@
 
 
 
-
-#ifndef LOADMONTAGEFORM1_H
-#define LOADMONTAGEFORM1_H
-
+#ifndef ADD_MATHFORM1_H
+#define ADD_MATHFORM1_H
 
 
 #include "qt_headers.h"
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 #include "global.h"
 #include "mainwindow.h"
-#include "xml.h"
-#include "utc_date_time.h"
 #include "utils.h"
-#include "spectrum_dock.h"
-#include "edf_helper.h"
 
-#include "filt/filter.h"
-#include "filt/plif_ecg_subtract_filter.h"
-#include "filt/spike_filter.h"
-
-#include "third_party/fidlib/fidlib.h"
+#include "filt/math_func.h"
 
 
 class UI_Mainwindow;
 
 
-class UI_LoadMontagewindow : public QObject
+class UI_MATH_func_dialog : public QObject
 {
   Q_OBJECT
 
 public:
-  UI_LoadMontagewindow(QWidget *parent, char *path = NULL);
+  UI_MATH_func_dialog(QWidget *);
 
   UI_Mainwindow *mainwindow;
 
 
 private:
 
-  QDialog      *LoadMontageDialog;
+QDialog        *mathdialog;
 
-  QListWidget  *filelist;
+QRadioButton  *sqrt_rbutton,
+              *square_rbutton,
+              *before_rbutton,
+              *after_rbutton;
 
-  QPushButton  *CloseButton,
-               *LoadButton;
+QGroupBox     *func_bgroup,
+              *when_bgroup;
 
-  char mtg_path[MAX_PATH_LENGTH];
+QPushButton    *close_button,
+               *apply_button;
 
-  int format_error(const char *, int , struct signalcompblock *, struct xml_handle *);
+QListWidget    *list;
+
+QLabel         *listlabel;
 
 private slots:
 
-  int LoadButtonClicked();
+void apply_button_clicked();
 
 };
 
 
+#endif
 
-#endif // LOADMONTAGEFORM1_H
+
+
+
+
+
+
 
 
