@@ -522,6 +522,10 @@ void UI_Mainwindow::save_session()
       fprintf(pro_file, "    <spike_filter_cnt>%i</spike_filter_cnt>\n", 0);
     }
 
+    fprintf(pro_file, "    <math_func_cnt_before>%i</math_func_cnt_before>\n", signalcomp[i]->math_func_cnt_before);
+
+    fprintf(pro_file, "    <math_func_cnt_after>%i</math_func_cnt_after>\n", signalcomp[i]->math_func_cnt_after);
+
     fprintf(pro_file, "    <filter_cnt>%i</filter_cnt>\n", signalcomp[i]->filter_cnt);
 
     fprintf(pro_file, "    <fidfilter_cnt>%i</fidfilter_cnt>\n", signalcomp[i]->fidfilter_cnt);
@@ -559,6 +563,15 @@ void UI_Mainwindow::save_session()
       fprintf(pro_file, "      <holdoff>%i</holdoff>\n", signalcomp[i]->spike_filter_holdoff);
 
       fprintf(pro_file, "    </spike_filter>\n");
+    }
+
+    for(j=0; j<signalcomp[i]->math_func_cnt_before; j++)
+    {
+      fprintf(pro_file, "    <math_func_before>\n");
+
+      fprintf(pro_file, "      <func>%i</func>\n", signalcomp[i]->math_func_before[j]->func);
+
+      fprintf(pro_file, "    </math_func_before>\n");
     }
 
     for(j=0; j<signalcomp[i]->filter_cnt; j++)
@@ -616,6 +629,15 @@ void UI_Mainwindow::save_session()
       }
 
       fprintf(pro_file, "    </fir_filter>\n");
+    }
+
+    for(j=0; j<signalcomp[i]->math_func_cnt_after; j++)
+    {
+      fprintf(pro_file, "    <math_func_after>\n");
+
+      fprintf(pro_file, "      <func>%i</func>\n", signalcomp[i]->math_func_after[j]->func);
+
+      fprintf(pro_file, "    </math_func_after>\n");
     }
 
     if(signalcomp[i]->plif_ecg_filter != NULL)
