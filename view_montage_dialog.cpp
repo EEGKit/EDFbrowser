@@ -100,6 +100,7 @@ void UI_ViewMontagewindow::SelectButtonClicked()
       math_func_cnt_before=0,
       math_func_cnt_after=0,
       math_func,
+      math_func_pk_hold_smpls=0,
       spike_filter_cnt=0,
       ravg_filter_cnt=0,
       fidfilter_cnt=0,
@@ -517,8 +518,31 @@ void UI_ViewMontagewindow::SelectButtonClicked()
           return;
         }
 
+        xml_go_up(xml_hdl);
+
+        if(xml_goto_nth_element_inside(xml_hdl, "pk_hold_smpls", 0))
+        {
+          format_error(__FILE__, __LINE__, xml_hdl);
+          return;
+        }
+        if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+        {
+          format_error(__FILE__, __LINE__, xml_hdl);
+          return;
+        }
+        math_func_pk_hold_smpls = atoi(result);
+        if(math_func_pk_hold_smpls < 0)
+        {
+          format_error(__FILE__, __LINE__, xml_hdl);
+          return;
+        }
+
         strlcpy(str3, "Math function: ", 64);
         get_math_func_descr(math_func, str3 + strlen(str3), 64 - strlen(str3));
+        if(math_func == MATH_FUNC_PK_HOLD)
+        {
+          snprintf(str3 + strlen(str3), 64 - strlen(str3), " %i smpls", math_func_pk_hold_smpls);
+        }
         math_item_before->appendRow(new QStandardItem(str3));
 
         xml_go_up(xml_hdl);
@@ -881,8 +905,31 @@ void UI_ViewMontagewindow::SelectButtonClicked()
           return;
         }
 
+        xml_go_up(xml_hdl);
+
+        if(xml_goto_nth_element_inside(xml_hdl, "pk_hold_smpls", 0))
+        {
+          format_error(__FILE__, __LINE__, xml_hdl);
+          return;
+        }
+        if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+        {
+          format_error(__FILE__, __LINE__, xml_hdl);
+          return;
+        }
+        math_func_pk_hold_smpls = atoi(result);
+        if(math_func_pk_hold_smpls < 0)
+        {
+          format_error(__FILE__, __LINE__, xml_hdl);
+          return;
+        }
+
         strlcpy(str3, "Math function: ", 64);
         get_math_func_descr(math_func, str3 + strlen(str3), 64 - strlen(str3));
+        if(math_func == MATH_FUNC_PK_HOLD)
+        {
+          snprintf(str3 + strlen(str3), 64 - strlen(str3), " %i smpls", math_func_pk_hold_smpls);
+        }
         math_item_after->appendRow(new QStandardItem(str3));
 
         xml_go_up(xml_hdl);

@@ -59,9 +59,16 @@ UI_MATH_func_dialog::UI_MATH_func_dialog(QWidget *w_parent)
   square_rbutton = new QRadioButton("Square");
   sqrt_rbutton = new QRadioButton("Square Root");
   abs_rbutton = new QRadioButton("Absolute");
+  pk_hold_rbutton = new QRadioButton("Peak Hold");
 
   before_rbutton = new QRadioButton("Before filtering");
   after_rbutton = new QRadioButton("After filtering");
+
+  pk_hold_spinbox = new QSpinBox;
+  pk_hold_spinbox->setRange(1, 100000);
+  pk_hold_spinbox->setSuffix(" smpls");
+  pk_hold_spinbox->setValue(100);
+  pk_hold_spinbox->setEnabled(false);
 
   close_button = new QPushButton;
   close_button->setText("&Close");
@@ -97,6 +104,8 @@ UI_MATH_func_dialog::UI_MATH_func_dialog(QWidget *w_parent)
   vlayout4->addWidget(square_rbutton);
   vlayout4->addWidget(sqrt_rbutton);
   vlayout4->addWidget(abs_rbutton);
+  vlayout4->addWidget(pk_hold_rbutton);
+  vlayout4->addWidget(pk_hold_spinbox);
   vlayout4->addStretch(1);
 
   func_bgroup->setLayout(vlayout4);
@@ -140,10 +149,17 @@ UI_MATH_func_dialog::UI_MATH_func_dialog(QWidget *w_parent)
 
   mathdialog->setLayout(vlayout1);
 
-  QObject::connect(apply_button, SIGNAL(clicked()), this,       SLOT(apply_button_clicked()));
-  QObject::connect(close_button, SIGNAL(clicked()), mathdialog, SLOT(close()));
+  QObject::connect(apply_button,    SIGNAL(clicked()),     this,       SLOT(apply_button_clicked()));
+  QObject::connect(pk_hold_rbutton, SIGNAL(toggled(bool)), this,       SLOT(pk_hold_rbutton_clicked(bool)));
+  QObject::connect(close_button,    SIGNAL(clicked()),     mathdialog, SLOT(close()));
 
   mathdialog->exec();
+}
+
+
+void UI_MATH_func_dialog::pk_hold_rbutton_clicked(bool c)
+{
+  pk_hold_spinbox->setEnabled(c);
 }
 
 
@@ -173,10 +189,14 @@ void UI_MATH_func_dialog::apply_button_clicked()
       {
         functype = MATH_FUNC_ABS;
       }
-      else
-      {
-        functype = MATH_FUNC_NONE;
-      }
+      else if(pk_hold_rbutton->isChecked() == true)
+        {
+          functype = MATH_FUNC_PK_HOLD;
+        }
+        else
+        {
+          functype = MATH_FUNC_NONE;
+        }
 
   if(before_rbutton->isChecked() == true)
   {
@@ -202,7 +222,7 @@ void UI_MATH_func_dialog::apply_button_clicked()
 
     if(before)
     {
-      mainwindow->signalcomp[s]->math_func_before[mainwindow->signalcomp[s]->math_func_cnt_before] = create_math_func(functype);
+      mainwindow->signalcomp[s]->math_func_before[mainwindow->signalcomp[s]->math_func_cnt_before] = create_math_func(functype, pk_hold_spinbox->value());
       if(mainwindow->signalcomp[s]->math_func_before[mainwindow->signalcomp[s]->math_func_cnt_before] == NULL)
       {
         QMessageBox::critical(mathdialog, "Error", "An error occurred when creating a new math function");
@@ -213,7 +233,7 @@ void UI_MATH_func_dialog::apply_button_clicked()
     }
     else
     {
-      mainwindow->signalcomp[s]->math_func_after[mainwindow->signalcomp[s]->math_func_cnt_after] = create_math_func(functype);
+      mainwindow->signalcomp[s]->math_func_after[mainwindow->signalcomp[s]->math_func_cnt_after] = create_math_func(functype, pk_hold_spinbox->value());
       if(mainwindow->signalcomp[s]->math_func_after[mainwindow->signalcomp[s]->math_func_cnt_after] == NULL)
       {
         QMessageBox::critical(mathdialog, "Error", "An error occurred when creating a new math function");

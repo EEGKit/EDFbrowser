@@ -45,6 +45,7 @@ int UI_Mainwindow::read_session_file(const char *path_session)
       math_func,
       math_func_cnt_before=0,
       math_func_cnt_after=0,
+      math_func_pk_hold_smpls=0,
       ravg_filter_cnt=0,
       fidfilter_cnt=0,
       order=1,
@@ -752,7 +753,23 @@ int UI_Mainwindow::read_session_file(const char *path_session)
         return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
       }
 
-      newsignalcomp->math_func_before[newsignalcomp->math_func_cnt_before] = create_math_func(math_func);
+      xml_go_up(xml_hdl);
+
+      if(xml_goto_nth_element_inside(xml_hdl, "pk_hold_smpls", 0))
+      {
+        return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+      }
+      if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+      {
+        return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+      }
+      math_func_pk_hold_smpls = atoi(result);
+      if(math_func_pk_hold_smpls < 0)
+      {
+        return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+      }
+
+      newsignalcomp->math_func_before[newsignalcomp->math_func_cnt_before] = create_math_func(math_func, math_func_pk_hold_smpls);
       if(newsignalcomp->math_func_before[newsignalcomp->math_func_cnt_before] == NULL)
       {
         return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
@@ -784,7 +801,23 @@ int UI_Mainwindow::read_session_file(const char *path_session)
         return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
       }
 
-      newsignalcomp->math_func_after[newsignalcomp->math_func_cnt_after] = create_math_func(math_func);
+      xml_go_up(xml_hdl);
+
+      if(xml_goto_nth_element_inside(xml_hdl, "pk_hold_smpls", 0))
+      {
+        return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+      }
+      if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+      {
+        return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+      }
+      math_func_pk_hold_smpls = atoi(result);
+      if(math_func_pk_hold_smpls < 0)
+      {
+        return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+      }
+
+      newsignalcomp->math_func_after[newsignalcomp->math_func_cnt_after] = create_math_func(math_func, math_func_pk_hold_smpls);
       if(newsignalcomp->math_func_after[newsignalcomp->math_func_cnt_after] == NULL)
       {
         return session_format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);

@@ -63,8 +63,11 @@ QDialog        *mathdialog;
 QRadioButton  *sqrt_rbutton,
               *square_rbutton,
               *abs_rbutton,
+              *pk_hold_rbutton,
               *before_rbutton,
               *after_rbutton;
+
+QSpinBox      *pk_hold_spinbox;
 
 QGroupBox     *func_bgroup,
               *when_bgroup;
@@ -79,6 +82,7 @@ QLabel         *listlabel;
 private slots:
 
 void apply_button_clicked();
+void pk_hold_rbutton_clicked(bool);
 
 };
 

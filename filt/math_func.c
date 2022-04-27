@@ -34,10 +34,11 @@ static const char math_func_descr[MATH_MAX_FUNCS][32]=
   "Square",
   "Square Root",
   "Absolute",
+  "Peak Hold",
 };
 
 
-struct math_func_settings * create_math_func(int func_f)
+struct math_func_settings * create_math_func(int func_f, int pk_smpls)
 {
   struct math_func_settings *st;
 
@@ -52,6 +53,19 @@ struct math_func_settings * create_math_func(int func_f)
   st->func = func_f;
 
   strlcpy(st->descr, math_func_descr[func_f], 32);
+
+  if(func_f == MATH_FUNC_PK_HOLD)
+  {
+    if(pk_smpls < 1)
+    {
+      free(st);
+      return NULL;
+    }
+
+    st->pk_hold_smpls_set = pk_smpls;
+
+    snprintf(st->descr + strlen(st->descr), 32 - strlen(st->descr), " %i smpls", pk_smpls);
+  }
 
   return st;
 }
@@ -104,10 +118,23 @@ double run_math_func(double val, struct math_func_settings *st)
       {
         return fabs(val);
       }
-      else if(st->func == MATH_FUNC_NONE)
+      else if(st->func == MATH_FUNC_PK_HOLD)
         {
-          return val;
+          st->pk_hold_smpl_cntr++;
+
+          if((val > st->pk_hold_val) || (st->pk_hold_smpl_cntr >= st->pk_hold_smpls_set))
+          {
+            st->pk_hold_val = val;
+            st->pk_hold_smpl_cntr = 0;
+            return val;
+          }
+
+          return st->pk_hold_val;
         }
+        else if(st->func == MATH_FUNC_NONE)
+          {
+            return val;
+          }
 
   return 0;
 }

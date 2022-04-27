@@ -230,6 +230,8 @@ void UI_SaveMontagewindow::SaveButtonClicked()
 
         fprintf(mtgfile, "      <func>%i</func>\n", mainwindow->signalcomp[i]->math_func_before[j]->func);
 
+        fprintf(mtgfile, "      <pk_hold_smpls>%i</pk_hold_smpls>\n", mainwindow->signalcomp[i]->math_func_before[j]->pk_hold_smpls_set);
+
         fprintf(mtgfile, "    </math_func_before>\n");
       }
 
@@ -295,6 +297,8 @@ void UI_SaveMontagewindow::SaveButtonClicked()
         fprintf(mtgfile, "    <math_func_after>\n");
 
         fprintf(mtgfile, "      <func>%i</func>\n", mainwindow->signalcomp[i]->math_func_after[j]->func);
+
+        fprintf(mtgfile, "      <pk_hold_smpls>%i</pk_hold_smpls>\n", mainwindow->signalcomp[i]->math_func_after[j]->pk_hold_smpls_set);
 
         fprintf(mtgfile, "    </math_func_after>\n");
       }

@@ -94,6 +94,12 @@ void UI_ViewSessionwindow::SelectButtonClicked()
       signal_cnt,
       filters_read,
       color,
+      math_funcs_before_read,
+      math_funcs_after_read,
+      math_func,
+      math_func_cnt_before=0,
+      math_func_cnt_after=0,
+      math_func_pk_hold_smpls=0,
       filter_cnt=0,
       spike_filter_cnt=0,
       ravg_filter_cnt=0,
@@ -163,7 +169,9 @@ void UI_ViewSessionwindow::SelectButtonClicked()
                 *powerspectrumdockItem,
                 *hypnogramItem,
                 *cdsaItem,
-                *tmp_item=NULL;
+                *tmp_item=NULL,
+                *math_item_before=NULL,
+                *math_item_after=NULL;
 
   struct xml_handle *xml_hdl=NULL;
 
@@ -495,6 +503,34 @@ void UI_ViewSessionwindow::SelectButtonClicked()
       xml_go_up(xml_hdl);
     }
 
+    if(!(xml_goto_nth_element_inside(xml_hdl, "math_func_cnt_before", 0)))
+    {
+      if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+      {
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
+        return;
+      }
+      math_func_cnt_before = atoi(result);
+      if(math_func_cnt_before < 0)  math_func_cnt_before = 0;
+      if(math_func_cnt_before > MAXMATHFUNCS)  math_func_cnt_before = MAXMATHFUNCS;
+
+      xml_go_up(xml_hdl);
+    }
+
+    if(!(xml_goto_nth_element_inside(xml_hdl, "math_func_cnt_after", 0)))
+    {
+      if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+      {
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
+        return;
+      }
+      math_func_cnt_after = atoi(result);
+      if(math_func_cnt_after < 0)  math_func_cnt_after = 0;
+      if(math_func_cnt_after > MAXMATHFUNCS)  math_func_cnt_after = MAXMATHFUNCS;
+
+      xml_go_up(xml_hdl);
+    }
+
     if(!(xml_goto_nth_element_inside(xml_hdl, "filter_cnt", 0)))
     {
       if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
@@ -685,6 +721,70 @@ void UI_ViewSessionwindow::SelectButtonClicked()
     signalItem->appendRow(new QStandardItem(edf_path));
 
     signalItem->appendRow(new QStandardItem(composition_txt));
+
+
+    if(math_func_cnt_before)
+    {
+      math_item_before = new QStandardItem("Math functions (before filtering)");
+
+      signalItem->appendRow(math_item_before);
+
+      for(math_funcs_before_read=0; math_funcs_before_read<math_func_cnt_before; math_funcs_before_read++)
+      {
+        if(xml_goto_nth_element_inside(xml_hdl, "math_func_before", math_funcs_before_read))
+        {
+          view_session_format_error(__FILE__, __LINE__, xml_hdl);
+          return;
+        }
+
+        if(xml_goto_nth_element_inside(xml_hdl, "func", 0))
+        {
+          view_session_format_error(__FILE__, __LINE__, xml_hdl);
+          return;
+        }
+        if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+        {
+          view_session_format_error(__FILE__, __LINE__, xml_hdl);
+          return;
+        }
+        math_func = atoi(result);
+        if((math_func < 0) || (math_func >= MATH_MAX_FUNCS))
+        {
+          view_session_format_error(__FILE__, __LINE__, xml_hdl);
+          return;
+        }
+
+        xml_go_up(xml_hdl);
+
+        if(xml_goto_nth_element_inside(xml_hdl, "pk_hold_smpls", 0))
+        {
+          view_session_format_error(__FILE__, __LINE__, xml_hdl);
+          return;
+        }
+        if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+        {
+          view_session_format_error(__FILE__, __LINE__, xml_hdl);
+          return;
+        }
+        math_func_pk_hold_smpls = atoi(result);
+        if(math_func_pk_hold_smpls < 0)
+        {
+          view_session_format_error(__FILE__, __LINE__, xml_hdl);
+          return;
+        }
+
+        strlcpy(str3, "Math function: ", 64);
+        get_math_func_descr(math_func, str3 + strlen(str3), 64 - strlen(str3));
+        if(math_func == MATH_FUNC_PK_HOLD)
+        {
+          snprintf(str3 + strlen(str3), 64 - strlen(str3), " %i smpls", math_func_pk_hold_smpls);
+        }
+        math_item_before->appendRow(new QStandardItem(str3));
+
+        xml_go_up(xml_hdl);
+        xml_go_up(xml_hdl);
+      }
+    }
 
     filterItem = new QStandardItem("Filters");
 
@@ -1008,6 +1108,69 @@ void UI_ViewSessionwindow::SelectButtonClicked()
 
       xml_go_up(xml_hdl);
       xml_go_up(xml_hdl);
+    }
+
+    if(math_func_cnt_after)
+    {
+      math_item_after = new QStandardItem("Math functions (after filtering)");
+
+      signalItem->appendRow(math_item_after);
+
+      for(math_funcs_after_read=0; math_funcs_after_read<math_func_cnt_after; math_funcs_after_read++)
+      {
+        if(xml_goto_nth_element_inside(xml_hdl, "math_func_after", math_funcs_after_read))
+        {
+          view_session_format_error(__FILE__, __LINE__, xml_hdl);
+          return;
+        }
+
+        if(xml_goto_nth_element_inside(xml_hdl, "func", 0))
+        {
+          view_session_format_error(__FILE__, __LINE__, xml_hdl);
+          return;
+        }
+        if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+        {
+          view_session_format_error(__FILE__, __LINE__, xml_hdl);
+          return;
+        }
+        math_func = atoi(result);
+        if((math_func < 0) || (math_func >= MATH_MAX_FUNCS))
+        {
+          view_session_format_error(__FILE__, __LINE__, xml_hdl);
+          return;
+        }
+
+        xml_go_up(xml_hdl);
+
+        if(xml_goto_nth_element_inside(xml_hdl, "pk_hold_smpls", 0))
+        {
+          view_session_format_error(__FILE__, __LINE__, xml_hdl);
+          return;
+        }
+        if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+        {
+          view_session_format_error(__FILE__, __LINE__, xml_hdl);
+          return;
+        }
+        math_func_pk_hold_smpls = atoi(result);
+        if(math_func_pk_hold_smpls < 0)
+        {
+          view_session_format_error(__FILE__, __LINE__, xml_hdl);
+          return;
+        }
+
+        strlcpy(str3, "Math function: ", 64);
+        get_math_func_descr(math_func, str3 + strlen(str3), 64 - strlen(str3));
+        if(math_func == MATH_FUNC_PK_HOLD)
+        {
+          snprintf(str3 + strlen(str3), 64 - strlen(str3), " %i smpls", math_func_pk_hold_smpls);
+        }
+        math_item_after->appendRow(new QStandardItem(str3));
+
+        xml_go_up(xml_hdl);
+        xml_go_up(xml_hdl);
+      }
     }
 
     if(!xml_goto_nth_element_inside(xml_hdl, "plif_ecg_filter", 0))

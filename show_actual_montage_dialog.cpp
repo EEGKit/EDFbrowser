@@ -208,6 +208,10 @@ UI_ShowActualMontagewindow::UI_ShowActualMontagewindow(QWidget *w_parent)
       {
         strlcpy(str, "Math function: ", 64);
         get_math_func_descr(mainwindow->signalcomp[i]->math_func_before[j]->func, str + strlen(str), 64 - strlen(str));
+        if(mainwindow->signalcomp[i]->math_func_before[j]->func == MATH_FUNC_PK_HOLD)
+        {
+          snprintf(str + strlen(str), 64 - strlen(str), " %i smpls", mainwindow->signalcomp[i]->math_func_before[j]->pk_hold_smpls_set);
+        }
         math_item_before->appendRow(new QStandardItem(str));
       }
     }
@@ -387,6 +391,10 @@ UI_ShowActualMontagewindow::UI_ShowActualMontagewindow(QWidget *w_parent)
       {
         strlcpy(str, "Math function: ", 64);
         get_math_func_descr(mainwindow->signalcomp[i]->math_func_after[j]->func, str + strlen(str), 64 - strlen(str));
+        if(mainwindow->signalcomp[i]->math_func_after[j]->func == MATH_FUNC_PK_HOLD)
+        {
+          snprintf(str + strlen(str), 64 - strlen(str), " %i smpls", mainwindow->signalcomp[i]->math_func_after[j]->pk_hold_smpls_set);
+        }
         math_item_after->appendRow(new QStandardItem(str));
       }
     }

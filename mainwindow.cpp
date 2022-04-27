@@ -571,6 +571,8 @@ void UI_Mainwindow::save_session()
 
       fprintf(pro_file, "      <func>%i</func>\n", signalcomp[i]->math_func_before[j]->func);
 
+      fprintf(pro_file, "      <pk_hold_smpls>%i</pk_hold_smpls>\n", signalcomp[i]->math_func_before[j]->pk_hold_smpls_set);
+
       fprintf(pro_file, "    </math_func_before>\n");
     }
 
@@ -636,6 +638,8 @@ void UI_Mainwindow::save_session()
       fprintf(pro_file, "    <math_func_after>\n");
 
       fprintf(pro_file, "      <func>%i</func>\n", signalcomp[i]->math_func_after[j]->func);
+
+      fprintf(pro_file, "      <pk_hold_smpls>%i</pk_hold_smpls>\n", signalcomp[i]->math_func_after[j]->pk_hold_smpls_set);
 
       fprintf(pro_file, "    </math_func_after>\n");
     }
