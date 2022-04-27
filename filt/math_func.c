@@ -32,6 +32,11 @@ struct math_func_settings * create_math_func(int func_f)
 {
   struct math_func_settings *st;
 
+  if((func_f < 0) || (func_f > 3))
+  {
+    return NULL;
+  }
+
   st = (struct math_func_settings *) calloc(1, sizeof(struct math_func_settings));
   if(st==NULL)  return NULL;
 
@@ -71,10 +76,14 @@ double run_math_func(double val, struct math_func_settings *st)
           return sqrt(val);
         }
     }
-    else if(st->func == MATH_FUNC_NONE)
+    else if(st->func == MATH_FUNC_ABS)
       {
-        return val;
+        return fabs(val);
       }
+      else if(st->func == MATH_FUNC_NONE)
+        {
+          return val;
+        }
 
   return 0;
 }

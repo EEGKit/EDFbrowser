@@ -846,7 +846,7 @@ int UI_LoadMontagewindow::LoadButtonClicked()
         return format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
       }
       math_func = atoi(result);
-      if((math_func < 1) || (math_func > 2))
+      if((math_func < 0) || (math_func > 3))
       {
         return format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
       }
@@ -878,7 +878,7 @@ int UI_LoadMontagewindow::LoadButtonClicked()
         return format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
       }
       math_func = atoi(result);
-      if((math_func < 1) || (math_func > 2))
+      if((math_func < 0) || (math_func > 3))
       {
         return format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
       }

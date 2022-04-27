@@ -214,6 +214,14 @@ UI_ShowActualMontagewindow::UI_ShowActualMontagewindow(QWidget *w_parent)
           {
             math_item_before->appendRow(new QStandardItem("Math function: Square Root"));
           }
+          else if(mainwindow->signalcomp[i]->math_func_before[j]->func == MATH_FUNC_ABS)
+            {
+              math_item_before->appendRow(new QStandardItem("Math function: Absolute"));
+            }
+            else if(mainwindow->signalcomp[i]->math_func_before[j]->func == MATH_FUNC_NONE)
+              {
+                math_item_before->appendRow(new QStandardItem("Math function: None"));
+              }
       }
     }
 
@@ -398,6 +406,14 @@ UI_ShowActualMontagewindow::UI_ShowActualMontagewindow(QWidget *w_parent)
           {
             math_item_after->appendRow(new QStandardItem("Math function: Square Root"));
           }
+          else if(mainwindow->signalcomp[i]->math_func_after[j]->func == MATH_FUNC_ABS)
+            {
+              math_item_after->appendRow(new QStandardItem("Math function: Absolute"));
+            }
+            else if(mainwindow->signalcomp[i]->math_func_after[j]->func == MATH_FUNC_NONE)
+              {
+                math_item_after->appendRow(new QStandardItem("Math function: None"));
+              }
       }
     }
 

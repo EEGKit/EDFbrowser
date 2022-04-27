@@ -58,6 +58,7 @@ UI_MATH_func_dialog::UI_MATH_func_dialog(QWidget *w_parent)
 
   square_rbutton = new QRadioButton("Square");
   sqrt_rbutton = new QRadioButton("Square Root");
+  abs_rbutton = new QRadioButton("Absolute");
 
   before_rbutton = new QRadioButton("Before filtering");
   after_rbutton = new QRadioButton("After filtering");
@@ -95,6 +96,7 @@ UI_MATH_func_dialog::UI_MATH_func_dialog(QWidget *w_parent)
   QVBoxLayout *vlayout4 = new QVBoxLayout;
   vlayout4->addWidget(square_rbutton);
   vlayout4->addWidget(sqrt_rbutton);
+  vlayout4->addWidget(abs_rbutton);
   vlayout4->addStretch(1);
 
   func_bgroup->setLayout(vlayout4);
@@ -145,8 +147,6 @@ UI_MATH_func_dialog::UI_MATH_func_dialog(QWidget *w_parent)
 }
 
 
-
-
 void UI_MATH_func_dialog::apply_button_clicked()
 {
   int i, s, n, functype=MATH_FUNC_NONE, before=0;
@@ -169,6 +169,14 @@ void UI_MATH_func_dialog::apply_button_clicked()
     {
       functype = MATH_FUNC_SQUARE;
     }
+    else if(abs_rbutton->isChecked() == true)
+      {
+        functype = MATH_FUNC_ABS;
+      }
+      else
+      {
+        functype = MATH_FUNC_NONE;
+      }
 
   if(before_rbutton->isChecked() == true)
   {

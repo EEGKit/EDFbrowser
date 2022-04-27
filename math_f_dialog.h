@@ -62,6 +62,7 @@ QDialog        *mathdialog;
 
 QRadioButton  *sqrt_rbutton,
               *square_rbutton,
+              *abs_rbutton,
               *before_rbutton,
               *after_rbutton;
 

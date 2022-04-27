@@ -42,6 +42,7 @@ extern "C" {
 #define MATH_FUNC_NONE      (0)
 #define MATH_FUNC_SQUARE    (1)
 #define MATH_FUNC_SQRT      (2)
+#define MATH_FUNC_ABS       (3)
 
 
 struct math_func_settings{
