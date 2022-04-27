@@ -43,15 +43,19 @@ extern "C" {
 #define MATH_FUNC_SQUARE    (1)
 #define MATH_FUNC_SQRT      (2)
 #define MATH_FUNC_ABS       (3)
+#define MATH_MAX_FUNCS      (4)
 
 
 struct math_func_settings{
   int func;
+  char descr[32];
 };
+
 
 struct math_func_settings * create_math_func(int);
 double run_math_func(double, struct math_func_settings *);
 void free_math_func(struct math_func_settings *);
+int get_math_func_descr(int, char *, int);
 
 #ifdef __cplusplus
 } /* extern "C" */

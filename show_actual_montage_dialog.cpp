@@ -206,22 +206,9 @@ UI_ShowActualMontagewindow::UI_ShowActualMontagewindow(QWidget *w_parent)
 
       for(j=0; j<mainwindow->signalcomp[i]->math_func_cnt_before; j++)
       {
-        if(mainwindow->signalcomp[i]->math_func_before[j]->func == MATH_FUNC_SQUARE)
-        {
-          math_item_before->appendRow(new QStandardItem("Math function: Square"));
-        }
-        else if(mainwindow->signalcomp[i]->math_func_before[j]->func == MATH_FUNC_SQRT)
-          {
-            math_item_before->appendRow(new QStandardItem("Math function: Square Root"));
-          }
-          else if(mainwindow->signalcomp[i]->math_func_before[j]->func == MATH_FUNC_ABS)
-            {
-              math_item_before->appendRow(new QStandardItem("Math function: Absolute"));
-            }
-            else if(mainwindow->signalcomp[i]->math_func_before[j]->func == MATH_FUNC_NONE)
-              {
-                math_item_before->appendRow(new QStandardItem("Math function: None"));
-              }
+        strlcpy(str, "Math function: ", 64);
+        get_math_func_descr(mainwindow->signalcomp[i]->math_func_before[j]->func, str + strlen(str), 64 - strlen(str));
+        math_item_before->appendRow(new QStandardItem(str));
       }
     }
 
@@ -398,22 +385,9 @@ UI_ShowActualMontagewindow::UI_ShowActualMontagewindow(QWidget *w_parent)
 
       for(j=0; j<mainwindow->signalcomp[i]->math_func_cnt_after; j++)
       {
-        if(mainwindow->signalcomp[i]->math_func_after[j]->func == MATH_FUNC_SQUARE)
-        {
-          math_item_after->appendRow(new QStandardItem("Math function: Square"));
-        }
-        else if(mainwindow->signalcomp[i]->math_func_after[j]->func == MATH_FUNC_SQRT)
-          {
-            math_item_after->appendRow(new QStandardItem("Math function: Square Root"));
-          }
-          else if(mainwindow->signalcomp[i]->math_func_after[j]->func == MATH_FUNC_ABS)
-            {
-              math_item_after->appendRow(new QStandardItem("Math function: Absolute"));
-            }
-            else if(mainwindow->signalcomp[i]->math_func_after[j]->func == MATH_FUNC_NONE)
-              {
-                math_item_after->appendRow(new QStandardItem("Math function: None"));
-              }
+        strlcpy(str, "Math function: ", 64);
+        get_math_func_descr(mainwindow->signalcomp[i]->math_func_after[j]->func, str + strlen(str), 64 - strlen(str));
+        math_item_after->appendRow(new QStandardItem(str));
       }
     }
 

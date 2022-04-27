@@ -511,28 +511,15 @@ void UI_ViewMontagewindow::SelectButtonClicked()
           return;
         }
         math_func = atoi(result);
-        if((math_func < 0) || (math_func > 3))
+        if((math_func < 0) || (math_func >= MATH_MAX_FUNCS))
         {
           format_error(__FILE__, __LINE__, xml_hdl);
           return;
         }
 
-        if(math_func == MATH_FUNC_SQUARE)
-        {
-          math_item_before->appendRow(new QStandardItem("Math function: Square"));
-        }
-        else if(math_func == MATH_FUNC_SQRT)
-          {
-            math_item_before->appendRow(new QStandardItem("Math function: Square Root"));
-          }
-          else if(math_func == MATH_FUNC_ABS)
-            {
-              math_item_before->appendRow(new QStandardItem("Math function: Absolute"));
-            }
-            else if(math_func == MATH_FUNC_NONE)
-              {
-                math_item_before->appendRow(new QStandardItem("Math function: None"));
-              }
+        strlcpy(str3, "Math function: ", 64);
+        get_math_func_descr(math_func, str3 + strlen(str3), 64 - strlen(str3));
+        math_item_before->appendRow(new QStandardItem(str3));
 
         xml_go_up(xml_hdl);
         xml_go_up(xml_hdl);
@@ -865,7 +852,7 @@ void UI_ViewMontagewindow::SelectButtonClicked()
 
     if(math_func_cnt_after)
     {
-      math_item_after = new QStandardItem("Math functions (before filtering)");
+      math_item_after = new QStandardItem("Math functions (after filtering)");
 
       signalItem->appendRow(math_item_after);
 
@@ -888,28 +875,15 @@ void UI_ViewMontagewindow::SelectButtonClicked()
           return;
         }
         math_func = atoi(result);
-        if((math_func < 0) || (math_func > 3))
+        if((math_func < 0) || (math_func >= MATH_MAX_FUNCS))
         {
           format_error(__FILE__, __LINE__, xml_hdl);
           return;
         }
 
-        if(math_func == MATH_FUNC_SQUARE)
-        {
-          math_item_after->appendRow(new QStandardItem("Math function: Square"));
-        }
-        else if(math_func == MATH_FUNC_SQRT)
-          {
-            math_item_after->appendRow(new QStandardItem("Math function: Square Root"));
-          }
-          else if(math_func == MATH_FUNC_ABS)
-            {
-              math_item_after->appendRow(new QStandardItem("Math function: Absolute"));
-            }
-            else if(math_func == MATH_FUNC_NONE)
-              {
-                math_item_after->appendRow(new QStandardItem("Math function: None"));
-              }
+        strlcpy(str3, "Math function: ", 64);
+        get_math_func_descr(math_func, str3 + strlen(str3), 64 - strlen(str3));
+        math_item_after->appendRow(new QStandardItem(str3));
 
         xml_go_up(xml_hdl);
         xml_go_up(xml_hdl);

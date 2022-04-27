@@ -28,11 +28,20 @@
 #include "math_func.h"
 
 
+static const char math_func_descr[MATH_MAX_FUNCS][32]=
+{
+  "None",
+  "Square",
+  "Square Root",
+  "Absolute",
+};
+
+
 struct math_func_settings * create_math_func(int func_f)
 {
   struct math_func_settings *st;
 
-  if((func_f < 0) || (func_f > 3))
+  if((func_f < 0) || (func_f >= MATH_MAX_FUNCS))
   {
     return NULL;
   }
@@ -42,7 +51,22 @@ struct math_func_settings * create_math_func(int func_f)
 
   st->func = func_f;
 
+  strlcpy(st->descr, math_func_descr[func_f], 32);
+
   return st;
+}
+
+
+int get_math_func_descr(int func_f, char *dest, int sz)
+{
+  if((func_f < 0) || (func_f >= MATH_MAX_FUNCS) || (dest == NULL) || (sz < 1))
+  {
+    return -1;
+  }
+
+  strlcpy(dest, math_func_descr[func_f], sz);
+
+  return 0;
 }
 
 
