@@ -332,7 +332,10 @@ void UI_ASCII2EDFapp::gobuttonpressed()
       smpls_per_block=0,
       bufsize=0,
       edf_signal,
-      len;
+      len,
+      total_lines;
+
+  long long file_sz;
 
   char path[MAX_PATH_LENGTH]="",
        txt_string[ASCII_MAX_LINE_LEN]="",
@@ -400,6 +403,10 @@ void UI_ASCII2EDFapp::gobuttonpressed()
   }
 
 /********************** check file *************************/
+
+  fseeko(inputfile, 0LL, SEEK_END);
+
+  file_sz = ftello(inputfile);
 
   rewind(inputfile);
 
@@ -483,6 +490,8 @@ void UI_ASCII2EDFapp::gobuttonpressed()
       column_end = 0;
     }
   }
+
+  total_lines = (file_sz - headersize) / (i + 1);
 
   if(i >= (ASCII_MAX_LINE_LEN - 2))
   {
@@ -996,6 +1005,13 @@ void UI_ASCII2EDFapp::gobuttonpressed()
 
   line_nr = startline;
 
+  QProgressDialog progress("Writing EDF file...", "Abort", 0, total_lines);
+  progress.setWindowModality(Qt::WindowModal);
+  progress.setMinimumDuration(200);
+  progress.setValue(1);
+
+  qApp->processEvents();
+
   while(1)
   {
     temp = fgetc(inputfile);
@@ -1080,6 +1096,7 @@ void UI_ASCII2EDFapp::gobuttonpressed()
           break;
         }
 
+        progress.reset();
         QApplication::restoreOverrideCursor();
         snprintf(txt_string, ASCII_MAX_LINE_LEN, "Error, number of columns in line %i is wrong.\n", line_nr);
         QMessageBox messagewindow(QMessageBox::Critical, "Error", txt_string);
@@ -1125,6 +1142,7 @@ void UI_ASCII2EDFapp::gobuttonpressed()
       {
         if(fwrite(buf, bufsize, 1, outputfile)!=1)
         {
+          progress.reset();
           QApplication::restoreOverrideCursor();
           QMessageBox messagewindow(QMessageBox::Critical, "Error", "Write error during conversion.");
           messagewindow.exec();
@@ -1138,6 +1156,13 @@ void UI_ASCII2EDFapp::gobuttonpressed()
         datarecords++;
 
         k = 0;
+
+        if(progress.wasCanceled() == true)
+        {
+          break;
+        }
+
+        progress.setValue(line_nr);
       }
 
       str_start = 0;
@@ -1159,6 +1184,7 @@ void UI_ASCII2EDFapp::gobuttonpressed()
 
     if(i>(ASCII_MAX_LINE_LEN - 2))
     {
+      progress.reset();
       QApplication::restoreOverrideCursor();
       snprintf(txt_string, ASCII_MAX_LINE_LEN, "Error, line %i is too long.\n", line_nr);
       QMessageBox messagewindow(QMessageBox::Critical, "Error", txt_string);
@@ -1171,6 +1197,7 @@ void UI_ASCII2EDFapp::gobuttonpressed()
     }
   }
 
+  progress.reset();
   QApplication::restoreOverrideCursor();
 
   fseeko(outputfile, 236LL, SEEK_SET);
