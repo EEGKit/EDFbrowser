@@ -754,13 +754,13 @@ void UI_cdsa_window::start_button_clicked()
   {
     if(ret_err == 1)
     {
-      QMessageBox::critical(myobjectDialog, "Error",
-                            "The system was not able to provide enough resources (memory) to perform the requested action.",
-                            QMessageBox::Close);
+      QMessageBox msgBox(QMessageBox::Critical, "Error", "The system was not able to provide enough resources (memory) to perform the requested action.", QMessageBox::Close);
+      msgBox.exec();
     }
     else
     {
-      QMessageBox::critical(myobjectDialog, "Error", "Internal error (-1)", QMessageBox::Close);
+      QMessageBox msgBox(QMessageBox::Critical, "Error", "Internal error (-1)", QMessageBox::Close);
+      msgBox.exec();
     }
     if(dat_f)
     {
