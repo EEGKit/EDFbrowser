@@ -766,7 +766,7 @@ void UI_FilterDialog::ApplyButtonClicked()
          frequency2,
          ripple;
 
-  char *err;
+  char *err=NULL;
 
   QListWidgetItem *item;
 

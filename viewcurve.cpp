@@ -2947,7 +2947,15 @@ void ViewCurve::exec_sidemenu(int signal_nr_intern)
   }
 
   sidemenuButton15 = new QPushButton;
-  sidemenuButton15->setText("Close");
+  sidemenuButton15->setText("aEEG");
+  if(mainwindow->live_stream_active)
+  {
+    sidemenuButton15->setEnabled(false);
+  }
+  sidemenuButton15->setEnabled(false);  //FIXME
+
+  sidemenuButton16 = new QPushButton;
+  sidemenuButton16->setText("Close");
 
   QGridLayout *gr = new QGridLayout;
   gr->addWidget(sidemenuButton1, 0, 1);
@@ -2965,6 +2973,7 @@ void ViewCurve::exec_sidemenu(int signal_nr_intern)
   gr->addWidget(sidemenuButton13, 12, 1);
   gr->addWidget(sidemenuButton14, 13, 1);
   gr->addWidget(sidemenuButton15, 14, 1);
+  gr->addWidget(sidemenuButton16, 15, 1);
   gr->setColumnStretch(0, 1000);
   gr->setColumnStretch(2, 1000);
 
@@ -2990,7 +2999,8 @@ void ViewCurve::exec_sidemenu(int signal_nr_intern)
   QObject::connect(sidemenuButton12,  SIGNAL(clicked()),                this,     SLOT(QRSdetectButton()));
   QObject::connect(sidemenuButton13,  SIGNAL(clicked()),                this,     SLOT(ECGdetectButton()));
   QObject::connect(sidemenuButton14,  SIGNAL(clicked()),                this,     SLOT(cdsa_button()));
-  QObject::connect(sidemenuButton15,  SIGNAL(clicked()),                this,     SLOT(sidemenu_close()));
+  QObject::connect(sidemenuButton15,  SIGNAL(clicked()),                this,     SLOT(aeeg_button()));
+  QObject::connect(sidemenuButton16,  SIGNAL(clicked()),                this,     SLOT(sidemenu_close()));
   QObject::connect(AliasLineEdit,     SIGNAL(returnPressed()),          this,     SLOT(sidemenu_close()));
 
   sidemenu->exec();
@@ -3275,6 +3285,46 @@ void ViewCurve::cdsa_button()
     if(mainwindow->cdsa_dock[i] == NULL)
     {
       UI_cdsa_window wndw(mainwindow, mainwindow->signalcomp[signal_nr], i);
+
+      break;
+    }
+  }
+}
+
+
+void ViewCurve::aeeg_button()
+{
+  int i;
+
+  sidemenu->close();
+
+  if(signal_nr >= mainwindow->signalcomps)
+  {
+    return;
+  }
+
+  if(mainwindow->signalcomp[signal_nr]->ecg_filter != NULL)
+  {
+    return;
+  }
+
+  if(mainwindow->signalcomp[signal_nr]->edfhdr->edfparam[mainwindow->signalcomp[signal_nr]->edfsignal[0]].sf_f < 99.999)
+  {
+    QMessageBox::critical(this, "Error", "Samplefrequency must be at least 100Hz.");
+    return;
+  }
+
+  if(mainwindow->signalcomp[signal_nr]->edfhdr->recording_len_sec < 30)
+  {
+    QMessageBox::critical(this, "Error", "Recording length must be at least 30 seconds.");
+    return;
+  }
+
+  for(i=0; i<MAXAEEGDOCKS; i++)
+  {
+    if(mainwindow->aeeg_dock[i] == NULL)
+    {
+      UI_aeeg_window wndw(mainwindow, mainwindow->signalcomp[signal_nr], i);
 
       break;
     }

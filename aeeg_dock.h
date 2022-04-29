@@ -38,8 +38,6 @@
 #include "global.h"
 #include "mainwindow.h"
 #include "utils.h"
-#include "filteredblockread.h"
-
 
 
 class UI_Mainwindow;

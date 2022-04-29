@@ -234,7 +234,8 @@ private:
               *sidemenuButton12,
               *sidemenuButton13,
               *sidemenuButton14,
-              *sidemenuButton15;
+              *sidemenuButton15,
+              *sidemenuButton16;
 
   QDoubleSpinBox *ScaleBox,
                  *ScaleBox2;
@@ -287,6 +288,7 @@ protected slots:
   void signalInvert();
   void sidemenu_close();
   void cdsa_button();
+  void aeeg_button();
   void QRSdetectButton();
 
   void select_annot(bool);
