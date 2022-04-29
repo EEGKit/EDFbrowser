@@ -2128,6 +2128,47 @@ void UI_Mainwindow::show_cdsa_dock()
 }
 
 
+void UI_Mainwindow::show_aeeg_dock()
+{
+  int i;
+
+  if((!files_open) || (!signalcomps) || live_stream_active)  return;
+
+  if(signalcomps == 1)
+  {
+    if(signalcomp[0]->ecg_filter != NULL)
+    {
+      return;
+    }
+
+    if(signalcomp[0]->edfhdr->edfparam[signalcomp[0]->edfsignal[0]].sf_f < 99.999)
+    {
+      QMessageBox::critical(this, "Error", "Samplefrequency must be at least 100Hz.");
+      return;
+    }
+
+    if(signalcomp[0]->edfhdr->recording_len_sec < 30)
+    {
+      QMessageBox::critical(this, "Error", "Recording length must be at least 30 seconds.");
+      return;
+    }
+
+    for(i=0; i<MAXAEEGDOCKS; i++)
+    {
+      if(aeeg_dock[i] == NULL)
+      {
+        UI_aeeg_window wndw(this, signalcomp[0], i);
+        break;
+      }
+    }
+
+    return;
+  }
+
+  UI_SignalChooser signalchooserdialog(this, 6);
+}
+
+
 void UI_Mainwindow::show_hypnogram()
 {
   int i, file_num=0;

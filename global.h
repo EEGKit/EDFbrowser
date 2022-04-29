@@ -80,6 +80,7 @@
 #define MAXSPECTRUMDIALOGS                  (32)
 #define MAXSPECTRUMDOCKS                     (8)
 #define MAXCDSADOCKS                        (64)
+#define MAXAEEGDOCKS                        (64)
 #define MAXHYPNOGRAMDOCKS                   (64)
 #define MAXHRVDOCKS                         (64)
 #define MAXPREDEFINEDMONTAGES               (12)
@@ -328,6 +329,7 @@ struct signalcompblock{
         double zratio_crossoverfreq;
         int spectr_dialog[MAXSPECTRUMDIALOGS];
         int cdsa_idx[MAXCDSADOCKS];
+        int aeeg_idx[MAXAEEGDOCKS];
         int avg_dialog[MAXAVERAGECURVEDIALOGS];
         int zscoredialog[MAXZSCOREDIALOGS];
         int annot_created_by_rect_draw_active;

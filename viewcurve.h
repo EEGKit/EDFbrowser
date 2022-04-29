@@ -56,6 +56,7 @@
 #include "statistics_dialog.h"
 #include "z_score_dialog.h"
 #include "cdsa_dialog.h"
+#include "aeeg_dialog.h"
 #include "run_qrs_detector.h"
 #include "averager_dialog.h"
 #include "edf_helper.h"

@@ -102,7 +102,10 @@
 #include "plif_ecg_subtract_filter_dialog.h"
 #include "export_filtered_signals.h"
 #include "fir_filter_dialog.h"
+#include "cdsa_dialog.h"
+#include "aeeg_dialog.h"
 #include "cdsa_dock.h"
+#include "aeeg_dock.h"
 #include "hypnogram_dialog.h"
 #include "hypnogram_dock.h"
 #include "run_qrs_detector.h"
@@ -153,6 +156,7 @@ class UI_FreqSpectrumWindow;
 class UI_AverageCurveWindow;
 class UI_ZScoreWindow;
 class UI_cdsa_dock;
+class UI_aeeg_dock;
 class UI_hypnogram_dock;
 class UI_hrv_dock;
 
@@ -224,6 +228,7 @@ public:
       cdsa_pwr_voltage,
       cdsa_max_pwr,
       cdsa_min_pwr,
+      aeeg_segmentlen,
       use_threads,
       check_for_updates,
       amplitude_doubler,
@@ -315,7 +320,9 @@ long long annot_editor_user_button_epoch_len,
          default_amplitude,
          cdsa_max_voltage,
          w_scaling,
-         h_scaling;
+         h_scaling,
+         aeeg_min_hz,
+         aeeg_max_hz;
 
   struct{
           double crossoverfreq;
@@ -360,6 +367,8 @@ long long annot_editor_user_button_epoch_len,
   UI_FreqSpectrumWindow *spectrumdialog[MAXSPECTRUMDIALOGS];
 
   UI_cdsa_dock *cdsa_dock[MAXCDSADOCKS];
+
+  UI_aeeg_dock *aeeg_dock[MAXAEEGDOCKS];
 
   UI_hypnogram_dock *hypnogram_dock[MAXHYPNOGRAMDOCKS];
 
@@ -704,6 +713,7 @@ private slots:
   void edit_predefined_montages();
   void show_spectrum_dock();
   void show_cdsa_dock();
+  void show_aeeg_dock();
   void show_hypnogram();
   void page_3cmsec();
   void page_25mmsec();

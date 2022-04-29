@@ -240,6 +240,41 @@ void UI_SignalChooser::call_sidemenu(QListWidgetItem *)
     }
   }
 
+  if(task == 6)
+  {
+    signal_nr2 = list->currentRow();
+
+    if(mainwindow->signalcomp[signal_nr2]->ecg_filter != NULL)
+    {
+      signalchooser_dialog->close();
+      return;
+    }
+
+    if(mainwindow->signalcomp[signal_nr2]->edfhdr->edfparam[mainwindow->signalcomp[signal_nr2]->edfsignal[0]].sf_f < 99.999)
+    {
+      QMessageBox::critical(signalchooser_dialog, "Error", "Samplefrequency must be at least 100Hz.");
+      signalchooser_dialog->close();
+      return;
+    }
+
+    if(mainwindow->signalcomp[signal_nr2]->edfhdr->recording_len_sec < 30)
+    {
+      QMessageBox::critical(signalchooser_dialog, "Error", "Recording length must be at least 30 seconds.");
+      signalchooser_dialog->close();
+      return;
+    }
+
+    for(i=0; i<MAXAEEGDOCKS; i++)
+    {
+      if(mainwindow->aeeg_dock[i] == NULL)
+      {
+        UI_aeeg_window wndw(mainwindow, mainwindow->signalcomp[signal_nr2], i);
+
+        break;
+      }
+    }
+  }
+
   if(task == 2)
   {
     AdjustFilterSettings filtersettings(mainwindow->signalcomp[list->currentRow()], mainwindow->maincurve);

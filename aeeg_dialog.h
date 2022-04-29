@@ -3,7 +3,7 @@
 *
 * Author: Teunis van Beelen
 *
-* Copyright (C) 2007 - 2022 Teunis van Beelen
+* Copyright (C) 2022 Teunis van Beelen
 *
 * Email: teuniz@protonmail.com
 *
@@ -25,85 +25,76 @@
 */
 
 
-
-
-#ifndef SIGNAL_CHOOSERFORM1_H
-#define SIGNAL_CHOOSERFORM1_H
-
+#ifndef UI_AEEGFORM_H
+#define UI_AEEGFORM_H
 
 
 #include "qt_headers.h"
 
-#include <stdio.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 
 #include "global.h"
 #include "mainwindow.h"
-#include "viewcurve.h"
-#include "adjustfiltersettings.h"
 #include "utils.h"
-#include "edf_helper.h"
-#include "cdsa_dialog.h"
-#include "aeeg_dialog.h"
-#include "cdsa_dock.h"
-#include "aeeg_dock.h"
-#include "hypnogram_dialog.h"
-#include "hypnogram_dock.h"
-
-#include "filt/ecg_filter.h"
+#include "filteredblockread.h"
+//#include "aeeg_dock.h"
 
 
 
 class UI_Mainwindow;
-class ViewCurve;
 
 
 
-class UI_SignalChooser : public QObject
+class UI_aeeg_window : public QObject
 {
   Q_OBJECT
 
 public:
-  UI_SignalChooser(QWidget *, int, int *sgnl_nr = NULL);
+  UI_aeeg_window(QWidget *, struct signalcompblock *, int, struct aeeg_dock_param_struct *p_par=NULL);
 
-  UI_Mainwindow *mainwindow;
-
+  UI_Mainwindow  *mainwindow;
 
 private:
 
-QDialog      *signalchooser_dialog;
+  int sf, aeeg_instance_nr;
 
-QPushButton  *CloseButton,
-             *UpButton,
-             *DownButton,
-             *DeleteButton,
-             *InvertButton,
-             *EditButton;
+  struct signalcompblock *signalcomp;
 
-QListWidget  *list;
+  struct aeeg_dock_param_struct *no_dialog_params;
 
-int task,
-    *signal_nr;
+  QDialog       *myobjectDialog;
 
-void load_signalcomps(void);
+  QFormLayout   *flayout;
 
-int get_selectionlist(int *);
+  QSpinBox      *segmentlen_spinbox;
+
+  QDoubleSpinBox *min_hz_spinbox,
+                 *max_hz_spinbox;
+
+  QPushButton   *close_button,
+                *start_button,
+                *default_button;
 
 private slots:
 
-void call_sidemenu(QListWidgetItem *);
-void signalUp();
-void signalDown();
-void signalDelete();
-void signalInvert();
-void signalEdit();
-void item_activated(QListWidgetItem *);
+  void start_button_clicked();
+  void default_button_clicked();
+  void segmentlen_spinbox_changed(int);
+  void min_hz_spinbox_changed(int);
+  void max_hz_spinbox_changed(int);
 
 };
 
+#endif
 
 
-#endif // SIGNAL_CHOOSERFORM1_H
+
+
+
+
+
+
 
 

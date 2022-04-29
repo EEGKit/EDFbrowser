@@ -208,6 +208,11 @@ UI_Mainwindow::UI_Mainwindow()
     cdsa_dock[i] = NULL;
   }
 
+  for(i=0; i<MAXAEEGDOCKS; i++)
+  {
+    aeeg_dock[i] = NULL;
+  }
+
   for(i=0; i<MAXHYPNOGRAMDOCKS; i++)
   {
     hypnogram_dock[i] = NULL;
@@ -358,6 +363,10 @@ UI_Mainwindow::UI_Mainwindow()
   cdsa_max_voltage = 5;
   cdsa_log = 1;
   cdsa_pwr_voltage = 1;
+
+  aeeg_segmentlen = 30;
+  aeeg_min_hz = 2;
+  aeeg_max_hz = 15;
 
   strlcpy(hypnogram_stage_name[0], "W", 32);
   strlcpy(hypnogram_stage_name[1], "R", 32);
@@ -1056,6 +1065,7 @@ UI_Mainwindow::UI_Mainwindow()
   windowmenu->addAction("Annotation editor", this, SLOT(annotation_editor()));
   windowmenu->addAction("Power Spectrum", this, SLOT(show_spectrum_dock()));
   windowmenu->addAction("Color Density Spectral Array", this, SLOT(show_cdsa_dock()));
+//  windowmenu->addAction("aEEG", this, SLOT(show_aeeg_dock()));
   windowmenu->addAction("Hypnogram", this, SLOT(show_hypnogram()));
   menubar->addMenu(windowmenu);
 
