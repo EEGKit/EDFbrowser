@@ -321,8 +321,9 @@ long long annot_editor_user_button_epoch_len,
          cdsa_max_voltage,
          w_scaling,
          h_scaling,
-         aeeg_min_hz,
-         aeeg_max_hz;
+         aeeg_bp_min_hz,
+         aeeg_bp_max_hz,
+         aeeg_lp_hz;
 
   struct{
           double crossoverfreq;

@@ -49,8 +49,9 @@ struct aeeg_dock_param_struct
 {
   struct signalcompblock *signalcomp;
   int sf;
-  double min_hz;
-  double max_hz;
+  double bp_min_hz;
+  double bp_max_hz;
+  double lp_hz;
   int segment_len;
   int segments_in_recording;
   int instance_num;

@@ -365,8 +365,9 @@ UI_Mainwindow::UI_Mainwindow()
   cdsa_pwr_voltage = 1;
 
   aeeg_segmentlen = 15;
-  aeeg_min_hz = 2;
-  aeeg_max_hz = 15;
+  aeeg_bp_min_hz = 2;
+  aeeg_bp_max_hz = 15;
+  aeeg_lp_hz = 0.5;
 
   strlcpy(hypnogram_stage_name[0], "W", 32);
   strlcpy(hypnogram_stage_name[1], "R", 32);

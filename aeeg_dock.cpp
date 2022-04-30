@@ -110,9 +110,11 @@ void UI_aeeg_dock::aeeg_dock_destroyed(QObject *)
 }
 
 
-void UI_aeeg_dock::file_pos_changed(long long f_pos)
+void UI_aeeg_dock::file_pos_changed(long long)
 {
   int i;
+
+  long long f_pos=0;
 
   for(i=0; i<mainwindow->signalcomps; i++)
   {
@@ -120,12 +122,24 @@ void UI_aeeg_dock::file_pos_changed(long long f_pos)
     {
       if(param.signalcomp == mainwindow->signalcomp[i])
       {
+        f_pos = mainwindow->signalcomp[i]->edfhdr->viewtime;
+
         break;
       }
     }
   }
 
   if(i == mainwindow->signalcomps)  return;
+
+  if(f_pos < 0)
+  {
+    f_pos = 0;
+  }
+
+  if(f_pos > param.signalcomp->file_duration)
+  {
+    f_pos = param.signalcomp->file_duration;
+  }
 
   curve1->setMarker1Position((double)f_pos / (double)(param.signalcomp->file_duration));
 }

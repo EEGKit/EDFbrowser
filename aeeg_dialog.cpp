@@ -84,19 +84,26 @@ UI_aeeg_window::UI_aeeg_window(QWidget *w_parent, struct signalcompblock *signal
   }
   segmentlen_spinbox->setValue(mainwindow->aeeg_segmentlen);
 
-  min_hz_spinbox = new QDoubleSpinBox;
-  min_hz_spinbox->setSuffix(" Hz");
-  min_hz_spinbox->setMinimum(1);
-  min_hz_spinbox->setMaximum((sf / 2) - 2);
-  min_hz_spinbox->setDecimals(1);
-  min_hz_spinbox->setValue(mainwindow->aeeg_min_hz);
+  bp_min_hz_spinbox = new QDoubleSpinBox;
+  bp_min_hz_spinbox->setSuffix(" Hz");
+  bp_min_hz_spinbox->setDecimals(1);
+  bp_min_hz_spinbox->setMinimum(1);
+  bp_min_hz_spinbox->setMaximum((sf / 2) - 2);
+  bp_min_hz_spinbox->setValue(mainwindow->aeeg_bp_min_hz);
 
-  max_hz_spinbox = new QDoubleSpinBox;
-  max_hz_spinbox->setSuffix(" Hz");
-  max_hz_spinbox->setMinimum(2);
-  max_hz_spinbox->setMaximum((sf / 2) - 1);
-  max_hz_spinbox->setDecimals(1);
-  max_hz_spinbox->setValue(mainwindow->aeeg_max_hz);
+  bp_max_hz_spinbox = new QDoubleSpinBox;
+  bp_max_hz_spinbox->setSuffix(" Hz");
+  bp_max_hz_spinbox->setDecimals(1);
+  bp_max_hz_spinbox->setMinimum(2);
+  bp_max_hz_spinbox->setMaximum((sf / 2) - 1);
+  bp_max_hz_spinbox->setValue(mainwindow->aeeg_bp_max_hz);
+
+  lp_hz_spinbox = new QDoubleSpinBox;
+  lp_hz_spinbox->setSuffix(" Hz");
+  lp_hz_spinbox->setDecimals(3);
+  lp_hz_spinbox->setMinimum(0.001);
+  lp_hz_spinbox->setMaximum(2);
+  lp_hz_spinbox->setValue(mainwindow->aeeg_lp_hz);
 
   strlcpy(str, " ", 128);
   strlcat(str, signalcomp->edfhdr->edfparam[signalcomp->edfsignal[0]].physdimension, 128);
@@ -112,9 +119,14 @@ UI_aeeg_window::UI_aeeg_window(QWidget *w_parent, struct signalcompblock *signal
   start_button->setText("Start");
 
   flayout = new QFormLayout;
+  flayout->addRow(" ", (QWidget *)(NULL));
   flayout->addRow("Segment length", segmentlen_spinbox);
-  flayout->addRow("Min. freq.", min_hz_spinbox);
-  flayout->addRow("Max. freq.", max_hz_spinbox);
+  flayout->addRow(" ", (QWidget *)(NULL));
+  flayout->addRow("Min. freq.", bp_min_hz_spinbox);
+  flayout->addRow("Max. freq.", bp_max_hz_spinbox);
+  flayout->addRow(" ", (QWidget *)(NULL));
+  flayout->addRow("LP freq.", lp_hz_spinbox);
+  flayout->addRow(" ", (QWidget *)(NULL));
 
   QHBoxLayout *hlayout2 = new QHBoxLayout;
   hlayout2->addLayout(flayout, 1000);
@@ -139,8 +151,8 @@ UI_aeeg_window::UI_aeeg_window(QWidget *w_parent, struct signalcompblock *signal
 
   if(sf >= 100)
   {
-    QObject::connect(default_button,     SIGNAL(clicked()),            this, SLOT(default_button_clicked()));
-    QObject::connect(start_button,       SIGNAL(clicked()),            this, SLOT(start_button_clicked()));
+    QObject::connect(default_button, SIGNAL(clicked()), this, SLOT(default_button_clicked()));
+    QObject::connect(start_button,   SIGNAL(clicked()), this, SLOT(start_button_clicked()));
   }
 
   myobjectDialog->exec();
@@ -149,17 +161,15 @@ UI_aeeg_window::UI_aeeg_window(QWidget *w_parent, struct signalcompblock *signal
 
 void UI_aeeg_window::default_button_clicked()
 {
-  QObject::blockSignals(true);
-
   segmentlen_spinbox->setValue(15);
-  min_hz_spinbox->setValue(2);
-  max_hz_spinbox->setValue(15);
+  bp_min_hz_spinbox->setValue(2);
+  bp_max_hz_spinbox->setValue(15);
+  lp_hz_spinbox->setValue(0.5);
 
   mainwindow->aeeg_segmentlen = 15;
-  mainwindow->aeeg_min_hz = 2;
-  mainwindow->aeeg_max_hz = 15;
-
-  QObject::blockSignals(false);
+  mainwindow->aeeg_bp_min_hz = 2;
+  mainwindow->aeeg_bp_max_hz = 15;
+  mainwindow->aeeg_lp_hz = 0.5;
 }
 
 
@@ -174,8 +184,9 @@ void UI_aeeg_window::start_button_clicked()
 
   long long samples_in_file;
 
-  double hz_min,
-         hz_max,
+  double bp_hz_min,
+         bp_hz_max,
+         lp_hz,
          *smplbuf=NULL,
          *min_max_val=NULL;
 
@@ -189,13 +200,14 @@ void UI_aeeg_window::start_button_clicked()
 
   struct aeeg_dock_param_struct dock_param;
 
-  if(myobjectDialog)
+  if(myobjectDialog != NULL)
   {
     segmentlen = segmentlen_spinbox->value();
-    hz_min = min_hz_spinbox->value();
-    hz_max = max_hz_spinbox->value();
+    bp_hz_min = bp_min_hz_spinbox->value();
+    bp_hz_max = bp_max_hz_spinbox->value();
+    lp_hz = lp_hz_spinbox->value();
 
-    if((hz_max - hz_min) <= 4.999)
+    if((bp_hz_max - bp_hz_min) <= 4.999)
     {
       QMessageBox msgBox(QMessageBox::Critical, "Error", "(Max.freq. - min.freq.) must be >= 5 Hz.", QMessageBox::Close);
       msgBox.exec();
@@ -205,12 +217,14 @@ void UI_aeeg_window::start_button_clicked()
   else  // no dialog
   {
     segmentlen = no_dialog_params->segment_len;
-    hz_min = no_dialog_params->min_hz;
-    hz_max = no_dialog_params->max_hz;
+    bp_hz_min = no_dialog_params->bp_min_hz;
+    bp_hz_max = no_dialog_params->bp_max_hz;
+    lp_hz = no_dialog_params->lp_hz;
   }
   mainwindow->aeeg_segmentlen = segmentlen;
-  mainwindow->aeeg_min_hz = hz_min;
-  mainwindow->aeeg_max_hz = hz_max;
+  mainwindow->aeeg_bp_min_hz = bp_hz_min;
+  mainwindow->aeeg_bp_max_hz = bp_hz_max;
+  mainwindow->aeeg_lp_hz = lp_hz;
 
   smpls_in_segment = sf * segmentlen;
 
@@ -267,8 +281,8 @@ void UI_aeeg_window::start_button_clicked()
   void *fidbuf_bp=NULL;
   void *fidbuf_lp=NULL;
 
-  snprintf(filt_spec_str_bp, 256, "BpBu%i/%f-%f", 8, hz_min, hz_max);
-  snprintf(filt_spec_str_lp, 256, "LpBu%i/%f", 8, 0.5);
+  snprintf(filt_spec_str_bp, 256, "BpBu%i/%f-%f", 8, bp_hz_min, bp_hz_max);
+  snprintf(filt_spec_str_lp, 256, "LpBu%i/%f", 8, lp_hz);
 
   filt_spec_ptr_bp = filt_spec_str_bp;
   filt_spec_ptr_lp = filt_spec_str_lp;
@@ -338,7 +352,7 @@ void UI_aeeg_window::start_button_clicked()
 
       smplbuf[j] = fabs(smplbuf[j]);  // rectifier
 
-      smplbuf[j] = fidfuncp_lp(fidbuf_lp, smplbuf[j]) * 2;  // lowpass 0.01 Hz, gain = 2
+      smplbuf[j] = fidfuncp_lp(fidbuf_lp, smplbuf[j]) * 2;  // lowpass 0.5 Hz, gain = 2
 
       if(min_max_val[(i * 2) + 1] < smplbuf[j])
       {
@@ -363,8 +377,9 @@ void UI_aeeg_window::start_button_clicked()
 
   dock_param.signalcomp = signalcomp;
   dock_param.sf = sf;
-  dock_param.min_hz = mainwindow->aeeg_min_hz;
-  dock_param.max_hz = mainwindow->aeeg_max_hz;
+  dock_param.bp_min_hz = mainwindow->aeeg_bp_min_hz;
+  dock_param.bp_max_hz = mainwindow->aeeg_bp_max_hz;
+  dock_param.lp_hz = mainwindow->aeeg_lp_hz;
   dock_param.segment_len = segmentlen;
   dock_param.segments_in_recording = segments_in_recording;
   dock_param.instance_num = aeeg_instance_nr;
