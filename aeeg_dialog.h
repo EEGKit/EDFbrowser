@@ -34,6 +34,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <float.h>
 
 #include "global.h"
 #include "mainwindow.h"

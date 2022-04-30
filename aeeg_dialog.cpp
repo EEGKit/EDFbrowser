@@ -52,7 +52,7 @@ UI_aeeg_window::UI_aeeg_window(QWidget *w_parent, struct signalcompblock *signal
     sf = signalcomp->edfhdr->edfparam[signalcomp->edfsignal[0]].sf_f + 0.5;
   }
 
-  if(no_dialog_params)
+  if(no_dialog_params != NULL)
   {
     no_dialog_params->sf = sf;
 
@@ -87,14 +87,14 @@ UI_aeeg_window::UI_aeeg_window(QWidget *w_parent, struct signalcompblock *signal
   min_hz_spinbox = new QDoubleSpinBox;
   min_hz_spinbox->setSuffix(" Hz");
   min_hz_spinbox->setMinimum(1);
-  min_hz_spinbox->setMaximum((sf / 2) - 1);
+  min_hz_spinbox->setMaximum((sf / 2) - 2);
   min_hz_spinbox->setDecimals(1);
   min_hz_spinbox->setValue(mainwindow->aeeg_min_hz);
 
   max_hz_spinbox = new QDoubleSpinBox;
   max_hz_spinbox->setSuffix(" Hz");
   max_hz_spinbox->setMinimum(2);
-  max_hz_spinbox->setMaximum(sf / 2);
+  max_hz_spinbox->setMaximum((sf / 2) - 1);
   max_hz_spinbox->setDecimals(1);
   max_hz_spinbox->setValue(mainwindow->aeeg_max_hz);
 
@@ -136,7 +136,7 @@ UI_aeeg_window::UI_aeeg_window(QWidget *w_parent, struct signalcompblock *signal
 
   QObject::connect(close_button, SIGNAL(clicked()), myobjectDialog, SLOT(close()));
 
-  if(sf >= 30)
+  if(sf >= 100)
   {
     QObject::connect(default_button,     SIGNAL(clicked()),            this, SLOT(default_button_clicked()));
     QObject::connect(start_button,       SIGNAL(clicked()),            this, SLOT(start_button_clicked()));
@@ -208,7 +208,6 @@ void UI_aeeg_window::start_button_clicked()
 {
   int i, j,
       err,
-      len,
       smpls_in_segment,
       segments_in_recording,
       segmentlen,
@@ -216,45 +215,40 @@ void UI_aeeg_window::start_button_clicked()
 
   long long samples_in_file;
 
-  double v_scale,
-         d_tmp,
-         hz_min,
+  double hz_min,
          hz_max,
-         *smplbuf=NULL;
+         *smplbuf=NULL,
+         *min_max_val=NULL;
 
   char str[1024]={""},
-       filt_spec_str[256]={""},
-       *filt_spec_ptr=NULL,
-       *fid_err=NULL;
+       filt_spec_str_bp[256]={""},
+       filt_spec_str_lp[256]={""},
+       *filt_spec_ptr_bp=NULL,
+       *filt_spec_ptr_lp=NULL,
+       *fid_err_lp=NULL,
+       *fid_err_bp=NULL;
 
   struct aeeg_dock_param_struct dock_param;
 
   if(myobjectDialog)
   {
     segmentlen = segmentlen_spinbox->value();
-    mainwindow->aeeg_segmentlen = segmentlen;
-
     hz_min = min_hz_spinbox->value();
-    mainwindow->aeeg_min_hz = hz_min;
-
     hz_max = max_hz_spinbox->value();
-    mainwindow->aeeg_max_hz = hz_max;
   }
   else  // no dialog
   {
     segmentlen = no_dialog_params->segment_len;
-    mainwindow->aeeg_segmentlen = segmentlen;
-
     hz_min = no_dialog_params->min_hz;
-    mainwindow->aeeg_min_hz = hz_min;
-
     hz_max = no_dialog_params->max_hz;
-    mainwindow->aeeg_max_hz = hz_max;
   }
+  mainwindow->aeeg_segmentlen = segmentlen;
+  mainwindow->aeeg_min_hz = hz_min;
+  mainwindow->aeeg_max_hz = hz_max;
 
   smpls_in_segment = sf * segmentlen;
 
-  samples_in_file = (long long)signalcomp->edfhdr->datarecords * (long long)signalcomp->edfhdr->edfparam[signalcomp->edfsignal[0]].smp_per_record;
+  samples_in_file = signalcomp->edfhdr->edfparam[signalcomp->edfsignal[0]].smpls;
 
   segments_in_recording = samples_in_file / (long long)smpls_in_segment;
 
@@ -264,13 +258,19 @@ void UI_aeeg_window::start_button_clicked()
 //
 //   printf("start_button_clicked(): segmentlen: %i\n", segmentlen);
 //
-//   printf("start_button_clicked(): datarecords in file: %lli\n", signalcomp->edfhdr->datarecords);
-//
 //   printf("start_button_clicked(): samples_in_file: %lli\n", samples_in_file);
 //
 //   printf("start_button_clicked(): smpls_in_segment: %i\n", smpls_in_segment);
 //
 //   printf("start_button_clicked(): segments_in_recording: %i\n", segments_in_recording);
+
+  min_max_val = (double *)malloc(segments_in_recording * 2 * sizeof(double));
+  if(min_max_val == NULL)
+  {
+    QMessageBox msgBox(QMessageBox::Critical, "Error", "The system was not able to provide enough resources (memory) to perform the requested action.", QMessageBox::Close);
+    msgBox.exec();
+    return;
+  }
 
   FilteredBlockReadClass fbr;
 
@@ -292,27 +292,43 @@ void UI_aeeg_window::start_button_clicked()
     return;
   }
 
-  FidFilter *fidfilter=NULL;
-  FidRun *fid_run=NULL;
-  FidFunc *fidfuncp=NULL;
-  void *fidbuf=NULL;
+  FidFilter *fidfilter_bp=NULL;
+  FidFilter *fidfilter_lp=NULL;
+  FidRun *fid_run_bp=NULL;
+  FidRun *fid_run_lp=NULL;
+  FidFunc *fidfuncp_bp=NULL;
+  FidFunc *fidfuncp_lp=NULL;
+  void *fidbuf_bp=NULL;
+  void *fidbuf_lp=NULL;
 
-  snprintf(filt_spec_str, 256, "BpBu%i/%f-%f", 8, hz_min, hz_max);
+  snprintf(filt_spec_str_bp, 256, "BpBu%i/%f-%f", 8, hz_min, hz_max);
+  snprintf(filt_spec_str_lp, 256, "LpBu%i/%f", 8, 0.5);
 
-  filt_spec_ptr = filt_spec_str;
+  filt_spec_ptr_bp = filt_spec_str_bp;
+  filt_spec_ptr_lp = filt_spec_str_lp;
 
-  fid_err = fid_parse(sf, &filt_spec_ptr, &fidfilter);
-  if(fid_err != NULL)
+  fid_err_bp = fid_parse(sf, &filt_spec_ptr_bp, &fidfilter_bp);
+  if(fid_err_bp != NULL)
   {
     QMessageBox msgBox(QMessageBox::Critical, "Error", "Internal error (-2)", QMessageBox::Close);
     msgBox.exec();
-    free(fid_err);
+    free(fid_err_bp);
+    return;
+  }
+  fid_err_lp = fid_parse(sf, &filt_spec_ptr_lp, &fidfilter_lp);
+  if(fid_err_lp != NULL)
+  {
+    QMessageBox msgBox(QMessageBox::Critical, "Error", "Internal error (-3)", QMessageBox::Close);
+    msgBox.exec();
+    free(fid_err_lp);
     return;
   }
 
-  fid_run = fid_run_new(fidfilter, &fidfuncp);
+  fid_run_bp = fid_run_new(fidfilter_bp, &fidfuncp_bp);
+  fid_run_lp = fid_run_new(fidfilter_lp, &fidfuncp_lp);
 
-  fidbuf = fid_run_newbuf(fid_run);
+  fidbuf_bp = fid_run_newbuf(fid_run_bp);
+  fidbuf_lp = fid_run_newbuf(fid_run_lp);
 
   QProgressDialog progress("Processing...", "Abort", 0, segments_in_recording);
   progress.setWindowModality(Qt::WindowModal);
@@ -333,21 +349,42 @@ void UI_aeeg_window::start_button_clicked()
     err = fbr.process_signalcomp(i * smpls_in_segment);
     if(err)
     {
-      snprintf(str, 1024, "Internal error (-3)  fbr() error: %i file: %s line %i", err, __FILE__, __LINE__);
+      snprintf(str, 1024, "Internal error (-4)  fbr() error: %i file: %s line %i", err, __FILE__, __LINE__);
       progress.reset();
       QMessageBox::critical(myobjectDialog, "Error", str, QMessageBox::Close);
       return;
     }
 
+    min_max_val[(i * 2) + 1] = 0;
+
+    min_max_val[i * 2] = DBL_MAX;
+
     for(j=0; j<smpls_in_segment; j++)
     {
-      smplbuf[j] = fidfuncp(fidbuf, smplbuf[j]);
+      smplbuf[j] = fidfuncp_bp(fidbuf_bp, smplbuf[j]);  // bandpass 2 - 15 Hz
+
+      smplbuf[j] = fabs(smplbuf[j]);  // rectifier
+
+      smplbuf[j] = fidfuncp_lp(fidbuf_lp, smplbuf[j]) * 2;  // lowpass 0.01 Hz, gain = 2
+
+      if(min_max_val[(i * 2) + 1] < smplbuf[j])
+      {
+        min_max_val[(i * 2) + 1] = smplbuf[j];
+      }
+
+      if(min_max_val[i * 2] > smplbuf[j])
+      {
+        min_max_val[i * 2] = smplbuf[j];
+      }
     }
   }
 
-  free(fidfilter);
-  fid_run_free(fid_run);
-  fid_run_freebuf(fidbuf);
+  free(fidfilter_bp);
+  free(fidfilter_lp);
+  fid_run_free(fid_run_bp);
+  fid_run_free(fid_run_lp);
+  fid_run_freebuf(fidbuf_bp);
+  fid_run_freebuf(fidbuf_lp);
 
   progress.reset();
 
@@ -358,6 +395,7 @@ void UI_aeeg_window::start_button_clicked()
   dock_param.segment_len = segmentlen;
   dock_param.segments_in_recording = segments_in_recording;
   dock_param.instance_num = aeeg_instance_nr;
+  dock_param.min_max_val = min_max_val;
   strlcpy(dock_param.unit, signalcomp->edfhdr->edfparam[signalcomp->edfsignal[0]].physdimension, 32);
   remove_trailing_spaces(dock_param.unit);
 
@@ -365,7 +403,7 @@ void UI_aeeg_window::start_button_clicked()
 
   signalcomp->aeeg_idx[aeeg_instance_nr] = aeeg_instance_nr + 1;
 
-  if(myobjectDialog)
+  if(myobjectDialog != NULL)
   {
     myobjectDialog->close();
   }

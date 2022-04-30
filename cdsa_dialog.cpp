@@ -632,7 +632,7 @@ void UI_cdsa_window::start_button_clicked()
 
   smpl_in_block = sf * blocklen;
 
-  samples_in_file = (long long)signalcomp->edfhdr->datarecords * (long long)signalcomp->edfhdr->edfparam[signalcomp->edfsignal[0]].smp_per_record;
+  samples_in_file = signalcomp->edfhdr->edfparam[signalcomp->edfsignal[0]].smpls;
 
   segments_in_recording = samples_in_file / (long long)smpls_in_segment;
 

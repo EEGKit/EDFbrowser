@@ -450,7 +450,7 @@ void UI_Mainwindow::save_session()
     {
       get_relative_path_from_absolut_paths(path_relative, session_path_tmp, edfheaderlist[i]->filename, MAX_PATH_LENGTH);
       xml_fwrite_encode_entity(pro_file, path_relative);
-//      printf("src1: ->%s<-\nsrc2: ->%s<-\ndest: ->%s<-\n", session_path_tmp, edfheaderlist[i]->filename, path_relative);  //FIXME
+//      printf("src1: ->%s<-\nsrc2: ->%s<-\ndest: ->%s<-\n", session_path_tmp, edfheaderlist[i]->filename, path_relative);
     }
     else
     {
@@ -488,7 +488,7 @@ void UI_Mainwindow::save_session()
     {
       get_relative_path_from_absolut_paths(path_relative, session_path_tmp, signalcomp[i]->edfhdr->filename, MAX_PATH_LENGTH);
       xml_fwrite_encode_entity(pro_file, path_relative);
-//      printf("src1: ->%s<-\nsrc2: ->%s<-\ndest: ->%s<-\n", session_path_tmp, signalcomp[i]->edfhdr->filename, path_relative);  //FIXME
+//      printf("src1: ->%s<-\nsrc2: ->%s<-\ndest: ->%s<-\n", session_path_tmp, signalcomp[i]->edfhdr->filename, path_relative);
     }
     else
     {
@@ -869,7 +869,7 @@ void UI_Mainwindow::save_session()
 
   for(i=0, present=0; i<MAX_RECENTFILES; i++)
   {
-//    printf("mainwindow.cpp: load_session(): recent_session_path[i]: ->%s<-\nsession_path_tmp: ->%s<-\n", recent_session_path[i], session_path_tmp);  //FIXME
+//    printf("mainwindow.cpp: load_session(): recent_session_path[i]: ->%s<-\nsession_path_tmp: ->%s<-\n", recent_session_path[i], session_path_tmp);
 
     if(!strcmp(&recent_session_path[i][0], session_path_tmp))
     {
@@ -981,7 +981,7 @@ void UI_Mainwindow::load_session()
 
   for(i=0, present=0; i<MAX_RECENTFILES; i++)
   {
-//    printf("mainwindow.cpp: load_session(): recent_session_path[i]: ->%s<-\nsession_path: ->%s<-\n", recent_session_path[i], session_path);  //FIXME
+//    printf("mainwindow.cpp: load_session(): recent_session_path[i]: ->%s<-\nsession_path: ->%s<-\n", recent_session_path[i], session_path);
 
     if(!strcmp(&recent_session_path[i][0], session_path))
     {
@@ -2141,9 +2141,9 @@ void UI_Mainwindow::show_aeeg_dock()
       return;
     }
 
-    if(signalcomp[0]->edfhdr->edfparam[signalcomp[0]->edfsignal[0]].sf_f < 99.999)
+    if(signalcomp[0]->edfhdr->edfparam[signalcomp[0]->edfsignal[0]].sf_int < 100)
     {
-      QMessageBox::critical(this, "Error", "Samplefrequency must be at least 100Hz.");
+      QMessageBox::critical(this, "Error", "Samplefrequency must be at least 100Hz and must be an integer value.");
       return;
     }
 
@@ -4617,7 +4617,7 @@ void UI_Mainwindow::recent_session_action_func(QAction *action)
 
   for(i=0, present=0; i<MAX_RECENTFILES; i++)
   {
-//    printf("mainwindow.cpp: load_session(): recent_session_path[i]: ->%s<-\nsession_path_tmp: ->%s<-\n", recent_session_path[i], session_path_tmp);  //FIXME
+//    printf("mainwindow.cpp: load_session(): recent_session_path[i]: ->%s<-\nsession_path_tmp: ->%s<-\n", recent_session_path[i], session_path_tmp);
 
     if(!strcmp(&recent_session_path[i][0], session_path_tmp))
     {

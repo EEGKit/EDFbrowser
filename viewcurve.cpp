@@ -3308,9 +3308,9 @@ void ViewCurve::aeeg_button()
     return;
   }
 
-  if(mainwindow->signalcomp[signal_nr]->edfhdr->edfparam[mainwindow->signalcomp[signal_nr]->edfsignal[0]].sf_f < 99.999)
+  if(mainwindow->signalcomp[signal_nr]->edfhdr->edfparam[mainwindow->signalcomp[signal_nr]->edfsignal[0]].sf_int < 100)
   {
-    QMessageBox::critical(this, "Error", "Samplefrequency must be at least 100Hz.");
+    QMessageBox::critical(this, "Error", "Samplefrequency must be at least 100Hz and must be an integer value.");
     return;
   }
 

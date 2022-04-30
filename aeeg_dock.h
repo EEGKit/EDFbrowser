@@ -38,11 +38,10 @@
 #include "global.h"
 #include "mainwindow.h"
 #include "utils.h"
+#include "signalcurve.h"
 
 
 class UI_Mainwindow;
-class a_simple_tracking_indicator;
-class a_simple_ruler_indicator;
 
 
 
@@ -57,6 +56,7 @@ struct aeeg_dock_param_struct
   int instance_num;
   char unit[32];
   int no_dialog;
+  double *min_max_val;
 };
 
 
@@ -72,15 +72,14 @@ public:
 
   QDockWidget *aeeg_dock;
 
+  SignalCurve *curve1;
+
   double w_scaling,
          h_scaling;
 
   struct aeeg_dock_param_struct param;
 
 private:
-
-  a_simple_tracking_indicator *trck_indic;
-  a_simple_ruler_indicator     *srl_indic;
 
   unsigned long long sigcomp_uid;
 
@@ -92,68 +91,6 @@ private slots:
   void file_pos_changed(long long);
   void contextmenu_requested(QPoint);
 
-};
-
-
-class a_simple_tracking_indicator: public QWidget
-{
-  Q_OBJECT
-
-public:
-  double w_scaling,
-         h_scaling;
-
-  a_simple_tracking_indicator(QWidget *parent=0);
-
-  QSize sizeHint() const {return minimumSizeHint(); }
-  QSize minimumSizeHint() const {return QSize(5, 5); }
-
-  void set_position(long long);
-  void set_maximum(long long);
-  void set_scaling(double, double);
-
-public slots:
-
-protected:
-  void paintEvent(QPaintEvent *);
-
-private:
-
-  long long pos, max;
-
-  void draw_small_arrow(QPainter *, int, int, int, QColor);
-};
-
-
-class a_simple_ruler_indicator: public QWidget
-{
-  Q_OBJECT
-
-public:
-  a_simple_ruler_indicator(QWidget *parent=0);
-
-  double w_scaling,
-         h_scaling;
-
-  QSize sizeHint() const {return minimumSizeHint(); }
-  QSize minimumSizeHint() const {return QSize(5, 5); }
-
-  void set_minimum(int);
-  void set_maximum(int);
-  void set_unit(const char *);
-  void set_scaling(double, double);
-
-public slots:
-
-protected:
-  void paintEvent(QPaintEvent *);
-  void contextmenu_requested(QPoint);
-
-private:
-
-  char unit[32];
-
-  int min, max;
 };
 
 
