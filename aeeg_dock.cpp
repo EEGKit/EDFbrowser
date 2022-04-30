@@ -44,7 +44,7 @@ UI_aeeg_dock::UI_aeeg_dock(QWidget *w_parent, struct aeeg_dock_param_struct par)
 
   sigcomp_uid = param.signalcomp->uid;
 
-  snprintf(str, 1024, "aEEG   %s", param.signalcomp->signallabel);
+  snprintf(str, 1024, " aEEG   %s", param.signalcomp->signallabel);
 
   curve1 = new SignalCurve;
   curve1->setSignalColor(Qt::darkBlue);

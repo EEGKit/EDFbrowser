@@ -343,6 +343,13 @@ void UI_aeeg_window::start_button_clicked()
     if(progress.wasCanceled() == true)
     {
       progress.reset();
+      free(min_max_val);
+      free(fidfilter_bp);
+      free(fidfilter_lp);
+      fid_run_free(fid_run_bp);
+      fid_run_free(fid_run_lp);
+      fid_run_freebuf(fidbuf_bp);
+      fid_run_freebuf(fidbuf_lp);
       return;
     }
 

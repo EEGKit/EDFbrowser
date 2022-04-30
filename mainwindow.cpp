@@ -101,6 +101,16 @@ void UI_Mainwindow::closeEvent(QCloseEvent *cl_event)
     }
   }
 
+  for(i=0; i<MAXAEEGDOCKS; i++)
+  {
+    if(aeeg_dock[i] != NULL)
+    {
+      delete aeeg_dock[i];
+
+      aeeg_dock[i] = NULL;
+    }
+  }
+
   for(i=0; i<MAXAVERAGECURVEDIALOGS; i++)
   {
     if(averagecurvedialog[i] != NULL)
@@ -2981,6 +2991,16 @@ void UI_Mainwindow::remove_all_signals()
     }
   }
 
+  for(i=0; i<MAXAEEGDOCKS; i++)
+  {
+    if(aeeg_dock[i] != NULL)
+    {
+      delete aeeg_dock[i];
+
+      aeeg_dock[i] = NULL;
+    }
+  }
+
   for(i=0; i<MAXAVERAGECURVEDIALOGS; i++)
   {
     if(averagecurvedialog[i] != NULL)
@@ -3138,6 +3158,18 @@ void UI_Mainwindow::close_file_action_func(QAction *action)
           delete cdsa_dock[p - 1];
 
           cdsa_dock[p - 1] = NULL;
+        }
+      }
+
+      for(i=0; i<MAXAEEGDOCKS; i++)
+      {
+        p = signalcomp[j]->aeeg_idx[i];
+
+        if(p != 0)
+        {
+          delete aeeg_dock[p - 1];
+
+          aeeg_dock[p - 1] = NULL;
         }
       }
 
@@ -5288,6 +5320,18 @@ void UI_Mainwindow::remove_signalcomp(int signal_nr)
       delete cdsa_dock[p - 1];
 
       cdsa_dock[p - 1] = NULL;
+    }
+  }
+
+  for(i=0; i<MAXAEEGDOCKS; i++)
+  {
+    p = signalcomp[signal_nr]->aeeg_idx[i];
+
+    if(p != 0)
+    {
+      delete aeeg_dock[p - 1];
+
+      aeeg_dock[p - 1] = NULL;
     }
   }
 

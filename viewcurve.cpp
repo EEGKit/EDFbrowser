@@ -2952,7 +2952,6 @@ void ViewCurve::exec_sidemenu(int signal_nr_intern)
   {
     sidemenuButton15->setEnabled(false);
   }
-  sidemenuButton15->setEnabled(false);  //FIXME
 
   sidemenuButton16 = new QPushButton;
   sidemenuButton16->setText("Close");
