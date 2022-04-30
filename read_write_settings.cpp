@@ -1602,6 +1602,63 @@ void UI_Mainwindow::read_general_settings()
     xml_go_up(xml_hdl);
   }
 
+  if(!(xml_goto_nth_element_inside(xml_hdl, "aeeg", 0)))
+  {
+    if(!(xml_goto_nth_element_inside(xml_hdl, "aeeg_segmentlen", 0)))
+    {
+      if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+      {
+        xml_close(xml_hdl);
+        return;
+      }
+
+      aeeg_segmentlen = atoi(result);
+
+      xml_go_up(xml_hdl);
+    }
+
+    if(!(xml_goto_nth_element_inside(xml_hdl, "aeeg_bp_min_hz", 0)))
+    {
+      if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+      {
+        xml_close(xml_hdl);
+        return;
+      }
+
+      aeeg_bp_min_hz = atof(result);
+
+      xml_go_up(xml_hdl);
+    }
+
+    if(!(xml_goto_nth_element_inside(xml_hdl, "aeeg_bp_max_hz", 0)))
+    {
+      if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+      {
+        xml_close(xml_hdl);
+        return;
+      }
+
+      aeeg_bp_max_hz = atof(result);
+
+      xml_go_up(xml_hdl);
+    }
+
+    if(!(xml_goto_nth_element_inside(xml_hdl, "aeeg_lp_hz", 0)))
+    {
+      if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+      {
+        xml_close(xml_hdl);
+        return;
+      }
+
+      aeeg_lp_hz = atof(result);
+
+      xml_go_up(xml_hdl);
+    }
+
+    xml_go_up(xml_hdl);
+  }
+
   if(!(xml_goto_nth_element_inside(xml_hdl, "annotation_editor", 0)))
   {
     for(i=0; i<8; i++)
@@ -3168,6 +3225,13 @@ void UI_Mainwindow::write_settings()
     fprintf(cfgfile, "      <cdsa_pwr_voltage>%i</cdsa_pwr_voltage>\n", cdsa_pwr_voltage);
     fprintf(cfgfile, "      <cdsa_max_voltage>%.10e</cdsa_max_voltage>\n", cdsa_max_voltage);
     fprintf(cfgfile, "    </cdsa>\n");
+
+    fprintf(cfgfile, "    <aeeg>\n");
+    fprintf(cfgfile, "      <aeeg_segmentlen>%i</aeeg_segmentlen>\n", aeeg_segmentlen);
+    fprintf(cfgfile, "      <aeeg_bp_min_hz>%e</aeeg_bp_min_hz>\n", aeeg_bp_min_hz);
+    fprintf(cfgfile, "      <aeeg_bp_max_hz>%e</aeeg_bp_max_hz>\n", aeeg_bp_max_hz);
+    fprintf(cfgfile, "      <aeeg_lp_hz>%e</aeeg_lp_hz>\n", aeeg_lp_hz);
+    fprintf(cfgfile, "    </aeeg>\n");
 
     fprintf(cfgfile, "    <hypnogram>\n");
     for(i=0; i<6; i++)
