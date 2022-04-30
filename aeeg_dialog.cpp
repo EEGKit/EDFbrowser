@@ -65,7 +65,7 @@ UI_aeeg_window::UI_aeeg_window(QWidget *w_parent, struct signalcompblock *signal
 
   myobjectDialog = new QDialog;
 
-  myobjectDialog->setMinimumSize(350 * mainwindow->w_scaling, 400 * mainwindow->h_scaling);
+  myobjectDialog->setMinimumSize(300 * mainwindow->w_scaling, 250 * mainwindow->h_scaling);
   myobjectDialog->setWindowTitle(str);
   myobjectDialog->setModal(true);
   myobjectDialog->setAttribute(Qt::WA_DeleteOnClose, true);
@@ -118,6 +118,7 @@ UI_aeeg_window::UI_aeeg_window(QWidget *w_parent, struct signalcompblock *signal
 
   QHBoxLayout *hlayout2 = new QHBoxLayout;
   hlayout2->addLayout(flayout, 1000);
+  hlayout2->addStretch(1000);
 
   QHBoxLayout *hlayout1 = new QHBoxLayout;
   hlayout1->addWidget(close_button);
@@ -140,51 +141,9 @@ UI_aeeg_window::UI_aeeg_window(QWidget *w_parent, struct signalcompblock *signal
   {
     QObject::connect(default_button,     SIGNAL(clicked()),            this, SLOT(default_button_clicked()));
     QObject::connect(start_button,       SIGNAL(clicked()),            this, SLOT(start_button_clicked()));
-    QObject::connect(segmentlen_spinbox, SIGNAL(valueChanged(int)),    this, SLOT(segmentlen_spinbox_changed(int)));
-    QObject::connect(min_hz_spinbox,     SIGNAL(valueChanged(double)), this, SLOT(min_hz_spinbox_changed(double)));
-    QObject::connect(max_hz_spinbox,     SIGNAL(valueChanged(double)), this, SLOT(max_hz_spinbox_changed(double)));
   }
 
   myobjectDialog->exec();
-}
-
-
-void UI_aeeg_window::segmentlen_spinbox_changed(int)
-{
-  QObject::blockSignals(true);
-
-//   if(blocklen_spinbox->value() > (value / 3))
-//   {
-//     blocklen_spinbox->setValue(value / 3);
-//   }
-
-  QObject::blockSignals(false);
-}
-
-
-void UI_aeeg_window::min_hz_spinbox_changed(double value)
-{
-  QObject::blockSignals(true);
-
-  if(max_hz_spinbox->value() <= value)
-  {
-    max_hz_spinbox->setValue(value + 1);
-  }
-
-  QObject::blockSignals(false);
-}
-
-
-void UI_aeeg_window::max_hz_spinbox_changed(double value)
-{
-  QObject::blockSignals(true);
-
-  if(min_hz_spinbox->value() >= value)
-  {
-    min_hz_spinbox->setValue(value - 1);
-  }
-
-  QObject::blockSignals(false);
 }
 
 
@@ -235,6 +194,13 @@ void UI_aeeg_window::start_button_clicked()
     segmentlen = segmentlen_spinbox->value();
     hz_min = min_hz_spinbox->value();
     hz_max = max_hz_spinbox->value();
+
+    if((hz_max - hz_min) <= 4.999)
+    {
+      QMessageBox msgBox(QMessageBox::Critical, "Error", "(Max.freq. - min.freq.) must be >= 5 Hz.", QMessageBox::Close);
+      msgBox.exec();
+      return;
+    }
   }
   else  // no dialog
   {
