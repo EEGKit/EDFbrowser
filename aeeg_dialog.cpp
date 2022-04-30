@@ -122,8 +122,8 @@ UI_aeeg_window::UI_aeeg_window(QWidget *w_parent, struct signalcompblock *signal
   flayout->addRow(" ", (QWidget *)(NULL));
   flayout->addRow("Segment length", segmentlen_spinbox);
   flayout->addRow(" ", (QWidget *)(NULL));
-  flayout->addRow("Min. freq.", bp_min_hz_spinbox);
-  flayout->addRow("Max. freq.", bp_max_hz_spinbox);
+  flayout->addRow("BP min. freq.", bp_min_hz_spinbox);
+  flayout->addRow("BP max. freq.", bp_max_hz_spinbox);
   flayout->addRow(" ", (QWidget *)(NULL));
   flayout->addRow("LP freq.", lp_hz_spinbox);
   flayout->addRow(" ", (QWidget *)(NULL));
@@ -149,7 +149,7 @@ UI_aeeg_window::UI_aeeg_window(QWidget *w_parent, struct signalcompblock *signal
 
   QObject::connect(close_button, SIGNAL(clicked()), myobjectDialog, SLOT(close()));
 
-  if(sf >= 100)
+  if((sf >= 100) && (signalcomp->edfhdr->recording_len_sec >= 30))
   {
     QObject::connect(default_button, SIGNAL(clicked()), this, SLOT(default_button_clicked()));
     QObject::connect(start_button,   SIGNAL(clicked()), this, SLOT(start_button_clicked()));

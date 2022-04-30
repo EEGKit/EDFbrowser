@@ -59,6 +59,7 @@ UI_aeeg_dock::UI_aeeg_dock(QWidget *w_parent, struct aeeg_dock_param_struct par)
   curve1->setDashBoardEnabled(false);
   curve1->setMarker1Color(Qt::red);
   curve1->setMarker1Enabled(true);
+  curve1->setCursorEnabled(false);
   curve1->drawCurve(param.min_max_val, param.segments_in_recording * 2, 100, 0);
 
   aeeg_dock = new QDockWidget(str, mainwindow);
