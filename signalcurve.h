@@ -127,6 +127,7 @@ public:
   void shiftCursorPixelsRight(int);
   void shiftCursorIndexLeft(int);
   void shiftCursorIndexRight(int);
+  void setV_LogarithmicEnabled(bool);
 
 signals:
   void extra_button_clicked();
@@ -221,6 +222,7 @@ private:
       h,
       old_w,
       updates_enabled,
+      v_log_enabled,
       fillsurface,
       *ibuf,
       sz_hint_w,

@@ -77,6 +77,7 @@ SignalCurve::SignalCurve(QWidget *w_parent) : QWidget(w_parent)
   bordersize = 60 * w_scaling;
   drawHruler = 1;
   drawVruler = 1;
+  v_log_enabled = 0;
   h_ruler_startvalue = 0.0;
   h_ruler_endvalue = 100.0;
   drawcurve_before_raster = 0;
@@ -1419,7 +1420,7 @@ void SignalCurve::drawWidget(QPainter *painter, int curve_w, int curve_h)
          p_pixels_per_unit,
          p2_pixels_per_unit;
 
-  char str[128];
+  char str[128]={""};
 
   QString q_str;
 
@@ -1612,35 +1613,75 @@ void SignalCurve::drawWidget(QPainter *painter, int curve_w, int curve_h)
       }
     }
 
-    for(lk = (p2_ruler_startvalue / p2_divisor) * p2_divisor; lk <= p2_ruler_endvalue; lk += p2_divisor)
+    // 100  50  25  10   5   4   3   2   1  (log10 conversion)
+    // 100  85  70  50  35  30  24  15   0
+    if(v_log_enabled)
     {
-      if(lk < p2_ruler_startvalue)
+      for(i=0; i<6; i++)
       {
-        continue;
-      }
+        switch(i)
+        {
+          case 0: p2_tmp = 0;
+                  snprintf(str, 128, "%i", 0);
+                  break;
+          case 1: p2_tmp = 35;
+                  snprintf(str, 128, "%i", (int)(max_value * 0.05 + 0.5));
+                  break;
+          case 2: p2_tmp = 50;
+                  snprintf(str, 128, "%i", (int)(max_value * 0.1 + 0.5));
+                  break;
+          case 3: p2_tmp = 70;
+                  snprintf(str, 128, "%i", (int)(max_value * 0.25 + 0.5));
+                  break;
+          case 4: p2_tmp = 85;
+                  snprintf(str, 128, "%i", (int)(max_value * 0.5 + 0.5));
+                  break;
+          case 5: p2_tmp = 100;
+                  snprintf(str, 128, "%i", (int)(max_value + 0.5));
+                  break;
+        }
 
-      if((precision == 0) && (max_value > 1000.0))
-      {
-        q_str.setNum((double)lk / (double)p2_multiplier, 'e', precision);
-      }
-      else
-      {
-        q_str.setNum((double)lk / (double)p2_multiplier, 'f', precision);
-      }
+        double p3_pixels_per_vraster = (curve_h - bordersize - bordersize) / 100.0;
 
-      p2_tmp = (double)(lk - p2_ruler_startvalue) * p2_pixels_per_unit;
+        p2_tmp *= p3_pixels_per_vraster;
 
-      if(curveUpSideDown == false)
-      {
-        painter->drawText((3 * w_scaling), curve_h - bordersize - p2_tmp - (8 * h_scaling), (40 * w_scaling), (16 * h_scaling), Qt::AlignRight | Qt::AlignVCenter | Qt::TextSingleLine, q_str);
+        painter->drawText((3 * w_scaling), curve_h - bordersize - p2_tmp - (8 * h_scaling), (40 * w_scaling), (16 * h_scaling), Qt::AlignRight | Qt::AlignVCenter | Qt::TextSingleLine, str);
 
         painter->drawLine(bordersize - (5 * w_scaling), curve_h - bordersize - p2_tmp, bordersize - (15 * w_scaling), curve_h - bordersize - p2_tmp);
       }
-      else
+    }
+    else
+    {
+      for(lk = (p2_ruler_startvalue / p2_divisor) * p2_divisor; lk <= p2_ruler_endvalue; lk += p2_divisor)
       {
-        painter->drawText((3 * w_scaling), bordersize + p2_tmp - (8 * h_scaling), (40 * w_scaling), (16 * h_scaling), Qt::AlignRight | Qt::AlignVCenter | Qt::TextSingleLine, q_str);
+        if(lk < p2_ruler_startvalue)
+        {
+          continue;
+        }
 
-        painter->drawLine(bordersize - (5 * w_scaling), bordersize + p2_tmp, bordersize - (15 * w_scaling), bordersize + p2_tmp);
+        if((precision == 0) && (max_value > 1000.0))
+        {
+          q_str.setNum((double)lk / (double)p2_multiplier, 'e', precision);
+        }
+        else
+        {
+          q_str.setNum((double)lk / (double)p2_multiplier, 'f', precision);
+        }
+
+        p2_tmp = (double)(lk - p2_ruler_startvalue) * p2_pixels_per_unit;
+
+        if(curveUpSideDown == false)
+        {
+          painter->drawText((3 * w_scaling), curve_h - bordersize - p2_tmp - (8 * h_scaling), (40 * w_scaling), (16 * h_scaling), Qt::AlignRight | Qt::AlignVCenter | Qt::TextSingleLine, q_str);
+
+          painter->drawLine(bordersize - (5 * w_scaling), curve_h - bordersize - p2_tmp, bordersize - (15 * w_scaling), curve_h - bordersize - p2_tmp);
+        }
+        else
+        {
+          painter->drawText((3 * w_scaling), bordersize + p2_tmp - (8 * h_scaling), (40 * w_scaling), (16 * h_scaling), Qt::AlignRight | Qt::AlignVCenter | Qt::TextSingleLine, q_str);
+
+          painter->drawLine(bordersize - (5 * w_scaling), bordersize + p2_tmp, bordersize - (15 * w_scaling), bordersize + p2_tmp);
+        }
       }
     }
   }
@@ -1967,22 +2008,50 @@ void SignalCurve::drawWidget(QPainter *painter, int curve_w, int curve_h)
     painter->drawLine(p_tmp, 0, p_tmp, curve_h);
   }
 
-  for(lk = (p2_ruler_startvalue / p2_divisor) * p2_divisor; lk <= p2_ruler_endvalue; lk += p2_divisor)
+  // 100  50  25  10   5   4   3   2   1  (log10 conversion)
+  // 100  85  70  50  35  30  24  15   0
+  if(v_log_enabled)
   {
-    if(lk < p2_ruler_startvalue)
+    for(i=0; i<4; i++)
     {
-      continue;
-    }
+      switch(i)
+      {
+        case 0: p2_tmp = 35;
+                break;
+        case 1: p2_tmp = 50;
+                break;
+        case 2: p2_tmp = 70;
+                break;
+        case 3: p2_tmp = 85;
+                break;
+      }
 
-    p2_tmp = (double)(lk - p2_ruler_startvalue) * p2_pixels_per_unit;
+      double p3_pixels_per_vraster = curve_h / 100.0;
 
-    if(curveUpSideDown == false)
-    {
+      p2_tmp *= p3_pixels_per_vraster;
+
       painter->drawLine(0, curve_h - p2_tmp, curve_w, curve_h - p2_tmp);
     }
-    else
+  }
+  else
+  {
+    for(lk = (p2_ruler_startvalue / p2_divisor) * p2_divisor; lk <= p2_ruler_endvalue; lk += p2_divisor)
     {
-      painter->drawLine(0, p2_tmp, curve_w, p2_tmp);
+      if(lk < p2_ruler_startvalue)
+      {
+        continue;
+      }
+
+      p2_tmp = (double)(lk - p2_ruler_startvalue) * p2_pixels_per_unit;
+
+      if(curveUpSideDown == false)
+      {
+        painter->drawLine(0, curve_h - p2_tmp, curve_w, curve_h - p2_tmp);
+      }
+      else
+      {
+        painter->drawLine(0, p2_tmp, curve_w, p2_tmp);
+      }
     }
   }
 
@@ -2280,6 +2349,10 @@ void SignalCurve::setLineEnabled(bool stat)
 
 void SignalCurve::drawCurve(double *samplebuf, int bsize, double max_val, double min_val)
 {
+  int i;
+
+  double dtmp;
+
   dbuf = samplebuf;
 
   ibuf = NULL;
@@ -2291,6 +2364,23 @@ void SignalCurve::drawCurve(double *samplebuf, int bsize, double max_val, double
   max_value = max_val;
 
   min_value = min_val;
+
+  if(v_log_enabled)
+  {
+    dtmp = max_value / log10(max_value);
+
+    for(i=0; i<bufsize; i++)
+    {
+      if(dbuf[i] <= 1)
+      {
+        dbuf[i] = 0;
+      }
+      else
+      {
+        dbuf[i] = log10(dbuf[i]) * dtmp;
+      }
+    }
+  }
 
   update();
 }
@@ -2598,6 +2688,19 @@ void SignalCurve::setUpsidedownEnabled(bool value)
 int SignalCurve::getCursorPosition(void)
 {
   return crosshair_1_value_2;
+}
+
+
+void SignalCurve::setV_LogarithmicEnabled(bool value)
+{
+  if(value == true)
+  {
+    v_log_enabled = 1;
+  }
+  else
+  {
+    v_log_enabled = 0;
+  }
 }
 
 
