@@ -63,6 +63,7 @@ struct aeeg_dock_param_struct
   double *min_max_val;
   double *max_median_val;
   double *min_median_val;
+  double scale_max_amp;
 };
 
 

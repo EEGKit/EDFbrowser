@@ -61,13 +61,13 @@ UI_aeeg_dock::UI_aeeg_dock(QWidget *w_parent, struct aeeg_dock_param_struct par)
   curve1->setMarker1Enabled(true);
   curve1->setCursorEnabled(false);
   curve1->setV_LogarithmicEnabled(true);
-  curve1->drawCurve(param.min_max_val, param.segments_in_recording * 2, 100, 1);
+  curve1->drawCurve(param.min_max_val, param.segments_in_recording * 2, param.scale_max_amp, 1);
   curve1->setSignalColor(Qt::green, 1);
   curve1->setTraceWidth(3, 1);
-  curve1->drawCurve(param.max_median_val, param.medians_in_recording, 100, 1, 1);
+  curve1->drawCurve(param.max_median_val, param.medians_in_recording, param.scale_max_amp, 1, 1);
   curve1->setSignalColor(Qt::green, 2);
   curve1->setTraceWidth(3, 2);
-  curve1->drawCurve(param.min_median_val, param.medians_in_recording, 100, 1, 2);
+  curve1->drawCurve(param.min_median_val, param.medians_in_recording, param.scale_max_amp, 1, 2);
 
   aeeg_dock = new QDockWidget(str, mainwindow);
   aeeg_dock->setFeatures(QDockWidget::AllDockWidgetFeatures);
@@ -159,6 +159,51 @@ void UI_aeeg_dock::file_pos_changed(long long)
 
 void UI_aeeg_dock::contextmenu_requested(QPoint)
 {
+  char str[4096]={"aEEG "};
+
+  strlcat(str, param.signalcomp->signallabel, 4096);
+
+  QDialog *myobjectDialog = new QDialog;
+  myobjectDialog->setMinimumSize(300, 215);
+  myobjectDialog->setWindowTitle(str);
+  myobjectDialog->setModal(true);
+  myobjectDialog->setAttribute(Qt::WA_DeleteOnClose, true);
+
+  QLabel *label = new QLabel;
+
+  QPushButton *pushButton1 = new QPushButton;
+  pushButton1->setText("Close");
+
+  snprintf(str, 4096,
+         " \n"
+         "Bandpass filter: %.1f - %.1f Hz.\n"
+         " \n"
+         "Lowpass filter: %.1f Hz\n"
+         " \n"
+         "Segment length: %i sec.\n"
+         " \n",
+         param.bp_min_hz,
+         param.bp_max_hz,
+         param.lp_hz,
+         param.segment_len);
+
+  label->setText(str);
+
+  QHBoxLayout *hlayout1 = new QHBoxLayout;
+  hlayout1->addStretch(1000);
+  hlayout1->addWidget(pushButton1);
+
+  QVBoxLayout *vlayout1 = new QVBoxLayout;
+  vlayout1->addWidget(label);
+  vlayout1->addStretch(1000);
+  vlayout1->addSpacing(20);
+  vlayout1->addLayout(hlayout1);
+
+  myobjectDialog->setLayout(vlayout1);
+
+  QObject::connect(pushButton1, SIGNAL(clicked()), myobjectDialog, SLOT(close()));
+
+  myobjectDialog->exec();
 }
 
 
