@@ -29,7 +29,7 @@
 #include "aeeg_dialog.h"
 
 
-
+#define MARGIN_MEDIAN_SZ    (20)
 
 
 UI_aeeg_window::UI_aeeg_window(QWidget *w_parent, struct signalcompblock *signal_comp, int numb, struct aeeg_dock_param_struct *p_par)
@@ -180,7 +180,11 @@ void UI_aeeg_window::start_button_clicked()
       smpls_in_segment,
       segments_in_recording,
       segmentlen,
-      ret_err=0;
+      medians_in_recording,
+      ret_err=0,
+      max_idx=0,
+      min_idx=0;
+
 
   long long samples_in_file;
 
@@ -188,7 +192,11 @@ void UI_aeeg_window::start_button_clicked()
          bp_hz_max,
          lp_hz,
          *smplbuf=NULL,
-         *min_max_val=NULL;
+         *min_max_val=NULL,
+         *max_median_val=NULL,
+         *min_median_val=NULL,
+         max_margin_median_buf[MARGIN_MEDIAN_SZ]={0},
+         min_margin_median_buf[MARGIN_MEDIAN_SZ]={0};
 
   char str[1024]={""},
        filt_spec_str_bp[256]={""},
@@ -199,6 +207,8 @@ void UI_aeeg_window::start_button_clicked()
        *fid_err_bp=NULL;
 
   struct aeeg_dock_param_struct dock_param;
+
+  memset(&dock_param, 0, sizeof(struct aeeg_dock_param_struct));
 
   if(myobjectDialog != NULL)
   {
@@ -232,6 +242,12 @@ void UI_aeeg_window::start_button_clicked()
 
   segments_in_recording = samples_in_file / (long long)smpls_in_segment;
 
+  max_idx = (smpls_in_segment * mainwindow->aeeg_max_nearby_pct) / 100.0 + 0.5;
+
+  min_idx = (smpls_in_segment * mainwindow->aeeg_min_nearby_pct) / 100.0 + 0.5;
+
+  medians_in_recording = segments_in_recording / MARGIN_MEDIAN_SZ;
+
 //   printf("start_button_clicked(): samples_in_file: %lli\n", samples_in_file);
 //
 //   printf("start_button_clicked(): sf: %i\n", sf);
@@ -243,9 +259,31 @@ void UI_aeeg_window::start_button_clicked()
 //   printf("start_button_clicked(): smpls_in_segment: %i\n", smpls_in_segment);
 //
 //   printf("start_button_clicked(): segments_in_recording: %i\n", segments_in_recording);
+//
+//   printf("start_button_clicked(): max_idx: %i\n", max_idx);
+//
+//   printf("start_button_clicked(): min_idx: %i\n", min_idx);
+//
+//   printf("start_button_clicked(): medians_in_recording: %i\n", medians_in_recording);
 
   min_max_val = (double *)malloc(segments_in_recording * 2 * sizeof(double));
   if(min_max_val == NULL)
+  {
+    QMessageBox msgBox(QMessageBox::Critical, "Error", "The system was not able to provide enough resources (memory) to perform the requested action.", QMessageBox::Close);
+    msgBox.exec();
+    return;
+  }
+
+  max_median_val = (double *)malloc(medians_in_recording * sizeof(double));
+  if(max_median_val == NULL)
+  {
+    QMessageBox msgBox(QMessageBox::Critical, "Error", "The system was not able to provide enough resources (memory) to perform the requested action.", QMessageBox::Close);
+    msgBox.exec();
+    return;
+  }
+
+  min_median_val = (double *)malloc(medians_in_recording * sizeof(double));
+  if(min_median_val == NULL)
   {
     QMessageBox msgBox(QMessageBox::Critical, "Error", "The system was not able to provide enough resources (memory) to perform the requested action.", QMessageBox::Close);
     msgBox.exec();
@@ -324,6 +362,8 @@ void UI_aeeg_window::start_button_clicked()
     {
       progress.reset();
       free(min_max_val);
+      free(max_median_val);
+      free(min_median_val);
       free(fidfilter_bp);
       free(fidfilter_lp);
       fid_run_free(fid_run_bp);
@@ -352,17 +392,27 @@ void UI_aeeg_window::start_button_clicked()
 
       smplbuf[j] = fabs(smplbuf[j]);  // rectifier
 
-      smplbuf[j] = fidfuncp_lp(fidbuf_lp, smplbuf[j]) * 2;  // lowpass 0.5 Hz, gain = 2
+      smplbuf[j] = fidfuncp_lp(fidbuf_lp, smplbuf[j]);  // averaging using lowpass 0.5 Hz
+    }
 
-      if(min_max_val[(i * 2) + 1] < smplbuf[j])
-      {
-        min_max_val[(i * 2) + 1] = smplbuf[j];
-      }
+    qsort(smplbuf, smpls_in_segment, sizeof(double), dbl_cmp);  // sorting
 
-      if(min_max_val[i * 2] > smplbuf[j])
-      {
-        min_max_val[i * 2] = smplbuf[j];
-      }
+    min_max_val[i * 2] = smplbuf[min_idx];
+    min_max_val[(i * 2) + 1] = smplbuf[max_idx];
+
+    min_margin_median_buf[i % MARGIN_MEDIAN_SZ] = smplbuf[min_idx];
+    max_margin_median_buf[i % MARGIN_MEDIAN_SZ] = smplbuf[max_idx];
+
+    if(!((i + 1) % MARGIN_MEDIAN_SZ))
+    {
+      qsort(min_margin_median_buf, MARGIN_MEDIAN_SZ, sizeof(double), dbl_cmp);
+      qsort(max_margin_median_buf, MARGIN_MEDIAN_SZ, sizeof(double), dbl_cmp);
+
+      min_median_val[i / MARGIN_MEDIAN_SZ] = (min_margin_median_buf[MARGIN_MEDIAN_SZ / 2] +
+                                              min_margin_median_buf[(MARGIN_MEDIAN_SZ / 2) + 1]) / 2;
+
+      max_median_val[i / MARGIN_MEDIAN_SZ] = (max_margin_median_buf[MARGIN_MEDIAN_SZ / 2] +
+                                              max_margin_median_buf[(MARGIN_MEDIAN_SZ / 2) + 1]) / 2;
     }
   }
 
@@ -384,6 +434,9 @@ void UI_aeeg_window::start_button_clicked()
   dock_param.segments_in_recording = segments_in_recording;
   dock_param.instance_num = aeeg_instance_nr;
   dock_param.min_max_val = min_max_val;
+  dock_param.min_median_val = min_median_val;
+  dock_param.max_median_val = max_median_val;
+  dock_param.medians_in_recording = medians_in_recording;
   strlcpy(dock_param.unit, signalcomp->edfhdr->edfparam[signalcomp->edfsignal[0]].physdimension, 32);
   remove_trailing_spaces(dock_param.unit);
 
@@ -395,6 +448,22 @@ void UI_aeeg_window::start_button_clicked()
   {
     myobjectDialog->close();
   }
+}
+
+
+int UI_aeeg_window::dbl_cmp(const void *a, const void *b)
+{
+  double val1, val2;
+
+  val1 = *(double *)a;
+  val2 = *(double *)b;
+
+  if(val1 > val2)
+  {
+    return 1;
+  }
+
+  return 0;
 }
 
 

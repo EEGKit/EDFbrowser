@@ -61,7 +61,7 @@ UI_aeeg_dock::UI_aeeg_dock(QWidget *w_parent, struct aeeg_dock_param_struct par)
   curve1->setMarker1Enabled(true);
   curve1->setCursorEnabled(false);
   curve1->setV_LogarithmicEnabled(true);
-  curve1->drawCurve(param.min_max_val, param.segments_in_recording * 2, 100, 0);
+  curve1->drawCurve(param.min_max_val, param.segments_in_recording * 2, 100, 1);
 
   aeeg_dock = new QDockWidget(str, mainwindow);
   aeeg_dock->setFeatures(QDockWidget::AllDockWidgetFeatures);
@@ -94,6 +94,8 @@ UI_aeeg_dock::~UI_aeeg_dock()
   }
 
   free(param.min_max_val);
+  free(param.max_median_val);
+  free(param.min_median_val);
 }
 
 

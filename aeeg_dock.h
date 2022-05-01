@@ -52,12 +52,17 @@ struct aeeg_dock_param_struct
   double bp_min_hz;
   double bp_max_hz;
   double lp_hz;
+  int max_nearby_pct;
+  int min_nearby_pct;
   int segment_len;
   int segments_in_recording;
+  int medians_in_recording;
   int instance_num;
   char unit[32];
   int no_dialog;
   double *min_max_val;
+  double *max_median_val;
+  double *min_median_val;
 };
 
 

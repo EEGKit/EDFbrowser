@@ -79,6 +79,8 @@ private:
                 *start_button,
                 *default_button;
 
+  static int dbl_cmp(const void *, const void *);
+
 private slots:
 
   void start_button_clicked();

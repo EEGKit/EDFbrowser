@@ -229,6 +229,8 @@ public:
       cdsa_max_pwr,
       cdsa_min_pwr,
       aeeg_segmentlen,
+      aeeg_max_nearby_pct,
+      aeeg_min_nearby_pct,
       use_threads,
       check_for_updates,
       amplitude_doubler,

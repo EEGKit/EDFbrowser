@@ -1622,7 +1622,7 @@ void SignalCurve::drawWidget(QPainter *painter, int curve_w, int curve_h)
         switch(i)
         {
           case 0: p2_tmp = 0;
-                  snprintf(str, 128, "%i", 0);
+                  snprintf(str, 128, "%i", 1);
                   break;
           case 1: p2_tmp = 35;
                   snprintf(str, 128, "%i", (int)(max_value * 0.05 + 0.5));
@@ -2124,7 +2124,16 @@ void SignalCurve::drawWidget(QPainter *painter, int curve_w, int curve_h)
           if(i==((int)(((double)crosshair_1_x_position) / h_step)))
           {
             crosshair_1_y_value = (dbuf[i] + offset) * v_sens;
-            crosshair_1_value = dbuf[i];
+            if(v_log_enabled)
+            {
+              crosshair_1_value = dbuf[i] / (max_value / log10(max_value));
+
+              crosshair_1_value = exp10(crosshair_1_value);
+            }
+            else
+            {
+              crosshair_1_value = dbuf[i];
+            }
             value = (h_ruler_endvalue - h_ruler_startvalue) / bufsize;
             crosshair_1_value_2 = (i * value) + h_ruler_startvalue;
           }
@@ -2373,7 +2382,7 @@ void SignalCurve::drawCurve(double *samplebuf, int bsize, double max_val, double
     {
       if(dbuf[i] <= 1)
       {
-        dbuf[i] = 0;
+        dbuf[i] = 1;
       }
       else
       {

@@ -368,6 +368,8 @@ UI_Mainwindow::UI_Mainwindow()
   aeeg_bp_min_hz = 2;
   aeeg_bp_max_hz = 15;
   aeeg_lp_hz = 0.5;
+  aeeg_max_nearby_pct = 93;
+  aeeg_min_nearby_pct = 9;
 
   strlcpy(hypnogram_stage_name[0], "W", 32);
   strlcpy(hypnogram_stage_name[1], "R", 32);
