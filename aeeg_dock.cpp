@@ -65,6 +65,9 @@ UI_aeeg_dock::UI_aeeg_dock(QWidget *w_parent, struct aeeg_dock_param_struct par)
   curve1->setSignalColor(Qt::green, 1);
   curve1->setTraceWidth(3, 1);
   curve1->drawCurve(param.max_median_val, param.medians_in_recording, 100, 1, 1);
+  curve1->setSignalColor(Qt::green, 2);
+  curve1->setTraceWidth(3, 2);
+  curve1->drawCurve(param.min_median_val, param.medians_in_recording, 100, 1, 2);
 
   aeeg_dock = new QDockWidget(str, mainwindow);
   aeeg_dock->setFeatures(QDockWidget::AllDockWidgetFeatures);
@@ -72,6 +75,8 @@ UI_aeeg_dock::UI_aeeg_dock(QWidget *w_parent, struct aeeg_dock_param_struct par)
   aeeg_dock->setAttribute(Qt::WA_DeleteOnClose);
   aeeg_dock->setContextMenuPolicy(Qt::CustomContextMenu);
   aeeg_dock->setWidget(curve1);
+  aeeg_dock->setMinimumHeight(250 * h_scaling);
+  aeeg_dock->setMinimumWidth(300 * w_scaling);
 
   mainwindow->addDockWidget(Qt::BottomDockWidgetArea, aeeg_dock, Qt::Horizontal);
 

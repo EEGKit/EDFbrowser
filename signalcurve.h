@@ -51,6 +51,7 @@
 
 #define MAXSPECTRUMMARKERS     (16)
 #define SC_MAX_PATH_LEN      (1024)
+#define SC_MAX_TRACES           (8)
 
 
 struct spectrum_markersblock{
@@ -157,8 +158,7 @@ private:
               *sidemenuButton5,
               *sidemenuButton6;
 
-  QColor SignalColor,
-         SignalColor2,
+  QColor SignalColor[SC_MAX_TRACES],
          BackgroundColor,
          RasterColor,
          BorderColor,
@@ -178,12 +178,9 @@ private:
   QPen Marker1Pen,
        Marker2Pen;
 
-  double max_value,
-         max_value2,
-         min_value,
-         min_value2,
-         *dbuf,
-         *dbuf2,
+  double max_value[SC_MAX_TRACES],
+         min_value[SC_MAX_TRACES],
+         *dbuf[SC_MAX_TRACES],
          h_ruler_startvalue,
          h_ruler_endvalue,
          printsize_x_factor,
@@ -200,14 +197,12 @@ private:
 
   float *fbuf;
 
-  int bufsize,
-      bufsize2,
+  int bufsize[SC_MAX_TRACES],
       bordersize,
       drawHruler,
       drawVruler,
       drawcurve_before_raster,
-      tracewidth,
-      tracewidth2,
+      tracewidth[SC_MAX_TRACES],
       extra_button,
       use_move_events,
       mouse_x,

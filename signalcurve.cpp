@@ -31,13 +31,17 @@
 
 SignalCurve::SignalCurve(QWidget *w_parent) : QWidget(w_parent)
 {
+  int i;
+
   setAttribute(Qt::WA_OpaquePaintEvent);
 
   recent_savedir[0] = 0;
 
-  SignalColor = Qt::blue;
-  tracewidth = 0;
-  tracewidth2 = 0;
+  for(i=0; i<SC_MAX_TRACES; i++)
+  {
+    SignalColor[i] = Qt::blue;
+    tracewidth[i] = 0;
+  }
   BackgroundColor = Qt::gray;
   RasterColor = Qt::darkGray;
   BorderColor = Qt::lightGray;
@@ -71,33 +75,34 @@ SignalCurve::SignalCurve(QWidget *w_parent) : QWidget(w_parent)
 
   setMinimumSize(sz_hint_w, sz_hint_h);
 
-  bufsize = 0;
-  bufsize2 = 0;
-  dbuf = NULL;
-  dbuf2 = NULL;
+  for(i=0; i<SC_MAX_TRACES; i++)
+  {
+    bufsize[i] = 0;
+    dbuf[i] = NULL;
+    max_value[i] = 100;
+    min_value[i] = -100;
+  }
   fbuf = NULL;
   ibuf = NULL;
   bordersize = 60 * w_scaling;
   drawHruler = 1;
   drawVruler = 1;
   v_log_enabled = 0;
-  h_ruler_startvalue = 0.0;
-  h_ruler_endvalue = 100.0;
+  h_ruler_startvalue = 0;
+  h_ruler_endvalue = 100;
   drawcurve_before_raster = 0;
   h_label[0] = 0;
   v_label[0] = 0;
   upperlabel1[0] = 0;
   upperlabel2[0] = 0;
   lowerlabel[0] = 0;
-  max_value = 100.0;
-  min_value = -100.0;
   extra_button = 0;
   extra_button_txt[0] = 0;
   use_move_events = 0;
   crosshair_1_active = 0;
   crosshair_1_moving = 0;
-  crosshair_1_value = 0.0;
-  crosshair_1_value_2 = 0.0;
+  crosshair_1_value = 0;
+  crosshair_1_value_2 = 0;
   crosshair_1_x_position = 0;
   marker_1_position = 0.25;
   marker_1_moving = 0;
@@ -129,19 +134,21 @@ SignalCurve::~SignalCurve()
 
 void SignalCurve::clear()
 {
-  dbuf = NULL;
-  dbuf2 = NULL;
+  int i;
+
+  for(i=0; i<SC_MAX_TRACES; i++)
+  {
+    dbuf[i] = NULL;
+    bufsize[i] = 0;
+  }
   fbuf = NULL;
   ibuf = NULL;
-
-  bufsize = 0;
-  bufsize2 = 0;
 
   use_move_events = 0;
   crosshair_1_active = 0;
   crosshair_1_moving = 0;
-  crosshair_1_value = 0.0;
-  crosshair_1_value_2 = 0.0;
+  crosshair_1_value = 0;
+  crosshair_1_value_2 = 0;
   crosshair_1_x_position = 0;
   marker_1_position = 0.25;
   marker_2_position = 0.75;
@@ -376,14 +383,14 @@ void SignalCurve::shiftCursorIndexLeft(int idxs)
     return;
   }
 
-  if(bufsize < 2)
+  if(bufsize[0] < 2)
   {
     return;
   }
 
   w = width();
 
-  ppi = (double)(w-(bordersize * 2)) / (double)bufsize;
+  ppi = (double)(w-(bordersize * 2)) / (double)(bufsize[0]);
 
   idx = (double)crosshair_1_x_position / ppi;
 
@@ -394,9 +401,9 @@ void SignalCurve::shiftCursorIndexLeft(int idxs)
     idx = 0;
   }
 
-  if(idx >= bufsize)
+  if(idx >= bufsize[0])
   {
-    idx = bufsize - 1;
+    idx = bufsize[0] - 1;
   }
 
   crosshair_1_x_position = (double)idx * ppi + (0.5 * ppi);
@@ -416,14 +423,14 @@ void SignalCurve::shiftCursorIndexRight(int idxs)
     return;
   }
 
-  if(bufsize < 2)
+  if(bufsize[0] < 2)
   {
     return;
   }
 
   w = width();
 
-  ppi = (double)(w-(bordersize * 2)) / (double)bufsize;
+  ppi = (double)(w-(bordersize * 2)) / (double)(bufsize[0]);
 
   idx = (double)crosshair_1_x_position / ppi;
 
@@ -434,9 +441,9 @@ void SignalCurve::shiftCursorIndexRight(int idxs)
     idx = 0;
   }
 
-  if(idx >= bufsize)
+  if(idx >= bufsize[0])
   {
-    idx = bufsize - 1;
+    idx = bufsize[0] - 1;
   }
 
   crosshair_1_x_position = (double)idx * ppi + (0.5 * ppi);
@@ -578,8 +585,8 @@ void SignalCurve::create_button(const char *txt)
 
 void SignalCurve::backup_colors_for_printing(void)
 {
-  backup_color_1 = SignalColor;
-  SignalColor = Qt::black;
+  backup_color_1 = SignalColor[0];
+  SignalColor[0] = Qt::black;
   backup_color_2 = RasterColor;
   RasterColor = Qt::black;
   backup_color_3 = BorderColor;
@@ -595,7 +602,7 @@ void SignalCurve::backup_colors_for_printing(void)
 
 void SignalCurve::restore_colors_after_printing(void)
 {
-  SignalColor = backup_color_1;
+  SignalColor[0] = backup_color_1;
   RasterColor = backup_color_2;
   BorderColor = backup_color_3;
   RulerColor = backup_color_4;
@@ -641,7 +648,7 @@ void SignalCurve::print_to_ascii()
 
   if(ibuf != NULL)
   {
-    for(i=0; i<bufsize; i++)
+    for(i=0; i<bufsize[0]; i++)
     {
       fprintf(outputfile, "%i\n", ibuf[i]);
     }
@@ -649,15 +656,15 @@ void SignalCurve::print_to_ascii()
 
   if(dbuf != NULL)
   {
-    for(i=0; i<bufsize; i++)
+    for(i=0; i<bufsize[0]; i++)
     {
-      fprintf(outputfile, "%.8f\n", dbuf[i]);
+      fprintf(outputfile, "%.8f\n", dbuf[0][i]);
     }
   }
 
   if(fbuf != NULL)
   {
-    for(i=0; i<bufsize; i++)
+    for(i=0; i<bufsize[0]; i++)
     {
       fprintf(outputfile, "%.8f\n", fbuf[i]);
     }
@@ -993,9 +1000,9 @@ void SignalCurve::drawWidget_to_printer(QPainter *painter, int curve_w, int curv
     }
   }
 
-  p2_ruler_startvalue = min_value * p2_multiplier;
+  p2_ruler_startvalue = min_value[0] * p2_multiplier;
 
-  p2_ruler_endvalue = max_value * p2_multiplier;
+  p2_ruler_endvalue = max_value[0] * p2_multiplier;
 
   p2_range = p2_ruler_endvalue - p2_ruler_startvalue;
 
@@ -1032,19 +1039,19 @@ void SignalCurve::drawWidget_to_printer(QPainter *painter, int curve_w, int curv
 
     precision = 0;
 
-    if((max_value < 10.0) && (max_value > -10.0) && (min_value < 10.0) && (min_value > -10.0))
+    if((max_value[0] < 10.0) && (max_value[0] > -10.0) && (min_value[0] < 10.0) && (min_value[0] > -10.0))
     {
       precision = 1;
 
-      if((max_value < 1.0) && (max_value > -1.0) && (min_value < 1.0) && (min_value > -1.0))
+      if((max_value[0] < 1.0) && (max_value[0] > -1.0) && (min_value[0] < 1.0) && (min_value[0] > -1.0))
       {
         precision = 2;
 
-        if((max_value < 0.1) && (max_value > -0.1) && (min_value < 0.1) && (min_value > -0.1))
+        if((max_value[0] < 0.1) && (max_value[0] > -0.1) && (min_value[0] < 0.1) && (min_value[0] > -0.1))
         {
           precision = 3;
 
-          if((max_value < 0.01) && (max_value > -0.01) && (min_value < 0.01) && (min_value > -0.01))
+          if((max_value[0] < 0.01) && (max_value[0] > -0.01) && (min_value[0] < 0.01) && (min_value[0] > -0.01))
           {
             precision = 4;
           }
@@ -1059,7 +1066,7 @@ void SignalCurve::drawWidget_to_printer(QPainter *painter, int curve_w, int curv
         continue;
       }
 
-      if((precision == 0) && (max_value > 1000.0))
+      if((precision == 0) && (max_value[0] > 1000.0))
       {
         q_str.setNum((double)i / (double)p2_multiplier, 'e', precision);
       }
@@ -1155,61 +1162,61 @@ void SignalCurve::drawWidget_to_printer(QPainter *painter, int curve_w, int curv
 
 /////////////////////////////////// draw the curve ///////////////////////////////////////////
 
-  if((dbuf == NULL) && (ibuf == NULL) && (fbuf == NULL)) return;
+  if((dbuf[0] == NULL) && (ibuf == NULL) && (fbuf == NULL)) return;
 
-  if(max_value <= min_value)  return;
+  if(max_value[0] <= min_value[0])  return;
 
-  if(bufsize < 2)  return;
+  if(bufsize[0] < 2)  return;
 
   if(curveUpSideDown == true)
   {
-    offset = (-(min_value));
+    offset = (-(min_value[0]));
 
-    v_sens = curve_h / (max_value - min_value);
+    v_sens = curve_h / (max_value[0] - min_value[0]);
   }
   else
   {
-    offset = (-(max_value));
+    offset = (-(max_value[0]));
 
-    v_sens = (-(curve_h / (max_value - min_value)));
+    v_sens = (-(curve_h / (max_value[0] - min_value[0])));
   }
 
-  h_step = (double)curve_w / (double)bufsize;
+  h_step = (double)curve_w / (double)(bufsize[0]);
 
-  if(dbuf)
+  if(dbuf[0])
   {
-    for(i = 0; i < bufsize; i++)
+    for(i=0; i<bufsize[0]; i++)
     {
       if(fillsurface)
       {
-        if(bufsize < curve_w)
+        if(bufsize[0] < curve_w)
         {
           for(j = 0; j < h_step; j++)
           {
-            painter->drawLine((i * h_step) + j, (dbuf[i] + offset) * v_sens, (i * h_step) + j, curve_h);
+            painter->drawLine((i * h_step) + j, (dbuf[0][i] + offset) * v_sens, (i * h_step) + j, curve_h);
           }
         }
         else
         {
-          painter->drawLine(i * h_step, (dbuf[i] + offset) * v_sens, i * h_step, curve_h);
+          painter->drawLine(i * h_step, (dbuf[0][i] + offset) * v_sens, i * h_step, curve_h);
         }
       }
       else
       {
-        if(bufsize < (curve_w / 2))
+        if(bufsize[0] < (curve_w / 2))
         {
-          painter->drawLine(i * h_step, (dbuf[i] + offset) * v_sens, (i + 1) * h_step, (dbuf[i] + offset) * v_sens);
+          painter->drawLine(i * h_step, (dbuf[0][i] + offset) * v_sens, (i + 1) * h_step, (dbuf[0][i] + offset) * v_sens);
           if(i)
           {
-            painter->drawLine(i * h_step, (dbuf[i - 1] + offset) * v_sens, i * h_step, (dbuf[i] + offset) * v_sens);
+            painter->drawLine(i * h_step, (dbuf[0][i - 1] + offset) * v_sens, i * h_step, (dbuf[0][i] + offset) * v_sens);
           }
         }
         else
         {
-          if(i < (bufsize - 1))
+          if(i < (bufsize[0] - 1))
           {
             {
-              painter->drawLine(i * h_step, (dbuf[i] + offset) * v_sens, (i + 1) * h_step, (dbuf[i + 1] + offset) * v_sens);
+              painter->drawLine(i * h_step, (dbuf[0][i] + offset) * v_sens, (i + 1) * h_step, (dbuf[0][i + 1] + offset) * v_sens);
             }
           }
         }
@@ -1219,9 +1226,9 @@ void SignalCurve::drawWidget_to_printer(QPainter *painter, int curve_w, int curv
       {
         if(i==((int)(((double)crosshair_1_x_position * p_factor) / h_step)))
         {
-          crosshair_1_y_value = (dbuf[i] + offset) * v_sens;
-          crosshair_1_value = dbuf[i];
-          value = (h_ruler_endvalue - h_ruler_startvalue) / bufsize;
+          crosshair_1_y_value = (dbuf[0][i] + offset) * v_sens;
+          crosshair_1_value = dbuf[0][i];
+          value = (h_ruler_endvalue - h_ruler_startvalue) / bufsize[0];
           crosshair_1_value_2 = (i * value) + (0.5 * value) + h_ruler_startvalue;
         }
       }
@@ -1230,11 +1237,11 @@ void SignalCurve::drawWidget_to_printer(QPainter *painter, int curve_w, int curv
 
   if(ibuf)
   {
-    for(i = 0; i < bufsize; i++)
+    for(i = 0; i < bufsize[0]; i++)
     {
       if(fillsurface)
       {
-        if(bufsize < curve_w)
+        if(bufsize[0] < curve_w)
         {
           for(j = 0; j < h_step; j++)
           {
@@ -1248,7 +1255,7 @@ void SignalCurve::drawWidget_to_printer(QPainter *painter, int curve_w, int curv
       }
       else
       {
-        if(bufsize < (curve_w / 2))
+        if(bufsize[0] < (curve_w / 2))
         {
           painter->drawLine(i * h_step, ((double)(ibuf[i]) + offset) * v_sens, (i + 1) * h_step, ((double)(ibuf[i]) + offset) * v_sens);
           if(i)
@@ -1258,7 +1265,7 @@ void SignalCurve::drawWidget_to_printer(QPainter *painter, int curve_w, int curv
         }
         else
         {
-          if(i < (bufsize - 1))
+          if(i < (bufsize[0] - 1))
           {
             {
               painter->drawLine(i * h_step, ((double)(ibuf[i]) + offset) * v_sens, (i + 1) * h_step, ((double)(ibuf[i + 1]) + offset) * v_sens);
@@ -1273,7 +1280,7 @@ void SignalCurve::drawWidget_to_printer(QPainter *painter, int curve_w, int curv
         {
           crosshair_1_y_value = ((double)(ibuf[i]) + offset) * v_sens;
           crosshair_1_value = (double)(ibuf[i]);
-          value = (h_ruler_endvalue - h_ruler_startvalue) / bufsize;
+          value = (h_ruler_endvalue - h_ruler_startvalue) / bufsize[0];
           crosshair_1_value_2 = (i * value) + (0.5 * value) + h_ruler_startvalue;
         }
       }
@@ -1282,11 +1289,11 @@ void SignalCurve::drawWidget_to_printer(QPainter *painter, int curve_w, int curv
 
   if(fbuf)
   {
-    for(i = 0; i < bufsize; i++)
+    for(i = 0; i < bufsize[0]; i++)
     {
       if(fillsurface)
       {
-        if(bufsize < curve_w)
+        if(bufsize[0] < curve_w)
         {
           for(j = 0; j < h_step; j++)
           {
@@ -1300,7 +1307,7 @@ void SignalCurve::drawWidget_to_printer(QPainter *painter, int curve_w, int curv
       }
       else
       {
-        if(bufsize < (curve_w / 2))
+        if(bufsize[0] < (curve_w / 2))
         {
           painter->drawLine(i * h_step, (fbuf[i] + offset) * v_sens, (i + 1) * h_step, (fbuf[i] + offset) * v_sens);
           if(i)
@@ -1310,7 +1317,7 @@ void SignalCurve::drawWidget_to_printer(QPainter *painter, int curve_w, int curv
         }
         else
         {
-          if(i < (bufsize - 1))
+          if(i < (bufsize[0] - 1))
           {
             {
               painter->drawLine(i * h_step, (fbuf[i] + offset) * v_sens, (i + 1) * h_step, (fbuf[i + 1] + offset) * v_sens);
@@ -1325,7 +1332,7 @@ void SignalCurve::drawWidget_to_printer(QPainter *painter, int curve_w, int curv
         {
           crosshair_1_y_value = (fbuf[i] + offset) * v_sens;
           crosshair_1_value = fbuf[i];
-          value = (h_ruler_endvalue - h_ruler_startvalue) / bufsize;
+          value = (h_ruler_endvalue - h_ruler_startvalue) / bufsize[0];
           crosshair_1_value_2 = (i * value) + (0.5 * value) + h_ruler_startvalue;
         }
       }
@@ -1397,7 +1404,7 @@ void SignalCurve::paintEvent(QPaintEvent *)
 
 void SignalCurve::drawWidget(QPainter *painter, int curve_w, int curve_h)
 {
-  int i, j,
+  int i, j, k,
       precision,
       p_w,
       p_h;
@@ -1540,9 +1547,9 @@ void SignalCurve::drawWidget(QPainter *painter, int curve_w, int curve_h)
     }
   }
 
-  p2_ruler_startvalue = min_value * p2_multiplier;
+  p2_ruler_startvalue = min_value[0] * p2_multiplier;
 
-  p2_ruler_endvalue = max_value * p2_multiplier;
+  p2_ruler_endvalue = max_value[0] * p2_multiplier;
 
   p2_range = p2_ruler_endvalue - p2_ruler_startvalue;
 
@@ -1598,19 +1605,19 @@ void SignalCurve::drawWidget(QPainter *painter, int curve_w, int curve_h)
 
     precision = 0;
 
-    if((max_value < 10.0) && (max_value > -10.0) && (min_value < 10.0) && (min_value > -10.0))
+    if((max_value[0] < 10.0) && (max_value[0] > -10.0) && (min_value[0] < 10.0) && (min_value[0] > -10.0))
     {
       precision = 1;
 
-      if((max_value < 1.0) && (max_value > -1.0) && (min_value < 1.0) && (min_value > -1.0))
+      if((max_value[0] < 1.0) && (max_value[0] > -1.0) && (min_value[0] < 1.0) && (min_value[0] > -1.0))
       {
         precision = 2;
 
-        if((max_value < 0.1) && (max_value > -0.1) && (min_value < 0.1) && (min_value > -0.1))
+        if((max_value[0] < 0.1) && (max_value[0] > -0.1) && (min_value[0] < 0.1) && (min_value[0] > -0.1))
         {
           precision = 3;
 
-          if((max_value < 0.01) && (max_value > -0.01) && (min_value < 0.01) && (min_value > -0.01))
+          if((max_value[0] < 0.01) && (max_value[0] > -0.01) && (min_value[0] < 0.01) && (min_value[0] > -0.01))
           {
             precision = 4;
           }
@@ -1630,19 +1637,19 @@ void SignalCurve::drawWidget(QPainter *painter, int curve_w, int curve_h)
                   snprintf(str, 128, "%i", 1);
                   break;
           case 1: p2_tmp = 35;
-                  snprintf(str, 128, "%i", (int)(max_value * 0.05 + 0.5));
+                  snprintf(str, 128, "%i", (int)(max_value[0] * 0.05 + 0.5));
                   break;
           case 2: p2_tmp = 50;
-                  snprintf(str, 128, "%i", (int)(max_value * 0.1 + 0.5));
+                  snprintf(str, 128, "%i", (int)(max_value[0] * 0.1 + 0.5));
                   break;
           case 3: p2_tmp = 70;
-                  snprintf(str, 128, "%i", (int)(max_value * 0.25 + 0.5));
+                  snprintf(str, 128, "%i", (int)(max_value[0] * 0.25 + 0.5));
                   break;
           case 4: p2_tmp = 85;
-                  snprintf(str, 128, "%i", (int)(max_value * 0.5 + 0.5));
+                  snprintf(str, 128, "%i", (int)(max_value[0] * 0.5 + 0.5));
                   break;
           case 5: p2_tmp = 100;
-                  snprintf(str, 128, "%i", (int)(max_value + 0.5));
+                  snprintf(str, 128, "%i", (int)(max_value[0] + 0.5));
                   break;
         }
 
@@ -1664,7 +1671,7 @@ void SignalCurve::drawWidget(QPainter *painter, int curve_w, int curve_h)
           continue;
         }
 
-        if((precision == 0) && (max_value > 1000.0))
+        if((precision == 0) && (max_value[0] > 1000.0))
         {
           q_str.setNum((double)lk / (double)p2_multiplier, 'e', precision);
         }
@@ -1815,63 +1822,63 @@ void SignalCurve::drawWidget(QPainter *painter, int curve_w, int curve_h)
 
   if(drawcurve_before_raster)
   {
-    if((dbuf == NULL) && (ibuf == NULL) && (fbuf == NULL)) return;
+    if((dbuf[0] == NULL) && (ibuf == NULL) && (fbuf == NULL)) return;
 
-    if(max_value <= min_value)  return;
+    if(max_value[0] <= min_value[0])  return;
 
-    if(bufsize < 2)  return;
+    if(bufsize[0] < 2)  return;
 
     if(curveUpSideDown == true)
     {
-      offset = (-(min_value));
+      offset = (-(min_value[0]));
 
-      v_sens = curve_h / (max_value - min_value);
+      v_sens = curve_h / (max_value[0] - min_value[0]);
     }
     else
     {
-      offset = (-(max_value));
+      offset = (-(max_value[0]));
 
-      v_sens = (-(curve_h / (max_value - min_value)));
+      v_sens = (-(curve_h / (max_value[0] - min_value[0])));
     }
 
-    h_step = (double)curve_w / (double)bufsize;
+    h_step = (double)curve_w / (double)bufsize[0];
 
-    painter->setPen(QPen(QBrush(SignalColor, Qt::SolidPattern), tracewidth, Qt::SolidLine, Qt::SquareCap, Qt::BevelJoin));
+    painter->setPen(QPen(QBrush(SignalColor[0], Qt::SolidPattern), tracewidth[0], Qt::SolidLine, Qt::SquareCap, Qt::BevelJoin));
 
-    if(dbuf)
+    if(dbuf[0])
     {
-      for(i = 0; i < bufsize; i++)
+      for(i = 0; i < bufsize[0]; i++)
       {
         if(fillsurface)
         {
-          if(bufsize < curve_w)
+          if(bufsize[0] < curve_w)
           {
             for(j = 0; j < h_step; j++)
             {
-              painter->drawLine((i * h_step) + j, (dbuf[i] + offset) * v_sens, (i * h_step) + j, curve_h);
+              painter->drawLine((i * h_step) + j, (dbuf[0][i] + offset) * v_sens, (i * h_step) + j, curve_h);
             }
           }
           else
           {
-            painter->drawLine(i * h_step, (dbuf[i] + offset) * v_sens, i * h_step, curve_h);
+            painter->drawLine(i * h_step, (dbuf[0][i] + offset) * v_sens, i * h_step, curve_h);
           }
         }
         else
         {
-          if(bufsize < (curve_w / 2))
+          if(bufsize[0] < (curve_w / 2))
           {
-            painter->drawLine(i * h_step, (dbuf[i] + offset) * v_sens, (i + 1) * h_step, (dbuf[i] + offset) * v_sens);
+            painter->drawLine(i * h_step, (dbuf[0][i] + offset) * v_sens, (i + 1) * h_step, (dbuf[0][i] + offset) * v_sens);
             if(i)
             {
-              painter->drawLine(i * h_step, (dbuf[i - 1] + offset) * v_sens, i * h_step, (dbuf[i] + offset) * v_sens);
+              painter->drawLine(i * h_step, (dbuf[0][i - 1] + offset) * v_sens, i * h_step, (dbuf[0][i] + offset) * v_sens);
             }
           }
           else
           {
-            if(i < (bufsize - 1))
+            if(i < (bufsize[0] - 1))
             {
               {
-                painter->drawLine(i * h_step, (dbuf[i] + offset) * v_sens, (i + 1) * h_step, (dbuf[i + 1] + offset) * v_sens);
+                painter->drawLine(i * h_step, (dbuf[0][i] + offset) * v_sens, (i + 1) * h_step, (dbuf[0][i + 1] + offset) * v_sens);
               }
             }
           }
@@ -1881,9 +1888,9 @@ void SignalCurve::drawWidget(QPainter *painter, int curve_w, int curve_h)
         {
           if(i==((int)(((double)crosshair_1_x_position) / h_step)))
           {
-            crosshair_1_y_value = (dbuf[i] + offset) * v_sens;
-            crosshair_1_value = dbuf[i];
-            value = (h_ruler_endvalue - h_ruler_startvalue) / bufsize;
+            crosshair_1_y_value = (dbuf[0][i] + offset) * v_sens;
+            crosshair_1_value = dbuf[0][i];
+            value = (h_ruler_endvalue - h_ruler_startvalue) / bufsize[0];
             crosshair_1_value_2 = (i * value) + h_ruler_startvalue;
           }
         }
@@ -1892,11 +1899,11 @@ void SignalCurve::drawWidget(QPainter *painter, int curve_w, int curve_h)
 
     if(ibuf)
     {
-      for(i = 0; i < bufsize; i++)
+      for(i = 0; i < bufsize[0]; i++)
       {
         if(fillsurface)
         {
-          if(bufsize < curve_w)
+          if(bufsize[0] < curve_w)
           {
             for(j = 0; j < h_step; j++)
             {
@@ -1910,7 +1917,7 @@ void SignalCurve::drawWidget(QPainter *painter, int curve_w, int curve_h)
         }
         else
         {
-          if(bufsize < (curve_w / 2))
+          if(bufsize[0] < (curve_w / 2))
           {
             painter->drawLine(i * h_step, ((double)(ibuf[i]) + offset) * v_sens, (i + 1) * h_step, ((double)(ibuf[i]) + offset) * v_sens);
             if(i)
@@ -1920,7 +1927,7 @@ void SignalCurve::drawWidget(QPainter *painter, int curve_w, int curve_h)
           }
           else
           {
-            if(i < (bufsize - 1))
+            if(i < (bufsize[0] - 1))
             {
               {
                 painter->drawLine(i * h_step, ((double)(ibuf[i]) + offset) * v_sens, (i + 1) * h_step, ((double)(ibuf[i + 1]) + offset) * v_sens);
@@ -1935,7 +1942,7 @@ void SignalCurve::drawWidget(QPainter *painter, int curve_w, int curve_h)
           {
             crosshair_1_y_value = ((double)(ibuf[i]) + offset) * v_sens;
             crosshair_1_value = (double)(ibuf[i]);
-            value = (h_ruler_endvalue - h_ruler_startvalue) / bufsize;
+            value = (h_ruler_endvalue - h_ruler_startvalue) / bufsize[0];
             crosshair_1_value_2 = (i * value) + h_ruler_startvalue;
           }
         }
@@ -1944,11 +1951,11 @@ void SignalCurve::drawWidget(QPainter *painter, int curve_w, int curve_h)
 
     if(fbuf)
     {
-      for(i = 0; i < bufsize; i++)
+      for(i=0; i<bufsize[0]; i++)
       {
         if(fillsurface)
         {
-          if(bufsize < curve_w)
+          if(bufsize[0] < curve_w)
           {
             for(j = 0; j < h_step; j++)
             {
@@ -1962,7 +1969,7 @@ void SignalCurve::drawWidget(QPainter *painter, int curve_w, int curve_h)
         }
         else
         {
-          if(bufsize < (curve_w / 2))
+          if(bufsize[0] < (curve_w / 2))
           {
             painter->drawLine(i * h_step, (fbuf[i] + offset) * v_sens, (i + 1) * h_step, (fbuf[i] + offset) * v_sens);
             if(i)
@@ -1972,7 +1979,7 @@ void SignalCurve::drawWidget(QPainter *painter, int curve_w, int curve_h)
           }
           else
           {
-            if(i < (bufsize - 1))
+            if(i < (bufsize[0] - 1))
             {
               {
                 painter->drawLine(i * h_step, (fbuf[i] + offset) * v_sens, (i + 1) * h_step, (fbuf[i + 1] + offset) * v_sens);
@@ -1987,7 +1994,7 @@ void SignalCurve::drawWidget(QPainter *painter, int curve_w, int curve_h)
           {
             crosshair_1_y_value = (fbuf[i] + offset) * v_sens;
             crosshair_1_value = fbuf[i];
-            value = (h_ruler_endvalue - h_ruler_startvalue) / bufsize;
+            value = (h_ruler_endvalue - h_ruler_startvalue) / bufsize[0];
             crosshair_1_value_2 = (i * value) + h_ruler_startvalue;
           }
         }
@@ -2064,62 +2071,81 @@ void SignalCurve::drawWidget(QPainter *painter, int curve_w, int curve_h)
 
   if(!drawcurve_before_raster)
   {
-    if((dbuf == NULL) && (ibuf == NULL) && (fbuf == NULL)) return;
+    if((dbuf[0] == NULL) && (ibuf == NULL) && (fbuf == NULL)) return;
 
-    if(max_value <= min_value)  return;
+    if(max_value[0] <= min_value[0])  return;
 
-    if(bufsize < 2)  return;
+    if(bufsize[0] < 2)  return;
 
     if(curveUpSideDown == true)
     {
-      offset = (-(min_value));
+      offset = (-(min_value[0]));
 
-      v_sens = curve_h / (max_value - min_value);
+      v_sens = curve_h / (max_value[0] - min_value[0]);
     }
     else
     {
-      offset = (-(max_value));
+      offset = (-(max_value[0]));
 
-      v_sens = (-(curve_h / (max_value - min_value)));
+      v_sens = (-(curve_h / (max_value[0] - min_value[0])));
     }
 
-    h_step = (double)curve_w / (double)bufsize;
+    h_step = (double)curve_w / (double)(bufsize[0]);
 
-    painter->setPen(QPen(QBrush(SignalColor, Qt::SolidPattern), tracewidth, Qt::SolidLine, Qt::SquareCap, Qt::BevelJoin));
+    painter->setPen(QPen(QBrush(SignalColor[0], Qt::SolidPattern), tracewidth[0], Qt::SolidLine, Qt::SquareCap, Qt::BevelJoin));
 
-    if(dbuf)
+    for(k=0; k<SC_MAX_TRACES; k++)
     {
-      for(i = 0; i < bufsize; i++)
+      if(dbuf[k] == NULL)
+      {
+        if(k)
+        {
+          h_step = (double)curve_w / (double)(bufsize[0]);
+
+          painter->setPen(QPen(QBrush(SignalColor[0], Qt::SolidPattern), tracewidth[0], Qt::SolidLine, Qt::SquareCap, Qt::BevelJoin));
+        }
+
+        break;
+      }
+
+      if(k)
+      {
+        h_step = (double)curve_w / (double)(bufsize[k]);
+
+        painter->setPen(QPen(QBrush(SignalColor[k], Qt::SolidPattern), tracewidth[k], Qt::SolidLine, Qt::SquareCap, Qt::BevelJoin));
+      }
+
+      for(i=0; i<bufsize[k]; i++)
       {
         if(fillsurface)
         {
-          if(bufsize < curve_w)
+          if(bufsize[k] < curve_w)
           {
-            for(j = 0; j < h_step; j++)
+            for(j=0; j<h_step; j++)
             {
-              painter->drawLine((i * h_step) + j, (dbuf[i] + offset) * v_sens, (i * h_step) + j, curve_h);
+              painter->drawLine((i * h_step) + j, (dbuf[k][i] + offset) * v_sens, (i * h_step) + j, curve_h);
             }
           }
           else
           {
-            painter->drawLine(i * h_step, (dbuf[i] + offset) * v_sens, i * h_step, curve_h);
+            painter->drawLine(i * h_step, (dbuf[k][i] + offset) * v_sens, i * h_step, curve_h);
           }
         }
         else
         {
-          if(bufsize < (curve_w / 2))
+          if(bufsize[k] < (curve_w / 2))
           {
-            painter->drawLine(i * h_step, (dbuf[i] + offset) * v_sens, (i + 1) * h_step, (dbuf[i] + offset) * v_sens);
+            painter->drawLine(i * h_step, (dbuf[k][i] + offset) * v_sens, (i + 1) * h_step, (dbuf[k][i] + offset) * v_sens);
             if(i)
             {
-              painter->drawLine(i * h_step, (dbuf[i - 1] + offset) * v_sens, i * h_step, (dbuf[i] + offset) * v_sens);
+              painter->drawLine(i * h_step, (dbuf[k][i - 1] + offset) * v_sens, i * h_step, (dbuf[k][i] + offset) * v_sens);
             }
           }
           else
           {
-            if(i < (bufsize - 1))
+            if(i < (bufsize[k] - 1))
             {
-              painter->drawLine(i * h_step, (dbuf[i] + offset) * v_sens, (i + 1) * h_step, (dbuf[i + 1] + offset) * v_sens);
+              painter->drawLine(i * h_step, (dbuf[k][i] + offset) * v_sens, (i + 1) * h_step, (dbuf[k][i + 1] + offset) * v_sens);
             }
           }
         }
@@ -2128,78 +2154,31 @@ void SignalCurve::drawWidget(QPainter *painter, int curve_w, int curve_h)
         {
           if(i==((int)(((double)crosshair_1_x_position) / h_step)))
           {
-            crosshair_1_y_value = (dbuf[i] + offset) * v_sens;
+            crosshair_1_y_value = (dbuf[0][i] + offset) * v_sens;
             if(v_log_enabled)
             {
-              crosshair_1_value = dbuf[i] / (max_value / log10(max_value));
+              crosshair_1_value = dbuf[0][i] / (max_value[0] / log10(max_value[0]));
 
               crosshair_1_value = exp10(crosshair_1_value);
             }
             else
             {
-              crosshair_1_value = dbuf[i];
+              crosshair_1_value = dbuf[0][i];
             }
-            value = (h_ruler_endvalue - h_ruler_startvalue) / bufsize;
+            value = (h_ruler_endvalue - h_ruler_startvalue) / bufsize[0];
             crosshair_1_value_2 = (i * value) + h_ruler_startvalue;
           }
         }
       }
     }
 
-    if(dbuf2)
-    {
-      h_step = (double)curve_w / (double)bufsize2;
-
-      painter->setPen(QPen(QBrush(SignalColor2, Qt::SolidPattern), tracewidth2, Qt::SolidLine, Qt::SquareCap, Qt::BevelJoin));
-
-      for(i = 0; i < bufsize2; i++)
-      {
-        if(fillsurface)
-        {
-          if(bufsize2 < curve_w)
-          {
-            for(j = 0; j < h_step; j++)
-            {
-              painter->drawLine((i * h_step) + j, (dbuf2[i] + offset) * v_sens, (i * h_step) + j, curve_h);
-            }
-          }
-          else
-          {
-            painter->drawLine(i * h_step, (dbuf2[i] + offset) * v_sens, i * h_step, curve_h);
-          }
-        }
-        else
-        {
-          if(bufsize < (curve_w / 2))
-          {
-            painter->drawLine(i * h_step, (dbuf2[i] + offset) * v_sens, (i + 1) * h_step, (dbuf2[i] + offset) * v_sens);
-            if(i)
-            {
-              painter->drawLine(i * h_step, (dbuf2[i - 1] + offset) * v_sens, i * h_step, (dbuf2[i] + offset) * v_sens);
-            }
-          }
-          else
-          {
-            if(i < (bufsize - 1))
-            {
-              painter->drawLine(i * h_step, (dbuf2[i] + offset) * v_sens, (i + 1) * h_step, (dbuf2[i + 1] + offset) * v_sens);
-            }
-          }
-        }
-      }
-
-      h_step = (double)curve_w / (double)bufsize;
-
-      painter->setPen(QPen(QBrush(SignalColor, Qt::SolidPattern), tracewidth, Qt::SolidLine, Qt::SquareCap, Qt::BevelJoin));
-    }
-
     if(ibuf)
     {
-      for(i = 0; i < bufsize; i++)
+      for(i = 0; i < bufsize[0]; i++)
       {
         if(fillsurface)
         {
-          if(bufsize < curve_w)
+          if(bufsize[0] < curve_w)
           {
             for(j = 0; j < h_step; j++)
             {
@@ -2213,7 +2192,7 @@ void SignalCurve::drawWidget(QPainter *painter, int curve_w, int curve_h)
         }
         else
         {
-          if(bufsize < (curve_w / 2))
+          if(bufsize[0] < (curve_w / 2))
           {
             painter->drawLine(i * h_step, ((double)(ibuf[i]) + offset) * v_sens, (i + 1) * h_step, ((double)(ibuf[i]) + offset) * v_sens);
             if(i)
@@ -2223,7 +2202,7 @@ void SignalCurve::drawWidget(QPainter *painter, int curve_w, int curve_h)
           }
           else
           {
-            if(i < (bufsize - 1))
+            if(i < (bufsize[0] - 1))
             {
               {
                 painter->drawLine(i * h_step, ((double)(ibuf[i]) + offset) * v_sens, (i + 1) * h_step, ((double)(ibuf[i + 1]) + offset) * v_sens);
@@ -2238,7 +2217,7 @@ void SignalCurve::drawWidget(QPainter *painter, int curve_w, int curve_h)
           {
             crosshair_1_y_value = ((double)(ibuf[i]) + offset) * v_sens;
             crosshair_1_value = (double)(ibuf[i]);
-            value = (h_ruler_endvalue - h_ruler_startvalue) / bufsize;
+            value = (h_ruler_endvalue - h_ruler_startvalue) / bufsize[0];
             crosshair_1_value_2 = (i * value) + h_ruler_startvalue;
           }
         }
@@ -2247,11 +2226,11 @@ void SignalCurve::drawWidget(QPainter *painter, int curve_w, int curve_h)
 
     if(fbuf)
     {
-      for(i = 0; i < bufsize; i++)
+      for(i = 0; i < bufsize[0]; i++)
       {
         if(fillsurface)
         {
-          if(bufsize < curve_w)
+          if(bufsize[0] < curve_w)
           {
             for(j = 0; j < h_step; j++)
             {
@@ -2265,7 +2244,7 @@ void SignalCurve::drawWidget(QPainter *painter, int curve_w, int curve_h)
         }
         else
         {
-          if(bufsize < (curve_w / 2))
+          if(bufsize[0] < (curve_w / 2))
           {
             painter->drawLine(i * h_step, (fbuf[i] + offset) * v_sens, (i + 1) * h_step, (fbuf[i] + offset) * v_sens);
             if(i)
@@ -2275,7 +2254,7 @@ void SignalCurve::drawWidget(QPainter *painter, int curve_w, int curve_h)
           }
           else
           {
-            if(i < (bufsize - 1))
+            if(i < (bufsize[0] - 1))
             {
               {
                 painter->drawLine(i * h_step, (fbuf[i] + offset) * v_sens, (i + 1) * h_step, (fbuf[i + 1] + offset) * v_sens);
@@ -2290,7 +2269,7 @@ void SignalCurve::drawWidget(QPainter *painter, int curve_w, int curve_h)
           {
             crosshair_1_y_value = (fbuf[i] + offset) * v_sens;
             crosshair_1_value = fbuf[i];
-            value = (h_ruler_endvalue - h_ruler_startvalue) / bufsize;
+            value = (h_ruler_endvalue - h_ruler_startvalue) / bufsize[0];
             crosshair_1_value_2 = (i * value) + h_ruler_startvalue;
           }
         }
@@ -2302,7 +2281,7 @@ void SignalCurve::drawWidget(QPainter *painter, int curve_w, int curve_h)
 
   if(line1Enabled == true)
   {
-    painter->setPen(QPen(QBrush(line1Color, Qt::SolidPattern), tracewidth, Qt::SolidLine, Qt::SquareCap, Qt::BevelJoin));
+    painter->setPen(QPen(QBrush(line1Color, Qt::SolidPattern), tracewidth[0], Qt::SolidLine, Qt::SquareCap, Qt::BevelJoin));
 
     painter->drawLine(line1_start_x * h_step, (line1_start_y + offset) * v_sens, line1_end_x * h_step, (line1_end_y + offset) * v_sens);
   }
@@ -2375,9 +2354,9 @@ void SignalCurve::drawLine(int start_x, double start_y, int end_x, double end_y,
   {
     line1_start_x = 0;
   }
-  if(line1_start_x >= bufsize)
+  if(line1_start_x >= bufsize[0])
   {
-    line1_start_x = bufsize - 1;
+    line1_start_x = bufsize[0] - 1;
   }
 
   line1_start_y = start_y;
@@ -2387,9 +2366,9 @@ void SignalCurve::drawLine(int start_x, double start_y, int end_x, double end_y,
   {
     line1_end_x = 0;
   }
-  if(line1_end_x >= bufsize)
+  if(line1_end_x >= bufsize[0])
   {
-    line1_end_x = bufsize - 1;
+    line1_end_x = bufsize[0] - 1;
   }
 
   line1_end_y = end_y;
@@ -2414,61 +2393,36 @@ void SignalCurve::drawCurve(double *samplebuf, int bsize, double max_val, double
 
   double dtmp;
 
-  if(trace_id)
+  if((trace_id < 0) || (trace_id >= SC_MAX_TRACES))
   {
-    dbuf2 = samplebuf;
-
-    bufsize2 = bsize;
-
-    max_value2 = max_val;
-
-    min_value2 = min_val;
-
-    if(v_log_enabled)
-    {
-      dtmp = max_value2 / log10(max_value2);
-
-      for(i=0; i<bufsize2; i++)
-      {
-        if(dbuf2[i] <= 1)
-        {
-          dbuf2[i] = 1;
-        }
-        else
-        {
-          dbuf2[i] = log10(dbuf2[i]) * dtmp;
-        }
-      }
-    }
+    return;
   }
-  else
+
+  dbuf[trace_id] = samplebuf;
+
+  ibuf = NULL;
+
+  fbuf = NULL;
+
+  bufsize[trace_id] = bsize;
+
+  max_value[trace_id] = max_val;
+
+  min_value[trace_id] = min_val;
+
+  if(v_log_enabled)
   {
-    dbuf = samplebuf;
+    dtmp = max_value[trace_id] / log10(max_value[trace_id]);
 
-    ibuf = NULL;
-
-    fbuf = NULL;
-
-    bufsize = bsize;
-
-    max_value = max_val;
-
-    min_value = min_val;
-
-    if(v_log_enabled)
+    for(i=0; i<bufsize[trace_id]; i++)
     {
-      dtmp = max_value / log10(max_value);
-
-      for(i=0; i<bufsize; i++)
+      if(dbuf[trace_id][i] <= 1)
       {
-        if(dbuf[i] <= 1)
-        {
-          dbuf[i] = 1;
-        }
-        else
-        {
-          dbuf[i] = log10(dbuf[i]) * dtmp;
-        }
+        dbuf[trace_id][i] = 1;
+      }
+      else
+      {
+        dbuf[trace_id][i] = log10(dbuf[trace_id][i]) * dtmp;
       }
     }
   }
@@ -2481,15 +2435,15 @@ void SignalCurve::drawCurve(int *samplebuf, int bsize, double max_val, double mi
 {
   ibuf = samplebuf;
 
-  dbuf = NULL;
+  dbuf[0] = NULL;
 
   fbuf = NULL;
 
-  bufsize = bsize;
+  bufsize[0] = bsize;
 
-  max_value = max_val;
+  max_value[0] = max_val;
 
-  min_value = min_val;
+  min_value[0] = min_val;
 
   update();
 }
@@ -2499,15 +2453,15 @@ void SignalCurve::drawCurve(float *samplebuf, int bsize, double max_val, double 
 {
   fbuf = samplebuf;
 
-  dbuf = NULL;
+  dbuf[0] = NULL;
 
   ibuf = NULL;
 
-  bufsize = bsize;
+  bufsize[0] = bsize;
 
-  max_value = max_val;
+  max_value[0] = max_val;
 
-  min_value = min_val;
+  min_value[0] = min_val;
 
   update();
 }
@@ -2617,14 +2571,8 @@ void SignalCurve::setH_RulerValues(double start, double end)
 
 void SignalCurve::setSignalColor(QColor newColor, int trace_id)
 {
-  if(trace_id)
-  {
-    SignalColor2 = newColor;
-  }
-  else
-  {
-    SignalColor = newColor;
-  }
+  SignalColor[trace_id] = newColor;
+
   update();
 }
 
@@ -2638,16 +2586,9 @@ void SignalCurve::setCrosshairColor(QColor newColor)
 
 void SignalCurve::setTraceWidth(int tr_width, int trace_id)
 {
-  if(trace_id)
-  {
-    tracewidth2 = tr_width;
-    if(tracewidth2 < 0)  tracewidth2 = 0;
-  }
-  else
-  {
-    tracewidth = tr_width;
-    if(tracewidth < 0)  tracewidth = 0;
-  }
+  tracewidth[trace_id] = tr_width;
+  if(tracewidth[trace_id] < 0)  tracewidth[trace_id] = 0;
+
   update();
 }
 
