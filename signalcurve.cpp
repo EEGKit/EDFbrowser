@@ -37,6 +37,7 @@ SignalCurve::SignalCurve(QWidget *w_parent) : QWidget(w_parent)
 
   SignalColor = Qt::blue;
   tracewidth = 0;
+  tracewidth2 = 0;
   BackgroundColor = Qt::gray;
   RasterColor = Qt::darkGray;
   BorderColor = Qt::lightGray;
@@ -71,7 +72,9 @@ SignalCurve::SignalCurve(QWidget *w_parent) : QWidget(w_parent)
   setMinimumSize(sz_hint_w, sz_hint_h);
 
   bufsize = 0;
+  bufsize2 = 0;
   dbuf = NULL;
+  dbuf2 = NULL;
   fbuf = NULL;
   ibuf = NULL;
   bordersize = 60 * w_scaling;
@@ -127,10 +130,12 @@ SignalCurve::~SignalCurve()
 void SignalCurve::clear()
 {
   dbuf = NULL;
+  dbuf2 = NULL;
   fbuf = NULL;
   ibuf = NULL;
 
   bufsize = 0;
+  bufsize2 = 0;
 
   use_move_events = 0;
   crosshair_1_active = 0;
@@ -2141,6 +2146,53 @@ void SignalCurve::drawWidget(QPainter *painter, int curve_w, int curve_h)
       }
     }
 
+    if(dbuf2)
+    {
+      h_step = (double)curve_w / (double)bufsize2;
+
+      painter->setPen(QPen(QBrush(SignalColor2, Qt::SolidPattern), tracewidth2, Qt::SolidLine, Qt::SquareCap, Qt::BevelJoin));
+
+      for(i = 0; i < bufsize2; i++)
+      {
+        if(fillsurface)
+        {
+          if(bufsize2 < curve_w)
+          {
+            for(j = 0; j < h_step; j++)
+            {
+              painter->drawLine((i * h_step) + j, (dbuf2[i] + offset) * v_sens, (i * h_step) + j, curve_h);
+            }
+          }
+          else
+          {
+            painter->drawLine(i * h_step, (dbuf2[i] + offset) * v_sens, i * h_step, curve_h);
+          }
+        }
+        else
+        {
+          if(bufsize < (curve_w / 2))
+          {
+            painter->drawLine(i * h_step, (dbuf2[i] + offset) * v_sens, (i + 1) * h_step, (dbuf2[i] + offset) * v_sens);
+            if(i)
+            {
+              painter->drawLine(i * h_step, (dbuf2[i - 1] + offset) * v_sens, i * h_step, (dbuf2[i] + offset) * v_sens);
+            }
+          }
+          else
+          {
+            if(i < (bufsize - 1))
+            {
+              painter->drawLine(i * h_step, (dbuf2[i] + offset) * v_sens, (i + 1) * h_step, (dbuf2[i + 1] + offset) * v_sens);
+            }
+          }
+        }
+      }
+
+      h_step = (double)curve_w / (double)bufsize;
+
+      painter->setPen(QPen(QBrush(SignalColor, Qt::SolidPattern), tracewidth, Qt::SolidLine, Qt::SquareCap, Qt::BevelJoin));
+    }
+
     if(ibuf)
     {
       for(i = 0; i < bufsize; i++)
@@ -2356,37 +2408,67 @@ void SignalCurve::setLineEnabled(bool stat)
 }
 
 
-void SignalCurve::drawCurve(double *samplebuf, int bsize, double max_val, double min_val)
+void SignalCurve::drawCurve(double *samplebuf, int bsize, double max_val, double min_val, int trace_id)
 {
   int i;
 
   double dtmp;
 
-  dbuf = samplebuf;
-
-  ibuf = NULL;
-
-  fbuf = NULL;
-
-  bufsize = bsize;
-
-  max_value = max_val;
-
-  min_value = min_val;
-
-  if(v_log_enabled)
+  if(trace_id)
   {
-    dtmp = max_value / log10(max_value);
+    dbuf2 = samplebuf;
 
-    for(i=0; i<bufsize; i++)
+    bufsize2 = bsize;
+
+    max_value2 = max_val;
+
+    min_value2 = min_val;
+
+    if(v_log_enabled)
     {
-      if(dbuf[i] <= 1)
+      dtmp = max_value2 / log10(max_value2);
+
+      for(i=0; i<bufsize2; i++)
       {
-        dbuf[i] = 1;
+        if(dbuf2[i] <= 1)
+        {
+          dbuf2[i] = 1;
+        }
+        else
+        {
+          dbuf2[i] = log10(dbuf2[i]) * dtmp;
+        }
       }
-      else
+    }
+  }
+  else
+  {
+    dbuf = samplebuf;
+
+    ibuf = NULL;
+
+    fbuf = NULL;
+
+    bufsize = bsize;
+
+    max_value = max_val;
+
+    min_value = min_val;
+
+    if(v_log_enabled)
+    {
+      dtmp = max_value / log10(max_value);
+
+      for(i=0; i<bufsize; i++)
       {
-        dbuf[i] = log10(dbuf[i]) * dtmp;
+        if(dbuf[i] <= 1)
+        {
+          dbuf[i] = 1;
+        }
+        else
+        {
+          dbuf[i] = log10(dbuf[i]) * dtmp;
+        }
       }
     }
   }
@@ -2533,9 +2615,16 @@ void SignalCurve::setH_RulerValues(double start, double end)
 }
 
 
-void SignalCurve::setSignalColor(QColor newColor)
+void SignalCurve::setSignalColor(QColor newColor, int trace_id)
 {
-  SignalColor = newColor;
+  if(trace_id)
+  {
+    SignalColor2 = newColor;
+  }
+  else
+  {
+    SignalColor = newColor;
+  }
   update();
 }
 
@@ -2547,10 +2636,18 @@ void SignalCurve::setCrosshairColor(QColor newColor)
 }
 
 
-void SignalCurve::setTraceWidth(int tr_width)
+void SignalCurve::setTraceWidth(int tr_width, int trace_id)
 {
-  tracewidth = tr_width;
-  if(tracewidth < 0)  tracewidth = 0;
+  if(trace_id)
+  {
+    tracewidth2 = tr_width;
+    if(tracewidth2 < 0)  tracewidth2 = 0;
+  }
+  else
+  {
+    tracewidth = tr_width;
+    if(tracewidth < 0)  tracewidth = 0;
+  }
   update();
 }
 

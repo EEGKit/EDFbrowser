@@ -80,8 +80,8 @@ public:
   QSize minimumSizeHint() const;
   int heightForWidth(int) const;
 
-  void setSignalColor(QColor);
-  void setTraceWidth(int);
+  void setSignalColor(QColor, int trace_id=0);
+  void setTraceWidth(int, int trace_id=0);
   void setBackgroundColor(QColor);
   void setRasterColor(QColor);
   void setBorderColor(QColor);
@@ -93,9 +93,9 @@ public:
   void setUpperLabel1(const char *);
   void setUpperLabel2(const char *);
   void setLowerLabel(const char *);
-  void drawCurve(double *, int , double , double );
-  void drawCurve(int *, int , double , double );
-  void drawCurve( float *, int , double , double );
+  void drawCurve(double *, int, double, double, int trace_id=0);
+  void drawCurve(int *, int, double, double);
+  void drawCurve( float *, int, double, double);
   void drawLine(int, double, int, double, QColor);
   void setLineEnabled(bool);
   void create_button(const char *);
@@ -158,6 +158,7 @@ private:
               *sidemenuButton6;
 
   QColor SignalColor,
+         SignalColor2,
          BackgroundColor,
          RasterColor,
          BorderColor,
@@ -178,8 +179,11 @@ private:
        Marker2Pen;
 
   double max_value,
+         max_value2,
          min_value,
+         min_value2,
          *dbuf,
+         *dbuf2,
          h_ruler_startvalue,
          h_ruler_endvalue,
          printsize_x_factor,
@@ -197,11 +201,13 @@ private:
   float *fbuf;
 
   int bufsize,
+      bufsize2,
       bordersize,
       drawHruler,
       drawVruler,
       drawcurve_before_raster,
       tracewidth,
+      tracewidth2,
       extra_button,
       use_move_events,
       mouse_x,

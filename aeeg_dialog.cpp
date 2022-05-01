@@ -266,6 +266,13 @@ void UI_aeeg_window::start_button_clicked()
 //
 //   printf("start_button_clicked(): medians_in_recording: %i\n", medians_in_recording);
 
+  if(medians_in_recording < 1)
+  {
+    QMessageBox msgBox(QMessageBox::Critical, "Error", "The recording length is too short, at least 20 x segment length seconds are needed.", QMessageBox::Close);
+    msgBox.exec();
+    return;
+  }
+
   min_max_val = (double *)malloc(segments_in_recording * 2 * sizeof(double));
   if(min_max_val == NULL)
   {
