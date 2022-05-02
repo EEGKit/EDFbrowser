@@ -51,7 +51,7 @@ struct aeeg_dock_param_struct
   int sf;
   double bp_min_hz;
   double bp_max_hz;
-  double lp_hz;
+  double ravg_len;
   int max_nearby_pct;
   int min_nearby_pct;
   int segment_len;

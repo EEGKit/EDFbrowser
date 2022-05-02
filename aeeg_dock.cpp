@@ -176,15 +176,15 @@ void UI_aeeg_dock::contextmenu_requested(QPoint)
 
   snprintf(str, 4096,
          " \n"
-         "Bandpass filter: %.1f - %.1f Hz.\n"
+         "Bandpass filter: %.1f - %.1f Hz\n"
          " \n"
-         "Lowpass filter: %.1f Hz\n"
+         "Smoothing filter: %.1f sec\n"
          " \n"
-         "Segment length: %i sec.\n"
+         "Segment length: %i sec\n"
          " \n",
          param.bp_min_hz,
          param.bp_max_hz,
-         param.lp_hz,
+         param.ravg_len,
          param.segment_len);
 
   label->setText(str);

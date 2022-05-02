@@ -325,7 +325,7 @@ long long annot_editor_user_button_epoch_len,
          h_scaling,
          aeeg_bp_min_hz,
          aeeg_bp_max_hz,
-         aeeg_lp_hz,
+         aeeg_ravg_len,
          aeeg_scale_max_amp;
 
   struct{

@@ -1643,7 +1643,7 @@ void UI_Mainwindow::read_general_settings()
       xml_go_up(xml_hdl);
     }
 
-    if(!(xml_goto_nth_element_inside(xml_hdl, "aeeg_lp_hz", 0)))
+    if(!(xml_goto_nth_element_inside(xml_hdl, "aeeg_ravg_len", 0)))
     {
       if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
       {
@@ -1651,7 +1651,7 @@ void UI_Mainwindow::read_general_settings()
         return;
       }
 
-      aeeg_lp_hz = atof(result);
+      aeeg_ravg_len = atof(result);
 
       xml_go_up(xml_hdl);
     }
@@ -3230,7 +3230,7 @@ void UI_Mainwindow::write_settings()
     fprintf(cfgfile, "      <aeeg_segmentlen>%i</aeeg_segmentlen>\n", aeeg_segmentlen);
     fprintf(cfgfile, "      <aeeg_bp_min_hz>%e</aeeg_bp_min_hz>\n", aeeg_bp_min_hz);
     fprintf(cfgfile, "      <aeeg_bp_max_hz>%e</aeeg_bp_max_hz>\n", aeeg_bp_max_hz);
-    fprintf(cfgfile, "      <aeeg_lp_hz>%e</aeeg_lp_hz>\n", aeeg_lp_hz);
+    fprintf(cfgfile, "      <aeeg_ravg_len>%e</aeeg_ravg_len>\n", aeeg_ravg_len);
     fprintf(cfgfile, "    </aeeg>\n");
 
     fprintf(cfgfile, "    <hypnogram>\n");

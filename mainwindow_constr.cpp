@@ -367,7 +367,7 @@ UI_Mainwindow::UI_Mainwindow()
   aeeg_segmentlen = 15;
   aeeg_bp_min_hz = 2;
   aeeg_bp_max_hz = 15;
-  aeeg_lp_hz = 0.5;
+  aeeg_ravg_len = 0.5;
   aeeg_max_nearby_pct = 93;
   aeeg_min_nearby_pct = 9;
   aeeg_scale_max_amp = 100;

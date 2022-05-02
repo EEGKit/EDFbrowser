@@ -31,7 +31,9 @@
 
 
 
-
+/*
+ *  type: 0 = highpass, 1 = lowpass
+ */
 struct ravg_filter_settings * create_ravg_filter(int type, int size)
 {
   struct ravg_filter_settings *settings;
