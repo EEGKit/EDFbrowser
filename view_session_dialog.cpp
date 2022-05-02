@@ -157,7 +157,11 @@ void UI_ViewSessionwindow::SelectButtonClicked()
          velocity,
          factor[MAXSIGNALS],
          fir_vars[1000],
-         max_voltage=0;
+         max_voltage=0,
+         bp_min_hz=0,
+         bp_max_hz=0,
+         ravg_len=0,
+         scale_max_amp=0;
 
   FILE *f_test=NULL;
 
@@ -169,6 +173,7 @@ void UI_ViewSessionwindow::SelectButtonClicked()
                 *powerspectrumdockItem,
                 *hypnogramItem,
                 *cdsaItem,
+                *aeegItem,
                 *tmp_item=NULL,
                 *math_item_before=NULL,
                 *math_item_after=NULL;
@@ -1952,6 +1957,172 @@ void UI_ViewSessionwindow::SelectButtonClicked()
     }
 
       xml_go_up(xml_hdl);
+  }
+
+  for(i=0; i<MAXAEEGDOCKS; i++)
+  {
+    if(xml_goto_nth_element_inside(xml_hdl, "aeeg", i))
+    {
+      break;
+    }
+
+    aeegItem = new QStandardItem("aEEG");
+
+    parentItem->appendRow(aeegItem);
+
+    if(xml_goto_nth_element_inside(xml_hdl, "sigcomp_idx", 0))
+    {
+      view_session_format_error(__FILE__, __LINE__, xml_hdl);
+      return;
+    }
+    else
+    {
+      if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+      {
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
+        return;
+      }
+
+      sigcomp_idx = atoi(result);
+      if(sigcomp_idx < 0)
+      {
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
+        return;
+      }
+
+      snprintf(str2, 2048, "Signal index: %i", sigcomp_idx + 1);
+      aeegItem->appendRow(new QStandardItem(str2));
+
+      xml_go_up(xml_hdl);
+    }
+
+    if(xml_goto_nth_element_inside(xml_hdl, "bp_min_hz", 0))
+    {
+      view_session_format_error(__FILE__, __LINE__, xml_hdl);
+      return;
+    }
+    else
+    {
+      if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+      {
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
+        return;
+      }
+
+      bp_min_hz = atof(result);
+      if(bp_min_hz < 0.999)
+      {
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
+        return;
+      }
+
+      snprintf(str2, 2048, "Bandpass min. frequency: %.1f Hz", bp_min_hz);
+      aeegItem->appendRow(new QStandardItem(str2));
+
+      xml_go_up(xml_hdl);
+    }
+
+    if(xml_goto_nth_element_inside(xml_hdl, "bp_max_hz", 0))
+    {
+      view_session_format_error(__FILE__, __LINE__, xml_hdl);
+      return;
+    }
+    else
+    {
+      if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+      {
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
+        return;
+      }
+
+      bp_max_hz = atof(result);
+      if(bp_max_hz < 1.999)
+      {
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
+        return;
+      }
+
+      snprintf(str2, 2048, "Bandpass max. frequency: %.1f Hz", bp_max_hz);
+      aeegItem->appendRow(new QStandardItem(str2));
+
+      xml_go_up(xml_hdl);
+    }
+
+    if(xml_goto_nth_element_inside(xml_hdl, "segment_len", 0))
+    {
+      view_session_format_error(__FILE__, __LINE__, xml_hdl);
+      return;
+    }
+    else
+    {
+      if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+      {
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
+        return;
+      }
+
+      segment_len = atoi(result);
+      if(segment_len < 5)
+      {
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
+        return;
+      }
+
+      snprintf(str2, 2048, "Segment length: %i seconds", segment_len);
+      aeegItem->appendRow(new QStandardItem(str2));
+
+      xml_go_up(xml_hdl);
+    }
+
+    if(xml_goto_nth_element_inside(xml_hdl, "ravg_len", 0))
+    {
+      view_session_format_error(__FILE__, __LINE__, xml_hdl);
+      return;
+    }
+    else
+    {
+      if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+      {
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
+        return;
+      }
+
+      ravg_len = atof(result);
+      if(ravg_len < 0.4999)
+      {
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
+        return;
+      }
+
+      snprintf(str2, 2048, "Smoothing length: %.1f sec", ravg_len);
+      aeegItem->appendRow(new QStandardItem(str2));
+
+      xml_go_up(xml_hdl);
+    }
+
+    if(xml_goto_nth_element_inside(xml_hdl, "scale_max_amp", 0))
+    {
+      view_session_format_error(__FILE__, __LINE__, xml_hdl);
+      return;
+    }
+    else
+    {
+      if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+      {
+        view_session_format_error(__FILE__, __LINE__, xml_hdl);
+        return;
+      }
+
+      scale_max_amp = atof(result);
+
+      snprintf(str2, 2048, "Max. amplitude: %.1f", scale_max_amp);
+
+      aeegItem->appendRow(new QStandardItem(str2));
+
+      xml_go_up(xml_hdl);
+    }
+
+    xml_go_up(xml_hdl);
   }
 
   video_path[0] = 0;

@@ -132,7 +132,7 @@ UI_aeeg_window::UI_aeeg_window(QWidget *w_parent, struct signalcompblock *signal
   flayout->addRow("BP min. freq.", bp_min_hz_spinbox);
   flayout->addRow("BP max. freq.", bp_max_hz_spinbox);
   flayout->addRow(" ", (QWidget *)(NULL));
-  flayout->addRow("Smoothing length.", ravg_len_spinbox);
+  flayout->addRow("Smoothing length", ravg_len_spinbox);
   flayout->addRow(" ", (QWidget *)(NULL));
   flayout->addRow("Max. amplitude", scale_max_amp_spinbox);
   flayout->addRow(" ", (QWidget *)(NULL));
