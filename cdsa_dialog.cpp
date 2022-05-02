@@ -54,7 +54,7 @@ UI_cdsa_window::UI_cdsa_window(QWidget *w_parent, struct signalcompblock *signal
     sf = signalcomp->edfhdr->edfparam[signalcomp->edfsignal[0]].sf_f + 0.5;
   }
 
-  if(no_dialog_params)
+  if(no_dialog_params != NULL)
   {
     no_dialog_params->sf = sf;
 
@@ -500,7 +500,7 @@ void UI_cdsa_window::start_button_clicked()
     rgb_map[i][2] = i - 1530;
   }
 
-  if(myobjectDialog)
+  if(myobjectDialog != NULL)
   {
     if(export_data_checkbox->checkState() == Qt::Checked)
     {

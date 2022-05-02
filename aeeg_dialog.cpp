@@ -273,11 +273,17 @@ void UI_aeeg_window::start_button_clicked()
 //
 //   printf("start_button_clicked(): segmentlen: %i\n", segmentlen);
 //
-//   printf("start_button_clicked(): samples_in_file: %lli\n", samples_in_file);
-//
 //   printf("start_button_clicked(): smpls_in_segment: %i\n", smpls_in_segment);
 //
 //   printf("start_button_clicked(): segments_in_recording: %i\n", segments_in_recording);
+//
+//   printf("start_button_clicked(): bp_hz_min: %f\n", bp_hz_min);
+//
+//   printf("start_button_clicked(): bp_hz_max: %f\n", bp_hz_max);
+//
+//   printf("start_button_clicked(): ravg_len: %f\n", ravg_len);
+//
+//   printf("start_button_clicked(): scale_max_amp: %f\n", scale_max_amp);
 //
 //   printf("start_button_clicked(): max_idx: %i\n", max_idx);
 //

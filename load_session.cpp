@@ -96,6 +96,10 @@ int UI_Mainwindow::read_session_file(const char *path_session)
 
   memset(&cdsa_param, 0, sizeof(struct cdsa_dock_param_struct));
 
+  struct aeeg_dock_param_struct aeeg_param;
+
+  memset(&aeeg_param, 0, sizeof(struct aeeg_dock_param_struct));
+
   if(path_session == NULL) return -999;
 
   xml_hdl = xml_get_handle(path_session);
@@ -2448,6 +2452,209 @@ int UI_Mainwindow::read_session_file(const char *path_session)
         if(cdsa_dock[j] == NULL)
         {
           UI_cdsa_window wndw(this, cdsa_param.signalcomp, j, &cdsa_param);
+          break;
+        }
+      }
+
+      xml_go_up(xml_hdl);
+    }
+    else
+    {
+      break;
+    }
+  }
+
+  for(i=0; i<MAXAEEGDOCKS; i++)
+  {
+    if(!(xml_goto_nth_element_inside(xml_hdl, "aeeg", i)))
+    {
+      memset(&aeeg_param, 0, sizeof(struct aeeg_dock_param_struct));
+
+      if(xml_goto_nth_element_inside(xml_hdl, "instance_num", 0))
+      {
+        return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
+      }
+      else
+      {
+        if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+        {
+          return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
+        }
+
+        aeeg_param.instance_num = atoi(result);
+        if((aeeg_param.instance_num < 0) || (aeeg_param.instance_num >= MAXAEEGDOCKS))
+        {
+          xml_go_up(xml_hdl);
+          xml_go_up(xml_hdl);
+          continue;
+        }
+
+        xml_go_up(xml_hdl);
+      }
+
+      if(xml_goto_nth_element_inside(xml_hdl, "sigcomp_idx", 0))
+      {
+        return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
+      }
+      else
+      {
+        if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+        {
+          return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
+        }
+
+        sigcomp_idx = atoi(result);
+        if((sigcomp_idx < 0) || (sigcomp_idx >= signalcomps))
+        {
+          xml_go_up(xml_hdl);
+          xml_go_up(xml_hdl);
+          continue;
+        }
+
+        aeeg_param.signalcomp = signalcomp[sigcomp_idx];
+
+        xml_go_up(xml_hdl);
+      }
+
+      if(xml_goto_nth_element_inside(xml_hdl, "bp_min_hz", 0))
+      {
+        return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
+      }
+      else
+      {
+        if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+        {
+          return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
+        }
+
+        aeeg_param.bp_min_hz = atof(result);
+        if(aeeg_param.bp_min_hz < 1)
+        {
+          xml_go_up(xml_hdl);
+          xml_go_up(xml_hdl);
+          continue;
+        }
+
+        xml_go_up(xml_hdl);
+      }
+
+      if(xml_goto_nth_element_inside(xml_hdl, "bp_max_hz", 0))
+      {
+        return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
+      }
+      else
+      {
+        if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+        {
+          return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
+        }
+
+        aeeg_param.bp_max_hz = atof(result);
+        if(aeeg_param.bp_max_hz < 2)
+        {
+          xml_go_up(xml_hdl);
+          xml_go_up(xml_hdl);
+          continue;
+        }
+
+        xml_go_up(xml_hdl);
+      }
+
+      if(xml_goto_nth_element_inside(xml_hdl, "segment_len", 0))
+      {
+        return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
+      }
+      else
+      {
+        if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+        {
+          return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
+        }
+
+        aeeg_param.segment_len = atoi(result);
+        if((aeeg_param.segment_len < 5) || (aeeg_param.segment_len > 300))
+        {
+          xml_go_up(xml_hdl);
+          xml_go_up(xml_hdl);
+          continue;
+        }
+
+        xml_go_up(xml_hdl);
+      }
+
+      if(xml_goto_nth_element_inside(xml_hdl, "ravg_len", 0))
+      {
+        return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
+      }
+      else
+      {
+        if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+        {
+          return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
+        }
+
+        aeeg_param.ravg_len = atof(result);
+        if((aeeg_param.ravg_len < 0.0999) || (aeeg_param.ravg_len > 5.001))
+        {
+          xml_go_up(xml_hdl);
+          xml_go_up(xml_hdl);
+          continue;
+        }
+
+        xml_go_up(xml_hdl);
+      }
+
+      if(xml_goto_nth_element_inside(xml_hdl, "scale_max_amp", 0))
+      {
+        return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
+      }
+      else
+      {
+        if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+        {
+          return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
+        }
+
+        aeeg_param.scale_max_amp = atof(result);
+        if((aeeg_param.scale_max_amp < 9.999) || (aeeg_param.scale_max_amp > 500.001))
+        {
+          xml_go_up(xml_hdl);
+          xml_go_up(xml_hdl);
+          continue;
+        }
+
+        xml_go_up(xml_hdl);
+      }
+
+      if((!files_open) || (!signalcomps) || (live_stream_active))
+      {
+        xml_go_up(xml_hdl);
+        continue;
+      }
+
+      if(aeeg_param.signalcomp->ecg_filter != NULL)
+      {
+        xml_go_up(xml_hdl);
+        continue;
+      }
+
+      if(aeeg_param.signalcomp->edfhdr->edfparam[aeeg_param.signalcomp->edfsignal[0]].sf_f < 99.999)
+      {
+        xml_go_up(xml_hdl);
+        continue;
+      }
+
+      if(aeeg_param.signalcomp->edfhdr->recording_len_sec < 300)
+      {
+        xml_go_up(xml_hdl);
+        continue;
+      }
+
+      for(j=0; j<MAXAEEGDOCKS; j++)
+      {
+        if(aeeg_dock[j] == NULL)
+        {
+          UI_aeeg_window wndw(this, aeeg_param.signalcomp, j, &aeeg_param);
           break;
         }
       }

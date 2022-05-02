@@ -873,6 +873,38 @@ void UI_Mainwindow::save_session()
     fprintf(pro_file, "  </cdsa>\n");
   }
 
+  for(i=0; i<MAXAEEGDOCKS; i++)
+  {
+    if(aeeg_dock[i] == NULL)  continue;
+
+    for(sigcomp_idx=0; sigcomp_idx<signalcomps; sigcomp_idx++)
+    {
+      if(signalcomp[sigcomp_idx] == aeeg_dock[i]->param.signalcomp)
+      {
+        break;
+      }
+    }
+    if(sigcomp_idx == signalcomps)  continue;
+
+    fprintf(pro_file, "  <aeeg>\n");
+
+    fprintf(pro_file, "    <sigcomp_idx>%i</sigcomp_idx>\n", sigcomp_idx);
+
+    fprintf(pro_file, "    <bp_min_hz>%e</bp_min_hz>\n", aeeg_dock[i]->param.bp_min_hz);
+
+    fprintf(pro_file, "    <bp_max_hz>%e</bp_max_hz>\n", aeeg_dock[i]->param.bp_max_hz);
+
+    fprintf(pro_file, "    <segment_len>%i</segment_len>\n", aeeg_dock[i]->param.segment_len);
+
+    fprintf(pro_file, "    <ravg_len>%e</ravg_len>\n", aeeg_dock[i]->param.ravg_len);
+
+    fprintf(pro_file, "    <scale_max_amp>%e</scale_max_amp>\n", aeeg_dock[i]->param.scale_max_amp);
+
+    fprintf(pro_file, "    <instance_num>%i</instance_num>\n", aeeg_dock[i]->param.instance_num);
+
+    fprintf(pro_file, "  </aeeg>\n");
+  }
+
   fprintf(pro_file, "</" PROGRAM_NAME "_session>\n");
 
   fclose(pro_file);
