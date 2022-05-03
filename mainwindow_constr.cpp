@@ -371,6 +371,7 @@ UI_Mainwindow::UI_Mainwindow()
   aeeg_max_nearby_pct = 93;
   aeeg_min_nearby_pct = 9;
   aeeg_scale_max_amp = 100;
+  aeeg_pk_det_decay = 1;
 
   strlcpy(hypnogram_stage_name[0], "W", 32);
   strlcpy(hypnogram_stage_name[1], "R", 32);

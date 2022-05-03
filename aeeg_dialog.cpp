@@ -116,6 +116,12 @@ UI_aeeg_window::UI_aeeg_window(QWidget *w_parent, struct signalcompblock *signal
   scale_max_amp_spinbox->setMaximum(500);
   scale_max_amp_spinbox->setValue(mainwindow->aeeg_scale_max_amp);
 
+  pk_det_decay_spinbox = new QDoubleSpinBox;
+  pk_det_decay_spinbox->setDecimals(1);
+  pk_det_decay_spinbox->setMinimum(0.1);
+  pk_det_decay_spinbox->setMaximum(10);
+  pk_det_decay_spinbox->setValue(mainwindow->aeeg_pk_det_decay);
+
   close_button = new QPushButton;
   close_button->setText("Close");
 
@@ -131,6 +137,8 @@ UI_aeeg_window::UI_aeeg_window(QWidget *w_parent, struct signalcompblock *signal
   flayout->addRow(" ", (QWidget *)(NULL));
   flayout->addRow("BP min. freq.", bp_min_hz_spinbox);
   flayout->addRow("BP max. freq.", bp_max_hz_spinbox);
+  flayout->addRow(" ", (QWidget *)(NULL));
+  flayout->addRow("Peak det. decay", pk_det_decay_spinbox);
   flayout->addRow(" ", (QWidget *)(NULL));
   flayout->addRow("Smoothing length", ravg_len_spinbox);
   flayout->addRow(" ", (QWidget *)(NULL));
@@ -175,12 +183,14 @@ void UI_aeeg_window::default_button_clicked()
   bp_max_hz_spinbox->setValue(15);
   ravg_len_spinbox->setValue(0.5);
   scale_max_amp_spinbox->setValue(100);
+  pk_det_decay_spinbox->setValue(1);
 
   mainwindow->aeeg_segmentlen = 15;
   mainwindow->aeeg_bp_min_hz = 2;
   mainwindow->aeeg_bp_max_hz = 15;
   mainwindow->aeeg_ravg_len = 0.5;
   mainwindow->aeeg_scale_max_amp = 100;
+  mainwindow->aeeg_pk_det_decay = 1;
 }
 
 
@@ -208,7 +218,10 @@ void UI_aeeg_window::start_button_clicked()
          *min_median_val=NULL,
          max_margin_median_buf[MARGIN_MEDIAN_SZ]={0},
          min_margin_median_buf[MARGIN_MEDIAN_SZ]={0},
-         scale_max_amp;
+         scale_max_amp,
+         pk_det_val=0,
+         pk_det_decay=1,
+         pk_det_decay_fact=0;
 
   char str[1024]={""},
        filt_spec_str_bp[256]={""},
@@ -226,6 +239,7 @@ void UI_aeeg_window::start_button_clicked()
     bp_hz_max = bp_max_hz_spinbox->value();
     ravg_len = ravg_len_spinbox->value();
     scale_max_amp = scale_max_amp_spinbox->value();
+    pk_det_decay = pk_det_decay_spinbox->value();
 
     if((bp_hz_max - bp_hz_min) <= 4.999)
     {
@@ -248,12 +262,14 @@ void UI_aeeg_window::start_button_clicked()
     bp_hz_max = no_dialog_params->bp_max_hz;
     ravg_len = no_dialog_params->ravg_len;
     scale_max_amp = no_dialog_params->scale_max_amp;
+    pk_det_decay = no_dialog_params->pk_det_decay;
   }
   mainwindow->aeeg_segmentlen = segmentlen;
   mainwindow->aeeg_bp_min_hz = bp_hz_min;
   mainwindow->aeeg_bp_max_hz = bp_hz_max;
   mainwindow->aeeg_ravg_len = ravg_len;
   mainwindow->aeeg_scale_max_amp = scale_max_amp;
+  mainwindow->aeeg_pk_det_decay = pk_det_decay;
 
   smpls_in_segment = sf * segmentlen;
 
@@ -266,6 +282,8 @@ void UI_aeeg_window::start_button_clicked()
   min_idx = (smpls_in_segment * mainwindow->aeeg_min_nearby_pct) / 100.0 + 0.5;
 
   medians_in_recording = segments_in_recording / MARGIN_MEDIAN_SZ;
+
+  pk_det_decay_fact = 1.0 - (1 / (pk_det_decay * sf));
 
 //   printf("start_button_clicked(): samples_in_file: %lli\n", samples_in_file);
 //
@@ -417,6 +435,16 @@ void UI_aeeg_window::start_button_clicked()
 
       smplbuf[j] = fabs(smplbuf[j]);  // rectifier
 
+      pk_det_val *= pk_det_decay_fact;  // peak detector
+      if(smplbuf[j] > pk_det_val)
+      {
+        pk_det_val = smplbuf[j];
+      }
+      else
+      {
+        smplbuf[j] = pk_det_val;
+      }
+
       smplbuf[j] = run_ravg_filter(smplbuf[j], ravg_st);  // smoothing
     }
 
@@ -461,6 +489,7 @@ void UI_aeeg_window::start_button_clicked()
   dock_param.max_median_val = max_median_val;
   dock_param.medians_in_recording = medians_in_recording;
   dock_param.scale_max_amp = scale_max_amp;
+  dock_param.pk_det_decay = pk_det_decay;
   strlcpy(dock_param.unit, signalcomp->edfhdr->edfparam[signalcomp->edfsignal[0]].physdimension, 32);
   remove_trailing_spaces(dock_param.unit);
 

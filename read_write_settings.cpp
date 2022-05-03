@@ -1656,6 +1656,32 @@ void UI_Mainwindow::read_general_settings()
       xml_go_up(xml_hdl);
     }
 
+    if(!(xml_goto_nth_element_inside(xml_hdl, "aeeg_scale_max_amp", 0)))
+    {
+      if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+      {
+        xml_close(xml_hdl);
+        return;
+      }
+
+      aeeg_scale_max_amp = atof(result);
+
+      xml_go_up(xml_hdl);
+    }
+
+    if(!(xml_goto_nth_element_inside(xml_hdl, "aeeg_pk_det_decay", 0)))
+    {
+      if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+      {
+        xml_close(xml_hdl);
+        return;
+      }
+
+      aeeg_pk_det_decay = atof(result);
+
+      xml_go_up(xml_hdl);
+    }
+
     xml_go_up(xml_hdl);
   }
 
@@ -3231,6 +3257,8 @@ void UI_Mainwindow::write_settings()
     fprintf(cfgfile, "      <aeeg_bp_min_hz>%e</aeeg_bp_min_hz>\n", aeeg_bp_min_hz);
     fprintf(cfgfile, "      <aeeg_bp_max_hz>%e</aeeg_bp_max_hz>\n", aeeg_bp_max_hz);
     fprintf(cfgfile, "      <aeeg_ravg_len>%e</aeeg_ravg_len>\n", aeeg_ravg_len);
+    fprintf(cfgfile, "      <aeeg_scale_max_amp>%e</aeeg_scale_max_amp>\n", aeeg_scale_max_amp);
+    fprintf(cfgfile, "      <aeeg_pk_det_decay>%e</aeeg_pk_det_decay>\n", aeeg_pk_det_decay);
     fprintf(cfgfile, "    </aeeg>\n");
 
     fprintf(cfgfile, "    <hypnogram>\n");

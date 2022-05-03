@@ -75,7 +75,8 @@ private:
   QDoubleSpinBox *bp_min_hz_spinbox,
                  *bp_max_hz_spinbox,
                  *ravg_len_spinbox,
-                 *scale_max_amp_spinbox;
+                 *scale_max_amp_spinbox,
+                 *pk_det_decay_spinbox;
 
   QPushButton   *close_button,
                 *start_button,

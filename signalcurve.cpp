@@ -2008,16 +2008,19 @@ void SignalCurve::drawWidget(QPainter *painter, int curve_w, int curve_h)
 
   painter->drawRect (0, 0, curve_w - 1, curve_h - 1);
 
-  for(lk = (p_ruler_startvalue / p_divisor) * p_divisor; lk <= p_ruler_endvalue; lk += p_divisor)
+  if(drawHruler)
   {
-    if(lk < p_ruler_startvalue)
+    for(lk = (p_ruler_startvalue / p_divisor) * p_divisor; lk <= p_ruler_endvalue; lk += p_divisor)
     {
-      continue;
+      if(lk < p_ruler_startvalue)
+      {
+        continue;
+      }
+
+      p_tmp = (double)(lk - p_ruler_startvalue) * p_pixels_per_unit;
+
+      painter->drawLine(p_tmp, 0, p_tmp, curve_h);
     }
-
-    p_tmp = (double)(lk - p_ruler_startvalue) * p_pixels_per_unit;
-
-    painter->drawLine(p_tmp, 0, p_tmp, curve_h);
   }
 
   // 100  50  25  10   5   4   3   2   1  (log10 conversion)
@@ -2722,6 +2725,19 @@ void SignalCurve::setV_rulerEnabled(bool value)
   else
   {
     drawVruler = 0;
+  }
+}
+
+
+void SignalCurve::setH_rulerEnabled(bool value)
+{
+  if(value == true)
+  {
+    drawHruler = 1;
+  }
+  else
+  {
+    drawHruler = 0;
   }
 }
 

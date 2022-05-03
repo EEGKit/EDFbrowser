@@ -900,6 +900,8 @@ void UI_Mainwindow::save_session()
 
     fprintf(pro_file, "    <scale_max_amp>%e</scale_max_amp>\n", aeeg_dock[i]->param.scale_max_amp);
 
+    fprintf(pro_file, "    <pk_det_decay>%e</pk_det_decay>\n", aeeg_dock[i]->param.pk_det_decay);
+
     fprintf(pro_file, "    <instance_num>%i</instance_num>\n", aeeg_dock[i]->param.instance_num);
 
     fprintf(pro_file, "  </aeeg>\n");

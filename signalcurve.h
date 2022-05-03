@@ -122,6 +122,7 @@ public:
   void disableSpectrumColors();
   void setFillSurfaceEnabled(bool);
   void setV_rulerEnabled(bool);
+  void setH_rulerEnabled(bool);
   void setUpsidedownEnabled(bool);
   int getCursorPosition(void);
   void shiftCursorPixelsLeft(int);

@@ -54,8 +54,9 @@ UI_aeeg_dock::UI_aeeg_dock(QWidget *w_parent, struct aeeg_dock_param_struct par)
   curve1->setMinimumHeight(100 * h_scaling);
   curve1->setMinimumWidth(100 * w_scaling);
   curve1->setV_label(param.signalcomp->physdimension);
-  curve1->setH_label("Hour");
-  curve1->setH_RulerValues(0, param.signalcomp->edfhdr->recording_len_sec / 3600);
+  curve1->setH_label("Sec.");
+  curve1->setH_RulerValues(0, param.signalcomp->edfhdr->recording_len_sec);
+  curve1->setH_rulerEnabled(false);
   curve1->setDashBoardEnabled(false);
   curve1->setMarker1Color(Qt::red);
   curve1->setMarker1Enabled(true);
@@ -64,10 +65,10 @@ UI_aeeg_dock::UI_aeeg_dock(QWidget *w_parent, struct aeeg_dock_param_struct par)
   curve1->setV_LogarithmicEnabled(true);
   curve1->drawCurve(param.min_max_val, param.segments_in_recording * 2, param.scale_max_amp, 1);
   curve1->setSignalColor(Qt::green, 1);
-  curve1->setTraceWidth(3, 1);
+  curve1->setTraceWidth(0, 1);
   curve1->drawCurve(param.max_median_val, param.medians_in_recording, param.scale_max_amp, 1, 1);
   curve1->setSignalColor(Qt::green, 2);
-  curve1->setTraceWidth(3, 2);
+  curve1->setTraceWidth(0, 2);
   curve1->drawCurve(param.min_median_val, param.medians_in_recording, param.scale_max_amp, 1, 2);
 
   aeeg_dock = new QDockWidget(str, mainwindow);
@@ -179,12 +180,15 @@ void UI_aeeg_dock::contextmenu_requested(QPoint)
          " \n"
          "Bandpass filter: %.1f - %.1f Hz\n"
          " \n"
+         "Peak det. decay: %.1f\n"
+         " \n"
          "Smoothing filter: %.1f sec\n"
          " \n"
          "Segment length: %i sec\n"
          " \n",
          param.bp_min_hz,
          param.bp_max_hz,
+         param.pk_det_decay,
          param.ravg_len,
          param.segment_len);
 
