@@ -131,6 +131,8 @@ public:
   void shiftCursorIndexLeft(int);
   void shiftCursorIndexRight(int);
   void setV_LogarithmicEnabled(bool);
+  void setFixedH_resolutionEnabled(bool);
+  void setH_Resolution(double);
 
 signals:
   void extra_button_clicked();
@@ -195,7 +197,8 @@ private:
          marker_1_position,
          marker_2_position,
          w_scaling,
-         h_scaling;
+         h_scaling,
+         h_resolution;
 
   float *fbuf;
 
@@ -230,7 +233,8 @@ private:
       fillsurface,
       *ibuf,
       sz_hint_w,
-      sz_hint_h;
+      sz_hint_h,
+      h_resolution_fixed;
 
   char h_label[32],
        v_label[21],

@@ -75,6 +75,10 @@ SignalCurve::SignalCurve(QWidget *w_parent) : QWidget(w_parent)
 
   setMinimumSize(sz_hint_w, sz_hint_h);
 
+  h_resolution = 1;
+
+  h_resolution_fixed = 0;
+
   for(i=0; i<SC_MAX_TRACES; i++)
   {
     bufsize[i] = 0;
@@ -2778,6 +2782,28 @@ void SignalCurve::setV_LogarithmicEnabled(bool value)
   else
   {
     v_log_enabled = 0;
+  }
+}
+
+
+void SignalCurve::setFixedH_resolutionEnabled(bool value)
+{
+  if(value == true)
+  {
+    h_resolution_fixed = 1;
+  }
+  else
+  {
+    h_resolution_fixed = 0;
+  }
+}
+
+
+void SignalCurve::setH_Resolution(double value)
+{
+  if(value > 1e-12)
+  {
+    h_resolution = value;
   }
 }
 

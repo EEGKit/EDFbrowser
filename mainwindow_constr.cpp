@@ -482,9 +482,9 @@ UI_Mainwindow::UI_Mainwindow()
 
   if(auto_dpi)
   {
-    y_pixelsizefactor = 2.54 / dpiy;
+    y_pixelsizefactor = 2.54 / dpiy;  /* cm per pixel vertical */
 
-    x_pixelsizefactor = 2.54 / dpix;
+    x_pixelsizefactor = 2.54 / dpix;  /* cm per pixel horizontal */
   }
 
   read_color_settings();
