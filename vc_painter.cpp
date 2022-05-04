@@ -56,6 +56,8 @@ void ViewCurve::drawCurve_stage_2(QPainter *painter, int w_width, int w_height, 
             l_tmp,
             l_tmp2=0;
 
+  double dtmp=0;
+
   struct signalcompblock **signalcomp=NULL;
 
   struct annotation_list *annot_list=NULL;
@@ -615,23 +617,25 @@ void ViewCurve::drawCurve_stage_2(QPainter *painter, int w_width, int w_height, 
 
       painter->drawLine(0, baseline, w, baseline);
 
-      if(signalcomp[i]->voltpercm < 0.001)
+      dtmp = fabs(signalcomp[i]->voltpercm);
+
+      if(dtmp < 0.001)
       {
         strlcpy(str2, "%+.5f ", 32);
       }
-      else if(signalcomp[i]->voltpercm < 0.01)
+      else if(dtmp < 0.01)
         {
           strlcpy(str2, "%+.4f ", 32);
         }
-        else if(signalcomp[i]->voltpercm < 0.1)
+        else if(dtmp < 0.1)
           {
             strlcpy(str2, "%+.3f ", 32);
           }
-          else if(signalcomp[i]->voltpercm < 1.0)
+          else if(dtmp < 1.0)
                 {
                   strlcpy(str2, "%+.2f ", 32);
                 }
-                else if(signalcomp[i]->voltpercm < 10.0)
+                else if(dtmp < 10.0)
                     {
                       strlcpy(str2, "%+.1f ", 32);
                     }
