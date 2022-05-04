@@ -329,6 +329,7 @@ void UI_aeeg_window::start_button_clicked()
   {
     QMessageBox msgBox(QMessageBox::Critical, "Error", "The system was not able to provide enough resources (memory) to perform the requested action.", QMessageBox::Close);
     msgBox.exec();
+    free(min_max_val);
     return;
   }
 
@@ -337,6 +338,8 @@ void UI_aeeg_window::start_button_clicked()
   {
     QMessageBox msgBox(QMessageBox::Critical, "Error", "The system was not able to provide enough resources (memory) to perform the requested action.", QMessageBox::Close);
     msgBox.exec();
+    free(min_max_val);
+    free(max_median_val);
     return;
   }
 
@@ -357,6 +360,9 @@ void UI_aeeg_window::start_button_clicked()
       QMessageBox msgBox(QMessageBox::Critical, "Error", "Internal error (-1)", QMessageBox::Close);
       msgBox.exec();
     }
+    free(min_max_val);
+    free(max_median_val);
+    free(min_median_val);
     return;
   }
 
@@ -375,6 +381,9 @@ void UI_aeeg_window::start_button_clicked()
     QMessageBox msgBox(QMessageBox::Critical, "Error", "Internal error (-2)", QMessageBox::Close);
     msgBox.exec();
     free(fid_err_bp);
+    free(min_max_val);
+    free(max_median_val);
+    free(min_median_val);
     return;
   }
 
@@ -390,6 +399,9 @@ void UI_aeeg_window::start_button_clicked()
     QMessageBox msgBox(QMessageBox::Critical, "Error", "Internal error (-3)", QMessageBox::Close);
     msgBox.exec();
     free(fid_err_bp);
+    free(min_max_val);
+    free(max_median_val);
+    free(min_median_val);
     return;
   }
 

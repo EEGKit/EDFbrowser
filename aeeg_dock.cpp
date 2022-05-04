@@ -53,10 +53,12 @@ UI_aeeg_dock::UI_aeeg_dock(QWidget *w_parent, struct aeeg_dock_param_struct par)
   curve1->setTraceWidth(0);
   curve1->setMinimumHeight(100 * h_scaling);
   curve1->setMinimumWidth(100 * w_scaling);
-  curve1->setV_label(param.signalcomp->physdimension);
+//  curve1->setV_label(param.signalcomp->physdimension);
   curve1->setH_label("Sec.");
   curve1->setH_RulerValues(0, param.signalcomp->edfhdr->recording_len_sec);
   curve1->setH_rulerEnabled(false);
+  curve1->setHor_BorderHeight(10 * h_scaling);
+  curve1->setVert_BorderWidth(50 * w_scaling);
   curve1->setDashBoardEnabled(false);
   curve1->setMarker1Color(Qt::red);
   curve1->setMarker1Enabled(true);
@@ -77,7 +79,7 @@ UI_aeeg_dock::UI_aeeg_dock(QWidget *w_parent, struct aeeg_dock_param_struct par)
   aeeg_dock->setAttribute(Qt::WA_DeleteOnClose);
   aeeg_dock->setContextMenuPolicy(Qt::CustomContextMenu);
   aeeg_dock->setWidget(curve1);
-  aeeg_dock->setMinimumHeight(250 * h_scaling);
+  aeeg_dock->setMinimumHeight(150 * h_scaling);
   aeeg_dock->setMinimumWidth(300 * w_scaling);
 
   mainwindow->addDockWidget(Qt::BottomDockWidgetArea, aeeg_dock, Qt::Horizontal);

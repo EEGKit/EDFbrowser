@@ -87,7 +87,8 @@ public:
   void setRasterColor(QColor);
   void setBorderColor(QColor);
   void setTextColor(QColor);
-  void setBorderSize(int);
+  void setHor_BorderHeight(int);
+  void setVert_BorderWidth(int);
   void setH_RulerValues(double, double);
   void setH_label(const char *);
   void setV_label(const char *);
@@ -199,7 +200,8 @@ private:
   float *fbuf;
 
   int bufsize[SC_MAX_TRACES],
-      bordersize,
+      vert_border_width,
+      hor_border_height,
       drawHruler,
       drawVruler,
       drawcurve_before_raster,
