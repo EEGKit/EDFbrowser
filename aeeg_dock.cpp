@@ -67,13 +67,13 @@ UI_aeeg_dock::UI_aeeg_dock(QWidget *w_parent, struct aeeg_dock_param_struct par)
   curve1->setV_LogarithmicEnabled(true);
   curve1->setH_Resolution((6.0 / mainwindow->x_pixelsizefactor) / (3600.0 / param.segment_len));  /* set horziontal scale to 6 cm per hour -> approx. 1 pixel per segment */
   curve1->setFixedH_resolutionEnabled(true);
-  curve1->drawCurve(param.min_max_val, param.segments_in_recording * 2, param.scale_max_amp, 1);
+  curve1->drawCurve(param.min_max_val, param.segments_in_recording * 2, param.scale_max_amp, 0);
   curve1->setSignalColor(Qt::green, 1);
   curve1->setTraceWidth(0, 1);
-  curve1->drawCurve(param.max_median_val, param.medians_in_recording, param.scale_max_amp, 1, 1);
+  curve1->drawCurve(param.max_median_val, param.medians_in_recording, param.scale_max_amp, 0, 1);
   curve1->setSignalColor(Qt::green, 2);
   curve1->setTraceWidth(0, 2);
-  curve1->drawCurve(param.min_median_val, param.medians_in_recording, param.scale_max_amp, 1, 2);
+  curve1->drawCurve(param.min_median_val, param.medians_in_recording, param.scale_max_amp, 0, 2);
 
   aeeg_dock = new QDockWidget(str, mainwindow);
   aeeg_dock->setFeatures(QDockWidget::AllDockWidgetFeatures);

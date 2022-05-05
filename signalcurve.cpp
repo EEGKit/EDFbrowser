@@ -1640,14 +1640,24 @@ void SignalCurve::drawWidget(QPainter *painter, int curve_w, int curve_h)
     // 100  85  70  50  35  30  24  15   0
     if(v_log_enabled)
     {
-      for(i=0; i<6; i++)
+      double p3_pixels_per_vraster = (curve_h - hor_border_height - hor_border_height) / 100.0;
+
+      for(i=1; i<5; i++)  // linear/log threshold hack
+      {
+        p2_tmp = i * 5 * p3_pixels_per_vraster;
+
+        painter->drawLine(vert_border_width - (5 * w_scaling), curve_h - hor_border_height - p2_tmp, vert_border_width - (15 * w_scaling), curve_h - hor_border_height - p2_tmp);
+      }
+
+      for(i=1; i<6; i++)
       {
         switch(i)
         {
           case 0: p2_tmp = 0;
-                  snprintf(str, 128, "%i", 1);
+                  snprintf(str, 128, "%i", 0);
                   break;
-          case 1: p2_tmp = 35;
+//          case 1: p2_tmp = 35;
+          case 1: p2_tmp = 25;  // linear/log threshold hack
                   snprintf(str, 128, "%i", (int)(max_value[0] * 0.05 + 0.5));
                   break;
           case 2: p2_tmp = 50;
@@ -1663,8 +1673,6 @@ void SignalCurve::drawWidget(QPainter *painter, int curve_w, int curve_h)
                   snprintf(str, 128, "%i", (int)(max_value[0] + 0.5));
                   break;
         }
-
-        double p3_pixels_per_vraster = (curve_h - hor_border_height - hor_border_height) / 100.0;
 
         p2_tmp *= p3_pixels_per_vraster;
 
@@ -2038,11 +2046,21 @@ void SignalCurve::drawWidget(QPainter *painter, int curve_w, int curve_h)
   // 100  85  70  50  35  30  24  15   0
   if(v_log_enabled)
   {
+    double p3_pixels_per_vraster = curve_h / 100.0;
+
+    for(i=1; i<5; i++)  // linear/log threshold hack
+    {
+      p2_tmp = i * 5 * p3_pixels_per_vraster;
+
+      painter->drawLine(0, curve_h - p2_tmp, curve_w, curve_h - p2_tmp);
+    }
+
     for(i=0; i<4; i++)
     {
       switch(i)
       {
-        case 0: p2_tmp = 35;
+//        case 0: p2_tmp = 35;
+        case 0: p2_tmp = 25;  // linear/log threshold hack
                 break;
         case 1: p2_tmp = 50;
                 break;
@@ -2051,8 +2069,6 @@ void SignalCurve::drawWidget(QPainter *painter, int curve_w, int curve_h)
         case 3: p2_tmp = 85;
                 break;
       }
-
-      double p3_pixels_per_vraster = curve_h / 100.0;
 
       p2_tmp *= p3_pixels_per_vraster;
 
@@ -2405,7 +2421,9 @@ void SignalCurve::drawCurve(double *samplebuf, int bsize, double max_val, double
 {
   int i;
 
-  double dtmp;
+  double dtmp,
+         log_treshold_1,
+         log_treshold_2;
 
   if((trace_id < 0) || (trace_id >= SC_MAX_TRACES))
   {
@@ -2428,15 +2446,19 @@ void SignalCurve::drawCurve(double *samplebuf, int bsize, double max_val, double
   {
     dtmp = max_value[trace_id] / log10(max_value[trace_id]);
 
+    log_treshold_1 = max_value[trace_id] / 10;
+
+    log_treshold_2 = max_value[trace_id] / 20;
+
     for(i=0; i<bufsize[trace_id]; i++)
     {
-      if(dbuf[trace_id][i] <= 1)
+      if(dbuf[trace_id][i] > log_treshold_1)  // linear/log threshold hack
       {
-        dbuf[trace_id][i] = 1;
+        dbuf[trace_id][i] = log10(dbuf[trace_id][i]) * dtmp;
       }
       else
       {
-        dbuf[trace_id][i] = log10(dbuf[trace_id][i]) * dtmp;
+        dbuf[trace_id][i] *= log_treshold_2;
       }
     }
   }
