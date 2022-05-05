@@ -2582,7 +2582,7 @@ int UI_Mainwindow::read_session_file(const char *path_session)
         xml_go_up(xml_hdl);
       }
 
-      if(xml_goto_nth_element_inside(xml_hdl, "ravg_len", 0))
+      if(xml_goto_nth_element_inside(xml_hdl, "lp_hz", 0))
       {
         return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
       }
@@ -2593,8 +2593,8 @@ int UI_Mainwindow::read_session_file(const char *path_session)
           return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
         }
 
-        aeeg_param.ravg_len = atof(result);
-        if((aeeg_param.ravg_len < 0.0999) || (aeeg_param.ravg_len > 5.001))
+        aeeg_param.lp_hz = atof(result);
+        if((aeeg_param.lp_hz < 0.00999) || (aeeg_param.lp_hz > 5.001))
         {
           xml_go_up(xml_hdl);
           xml_go_up(xml_hdl);
@@ -2622,23 +2622,6 @@ int UI_Mainwindow::read_session_file(const char *path_session)
           xml_go_up(xml_hdl);
           continue;
         }
-
-        xml_go_up(xml_hdl);
-      }
-
-      if(xml_goto_nth_element_inside(xml_hdl, "pk_det_decay", 0))
-      {
-        //return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
-        aeeg_param.pk_det_decay = 1;
-      }
-      else
-      {
-        if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
-        {
-          return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
-        }
-
-        aeeg_param.pk_det_decay = atof(result);
 
         xml_go_up(xml_hdl);
       }

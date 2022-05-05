@@ -32,8 +32,6 @@
 #define MARGIN_MEDIAN_SZ    (20)
 
 
-#define AEEG_USE_PK_DET
-
 
 
 UI_aeeg_window::UI_aeeg_window(QWidget *w_parent, struct signalcompblock *signal_comp, int numb, struct aeeg_dock_param_struct *p_par)
@@ -101,14 +99,14 @@ UI_aeeg_window::UI_aeeg_window(QWidget *w_parent, struct signalcompblock *signal
   bp_max_hz_spinbox->setMinimum(2);
   bp_max_hz_spinbox->setMaximum((sf / 2) - 1);
   bp_max_hz_spinbox->setValue(mainwindow->aeeg_bp_max_hz);
-#ifdef AEEG_USE_PK_DET
-  ravg_len_spinbox = new QDoubleSpinBox;
-  ravg_len_spinbox->setSuffix(" sec");
-  ravg_len_spinbox->setDecimals(1);
-  ravg_len_spinbox->setMinimum(0.1);
-  ravg_len_spinbox->setMaximum(5);
-  ravg_len_spinbox->setValue(mainwindow->aeeg_ravg_len);
-#endif
+
+  lp_hz_spinbox = new QDoubleSpinBox;
+  lp_hz_spinbox->setSuffix(" Hz");
+  lp_hz_spinbox->setDecimals(2);
+  lp_hz_spinbox->setMinimum(0.01);
+  lp_hz_spinbox->setMaximum(5);
+  lp_hz_spinbox->setValue(mainwindow->aeeg_lp_hz);
+
   strlcpy(str, " ", 128);
   strlcat(str, signalcomp->edfhdr->edfparam[signalcomp->edfsignal[0]].physdimension, 128);
   remove_trailing_spaces(str);
@@ -119,13 +117,7 @@ UI_aeeg_window::UI_aeeg_window(QWidget *w_parent, struct signalcompblock *signal
   scale_max_amp_spinbox->setMinimum(10);
   scale_max_amp_spinbox->setMaximum(500);
   scale_max_amp_spinbox->setValue(mainwindow->aeeg_scale_max_amp);
-#ifdef AEEG_USE_PK_DET
-  pk_det_decay_spinbox = new QDoubleSpinBox;
-  pk_det_decay_spinbox->setDecimals(1);
-  pk_det_decay_spinbox->setMinimum(0.1);
-  pk_det_decay_spinbox->setMaximum(10);
-  pk_det_decay_spinbox->setValue(mainwindow->aeeg_pk_det_decay);
-#endif
+
   close_button = new QPushButton;
   close_button->setText("Close");
 
@@ -142,12 +134,8 @@ UI_aeeg_window::UI_aeeg_window(QWidget *w_parent, struct signalcompblock *signal
   flayout->addRow("BP min. freq.", bp_min_hz_spinbox);
   flayout->addRow("BP max. freq.", bp_max_hz_spinbox);
   flayout->addRow(" ", (QWidget *)(NULL));
-#ifdef AEEG_USE_PK_DET
-  flayout->addRow("Peak det. decay", pk_det_decay_spinbox);
+  flayout->addRow("LP envelope", lp_hz_spinbox);
   flayout->addRow(" ", (QWidget *)(NULL));
-  flayout->addRow("Smoothing length", ravg_len_spinbox);
-  flayout->addRow(" ", (QWidget *)(NULL));
-#endif
   flayout->addRow("Max. amplitude", scale_max_amp_spinbox);
   flayout->addRow(" ", (QWidget *)(NULL));
 
@@ -187,20 +175,14 @@ void UI_aeeg_window::default_button_clicked()
   segmentlen_spinbox->setValue(15);
   bp_min_hz_spinbox->setValue(2);
   bp_max_hz_spinbox->setValue(15);
+  lp_hz_spinbox->setValue(0.5);
   scale_max_amp_spinbox->setValue(100);
-#ifdef AEEG_USE_PK_DET
-  pk_det_decay_spinbox->setValue(1);
-  ravg_len_spinbox->setValue(0.5);
-#endif
 
   mainwindow->aeeg_segmentlen = 15;
   mainwindow->aeeg_bp_min_hz = 2;
   mainwindow->aeeg_bp_max_hz = 15;
+  mainwindow->aeeg_lp_hz = 0.5;
   mainwindow->aeeg_scale_max_amp = 100;
-#ifdef AEEG_USE_PK_DET
-  mainwindow->aeeg_pk_det_decay = 1;
-  mainwindow->aeeg_ravg_len = 0.5;
-#endif
 }
 
 
@@ -221,28 +203,22 @@ void UI_aeeg_window::start_button_clicked()
 
   double bp_hz_min,
          bp_hz_max,
-         ravg_len,
+         lp_hz,
          *smplbuf=NULL,
          *min_max_val=NULL,
          *max_median_val=NULL,
          *min_median_val=NULL,
          max_margin_median_buf[MARGIN_MEDIAN_SZ]={0},
          min_margin_median_buf[MARGIN_MEDIAN_SZ]={0},
-         scale_max_amp,
-         pk_det_val=0,
-         pk_det_decay=1,
-         pk_det_decay_fact=0;
+         scale_max_amp;
 
-  char str[1024]={""},
-       filt_spec_str_bp[256]={""},
+  char filt_spec_str_bp[256]={""},
        *filt_spec_ptr_bp=NULL,
-       *fid_err_bp=NULL;
-#ifdef AEEG_USE_PK_DET
-#else
-  char filt_spec_str_lp[256]={""},
+       *fid_err_bp=NULL,
+       filt_spec_str_lp[256]={""},
        *filt_spec_ptr_lp=NULL,
        *fid_err_lp=NULL;
-#endif
+
   struct aeeg_dock_param_struct dock_param;
 
   memset(&dock_param, 0, sizeof(struct aeeg_dock_param_struct));
@@ -252,43 +228,30 @@ void UI_aeeg_window::start_button_clicked()
     segmentlen = segmentlen_spinbox->value();
     bp_hz_min = bp_min_hz_spinbox->value();
     bp_hz_max = bp_max_hz_spinbox->value();
+    lp_hz = lp_hz_spinbox->value();
     scale_max_amp = scale_max_amp_spinbox->value();
-#ifdef AEEG_USE_PK_DET
-    pk_det_decay = pk_det_decay_spinbox->value();
-    ravg_len = ravg_len_spinbox->value();
-#endif
+
     if((bp_hz_max - bp_hz_min) <= 4.999)
     {
       QMessageBox msgBox(QMessageBox::Critical, "Error", "(Max.freq. - min.freq.) must be >= 5 Hz.", QMessageBox::Close);
       msgBox.exec();
       return;
     }
-#ifdef AEEG_USE_PK_DET
-    if(ravg_len > segmentlen)
-    {
-      QMessageBox msgBox(QMessageBox::Critical, "Error", "Segment length must be > smoothing length.", QMessageBox::Close);
-      msgBox.exec();
-      return;
-    }
-#endif
   }
   else  // no dialog
   {
     segmentlen = no_dialog_params->segment_len;
     bp_hz_min = no_dialog_params->bp_min_hz;
     bp_hz_max = no_dialog_params->bp_max_hz;
-    ravg_len = no_dialog_params->ravg_len;
+    lp_hz = no_dialog_params->lp_hz;
     scale_max_amp = no_dialog_params->scale_max_amp;
-    pk_det_decay = no_dialog_params->pk_det_decay;
   }
   mainwindow->aeeg_segmentlen = segmentlen;
   mainwindow->aeeg_bp_min_hz = bp_hz_min;
   mainwindow->aeeg_bp_max_hz = bp_hz_max;
+  mainwindow->aeeg_lp_hz = lp_hz;
   mainwindow->aeeg_scale_max_amp = scale_max_amp;
-#ifdef AEEG_USE_PK_DET
-  mainwindow->aeeg_pk_det_decay = pk_det_decay;
-  mainwindow->aeeg_ravg_len = ravg_len;
-#endif
+
   smpls_in_segment = sf * segmentlen;
 
   samples_in_file = signalcomp->edfhdr->edfparam[signalcomp->edfsignal[0]].smpls;
@@ -300,8 +263,6 @@ void UI_aeeg_window::start_button_clicked()
   min_idx = (smpls_in_segment * mainwindow->aeeg_min_nearby_pct) / 100.0 + 0.5;
 
   medians_in_recording = segments_in_recording / MARGIN_MEDIAN_SZ;
-
-  pk_det_decay_fact = 1.0 - (1 / (pk_det_decay * sf));
 
 //   printf("start_button_clicked(): samples_in_file: %lli\n", samples_in_file);
 //
@@ -317,7 +278,7 @@ void UI_aeeg_window::start_button_clicked()
 //
 //   printf("start_button_clicked(): bp_hz_max: %f\n", bp_hz_max);
 //
-//   printf("start_button_clicked(): ravg_len: %f\n", ravg_len);
+//   printf("start_button_clicked(): lp_hz: %f\n", lp_hz);
 //
 //   printf("start_button_clicked(): scale_max_amp: %f\n", scale_max_amp);
 //
@@ -409,27 +370,12 @@ void UI_aeeg_window::start_button_clicked()
 
   fidbuf_bp = fid_run_newbuf(fid_run_bp);
 
-#ifdef AEEG_USE_PK_DET
-  struct ravg_filter_settings *ravg_st;
-
-  ravg_st = create_ravg_filter(1, (ravg_len * sf) + 0.5);
-  if(ravg_st == NULL)
-  {
-    QMessageBox msgBox(QMessageBox::Critical, "Error", "Internal error (-3)", QMessageBox::Close);
-    msgBox.exec();
-    free(fid_err_bp);
-    free(min_max_val);
-    free(max_median_val);
-    free(min_median_val);
-    return;
-  }
-#else
   FidFilter *fidfilter_lp=NULL;
   FidRun *fid_run_lp=NULL;
   FidFunc *fidfuncp_lp=NULL;
   void *fidbuf_lp=NULL;
 
-  snprintf(filt_spec_str_lp, 256, "LpBu%i/%f", 4, 0.5);
+  snprintf(filt_spec_str_lp, 256, "LpBu%i/%f", 4, lp_hz);
 
   filt_spec_ptr_lp = filt_spec_str_lp;
 
@@ -449,7 +395,7 @@ void UI_aeeg_window::start_button_clicked()
   fid_run_lp = fid_run_new(fidfilter_lp, &fidfuncp_lp);
 
   fidbuf_lp = fid_run_newbuf(fid_run_lp);
-#endif
+
   QProgressDialog progress("Processing...", "Abort", 0, segments_in_recording);
   progress.setWindowModality(Qt::WindowModal);
   progress.setMinimumDuration(500);
@@ -469,22 +415,18 @@ void UI_aeeg_window::start_button_clicked()
       free(fidfilter_bp);
       fid_run_free(fid_run_bp);
       fid_run_freebuf(fidbuf_bp);
-#ifdef AEEG_USE_PK_DET
-      free_ravg_filter(ravg_st);
-#else
       free(fidfilter_lp);
       fid_run_free(fid_run_lp);
       fid_run_freebuf(fidbuf_lp);
-#endif
       return;
     }
 
     err = fbr.process_signalcomp(i * smpls_in_segment);
     if(err)
     {
-      snprintf(str, 1024, "Internal error (-4)  fbr() error: %i file: %s line %i", err, __FILE__, __LINE__);
       progress.reset();
-      QMessageBox::critical(myobjectDialog, "Error", str, QMessageBox::Close);
+      QMessageBox msgBox(QMessageBox::Critical, "Error", "Internal error (-4)", QMessageBox::Close);
+      msgBox.exec();
       return;
     }
 
@@ -497,21 +439,8 @@ void UI_aeeg_window::start_button_clicked()
       smplbuf[j] = fidfuncp_bp(fidbuf_bp, smplbuf[j]);  // bandpass 2 - 15 Hz
 
       smplbuf[j] = fabs(smplbuf[j]);  // rectifier
-#ifdef AEEG_USE_PK_DET
-      pk_det_val *= pk_det_decay_fact;  // peak detector
-      if(smplbuf[j] > pk_det_val)
-      {
-        pk_det_val = smplbuf[j];
-      }
-      else
-      {
-        smplbuf[j] = pk_det_val;
-      }
 
-      smplbuf[j] = run_ravg_filter(smplbuf[j], ravg_st);  // smoothing
-#else
-      smplbuf[j] = fidfuncp_lp(fidbuf_lp, smplbuf[j]) * 2;  // lowpass smoothing and gain 2x
-#endif
+      smplbuf[j] = fidfuncp_lp(fidbuf_lp, smplbuf[j]) * 2;  // lowpass envelope smoothing and gain 2x
     }
 
     qsort(smplbuf, smpls_in_segment, sizeof(double), dbl_cmp);  // sorting
@@ -538,20 +467,17 @@ void UI_aeeg_window::start_button_clicked()
   free(fidfilter_bp);
   fid_run_free(fid_run_bp);
   fid_run_freebuf(fidbuf_bp);
-#ifdef AEEG_USE_PK_DET
-  free_ravg_filter(ravg_st);
-#else
   free(fidfilter_lp);
   fid_run_free(fid_run_lp);
   fid_run_freebuf(fidbuf_lp);
-#endif
+
   progress.reset();
 
   dock_param.signalcomp = signalcomp;
   dock_param.sf = sf;
   dock_param.bp_min_hz = mainwindow->aeeg_bp_min_hz;
   dock_param.bp_max_hz = mainwindow->aeeg_bp_max_hz;
-  dock_param.ravg_len = mainwindow->aeeg_ravg_len;
+  dock_param.lp_hz = mainwindow->aeeg_lp_hz;
   dock_param.segment_len = segmentlen;
   dock_param.segments_in_recording = segments_in_recording;
   dock_param.instance_num = aeeg_instance_nr;
@@ -560,7 +486,6 @@ void UI_aeeg_window::start_button_clicked()
   dock_param.max_median_val = max_median_val;
   dock_param.medians_in_recording = medians_in_recording;
   dock_param.scale_max_amp = scale_max_amp;
-  dock_param.pk_det_decay = pk_det_decay;
   strlcpy(dock_param.unit, signalcomp->edfhdr->edfparam[signalcomp->edfsignal[0]].physdimension, 32);
   remove_trailing_spaces(dock_param.unit);
 

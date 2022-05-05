@@ -896,11 +896,9 @@ void UI_Mainwindow::save_session()
 
     fprintf(pro_file, "    <segment_len>%i</segment_len>\n", aeeg_dock[i]->param.segment_len);
 
-    fprintf(pro_file, "    <ravg_len>%e</ravg_len>\n", aeeg_dock[i]->param.ravg_len);
+    fprintf(pro_file, "    <lp_hz>%e</lp_hz>\n", aeeg_dock[i]->param.lp_hz);
 
     fprintf(pro_file, "    <scale_max_amp>%e</scale_max_amp>\n", aeeg_dock[i]->param.scale_max_amp);
-
-    fprintf(pro_file, "    <pk_det_decay>%e</pk_det_decay>\n", aeeg_dock[i]->param.pk_det_decay);
 
     fprintf(pro_file, "    <instance_num>%i</instance_num>\n", aeeg_dock[i]->param.instance_num);
 

@@ -41,7 +41,6 @@
 #include "utils.h"
 #include "filteredblockread.h"
 #include "aeeg_dock.h"
-#include "filt/ravg_filter.h"
 #include "third_party/fidlib/fidlib.h"
 
 
@@ -74,9 +73,8 @@ private:
 
   QDoubleSpinBox *bp_min_hz_spinbox,
                  *bp_max_hz_spinbox,
-                 *ravg_len_spinbox,
-                 *scale_max_amp_spinbox,
-                 *pk_det_decay_spinbox;
+                 *lp_hz_spinbox,
+                 *scale_max_amp_spinbox;
 
   QPushButton   *close_button,
                 *start_button,

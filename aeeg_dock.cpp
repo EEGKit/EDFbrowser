@@ -182,19 +182,16 @@ void UI_aeeg_dock::contextmenu_requested(QPoint)
 
   snprintf(str, 4096,
          " \n"
+         "Segment length: %i sec\n"
+         " \n"
          "Bandpass filter: %.1f - %.1f Hz\n"
          " \n"
-         "Peak det. decay: %.1f\n"
-         " \n"
-         "Smoothing filter: %.1f sec\n"
-         " \n"
-         "Segment length: %i sec\n"
+         "Envelope Lowpass filter: %.2f Hz\n"
          " \n",
+         param.segment_len,
          param.bp_min_hz,
          param.bp_max_hz,
-         param.pk_det_decay,
-         param.ravg_len,
-         param.segment_len);
+         param.lp_hz);
 
   label->setText(str);
 

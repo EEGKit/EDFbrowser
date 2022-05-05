@@ -325,9 +325,8 @@ long long annot_editor_user_button_epoch_len,
          h_scaling,
          aeeg_bp_min_hz,
          aeeg_bp_max_hz,
-         aeeg_ravg_len,
-         aeeg_scale_max_amp,
-         aeeg_pk_det_decay;
+         aeeg_lp_hz,
+         aeeg_scale_max_amp;
 
   struct{
           double crossoverfreq;
