@@ -491,6 +491,10 @@ void UI_aeeg_window::start_button_clicked()
 
   mainwindow->aeeg_dock[aeeg_instance_nr] = new UI_aeeg_dock(mainwindow, dock_param);
 
+  mainwindow->addToolBar(Qt::BottomToolBarArea, mainwindow->aeeg_dock[aeeg_instance_nr]->aeeg_dock);
+
+  mainwindow->insertToolBarBreak(mainwindow->aeeg_dock[aeeg_instance_nr]->aeeg_dock);
+
   signalcomp->aeeg_idx[aeeg_instance_nr] = aeeg_instance_nr + 1;
 
   if(myobjectDialog != NULL)

@@ -33,6 +33,10 @@ UI_aeeg_dock::UI_aeeg_dock(QWidget *w_parent, struct aeeg_dock_param_struct par)
 {
   char str[1024]={""};
 
+  QFrame *frame;
+
+  QGridLayout *grid_layout;
+
   mainwindow = (UI_Mainwindow *)w_parent;
 
   w_scaling = mainwindow->w_scaling;
@@ -46,12 +50,19 @@ UI_aeeg_dock::UI_aeeg_dock(QWidget *w_parent, struct aeeg_dock_param_struct par)
 
   snprintf(str, 1024, " aEEG   %s", param.signalcomp->signallabel);
 
+  frame = new QFrame;
+  frame->setFrameStyle(QFrame::NoFrame);
+  frame->setLineWidth(0);
+  frame->setMidLineWidth(0);
+  frame->setContentsMargins(0, 0, 0, 0);
+
   curve1 = new SignalCurve;
   curve1->setSignalColor(Qt::darkBlue);
   curve1->setBackgroundColor(Qt::white);
   curve1->setRasterColor(Qt::gray);
   curve1->setTraceWidth(0);
-  curve1->setMinimumHeight(100 * h_scaling);
+  curve1->setMinimumHeight(120 * h_scaling);
+  curve1->setMaximumHeight(120 * h_scaling);
   curve1->setMinimumWidth(100 * w_scaling);
 //  curve1->setV_label(param.signalcomp->physdimension);
   curve1->setH_label("Sec.");
@@ -74,17 +85,29 @@ UI_aeeg_dock::UI_aeeg_dock(QWidget *w_parent, struct aeeg_dock_param_struct par)
   curve1->setSignalColor(Qt::green, 2);
   curve1->setTraceWidth(0, 2);
   curve1->drawCurve(param.min_median_val, param.medians_in_recording, param.scale_max_amp, 0, 2);
+  curve1->setContentsMargins(0, 0, 0, 0);
 
-  aeeg_dock = new QDockWidget(str, mainwindow);
-  aeeg_dock->setFeatures(QDockWidget::AllDockWidgetFeatures);
-  aeeg_dock->setAllowedAreas(Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
+//   aeeg_dock = new QDockWidget(str, mainwindow);
+//   aeeg_dock->setFeatures(QDockWidget::AllDockWidgetFeatures);
+//   aeeg_dock->setAllowedAreas(Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
+//   aeeg_dock->setAttribute(Qt::WA_DeleteOnClose);
+//   aeeg_dock->setContextMenuPolicy(Qt::CustomContextMenu);
+//   aeeg_dock->setWidget(curve1);
+//   aeeg_dock->setMinimumHeight(150 * h_scaling);
+//   aeeg_dock->setMinimumWidth(300 * w_scaling);
+//
+//   mainwindow->addDockWidget(Qt::BottomDockWidgetArea, aeeg_dock, Qt::Horizontal);
+
+  grid_layout = new QGridLayout(frame);
+  grid_layout->addWidget(curve1, 0, 0);
+  grid_layout->setColumnStretch(0, 100);
+
+  aeeg_dock = new QToolBar(str, mainwindow);
+  aeeg_dock->setOrientation(Qt::Horizontal);
+  aeeg_dock->setAllowedAreas(Qt::TopToolBarArea | Qt::BottomToolBarArea);
   aeeg_dock->setAttribute(Qt::WA_DeleteOnClose);
   aeeg_dock->setContextMenuPolicy(Qt::CustomContextMenu);
-  aeeg_dock->setWidget(curve1);
-  aeeg_dock->setMinimumHeight(150 * h_scaling);
-  aeeg_dock->setMinimumWidth(300 * w_scaling);
-
-  mainwindow->addDockWidget(Qt::BottomDockWidgetArea, aeeg_dock, Qt::Horizontal);
+  aeeg_dock->addWidget(frame);
 
   QObject::connect(aeeg_dock,  SIGNAL(destroyed(QObject *)),               this, SLOT(aeeg_dock_destroyed(QObject *)));
   QObject::connect(aeeg_dock,  SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(contextmenu_requested(QPoint)));

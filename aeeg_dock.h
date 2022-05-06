@@ -77,7 +77,7 @@ public:
 
   UI_Mainwindow  *mainwindow;
 
-  QDockWidget *aeeg_dock;
+  QToolBar *aeeg_dock;
 
   SignalCurve *curve1;
 
