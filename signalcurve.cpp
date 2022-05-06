@@ -1646,7 +1646,7 @@ void SignalCurve::drawWidget(QPainter *painter, int curve_w, int curve_h)
       {
         p2_tmp = i * 5 * p3_pixels_per_vraster;
 
-        painter->drawLine(vert_border_width - (5 * w_scaling), curve_h - hor_border_height - p2_tmp, vert_border_width - (15 * w_scaling), curve_h - hor_border_height - p2_tmp);
+        painter->drawLine(vert_border_width - (5 * w_scaling), curve_h - hor_border_height - p2_tmp, vert_border_width - (10 * w_scaling), curve_h - hor_border_height - p2_tmp);
       }
 
       for(i=1; i<6; i++)
@@ -1676,9 +1676,9 @@ void SignalCurve::drawWidget(QPainter *painter, int curve_w, int curve_h)
 
         p2_tmp *= p3_pixels_per_vraster;
 
-        painter->drawText((3 * w_scaling), curve_h - hor_border_height - p2_tmp - (8 * h_scaling), vert_border_width - (20 * w_scaling), (16 * h_scaling), Qt::AlignRight | Qt::AlignVCenter | Qt::TextSingleLine, str);
+        painter->drawText(vert_border_width - (45 * w_scaling), curve_h - hor_border_height - p2_tmp - (8 * h_scaling), vert_border_width - (20 * w_scaling), (16 * h_scaling), Qt::AlignRight | Qt::AlignVCenter | Qt::TextSingleLine, str);
 
-        painter->drawLine(vert_border_width - (5 * w_scaling), curve_h - hor_border_height - p2_tmp, vert_border_width - (15 * w_scaling), curve_h - hor_border_height - p2_tmp);
+        painter->drawLine(vert_border_width - (5 * w_scaling), curve_h - hor_border_height - p2_tmp, vert_border_width - (10 * w_scaling), curve_h - hor_border_height - p2_tmp);
       }
     }
     else
@@ -2120,7 +2120,14 @@ void SignalCurve::drawWidget(QPainter *painter, int curve_w, int curve_h)
       v_sens = (-(curve_h / (max_value[0] - min_value[0])));
     }
 
-    h_step = (double)curve_w / (double)(bufsize[0]);
+    if(h_resolution_fixed)
+    {
+      h_step = h_resolution;
+    }
+    else
+    {
+      h_step = (double)curve_w / (double)(bufsize[0]);
+    }
 
     painter->setPen(QPen(QBrush(SignalColor[0], Qt::SolidPattern), tracewidth[0], Qt::SolidLine, Qt::SquareCap, Qt::BevelJoin));
 
@@ -2130,9 +2137,16 @@ void SignalCurve::drawWidget(QPainter *painter, int curve_w, int curve_h)
       {
         if(k)
         {
-          h_step = (double)curve_w / (double)(bufsize[0]);
+          if(h_resolution_fixed)
+          {
+            h_step = h_resolution;
+          }
+          else
+          {
+            h_step = (double)curve_w / (double)(bufsize[0]);
 
-          painter->setPen(QPen(QBrush(SignalColor[0], Qt::SolidPattern), tracewidth[0], Qt::SolidLine, Qt::SquareCap, Qt::BevelJoin));
+            painter->setPen(QPen(QBrush(SignalColor[0], Qt::SolidPattern), tracewidth[0], Qt::SolidLine, Qt::SquareCap, Qt::BevelJoin));
+          }
         }
 
         break;
@@ -2140,7 +2154,14 @@ void SignalCurve::drawWidget(QPainter *painter, int curve_w, int curve_h)
 
       if(k)
       {
-        h_step = (double)curve_w / (double)(bufsize[k]);
+        if(h_resolution_fixed)
+        {
+          h_step = (h_resolution * bufsize[0]) / bufsize[k];
+        }
+        else
+        {
+          h_step = (double)curve_w / (double)(bufsize[k]);
+        }
 
         painter->setPen(QPen(QBrush(SignalColor[k], Qt::SolidPattern), tracewidth[k], Qt::SolidLine, Qt::SquareCap, Qt::BevelJoin));
       }
@@ -2179,25 +2200,28 @@ void SignalCurve::drawWidget(QPainter *painter, int curve_w, int curve_h)
             }
           }
         }
+      }
+    }
 
-        if(crosshair_1_active)
+    if(dbuf[0] != NULL)
+    {
+      if(crosshair_1_active)
+      {
+        if(i==((int)(((double)crosshair_1_x_position) / h_step)))
         {
-          if(i==((int)(((double)crosshair_1_x_position) / h_step)))
+          crosshair_1_y_value = (dbuf[0][i] + offset) * v_sens;
+          if(v_log_enabled)
           {
-            crosshair_1_y_value = (dbuf[0][i] + offset) * v_sens;
-            if(v_log_enabled)
-            {
-              crosshair_1_value = dbuf[0][i] / (max_value[0] / log10(max_value[0]));
+            crosshair_1_value = dbuf[0][i] / (max_value[0] / log10(max_value[0]));
 
-              crosshair_1_value = exp10(crosshair_1_value);
-            }
-            else
-            {
-              crosshair_1_value = dbuf[0][i];
-            }
-            value = (h_ruler_endvalue - h_ruler_startvalue) / bufsize[0];
-            crosshair_1_value_2 = (i * value) + h_ruler_startvalue;
+            crosshair_1_value = exp10(crosshair_1_value);
           }
+          else
+          {
+            crosshair_1_value = dbuf[0][i];
+          }
+          value = (h_ruler_endvalue - h_ruler_startvalue) / bufsize[0];
+          crosshair_1_value_2 = (i * value) + h_ruler_startvalue;
         }
       }
     }
@@ -2322,7 +2346,14 @@ void SignalCurve::drawWidget(QPainter *painter, int curve_w, int curve_h)
   {
     painter->setPen(Marker1Pen);
 
-    painter->drawLine(curve_w * marker_1_position, 0, curve_w * marker_1_position, curve_h);
+    if(h_resolution_fixed)
+    {
+      painter->drawLine(bufsize[0] * h_resolution * marker_1_position, 0, bufsize[0] * h_resolution * marker_1_position, curve_h);
+    }
+    else
+    {
+      painter->drawLine(curve_w * marker_1_position, 0, curve_w * marker_1_position, curve_h);
+    }
   }
 
   if(Marker2Enabled == true)
