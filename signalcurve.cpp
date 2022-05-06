@@ -1645,11 +1645,15 @@ void SignalCurve::drawWidget(QPainter *painter, int curve_w, int curve_h)
     {
       double p3_pixels_per_vraster = (curve_h - hor_border_height - hor_border_height) / 100.0;
 
+      painter->drawLine(curve_w - vert_border_width + (5 * w_scaling), hor_border_height, curve_w - vert_border_width + (5 * w_scaling), curve_h - hor_border_height);
+
       for(i=1; i<5; i++)  // linear/log threshold hack
       {
         p2_tmp = i * 5 * p3_pixels_per_vraster;
 
         painter->drawLine(vert_border_width - (5 * w_scaling), curve_h - hor_border_height - p2_tmp, vert_border_width - (10 * w_scaling), curve_h - hor_border_height - p2_tmp);
+
+        painter->drawLine(curve_w - vert_border_width + (5 * w_scaling), curve_h - hor_border_height - p2_tmp, curve_w - vert_border_width + (10 * w_scaling), curve_h - hor_border_height - p2_tmp);
       }
 
       for(i=1; i<6; i++)
@@ -1681,7 +1685,11 @@ void SignalCurve::drawWidget(QPainter *painter, int curve_w, int curve_h)
 
         painter->drawText(vert_border_width - (45 * w_scaling), curve_h - hor_border_height - p2_tmp - (8 * h_scaling), vert_border_width - (20 * w_scaling), (16 * h_scaling), Qt::AlignRight | Qt::AlignVCenter | Qt::TextSingleLine, str);
 
+        painter->drawText(curve_w - vert_border_width + (15 * w_scaling), curve_h - hor_border_height - p2_tmp - (8 * h_scaling), vert_border_width - (20 * w_scaling), (16 * h_scaling), Qt::AlignLeft | Qt::AlignVCenter | Qt::TextSingleLine, str);
+
         painter->drawLine(vert_border_width - (5 * w_scaling), curve_h - hor_border_height - p2_tmp, vert_border_width - (10 * w_scaling), curve_h - hor_border_height - p2_tmp);
+
+        painter->drawLine(curve_w - vert_border_width + (5 * w_scaling), curve_h - hor_border_height - p2_tmp, curve_w - vert_border_width + (10 * w_scaling), curve_h - hor_border_height - p2_tmp);
       }
     }
     else
