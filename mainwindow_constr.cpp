@@ -66,6 +66,7 @@ UI_Mainwindow::UI_Mainwindow()
   setMinimumSize(640, 480);
   setWindowTitle(PROGRAM_NAME);
   setWindowIcon(QIcon(":/images/edf.png"));
+  setDockNestingEnabled(true);
 
   setlocale(LC_NUMERIC, "C");
 
