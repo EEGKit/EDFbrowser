@@ -131,7 +131,7 @@ public:
   void shiftCursorIndexLeft(int);
   void shiftCursorIndexRight(int);
   void setV_LogarithmicEnabled(bool);
-  void setFixedH_resolutionEnabled(bool);
+  void setFixedH_resolutionEnabled(bool, int);
   void setH_Resolution(double);
 
 signals:
@@ -234,7 +234,8 @@ private:
       *ibuf,
       sz_hint_w,
       sz_hint_h,
-      h_resolution_fixed;
+      h_resolution_fixed,
+      h_res_fix_alignment;
 
   char h_label[32],
        v_label[21],

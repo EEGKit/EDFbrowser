@@ -79,6 +79,8 @@ SignalCurve::SignalCurve(QWidget *w_parent) : QWidget(w_parent)
 
   h_resolution_fixed = 0;
 
+  h_res_fix_alignment = 0;
+
   for(i=0; i<SC_MAX_TRACES; i++)
   {
     bufsize[i] = 0;
@@ -1434,9 +1436,10 @@ void SignalCurve::drawWidget(QPainter *painter, int curve_w, int curve_h)
             p2_ruler_endvalue,
             p2_tmp;
 
-  double v_sens=0.0,
-         offset=0.0,
-         h_step=0.0,
+  double v_sens=0,
+         offset=0,
+         h_step=0,
+         h_offset=0,
          value,
          pixelsPerUnit,
          sum_colorbar_value,
@@ -2120,13 +2123,25 @@ void SignalCurve::drawWidget(QPainter *painter, int curve_w, int curve_h)
       v_sens = (-(curve_h / (max_value[0] - min_value[0])));
     }
 
+    h_offset = 0;
+
     if(h_resolution_fixed)
     {
       h_step = h_resolution;
+
+      if(h_res_fix_alignment)
+      {
+        if((bufsize[0] * h_step) > curve_w)
+        {
+          h_offset = curve_w - (bufsize[0] * h_step);
+        }
+      }
     }
     else
     {
       h_step = (double)curve_w / (double)(bufsize[0]);
+
+      h_offset = 0;
     }
 
     painter->setPen(QPen(QBrush(SignalColor[0], Qt::SolidPattern), tracewidth[0], Qt::SolidLine, Qt::SquareCap, Qt::BevelJoin));
@@ -2140,6 +2155,8 @@ void SignalCurve::drawWidget(QPainter *painter, int curve_w, int curve_h)
           if(h_resolution_fixed)
           {
             h_step = h_resolution;
+
+            h_offset = 0;
           }
           else
           {
@@ -2157,6 +2174,15 @@ void SignalCurve::drawWidget(QPainter *painter, int curve_w, int curve_h)
         if(h_resolution_fixed)
         {
           h_step = (h_resolution * bufsize[0]) / bufsize[k];
+
+          if((bufsize[k] * h_step) > curve_w)
+          {
+            h_offset = curve_w - (bufsize[k] * h_step);
+          }
+          else
+          {
+            h_offset = 0;
+          }
         }
         else
         {
@@ -2186,17 +2212,17 @@ void SignalCurve::drawWidget(QPainter *painter, int curve_w, int curve_h)
         {
           if(bufsize[k] < (curve_w / 2))
           {
-            painter->drawLine(i * h_step, (dbuf[k][i] + offset) * v_sens, (i + 1) * h_step, (dbuf[k][i] + offset) * v_sens);
+            painter->drawLine((i * h_step) + h_offset, (dbuf[k][i] + offset) * v_sens, ((i + 1) * h_step) + h_offset, (dbuf[k][i] + offset) * v_sens);
             if(i)
             {
-              painter->drawLine(i * h_step, (dbuf[k][i - 1] + offset) * v_sens, i * h_step, (dbuf[k][i] + offset) * v_sens);
+              painter->drawLine((i * h_step) + h_offset, (dbuf[k][i - 1] + offset) * v_sens, (i * h_step) + h_offset, (dbuf[k][i] + offset) * v_sens);
             }
           }
           else
           {
             if(i < (bufsize[k] - 1))
             {
-              painter->drawLine(i * h_step, (dbuf[k][i] + offset) * v_sens, (i + 1) * h_step, (dbuf[k][i + 1] + offset) * v_sens);
+              painter->drawLine((i * h_step) + h_offset, (dbuf[k][i] + offset) * v_sens, ((i + 1) * h_step) + h_offset, (dbuf[k][i + 1] + offset) * v_sens);
             }
           }
         }
@@ -2346,9 +2372,19 @@ void SignalCurve::drawWidget(QPainter *painter, int curve_w, int curve_h)
   {
     painter->setPen(Marker1Pen);
 
+    h_offset = 0;
+
     if(h_resolution_fixed)
     {
-      painter->drawLine(bufsize[0] * h_resolution * marker_1_position, 0, bufsize[0] * h_resolution * marker_1_position, curve_h);
+      if(h_res_fix_alignment)
+      {
+        if((bufsize[0] * h_step) > curve_w)
+        {
+          h_offset = curve_w - (bufsize[0] * h_step);
+        }
+      }
+
+      painter->drawLine((bufsize[0] * h_resolution * marker_1_position) + h_offset, 0, (bufsize[0] * h_resolution * marker_1_position) + h_offset, curve_h);
     }
     else
     {
@@ -2839,7 +2875,7 @@ void SignalCurve::setV_LogarithmicEnabled(bool value)
 }
 
 
-void SignalCurve::setFixedH_resolutionEnabled(bool value)
+void SignalCurve::setFixedH_resolutionEnabled(bool value, int align)
 {
   if(value == true)
   {
@@ -2848,6 +2884,12 @@ void SignalCurve::setFixedH_resolutionEnabled(bool value)
   else
   {
     h_resolution_fixed = 0;
+  }
+
+  h_res_fix_alignment = align;
+  if(h_res_fix_alignment != 1)
+  {
+    h_res_fix_alignment = 0;
   }
 }
 

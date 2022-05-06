@@ -66,7 +66,7 @@ UI_aeeg_dock::UI_aeeg_dock(QWidget *w_parent, struct aeeg_dock_param_struct par)
   curve1->setPrintEnabled(false);
   curve1->setV_LogarithmicEnabled(true);
   curve1->setH_Resolution(((6.0 / mainwindow->x_pixelsizefactor) / (3600.0 / param.segment_len)) / 2);  /* set horziontal scale to 6 cm per hour -> approx. 1 pixel per segment */
-  curve1->setFixedH_resolutionEnabled(true);
+  curve1->setFixedH_resolutionEnabled(true, 1);
   curve1->drawCurve(param.min_max_val, param.segments_in_recording * 2, param.scale_max_amp, 0);
   curve1->setSignalColor(Qt::green, 1);
   curve1->setTraceWidth(0, 1);
