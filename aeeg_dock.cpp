@@ -621,7 +621,7 @@ void aeeg_curve_widget::paintEvent(QPaintEvent *)
   painter.setPen(Qt::green);
   h_step *= 20;
 
-  for(i=0; i<(param.medians_in_recording - 1); i++)
+  for(i=0; i<param.medians_in_recording; i++)
   {
     painter.drawLine(i * h_step, h - (param.max_median_val[i] * v_sense), (i + 1) * h_step, h - (param.max_median_val[i] * v_sense));
 
