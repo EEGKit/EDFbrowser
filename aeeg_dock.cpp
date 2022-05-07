@@ -58,48 +58,6 @@ UI_aeeg_dock::UI_aeeg_dock(QWidget *w_parent, struct aeeg_dock_param_struct par)
   frame->setMidLineWidth(0);
   frame->setContentsMargins(0, 0, 0, 0);
 
-//   curve1 = new SignalCurve;
-//   curve1->setSignalColor(Qt::darkBlue);
-//   curve1->setBackgroundColor(Qt::white);
-//   curve1->setRasterColor(Qt::gray);
-//   curve1->setTraceWidth(0);
-//   curve1->setMinimumHeight(120 * h_scaling);
-//   curve1->setMaximumHeight(120 * h_scaling);
-//   curve1->setMinimumWidth(100 * w_scaling);
-// //  curve1->setV_label(param.signalcomp->physdimension);
-//   curve1->setH_label("Sec.");
-//   curve1->setH_RulerValues(0, param.signalcomp->edfhdr->recording_len_sec);
-//   curve1->setH_rulerEnabled(false);
-//   curve1->setHor_BorderHeight(10 * h_scaling);
-//   curve1->setVert_BorderWidth(50 * w_scaling);
-//   curve1->setDashBoardEnabled(false);
-//   curve1->setMarker1Color(Qt::red);
-//   curve1->setMarker1Enabled(true);
-//   curve1->setCursorEnabled(false);
-//   curve1->setPrintEnabled(false);
-//   curve1->setV_LogarithmicEnabled(true);
-//   curve1->setH_Resolution(((6.0 / mainwindow->x_pixelsizefactor) / (3600.0 / param.segment_len)) / 2);  /* set horziontal scale to 6 cm per hour -> approx. 1 pixel per segment */
-//   curve1->setFixedH_resolutionEnabled(true, 1);
-//   curve1->drawCurve(param.min_max_val, param.segments_in_recording * 2, param.scale_max_amp, 0);
-//   curve1->setSignalColor(Qt::green, 1);
-//   curve1->setTraceWidth(0, 1);
-//   curve1->drawCurve(param.max_median_val, param.medians_in_recording, param.scale_max_amp, 0, 1);
-//   curve1->setSignalColor(Qt::green, 2);
-//   curve1->setTraceWidth(0, 2);
-//   curve1->drawCurve(param.min_median_val, param.medians_in_recording, param.scale_max_amp, 0, 2);
-//   curve1->setContentsMargins(0, 0, 0, 0);
-
-//   aeeg_dock = new QDockWidget(str, mainwindow);
-//   aeeg_dock->setFeatures(QDockWidget::AllDockWidgetFeatures);
-//   aeeg_dock->setAllowedAreas(Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
-//   aeeg_dock->setAttribute(Qt::WA_DeleteOnClose);
-//   aeeg_dock->setContextMenuPolicy(Qt::CustomContextMenu);
-//   aeeg_dock->setWidget(curve1);
-//   aeeg_dock->setMinimumHeight(150 * h_scaling);
-//   aeeg_dock->setMinimumWidth(300 * w_scaling);
-//
-//   mainwindow->addDockWidget(Qt::BottomDockWidgetArea, aeeg_dock, Qt::Horizontal);
-
   aeeg_curve = new aeeg_curve_widget;
   aeeg_curve->set_params(&param);
   aeeg_curve->setMinimumHeight(mainwindow->aeegdock_height);
@@ -107,7 +65,7 @@ UI_aeeg_dock::UI_aeeg_dock(QWidget *w_parent, struct aeeg_dock_param_struct par)
   aeeg_curve->setMinimumWidth(100);
   aeeg_curve->setContentsMargins(0, 0, 0, 0);
   aeeg_curve->set_trace_color(Qt::darkBlue);
-  aeeg_curve->set_range(0, 100);
+  aeeg_curve->set_range(0, param.scale_max_amp);
   aeeg_curve->make_logarithmic();
 
   srl_indic1 = new log_vruler_indicator;
@@ -115,12 +73,14 @@ UI_aeeg_dock::UI_aeeg_dock(QWidget *w_parent, struct aeeg_dock_param_struct par)
   srl_indic1->set_scaling(w_scaling, h_scaling);
   srl_indic1->setContentsMargins(0, 0, 0, 0);
   srl_indic1->setMinimumWidth(40 * w_scaling);
+  srl_indic1->set_range(0, param.scale_max_amp);
 
   srl_indic2 = new log_vruler_indicator;
   srl_indic2->set_params(&param);
   srl_indic2->set_scaling(w_scaling, h_scaling);
   srl_indic2->setContentsMargins(0, 0, 0, 0);
   srl_indic2->setMinimumWidth(40 * w_scaling);
+  srl_indic2->set_range(0, param.scale_max_amp);
   srl_indic2->set_mirrored(true);
 
   grid_layout = new QGridLayout(frame);
