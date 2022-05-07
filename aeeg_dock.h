@@ -99,6 +99,8 @@ private:
 
   QMenu *context_menu;
 
+  QSpinBox *height_spinbox;
+
 private slots:
 
   void aeeg_dock_destroyed(QObject *);
@@ -106,6 +108,7 @@ private slots:
   void show_settings(bool);
   void close_dock(bool);
   void show_context_menu(QPoint);
+  void height_spinbox_changed(int);
 
 };
 

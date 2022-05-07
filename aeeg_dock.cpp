@@ -190,13 +190,19 @@ void UI_aeeg_dock::show_settings(bool)
 
   strlcat(str, param.signalcomp->signallabel, 4096);
 
-  QDialog *myobjectDialog = new QDialog;
-  myobjectDialog->setMinimumSize(300, 215);
-  myobjectDialog->setWindowTitle(str);
-  myobjectDialog->setModal(true);
-  myobjectDialog->setAttribute(Qt::WA_DeleteOnClose, true);
+  QDialog *settings_dialog = new QDialog;
+  settings_dialog->setMinimumSize(300, 350);
+  settings_dialog->setWindowTitle(str);
+  settings_dialog->setModal(true);
+  settings_dialog->setAttribute(Qt::WA_DeleteOnClose, true);
 
   QLabel *label = new QLabel;
+
+  height_spinbox = new QSpinBox;
+  height_spinbox->setRange(80, 500);
+  height_spinbox->setSingleStep(10);
+  height_spinbox->setSuffix(" px");
+  height_spinbox->setValue(mainwindow->aeegdock_height);
 
   QPushButton *pushButton1 = new QPushButton;
   pushButton1->setText("Close");
@@ -220,17 +226,36 @@ void UI_aeeg_dock::show_settings(bool)
   hlayout1->addStretch(1000);
   hlayout1->addWidget(pushButton1);
 
+  QHBoxLayout *hlayout2 = new QHBoxLayout;
+  hlayout2->addWidget(height_spinbox);
+  hlayout2->addStretch(1000);
+
+  QFormLayout *flayout = new QFormLayout;
+  flayout->addRow("Dock height: ", hlayout2);
+
   QVBoxLayout *vlayout1 = new QVBoxLayout;
   vlayout1->addWidget(label);
+  vlayout1->addStretch(1000);
+  vlayout1->addLayout(flayout);
   vlayout1->addStretch(1000);
   vlayout1->addSpacing(20);
   vlayout1->addLayout(hlayout1);
 
-  myobjectDialog->setLayout(vlayout1);
+  settings_dialog->setLayout(vlayout1);
 
-  QObject::connect(pushButton1, SIGNAL(clicked()), myobjectDialog, SLOT(close()));
+  QObject::connect(pushButton1,    SIGNAL(clicked()),         settings_dialog, SLOT(close()));
+  QObject::connect(height_spinbox, SIGNAL(valueChanged(int)), this,            SLOT(height_spinbox_changed(int)));
 
-  myobjectDialog->exec();
+  settings_dialog->exec();
+}
+
+
+void UI_aeeg_dock::height_spinbox_changed(int val)
+{
+  mainwindow->aeegdock_height = val;
+
+  aeeg_curve->setMinimumHeight(mainwindow->aeegdock_height);
+  aeeg_curve->setMaximumHeight(mainwindow->aeegdock_height);
 }
 
 

@@ -182,6 +182,7 @@ void UI_hrv_dock::show_settings(bool)
   height_spinbox = new QSpinBox;
   height_spinbox->setRange(80, 500);
   height_spinbox->setSingleStep(10);
+  height_spinbox->setSuffix(" px");
   height_spinbox->setValue(mainwindow->hrvdock_height);
 
   color_button = new SpecialButton;
@@ -213,7 +214,7 @@ void UI_hrv_dock::show_settings(bool)
   flayout->addRow(" ", (QWidget *)NULL);
   flayout->addRow("Minimum BPM:", hlayout2);
   flayout->addRow(" ", (QWidget *)NULL);
-  flayout->addRow("Height:", hlayout3);
+  flayout->addRow("Dock height:", hlayout3);
   flayout->addRow(" ", (QWidget *)NULL);
   flayout->addRow("Trace color:", hlayout4);
   flayout->addRow(" ", (QWidget *)NULL);
