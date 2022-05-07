@@ -1669,6 +1669,19 @@ void UI_Mainwindow::read_general_settings()
       xml_go_up(xml_hdl);
     }
 
+    if(!(xml_goto_nth_element_inside(xml_hdl, "aeegdock_height", 0)))
+    {
+      if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+      {
+        xml_close(xml_hdl);
+        return;
+      }
+
+      aeegdock_height = atoi(result);
+
+      xml_go_up(xml_hdl);
+    }
+
     xml_go_up(xml_hdl);
   }
 
@@ -3245,6 +3258,7 @@ void UI_Mainwindow::write_settings()
     fprintf(cfgfile, "      <aeeg_bp_max_hz>%e</aeeg_bp_max_hz>\n", aeeg_bp_max_hz);
     fprintf(cfgfile, "      <aeeg_lp_hz>%e</aeeg_lp_hz>\n", aeeg_lp_hz);
     fprintf(cfgfile, "      <aeeg_scale_max_amp>%e</aeeg_scale_max_amp>\n", aeeg_scale_max_amp);
+    fprintf(cfgfile, "      <aeegdock_height>%i</aeegdock_height>\n", aeegdock_height);
     fprintf(cfgfile, "    </aeeg>\n");
 
     fprintf(cfgfile, "    <hypnogram>\n");
