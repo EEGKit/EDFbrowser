@@ -214,16 +214,6 @@ void UI_aeeg_dock::file_pos_changed(long long)
 
   if(i == mainwindow->signalcomps)  return;
 
-  if(f_pos < 0)
-  {
-    f_pos = 0;
-  }
-
-  if(f_pos > param.signalcomp->file_duration)
-  {
-    f_pos = param.signalcomp->file_duration;
-  }
-
   aeeg_curve->set_marker_position((int)(f_pos / 10000000LL));
 }
 
@@ -349,7 +339,7 @@ void log_vruler_indicator::paintEvent(QPaintEvent *)
   // 100  50  25  10   5   4   3   2   1  (log10 conversion)
   // 100  85  70  50  35  30  24  15   0
 
-  pixel_per_unit = h / 100.0;
+  pixel_per_unit = h / 105.0;
 
   if(!mirrored)
   {
@@ -405,13 +395,13 @@ void log_vruler_indicator::paintEvent(QPaintEvent *)
     {
       painter.drawLine(w - 4, h - tmp, w - 13, h - tmp);
 
-      painter.drawText(QRectF(w - (35 * w_scaling), h - (int)(tmp + 0.5 + (9 * h_scaling)), 20 * w_scaling, 20 * h_scaling), Qt::AlignRight | Qt::AlignHCenter, str);
+      painter.drawText(QRectF(w - (35 * w_scaling), h - (int)(tmp + 0.5 + (9 * h_scaling)), 20 * w_scaling, 20 * h_scaling), Qt::AlignRight | Qt::AlignVCenter, str);
     }
     else
     {
       painter.drawLine(4, h - tmp, 13, h - tmp);
 
-      painter.drawText(QRectF(10 * w_scaling, h - (int)(tmp + 0.5 + (9 * h_scaling)), 20 * w_scaling, 20 * h_scaling), Qt::AlignLeft | Qt::AlignHCenter, str);
+      painter.drawText(QRectF(13 * w_scaling, h - (int)(tmp + 0.5 + (9 * h_scaling)), 20 * w_scaling, 20 * h_scaling), Qt::AlignLeft | Qt::AlignVCenter, str);
     }
   }
 }
@@ -559,7 +549,7 @@ void aeeg_curve_widget::paintEvent(QPaintEvent *)
   // 100  50  25  10   5   4   3   2   1  (log10 conversion)
   // 100  85  70  50  35  30  24  15   0
 
-  pixel_per_unit = h / 100.0;
+  pixel_per_unit = h / 105.0;
 
   painter.setPen(Qt::lightGray);
 
@@ -570,7 +560,7 @@ void aeeg_curve_widget::paintEvent(QPaintEvent *)
     painter.drawLine(0, h - tmp, w, h -  tmp);
   }
 
-  for(i=1; i<5; i++)
+  for(i=1; i<6; i++)
   {
     switch(i)
     {
@@ -594,15 +584,21 @@ void aeeg_curve_widget::paintEvent(QPaintEvent *)
     painter.drawLine(0, h - tmp, w, h - tmp);
   }
 
+  painter.drawText(30 * mainwindow->w_scaling, h * 0.7, param.signalcomp->signallabel);
+  painter.drawText(w - (120 * mainwindow->w_scaling), h * 0.7, param.signalcomp->signallabel);
+
   /* draw the marker */
-  painter.setPen(Qt::red);
-  h_step = (6.0 / mainwindow->x_pixelsizefactor) / 3600.0;
-  painter.drawLine(marker_pos * h_step, 0, marker_pos * h_step, h);
+  if((marker_pos >= -(int)(mainwindow->pagetime / 10000000LL)) && (marker_pos <= (param.signalcomp->file_duration / 10000000LL)))
+  {
+    painter.setPen(Qt::red);
+    h_step = (6.0 / mainwindow->x_pixelsizefactor) / 3600.0;
+    painter.drawLine(marker_pos * h_step, 0, marker_pos * h_step, h);
+  }
 
   /* set horziontal scale to 6 cm per hour -> approx. 1 pixel per segment */
   h_step = (6.0 / mainwindow->x_pixelsizefactor) / (3600.0 / param.segment_len);
 
-  v_sense = h / aeeg_max;
+  v_sense = (h / aeeg_max) / 1.05;
 
   /* draw the traces */
   painter.setPen(trace_color);
