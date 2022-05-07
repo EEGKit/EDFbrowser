@@ -213,7 +213,8 @@ void UI_aeeg_window::start_button_clicked()
          min_margin_median_buf[MARGIN_MEDIAN_SZ]={0},
          scale_max_amp;
 
-  char filt_spec_str_bp[256]={""},
+  char str[32]={""},
+       filt_spec_str_bp[256]={""},
        *filt_spec_ptr_bp=NULL,
        *fid_err_bp=NULL,
        filt_spec_str_lp[256]={""},
@@ -223,6 +224,15 @@ void UI_aeeg_window::start_button_clicked()
   struct aeeg_dock_param_struct dock_param;
 
   memset(&dock_param, 0, sizeof(struct aeeg_dock_param_struct));
+
+  strlcpy(str, signalcomp->physdimension, 32);
+  ascii_toupper(str);
+  if(strncmp(str, "UV", 2))
+  {
+    QMessageBox msgBox(QMessageBox::Critical, "Error", "Physical dimension (unit) must be uV.", QMessageBox::Close);
+    msgBox.exec();
+    return;
+  }
 
   if(myobjectDialog != NULL)
   {

@@ -364,6 +364,16 @@ void log_vruler_indicator::paintEvent(QPaintEvent *)
       painter.drawText(QRectF(13 * w_scaling, h - (int)(tmp + 0.5 + (9 * h_scaling)), 20 * w_scaling, 20 * h_scaling), Qt::AlignLeft | Qt::AlignVCenter, str);
     }
   }
+
+  /* draw the physical dimension (unit) */
+  if(!mirrored)
+  {
+    painter.drawText(2, h - 3, param.signalcomp->physdimension);
+  }
+  else
+  {
+    painter.drawText(13 * w_scaling, h - 3, param.signalcomp->physdimension);
+  }
 }
 
 
@@ -544,6 +554,7 @@ void aeeg_curve_widget::paintEvent(QPaintEvent *)
     painter.drawLine(0, h - tmp, w, h - tmp);
   }
 
+  /* draw the signal label */
   painter.drawText(30 * mainwindow->w_scaling, h * 0.7, param.signalcomp->signallabel);
   painter.drawText(w - (120 * mainwindow->w_scaling), h * 0.7, param.signalcomp->signallabel);
 
