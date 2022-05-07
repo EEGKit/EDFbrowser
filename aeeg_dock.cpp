@@ -37,6 +37,8 @@ UI_aeeg_dock::UI_aeeg_dock(QWidget *w_parent, struct aeeg_dock_param_struct par)
 
   QGridLayout *grid_layout;
 
+  is_deleted = 0;
+
   mainwindow = (UI_Mainwindow *)w_parent;
 
   w_scaling = mainwindow->w_scaling;
@@ -44,7 +46,7 @@ UI_aeeg_dock::UI_aeeg_dock(QWidget *w_parent, struct aeeg_dock_param_struct par)
 
   param = par;
 
-  is_deleted = 0;
+  param.mainwindow = mainwindow;
 
   sigcomp_uid = param.signalcomp->uid;
 
@@ -56,36 +58,36 @@ UI_aeeg_dock::UI_aeeg_dock(QWidget *w_parent, struct aeeg_dock_param_struct par)
   frame->setMidLineWidth(0);
   frame->setContentsMargins(0, 0, 0, 0);
 
-  curve1 = new SignalCurve;
-  curve1->setSignalColor(Qt::darkBlue);
-  curve1->setBackgroundColor(Qt::white);
-  curve1->setRasterColor(Qt::gray);
-  curve1->setTraceWidth(0);
-  curve1->setMinimumHeight(120 * h_scaling);
-  curve1->setMaximumHeight(120 * h_scaling);
-  curve1->setMinimumWidth(100 * w_scaling);
-//  curve1->setV_label(param.signalcomp->physdimension);
-  curve1->setH_label("Sec.");
-  curve1->setH_RulerValues(0, param.signalcomp->edfhdr->recording_len_sec);
-  curve1->setH_rulerEnabled(false);
-  curve1->setHor_BorderHeight(10 * h_scaling);
-  curve1->setVert_BorderWidth(50 * w_scaling);
-  curve1->setDashBoardEnabled(false);
-  curve1->setMarker1Color(Qt::red);
-  curve1->setMarker1Enabled(true);
-  curve1->setCursorEnabled(false);
-  curve1->setPrintEnabled(false);
-  curve1->setV_LogarithmicEnabled(true);
-  curve1->setH_Resolution(((6.0 / mainwindow->x_pixelsizefactor) / (3600.0 / param.segment_len)) / 2);  /* set horziontal scale to 6 cm per hour -> approx. 1 pixel per segment */
-  curve1->setFixedH_resolutionEnabled(true, 1);
-  curve1->drawCurve(param.min_max_val, param.segments_in_recording * 2, param.scale_max_amp, 0);
-  curve1->setSignalColor(Qt::green, 1);
-  curve1->setTraceWidth(0, 1);
-  curve1->drawCurve(param.max_median_val, param.medians_in_recording, param.scale_max_amp, 0, 1);
-  curve1->setSignalColor(Qt::green, 2);
-  curve1->setTraceWidth(0, 2);
-  curve1->drawCurve(param.min_median_val, param.medians_in_recording, param.scale_max_amp, 0, 2);
-  curve1->setContentsMargins(0, 0, 0, 0);
+//   curve1 = new SignalCurve;
+//   curve1->setSignalColor(Qt::darkBlue);
+//   curve1->setBackgroundColor(Qt::white);
+//   curve1->setRasterColor(Qt::gray);
+//   curve1->setTraceWidth(0);
+//   curve1->setMinimumHeight(120 * h_scaling);
+//   curve1->setMaximumHeight(120 * h_scaling);
+//   curve1->setMinimumWidth(100 * w_scaling);
+// //  curve1->setV_label(param.signalcomp->physdimension);
+//   curve1->setH_label("Sec.");
+//   curve1->setH_RulerValues(0, param.signalcomp->edfhdr->recording_len_sec);
+//   curve1->setH_rulerEnabled(false);
+//   curve1->setHor_BorderHeight(10 * h_scaling);
+//   curve1->setVert_BorderWidth(50 * w_scaling);
+//   curve1->setDashBoardEnabled(false);
+//   curve1->setMarker1Color(Qt::red);
+//   curve1->setMarker1Enabled(true);
+//   curve1->setCursorEnabled(false);
+//   curve1->setPrintEnabled(false);
+//   curve1->setV_LogarithmicEnabled(true);
+//   curve1->setH_Resolution(((6.0 / mainwindow->x_pixelsizefactor) / (3600.0 / param.segment_len)) / 2);  /* set horziontal scale to 6 cm per hour -> approx. 1 pixel per segment */
+//   curve1->setFixedH_resolutionEnabled(true, 1);
+//   curve1->drawCurve(param.min_max_val, param.segments_in_recording * 2, param.scale_max_amp, 0);
+//   curve1->setSignalColor(Qt::green, 1);
+//   curve1->setTraceWidth(0, 1);
+//   curve1->drawCurve(param.max_median_val, param.medians_in_recording, param.scale_max_amp, 0, 1);
+//   curve1->setSignalColor(Qt::green, 2);
+//   curve1->setTraceWidth(0, 2);
+//   curve1->drawCurve(param.min_median_val, param.medians_in_recording, param.scale_max_amp, 0, 2);
+//   curve1->setContentsMargins(0, 0, 0, 0);
 
 //   aeeg_dock = new QDockWidget(str, mainwindow);
 //   aeeg_dock->setFeatures(QDockWidget::AllDockWidgetFeatures);
@@ -98,9 +100,34 @@ UI_aeeg_dock::UI_aeeg_dock(QWidget *w_parent, struct aeeg_dock_param_struct par)
 //
 //   mainwindow->addDockWidget(Qt::BottomDockWidgetArea, aeeg_dock, Qt::Horizontal);
 
+  aeeg_curve = new aeeg_curve_widget;
+  aeeg_curve->set_params(&param);
+  aeeg_curve->setMinimumHeight(mainwindow->aeegdock_height);
+  aeeg_curve->setMaximumHeight(mainwindow->aeegdock_height);
+  aeeg_curve->setMinimumWidth(100);
+  aeeg_curve->setContentsMargins(0, 0, 0, 0);
+  aeeg_curve->set_trace_color(Qt::darkBlue);
+  aeeg_curve->set_range(0, 100);
+  aeeg_curve->make_logarithmic();
+
+  srl_indic1 = new log_vruler_indicator;
+  srl_indic1->set_params(&param);
+  srl_indic1->set_scaling(w_scaling, h_scaling);
+  srl_indic1->setContentsMargins(0, 0, 0, 0);
+  srl_indic1->setMinimumWidth(40 * w_scaling);
+
+  srl_indic2 = new log_vruler_indicator;
+  srl_indic2->set_params(&param);
+  srl_indic2->set_scaling(w_scaling, h_scaling);
+  srl_indic2->setContentsMargins(0, 0, 0, 0);
+  srl_indic2->setMinimumWidth(40 * w_scaling);
+  srl_indic2->set_mirrored(true);
+
   grid_layout = new QGridLayout(frame);
-  grid_layout->addWidget(curve1, 0, 0);
-  grid_layout->setColumnStretch(0, 100);
+  grid_layout->addWidget(srl_indic1, 0, 0);
+  grid_layout->addWidget(aeeg_curve, 0, 1);
+  grid_layout->addWidget(srl_indic2, 0, 2);
+  grid_layout->setColumnStretch(1, 100);
 
   aeeg_dock = new QToolBar(str, mainwindow);
   aeeg_dock->setOrientation(Qt::Horizontal);
@@ -109,9 +136,17 @@ UI_aeeg_dock::UI_aeeg_dock(QWidget *w_parent, struct aeeg_dock_param_struct par)
   aeeg_dock->setContextMenuPolicy(Qt::CustomContextMenu);
   aeeg_dock->addWidget(frame);
 
-  QObject::connect(aeeg_dock,  SIGNAL(destroyed(QObject *)),               this, SLOT(aeeg_dock_destroyed(QObject *)));
-  QObject::connect(aeeg_dock,  SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(contextmenu_requested(QPoint)));
-  QObject::connect(mainwindow, SIGNAL(file_position_changed(long long)),   this, SLOT(file_pos_changed(long long)));
+  context_menu = new QMenu(aeeg_dock);
+  QAction *settings_act = new QAction("Settings", this);
+  QAction *close_act = new QAction("Close", this);
+  context_menu->addAction(settings_act);
+  context_menu->addAction(close_act);
+
+  QObject::connect(aeeg_dock,    SIGNAL(destroyed(QObject *)),               this, SLOT(aeeg_dock_destroyed(QObject *)));
+  QObject::connect(settings_act, SIGNAL(triggered(bool)),                    this, SLOT(show_settings(bool)));
+  QObject::connect(aeeg_dock,    SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(show_context_menu(QPoint)));
+  QObject::connect(mainwindow,   SIGNAL(file_position_changed(long long)),   this, SLOT(file_pos_changed(long long)));
+  QObject::connect(close_act,    SIGNAL(triggered(bool)),                    this, SLOT(close_dock(bool)));
 
   file_pos_changed(0);
 }
@@ -130,7 +165,8 @@ UI_aeeg_dock::~UI_aeeg_dock()
     mainwindow->aeeg_dock[param.instance_num] = NULL;
   }
 
-  free(param.min_max_val);
+  free(param.max_seg_val);
+  free(param.min_seg_val);
   free(param.max_median_val);
   free(param.min_median_val);
 }
@@ -147,6 +183,12 @@ void UI_aeeg_dock::aeeg_dock_destroyed(QObject *)
     mainwindow->aeeg_dock[param.instance_num] = NULL;
   }
 
+  delete this;
+}
+
+
+void UI_aeeg_dock::close_dock(bool)
+{
   delete this;
 }
 
@@ -182,11 +224,17 @@ void UI_aeeg_dock::file_pos_changed(long long)
     f_pos = param.signalcomp->file_duration;
   }
 
-  curve1->setMarker1Position((double)f_pos / (double)(param.signalcomp->file_duration));
+  aeeg_curve->set_marker_position((int)(f_pos / 10000000LL));
 }
 
 
-void UI_aeeg_dock::contextmenu_requested(QPoint)
+void UI_aeeg_dock::show_context_menu(QPoint)
+{
+  context_menu->exec(QCursor::pos());
+}
+
+
+void UI_aeeg_dock::show_settings(bool)
 {
   char str[4096]={"aEEG "};
 
@@ -234,6 +282,358 @@ void UI_aeeg_dock::contextmenu_requested(QPoint)
 
   myobjectDialog->exec();
 }
+
+
+log_vruler_indicator::log_vruler_indicator(QWidget *w_parent) : QWidget(w_parent)
+{
+  setAttribute(Qt::WA_OpaquePaintEvent);
+
+  setFixedWidth(50);
+
+  max_val = 100;
+
+  min_val = 0;
+
+  mirrored = 0;
+
+  w_scaling = 1;
+  h_scaling = 1;
+}
+
+
+void log_vruler_indicator::set_scaling(double w, double h)
+{
+  w_scaling = w;
+  h_scaling = h;
+
+  setFixedWidth(30 * w_scaling);
+}
+
+
+void log_vruler_indicator::set_params(struct aeeg_dock_param_struct *parms)
+{
+  param = *parms;
+}
+
+
+void log_vruler_indicator::set_mirrored(bool mir)
+{
+  if(mir == true)
+  {
+    mirrored = 1;
+  }
+  else
+  {
+    mirrored = 0;
+  }
+}
+
+
+void log_vruler_indicator::paintEvent(QPaintEvent *)
+{
+  int i, w, h, tmp;
+
+  char str[128]={""};
+
+  double pixel_per_unit;
+
+  w = width();
+  h = height();
+
+  QPainter painter(this);
+
+  painter.fillRect(0, 0, w, h, Qt::lightGray);
+
+  painter.setPen(Qt::black);
+
+  // 100  50  25  10   5   4   3   2   1  (log10 conversion)
+  // 100  85  70  50  35  30  24  15   0
+
+  pixel_per_unit = h / 100.0;
+
+  if(!mirrored)
+  {
+    painter.drawLine(w - 4, 0, w - 4, h);
+  }
+  else
+  {
+    painter.drawLine(4, 0, 4, h);
+  }
+
+  for(i=1; i<5; i++)  // linear region
+  {
+    tmp = (i * 5 * pixel_per_unit) + 0.5;
+
+    if(!mirrored)
+    {
+      painter.drawLine(w - 4, h - tmp, w - 13, h -  tmp);
+    }
+    else
+    {
+      painter.drawLine(4, h - tmp, 13, h -  tmp);
+    }
+  }
+
+  for(i=1; i<6; i++)
+  {
+    switch(i)
+    {
+      case 0: tmp = 0;
+              snprintf(str, 128, "%i", 0);
+              break;
+//          case 1: tmp = 35;
+      case 1: tmp = 25;  // linear/log threshold hack
+              snprintf(str, 128, "%i", (int)(max_val * 0.05 + 0.5));
+              break;
+      case 2: tmp = 50;
+              snprintf(str, 128, "%i", (int)(max_val * 0.1 + 0.5));
+              break;
+      case 3: tmp = 70;
+              snprintf(str, 128, "%i", (int)(max_val * 0.25 + 0.5));
+              break;
+      case 4: tmp = 85;
+              snprintf(str, 128, "%i", (int)(max_val * 0.5 + 0.5));
+              break;
+      case 5: tmp = 100;
+              snprintf(str, 128, "%i", (int)(max_val + 0.5));
+              break;
+    }
+
+    tmp *= pixel_per_unit;
+
+    if(!mirrored)
+    {
+      painter.drawLine(w - 4, h - tmp, w - 13, h - tmp);
+
+      painter.drawText(QRectF(w - (35 * w_scaling), h - (int)(tmp + 0.5 + (9 * h_scaling)), 20 * w_scaling, 20 * h_scaling), Qt::AlignRight | Qt::AlignHCenter, str);
+    }
+    else
+    {
+      painter.drawLine(4, h - tmp, 13, h - tmp);
+
+      painter.drawText(QRectF(10 * w_scaling, h - (int)(tmp + 0.5 + (9 * h_scaling)), 20 * w_scaling, 20 * h_scaling), Qt::AlignLeft | Qt::AlignHCenter, str);
+    }
+  }
+}
+
+
+void log_vruler_indicator::set_range(int min, int max)
+{
+  max_val = max;
+
+  min_val = min;
+}
+
+
+aeeg_curve_widget::aeeg_curve_widget(QWidget *w_parent) : QWidget(w_parent)
+{
+  mainwindow = NULL;
+
+  memset(&param, 0, sizeof(struct aeeg_dock_param_struct));
+
+  setAttribute(Qt::WA_OpaquePaintEvent);
+
+  aeeg_min = 0;
+
+  aeeg_max = 100;
+
+  aeeg_range = aeeg_max - aeeg_min;
+
+  trace_color = Qt::red;
+
+  marker_pos = 0;
+}
+
+
+void aeeg_curve_widget::set_params(struct aeeg_dock_param_struct *parms)
+{
+  param = *parms;
+
+  mainwindow = param.mainwindow;
+}
+
+
+void aeeg_curve_widget::set_range(int min, int max)
+{
+  aeeg_max = max;
+
+  aeeg_min = min;
+
+  aeeg_range = aeeg_max - aeeg_min;
+}
+
+
+void aeeg_curve_widget::set_trace_color(QColor color)
+{
+  trace_color = color;
+}
+
+
+void aeeg_curve_widget::make_logarithmic(void)
+{
+  int i;
+
+  double dtmp,
+         log_treshold_1,
+         log_treshold_2;
+
+  dtmp = aeeg_max / log10(aeeg_max);
+
+  log_treshold_1 = aeeg_max / 10;
+
+  log_treshold_2 = aeeg_max / 20;
+
+  for(i=0; i<param.segments_in_recording; i++)
+  {
+    if(param.max_seg_val[i] > log_treshold_1)  // linear/log threshold hack
+    {
+      param.max_seg_val[i] = log10(param.max_seg_val[i]) * dtmp;
+    }
+    else
+    {
+      param.max_seg_val[i] *= log_treshold_2;
+    }
+
+    if(param.min_seg_val[i] > log_treshold_1)  // linear/log threshold hack
+    {
+      param.min_seg_val[i] = log10(param.min_seg_val[i]) * dtmp;
+    }
+    else
+    {
+      param.min_seg_val[i] *= log_treshold_2;
+    }
+  }
+
+  for(i=0; i<param.medians_in_recording; i++)
+  {
+    if(param.max_median_val[i] > log_treshold_1)  // linear/log threshold hack
+    {
+      param.max_median_val[i] = log10(param.max_median_val[i]) * dtmp;
+    }
+    else
+    {
+      param.max_median_val[i] *= log_treshold_2;
+    }
+
+    if(param.min_median_val[i] > log_treshold_1)  // linear/log threshold hack
+    {
+      param.min_median_val[i] = log10(param.min_median_val[i]) * dtmp;
+    }
+    else
+    {
+      param.min_median_val[i] *= log_treshold_2;
+    }
+  }
+}
+
+
+void aeeg_curve_widget::set_marker_position(int pos_s)
+{
+  marker_pos = pos_s;
+
+  update();
+}
+
+
+void aeeg_curve_widget::paintEvent(QPaintEvent *)
+{
+  int w, h, i, tmp,
+      pos_x1,
+      pos_x2;
+
+  double pixel_per_unit,
+         h_step,
+         v_sense;
+
+  w = width();
+  h = height();
+
+  QPainter painter(this);
+#if QT_VERSION >= 0x050000
+  painter.setRenderHint(QPainter::Qt4CompatiblePainting, true);
+#endif
+  painter.fillRect(0, 0, w, h, Qt::white);
+
+  if(param.mainwindow == NULL) return;
+
+  // 100  50  25  10   5   4   3   2   1  (log10 conversion)
+  // 100  85  70  50  35  30  24  15   0
+
+  pixel_per_unit = h / 100.0;
+
+  painter.setPen(Qt::lightGray);
+
+  for(i=1; i<5; i++)  // linear region
+  {
+    tmp = (i * 5 * pixel_per_unit) + 0.5;
+
+    painter.drawLine(0, h - tmp, w, h -  tmp);
+  }
+
+  for(i=1; i<5; i++)
+  {
+    switch(i)
+    {
+      case 0: tmp = 0;
+              break;
+//          case 1: tmp = 35;
+      case 1: tmp = 25;  // linear/log threshold hack
+              break;
+      case 2: tmp = 50;
+              break;
+      case 3: tmp = 70;
+              break;
+      case 4: tmp = 85;
+              break;
+      case 5: tmp = 100;
+              break;
+    }
+
+    tmp *= pixel_per_unit;
+
+    painter.drawLine(0, h - tmp, w, h - tmp);
+  }
+
+  /* draw the marker */
+  painter.setPen(Qt::red);
+  h_step = (6.0 / mainwindow->x_pixelsizefactor) / 3600.0;
+  painter.drawLine(marker_pos * h_step, 0, marker_pos * h_step, h);
+
+  /* set horziontal scale to 6 cm per hour -> approx. 1 pixel per segment */
+  h_step = (6.0 / mainwindow->x_pixelsizefactor) / (3600.0 / param.segment_len);
+
+  v_sense = h / aeeg_max;
+
+  /* draw the traces */
+  painter.setPen(trace_color);
+
+  for(i=0; i<param.segments_in_recording; i++)
+  {
+    pos_x1 = i * h_step;
+
+    painter.drawLine(pos_x1, h - (param.max_seg_val[i] * v_sense), pos_x1, h - (param.min_seg_val[i] * v_sense));
+
+    pos_x2 = (i + 1) * h_step;
+
+    for(++pos_x1; pos_x1 < pos_x2; pos_x1++)
+    {
+      painter.drawLine(pos_x1, h - (param.max_seg_val[i] * v_sense), pos_x1, h - (param.min_seg_val[i] * v_sense));
+    }
+  }
+
+  /* draw the margins */
+  painter.setPen(Qt::green);
+  h_step *= 20;
+
+  for(i=0; i<(param.medians_in_recording - 1); i++)
+  {
+    painter.drawLine(i * h_step, h - (param.max_median_val[i] * v_sense), (i + 1) * h_step, h - (param.max_median_val[i] * v_sense));
+
+    painter.drawLine(i * h_step, h - (param.min_median_val[i] * v_sense), (i + 1) * h_step, h - (param.min_median_val[i] * v_sense));
+  }
+}
+
+
 
 
 

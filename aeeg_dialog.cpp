@@ -205,7 +205,8 @@ void UI_aeeg_window::start_button_clicked()
          bp_hz_max,
          lp_hz,
          *smplbuf=NULL,
-         *min_max_val=NULL,
+         *min_seg_val=NULL,
+         *max_seg_val=NULL,
          *max_median_val=NULL,
          *min_median_val=NULL,
          max_margin_median_buf[MARGIN_MEDIAN_SZ]={0},
@@ -295,11 +296,20 @@ void UI_aeeg_window::start_button_clicked()
     return;
   }
 
-  min_max_val = (double *)malloc(segments_in_recording * 2 * sizeof(double));
-  if(min_max_val == NULL)
+  max_seg_val = (double *)malloc(segments_in_recording * sizeof(double));
+  if(max_seg_val == NULL)
   {
     QMessageBox msgBox(QMessageBox::Critical, "Error", "The system was not able to provide enough resources (memory) to perform the requested action.", QMessageBox::Close);
     msgBox.exec();
+    return;
+  }
+
+  min_seg_val = (double *)malloc(segments_in_recording * sizeof(double));
+  if(min_seg_val == NULL)
+  {
+    QMessageBox msgBox(QMessageBox::Critical, "Error", "The system was not able to provide enough resources (memory) to perform the requested action.", QMessageBox::Close);
+    msgBox.exec();
+    free(max_seg_val);
     return;
   }
 
@@ -308,7 +318,8 @@ void UI_aeeg_window::start_button_clicked()
   {
     QMessageBox msgBox(QMessageBox::Critical, "Error", "The system was not able to provide enough resources (memory) to perform the requested action.", QMessageBox::Close);
     msgBox.exec();
-    free(min_max_val);
+    free(max_seg_val);
+    free(min_seg_val);
     return;
   }
 
@@ -317,7 +328,8 @@ void UI_aeeg_window::start_button_clicked()
   {
     QMessageBox msgBox(QMessageBox::Critical, "Error", "The system was not able to provide enough resources (memory) to perform the requested action.", QMessageBox::Close);
     msgBox.exec();
-    free(min_max_val);
+    free(max_seg_val);
+    free(min_seg_val);
     free(max_median_val);
     return;
   }
@@ -339,7 +351,8 @@ void UI_aeeg_window::start_button_clicked()
       QMessageBox msgBox(QMessageBox::Critical, "Error", "Internal error (-1)", QMessageBox::Close);
       msgBox.exec();
     }
-    free(min_max_val);
+    free(max_seg_val);
+    free(min_seg_val);
     free(max_median_val);
     free(min_median_val);
     return;
@@ -360,7 +373,8 @@ void UI_aeeg_window::start_button_clicked()
     QMessageBox msgBox(QMessageBox::Critical, "Error", "Internal error (-2)", QMessageBox::Close);
     msgBox.exec();
     free(fid_err_bp);
-    free(min_max_val);
+    free(max_seg_val);
+    free(min_seg_val);
     free(max_median_val);
     free(min_median_val);
     return;
@@ -386,7 +400,8 @@ void UI_aeeg_window::start_button_clicked()
     msgBox.exec();
     free(fid_err_bp);
     free(fid_err_lp);
-    free(min_max_val);
+    free(max_seg_val);
+    free(min_seg_val);
     free(max_median_val);
     free(min_median_val);
     return;
@@ -409,7 +424,8 @@ void UI_aeeg_window::start_button_clicked()
     if(progress.wasCanceled() == true)
     {
       progress.reset();
-      free(min_max_val);
+      free(max_seg_val);
+      free(min_seg_val);
       free(max_median_val);
       free(min_median_val);
       free(fidfilter_bp);
@@ -430,9 +446,8 @@ void UI_aeeg_window::start_button_clicked()
       return;
     }
 
-    min_max_val[(i * 2) + 1] = 0;
-
-    min_max_val[i * 2] = DBL_MAX;
+    max_seg_val[i] = 0;
+    min_seg_val[i] = DBL_MAX;
 
     for(j=0; j<smpls_in_segment; j++)
     {
@@ -445,11 +460,11 @@ void UI_aeeg_window::start_button_clicked()
 
     qsort(smplbuf, smpls_in_segment, sizeof(double), dbl_cmp);  // sorting
 
-    min_max_val[i * 2] = smplbuf[min_idx];
-    min_max_val[(i * 2) + 1] = smplbuf[max_idx];
+    max_seg_val[i] = smplbuf[max_idx];
+    min_seg_val[i] = smplbuf[min_idx];
 
-    min_margin_median_buf[i % MARGIN_MEDIAN_SZ] = smplbuf[min_idx];
     max_margin_median_buf[i % MARGIN_MEDIAN_SZ] = smplbuf[max_idx];
+    min_margin_median_buf[i % MARGIN_MEDIAN_SZ] = smplbuf[min_idx];
 
     if(!((i + 1) % MARGIN_MEDIAN_SZ))
     {
@@ -481,7 +496,8 @@ void UI_aeeg_window::start_button_clicked()
   dock_param.segment_len = segmentlen;
   dock_param.segments_in_recording = segments_in_recording;
   dock_param.instance_num = aeeg_instance_nr;
-  dock_param.min_max_val = min_max_val;
+  dock_param.max_seg_val = max_seg_val;
+  dock_param.min_seg_val = min_seg_val;
   dock_param.min_median_val = min_median_val;
   dock_param.max_median_val = max_median_val;
   dock_param.medians_in_recording = medians_in_recording;

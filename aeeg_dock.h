@@ -38,11 +38,11 @@
 #include "global.h"
 #include "mainwindow.h"
 #include "utils.h"
-#include "signalcurve.h"
 
 
 class UI_Mainwindow;
-
+class log_vruler_indicator;
+class aeeg_curve_widget;
 
 
 struct aeeg_dock_param_struct
@@ -60,10 +60,12 @@ struct aeeg_dock_param_struct
   int instance_num;
   char unit[32];
   int no_dialog;
-  double *min_max_val;
+  double *max_seg_val;
+  double *min_seg_val;
   double *max_median_val;
   double *min_median_val;
   double scale_max_amp;
+  UI_Mainwindow *mainwindow;
 };
 
 
@@ -79,8 +81,6 @@ public:
 
   QToolBar *aeeg_dock;
 
-  SignalCurve *curve1;
-
   double w_scaling,
          h_scaling;
 
@@ -92,12 +92,101 @@ private:
 
   int is_deleted;
 
+  aeeg_curve_widget *aeeg_curve;
+
+  log_vruler_indicator *srl_indic1,
+                       *srl_indic2;
+
+  QMenu *context_menu;
+
 private slots:
 
   void aeeg_dock_destroyed(QObject *);
   void file_pos_changed(long long);
+  void show_settings(bool);
+  void close_dock(bool);
+  void show_context_menu(QPoint);
+
+};
+
+
+class log_vruler_indicator: public QWidget
+{
+  Q_OBJECT
+
+public:
+  log_vruler_indicator(QWidget *parent=0);
+
+  QSize sizeHint() const {return minimumSizeHint(); }
+  QSize minimumSizeHint() const {return QSize(5, 5); }
+
+  void set_params(struct aeeg_dock_param_struct *);
+
+  void set_range(int, int);
+  void set_scaling(double, double);
+  void set_mirrored(bool);
+
+public slots:
+
+protected:
+  void paintEvent(QPaintEvent *);
   void contextmenu_requested(QPoint);
 
+private:
+
+  struct aeeg_dock_param_struct param;
+
+  log_vruler_indicator *srl_indic;
+
+  aeeg_curve_widget *aeeg_curve;
+
+  int max_val,
+      min_val,
+      mirrored;
+
+  double w_scaling,
+         h_scaling;
+};
+
+
+class aeeg_curve_widget: public QWidget
+{
+  Q_OBJECT
+
+public:
+  aeeg_curve_widget(QWidget *parent=0);
+
+  QSize sizeHint() const {return minimumSizeHint(); }
+  QSize minimumSizeHint() const {return QSize(5, 5); }
+
+  UI_Mainwindow  *mainwindow;
+
+  void set_params(struct aeeg_dock_param_struct *);
+
+  void set_range(int, int);
+
+  void set_trace_color(QColor);
+
+  void make_logarithmic(void);
+
+  void set_marker_position(int);
+
+public slots:
+
+protected:
+  void paintEvent(QPaintEvent *);
+
+private:
+
+  int marker_pos;
+
+  struct aeeg_dock_param_struct param;
+
+  double aeeg_min,
+         aeeg_max,
+         aeeg_range;
+
+  QColor trace_color;
 };
 
 

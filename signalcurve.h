@@ -51,7 +51,6 @@
 
 #define MAXSPECTRUMMARKERS     (16)
 #define SC_MAX_PATH_LEN      (1024)
-#define SC_MAX_TRACES           (8)
 
 
 struct spectrum_markersblock{
@@ -81,23 +80,22 @@ public:
   QSize minimumSizeHint() const;
   int heightForWidth(int) const;
 
-  void setSignalColor(QColor, int trace_id=0);
-  void setTraceWidth(int, int trace_id=0);
+  void setSignalColor(QColor);
+  void setTraceWidth(int);
   void setBackgroundColor(QColor);
   void setRasterColor(QColor);
   void setBorderColor(QColor);
   void setTextColor(QColor);
-  void setHor_BorderHeight(int);
-  void setVert_BorderWidth(int);
+  void setBorderSize(int);
   void setH_RulerValues(double, double);
   void setH_label(const char *);
   void setV_label(const char *);
   void setUpperLabel1(const char *);
   void setUpperLabel2(const char *);
   void setLowerLabel(const char *);
-  void drawCurve(double *, int, double, double, int trace_id=0);
-  void drawCurve(int *, int, double, double);
-  void drawCurve( float *, int, double, double);
+  void drawCurve(double *, int , double , double );
+  void drawCurve(int *, int , double , double );
+  void drawCurve( float *, int , double , double );
   void drawLine(int, double, int, double, QColor);
   void setLineEnabled(bool);
   void create_button(const char *);
@@ -123,16 +121,12 @@ public:
   void disableSpectrumColors();
   void setFillSurfaceEnabled(bool);
   void setV_rulerEnabled(bool);
-  void setH_rulerEnabled(bool);
   void setUpsidedownEnabled(bool);
   int getCursorPosition(void);
   void shiftCursorPixelsLeft(int);
   void shiftCursorPixelsRight(int);
   void shiftCursorIndexLeft(int);
   void shiftCursorIndexRight(int);
-  void setV_LogarithmicEnabled(bool);
-  void setFixedH_resolutionEnabled(bool, int);
-  void setH_Resolution(double);
 
 signals:
   void extra_button_clicked();
@@ -162,7 +156,7 @@ private:
               *sidemenuButton5,
               *sidemenuButton6;
 
-  QColor SignalColor[SC_MAX_TRACES],
+  QColor SignalColor,
          BackgroundColor,
          RasterColor,
          BorderColor,
@@ -182,9 +176,9 @@ private:
   QPen Marker1Pen,
        Marker2Pen;
 
-  double max_value[SC_MAX_TRACES],
-         min_value[SC_MAX_TRACES],
-         *dbuf[SC_MAX_TRACES],
+  double max_value,
+         min_value,
+         *dbuf,
          h_ruler_startvalue,
          h_ruler_endvalue,
          printsize_x_factor,
@@ -197,18 +191,16 @@ private:
          marker_1_position,
          marker_2_position,
          w_scaling,
-         h_scaling,
-         h_resolution;
+         h_scaling;
 
   float *fbuf;
 
-  int bufsize[SC_MAX_TRACES],
-      vert_border_width,
-      hor_border_height,
+  int bufsize,
+      bordersize,
       drawHruler,
       drawVruler,
       drawcurve_before_raster,
-      tracewidth[SC_MAX_TRACES],
+      tracewidth,
       extra_button,
       use_move_events,
       mouse_x,
@@ -229,13 +221,10 @@ private:
       h,
       old_w,
       updates_enabled,
-      v_log_enabled,
       fillsurface,
       *ibuf,
       sz_hint_w,
-      sz_hint_h,
-      h_resolution_fixed,
-      h_res_fix_alignment;
+      sz_hint_h;
 
   char h_label[32],
        v_label[21],
