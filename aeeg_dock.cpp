@@ -530,6 +530,8 @@ void aeeg_curve_widget::paintEvent(QPaintEvent *)
          h_step,
          v_sense;
 
+  char str[64]={""};
+
   w = width();
   h = height();
 
@@ -580,8 +582,10 @@ void aeeg_curve_widget::paintEvent(QPaintEvent *)
   }
 
   /* draw the signal label */
-  painter.drawText(30 * mainwindow->w_scaling, h * 0.7, param.signalcomp->signallabel);
-  painter.drawText(w - (120 * mainwindow->w_scaling), h * 0.7, param.signalcomp->signallabel);
+  strlcpy(str, "aEEG ", 64);
+  strlcat(str, param.signalcomp->signallabel, 64);
+  painter.drawText(30 * mainwindow->w_scaling, h * 0.7, str);
+  painter.drawText(w - (120 * mainwindow->w_scaling), h * 0.7, str);
 
   /* draw the marker */
   if((marker_pos >= -(int)(mainwindow->pagetime / 10000000LL)) && (marker_pos <= (param.signalcomp->file_duration / 10000000LL)))
