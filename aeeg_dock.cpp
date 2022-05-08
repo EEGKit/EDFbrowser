@@ -522,12 +522,16 @@ void aeeg_curve_widget::set_marker_position(int pos_s)
 
 void aeeg_curve_widget::paintEvent(QPaintEvent *)
 {
-  int w, h, i, tmp,
+  int w, h, i, tmp=0,
       pos_x1,
-      pos_x2;
+      pos_x2,
+      x_marker_pos=-1,
+      trace_px_len,
+      x_offset=0;
 
   double pixel_per_unit,
-         h_step,
+         h_step_segment,
+         h_step_second,
          v_sense;
 
   char str[64]={""};
@@ -548,6 +552,48 @@ void aeeg_curve_widget::paintEvent(QPaintEvent *)
 
   pixel_per_unit = h / 105.0;
 
+  h_step_second = (6.0 / mainwindow->x_pixelsizefactor) / 3600.0;
+
+  trace_px_len = ((param.signalcomp->file_duration / 10000000.0) / 3600.0) * (6.0 / mainwindow->x_pixelsizefactor);
+
+  if((marker_pos >= -(int)(mainwindow->pagetime / 10000000LL)) && (marker_pos <= (param.signalcomp->file_duration / 10000000LL)))
+  {
+    x_marker_pos = marker_pos * h_step_second;
+  }
+
+  /* auto-adjust the horizontal centering around the file position indicator */
+  if(trace_px_len > w)
+  {
+    x_offset = (w - trace_px_len) / 2;
+
+    tmp = (w / 2) - x_marker_pos - x_offset;
+
+    if(tmp > 0)
+    {
+      x_offset += tmp;
+
+      if(x_offset > 0)
+      {
+        x_offset = 0;
+      }
+    }
+    else if(tmp < 0)
+      {
+        x_offset += tmp;
+
+        if(x_offset < (w - trace_px_len))
+        {
+          x_offset = w - trace_px_len;
+        }
+      }
+  }
+
+  /* set horziontal scale to 6 cm per hour -> approx. 1 pixel per segment */
+  h_step_segment = (6.0 / mainwindow->x_pixelsizefactor) / (3600.0 / param.segment_len);
+
+  v_sense = (h / aeeg_max) / 1.05;
+
+  /* draw the rulers */
   painter.setPen(Qt::lightGray);
 
   for(i=1; i<5; i++)  // linear region
@@ -587,29 +633,28 @@ void aeeg_curve_widget::paintEvent(QPaintEvent *)
   painter.drawText(30 * mainwindow->w_scaling, h * 0.7, str);
   painter.drawText(w - (120 * mainwindow->w_scaling), h * 0.7, str);
 
-  /* draw the marker */
-  if((marker_pos >= -(int)(mainwindow->pagetime / 10000000LL)) && (marker_pos <= (param.signalcomp->file_duration / 10000000LL)))
+  if(x_offset)
   {
-    painter.setPen(Qt::red);
-    h_step = (6.0 / mainwindow->x_pixelsizefactor) / 3600.0;
-    painter.drawLine(marker_pos * h_step, 0, marker_pos * h_step, h);
+    painter.translate(x_offset, 0);
   }
 
-  /* set horziontal scale to 6 cm per hour -> approx. 1 pixel per segment */
-  h_step = (6.0 / mainwindow->x_pixelsizefactor) / (3600.0 / param.segment_len);
-
-  v_sense = (h / aeeg_max) / 1.05;
+  /* draw the marker */
+  if(x_marker_pos >= 0)
+  {
+    painter.setPen(Qt::red);
+    painter.drawLine(x_marker_pos, 0, x_marker_pos, h);
+  }
 
   /* draw the traces */
   painter.setPen(trace_color);
 
   for(i=0; i<param.segments_in_recording; i++)
   {
-    pos_x1 = i * h_step;
+    pos_x1 = i * h_step_segment;
 
     painter.drawLine(pos_x1, h - (param.max_seg_val[i] * v_sense), pos_x1, h - (param.min_seg_val[i] * v_sense));
 
-    pos_x2 = (i + 1) * h_step;
+    pos_x2 = (i + 1) * h_step_segment;
 
     for(++pos_x1; pos_x1 < pos_x2; pos_x1++)
     {
@@ -619,13 +664,13 @@ void aeeg_curve_widget::paintEvent(QPaintEvent *)
 
   /* draw the margins */
   painter.setPen(Qt::green);
-  h_step *= 20;
+  h_step_segment *= 20;
 
   for(i=0; i<param.medians_in_recording; i++)
   {
-    painter.drawLine(i * h_step, h - (param.max_median_val[i] * v_sense), (i + 1) * h_step, h - (param.max_median_val[i] * v_sense));
+    painter.drawLine(i * h_step_segment, h - (param.max_median_val[i] * v_sense), (i + 1) * h_step_segment, h - (param.max_median_val[i] * v_sense));
 
-    painter.drawLine(i * h_step, h - (param.min_median_val[i] * v_sense), (i + 1) * h_step, h - (param.min_median_val[i] * v_sense));
+    painter.drawLine(i * h_step_segment, h - (param.min_median_val[i] * v_sense), (i + 1) * h_step_segment, h - (param.min_median_val[i] * v_sense));
   }
 }
 
