@@ -627,6 +627,16 @@ void aeeg_curve_widget::paintEvent(QPaintEvent *)
     painter.drawLine(0, h - tmp, w, h - tmp);
   }
 
+  /* horizontal ruler, draw a vertical line (graticule) for every hour */
+  for(i=1; 128; i++)
+  {
+    tmp = (i * (6.0 / mainwindow->x_pixelsizefactor)) + x_offset + 0.5;
+
+    if(tmp > (w - x_offset))  break;
+
+    painter.drawLine(tmp, 0, tmp, h);
+  }
+
   /* draw the signal label */
   strlcpy(str, "aEEG ", 64);
   strlcat(str, param.signalcomp->signallabel, 64);
