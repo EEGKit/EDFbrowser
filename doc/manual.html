@@ -122,8 +122,8 @@
 
 <p>
   Use the Filemenu to open a stream. The stream must be a "growing" file.<br>
-  This mode is used when you have an aquisitionprogram running that writes EDF or BDF.<br>
-  While the aquisitionprogram writes the data to the file, you can use EDFbrowser to watch<br>
+  This mode is used when you have an acquisitionprogram running that writes EDF or BDF.<br>
+  While the acquisitionprogram writes the data to the file, you can use EDFbrowser to watch<br>
   (follow) the actual data. EDFbrowser will regularly check the actual filesize and display the<br>
   last part of the file i.e. the most actual/recent data.<br>
   The default intervaltime between the updates is 500 milliSeconds and can be changed in the settingsmenu.
@@ -1312,7 +1312,7 @@
 <h4>DC-events / DC-triggers</h4>
 <p>
   A "DC-event" consist of a positive impulse (startbit) followed by eight databits and a stopbit (lowlevel).<br>
-  This signal is recorded onto a dc-coupled inputchannel of the hardware during aquisition.<br>
+  This signal is recorded onto a dc-coupled inputchannel of the hardware during acquisition.<br>
   The eight databits are used to identify a maximum of 256 different types of events/triggers.<br>
   The startbit has always a high level and the stopbit has always a lowlevel.<br>
   At idle the signal should stay at low level.<br>
@@ -1414,9 +1414,9 @@
 <br>
   - subject (the name of the subject)<br>
 <br>
-  - recording (a description about the type of recording/aquisition)<br>
+  - recording (a description about the type of recording/acquisition)<br>
 <br>
-  - startdate and time of the recording/aquisition<br>
+  - startdate and time of the recording/acquisition<br>
 <br>
   - signals: for every column in the ASCII-file, there is a row in the signals-table.<br>
   every row has a checkbox and four inputfields:<br>
@@ -1484,7 +1484,7 @@
   The new settings will be effective after closing and re-opening the file.<br>
   Also, you can selectively hide annotations by rightclicking on an annotation in the annotationwindow.<br>
 <br>
-  Note: In case you changed the default electrodenames in the Nihon Kohden aquisition software,<br>
+  Note: In case you changed the default electrodenames in the Nihon Kohden acquisition software,<br>
   you need also the *.21e file which contains the electrode names (labels).
 </p>
 
@@ -1625,7 +1625,7 @@
 <br>
   In EDFbrowser, you'll find the Finometer to EDF converter in the Tools-menu.<br>
   In order to create a correct EDF-file header, enter the subject and a description about<br>
-  the type of recording/aquisition.<br>
+  the type of recording/acquisition.<br>
   Adjust the startdate and starttime to the date and time when the Finometer registration took place.<br>
 <br>
   Click on the "select file" button to select the Finometer/Beatscope file.
@@ -1687,7 +1687,7 @@
 <br>
   In EDFbrowser, you'll find the Nexfin to EDF converter in the Tools-menu.<br>
   In order to create a correct EDF-file header, enter the subject and a description about<br>
-  the type of recording/aquisition.<br>
+  the type of recording/acquisition.<br>
   Adjust the startdate and starttime to the date and time when the Nexfin registration took place.<br>
 <br>
   Select which file you want to convert: beat-to-beat data, blood pressure waveform or the analog inputs.<br>
@@ -2333,7 +2333,7 @@
   between the smallest and the largest value is 1 to 2^16 or 1:65536.<br>
   In BDF the resolution is 24 bits, so the ratio between the smallest and the largest value is<br>
   1 to 2^24 or 1:16777216. In other words, the dynamic range of a BDF file is much higher.<br>
-  BDF is the 24-bits version of EDF, invented because more and more ADC's/aquisition systems use<br>
+  BDF is the 24-bits version of EDF, invented because more and more ADC's/acquisition systems use<br>
   24-bits analoog to digital converters. When you try to store the data from a 24-bits ADC into EDF,<br>
   you will lose information.<br>
 <br>
