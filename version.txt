@@ -5,7 +5,9 @@
  - Made the label type stripping optional, it can be enabled or disabled in Settings -> Options -> Other
    Default is enabled e.g. EEG FP1 becomes FP1, ECG V2 becomes V2.
 
- - ASCII to EDF converter: increase maximum line length from 2048 to 4096.
+ - ASCII to EDF converter: increase maximum line length from 2048 to 16384.
+
+ - Added the possibility to display aEEG/CFM (amplitude-integrated EEG / Cerebral Function Monitoring).
 
 
  version 1.92      March 27, 2022

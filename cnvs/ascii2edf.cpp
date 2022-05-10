@@ -29,6 +29,9 @@
 #include "ascii2edf.h"
 
 
+#define ASCII_MAX_LINE_LEN       (16384)
+
+
 
 UI_ASCII2EDFapp::UI_ASCII2EDFapp(QWidget *w_parent, char *recent_dir, char *save_dir)
 {

@@ -41,8 +41,6 @@
 #include "mainwindow.h"
 
 
-#define ASCII_MAX_LINE_LEN       (16384)
-
 
 class UI_Mainwindow;
 
