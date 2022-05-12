@@ -1682,6 +1682,23 @@ void UI_Mainwindow::read_general_settings()
       xml_go_up(xml_hdl);
     }
 
+    if(!(xml_goto_nth_element_inside(xml_hdl, "aeeg_plot_margins", 0)))
+    {
+      if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+      {
+        xml_close(xml_hdl);
+        return;
+      }
+
+      aeeg_plot_margins = atoi(result);
+      if(aeeg_plot_margins != 0)
+      {
+        aeeg_plot_margins = 1;
+      }
+
+      xml_go_up(xml_hdl);
+    }
+
     xml_go_up(xml_hdl);
   }
 
@@ -3259,6 +3276,7 @@ void UI_Mainwindow::write_settings()
     fprintf(cfgfile, "      <aeeg_lp_hz>%e</aeeg_lp_hz>\n", aeeg_lp_hz);
     fprintf(cfgfile, "      <aeeg_scale_max_amp>%e</aeeg_scale_max_amp>\n", aeeg_scale_max_amp);
     fprintf(cfgfile, "      <aeegdock_height>%i</aeegdock_height>\n", aeegdock_height);
+    fprintf(cfgfile, "      <aeeg_plot_margins>%i</aeeg_plot_margins>\n", aeeg_plot_margins);
     fprintf(cfgfile, "    </aeeg>\n");
 
     fprintf(cfgfile, "    <hypnogram>\n");

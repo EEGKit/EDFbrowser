@@ -118,6 +118,17 @@ UI_aeeg_window::UI_aeeg_window(QWidget *w_parent, struct signalcompblock *signal
   scale_max_amp_spinbox->setMaximum(500);
   scale_max_amp_spinbox->setValue(mainwindow->aeeg_scale_max_amp);
 
+  plot_margins_checkbox = new QCheckBox;
+  plot_margins_checkbox->setTristate(false);
+  if(mainwindow->aeeg_plot_margins)
+  {
+    plot_margins_checkbox->setCheckState(Qt::Checked);
+  }
+  else
+  {
+    plot_margins_checkbox->setCheckState(Qt::Unchecked);
+  }
+
   close_button = new QPushButton;
   close_button->setText("Close");
 
@@ -137,6 +148,8 @@ UI_aeeg_window::UI_aeeg_window(QWidget *w_parent, struct signalcompblock *signal
   flayout->addRow("LP envelope", lp_hz_spinbox);
   flayout->addRow(" ", (QWidget *)(NULL));
   flayout->addRow("Max. amplitude", scale_max_amp_spinbox);
+  flayout->addRow(" ", (QWidget *)(NULL));
+  flayout->addRow("Plot margins", plot_margins_checkbox);
   flayout->addRow(" ", (QWidget *)(NULL));
 
   QHBoxLayout *hlayout2 = new QHBoxLayout;
@@ -177,12 +190,14 @@ void UI_aeeg_window::default_button_clicked()
   bp_max_hz_spinbox->setValue(15);
   lp_hz_spinbox->setValue(0.5);
   scale_max_amp_spinbox->setValue(100);
+  plot_margins_checkbox->setCheckState(Qt::Checked);
 
   mainwindow->aeeg_segmentlen = 15;
   mainwindow->aeeg_bp_min_hz = 2;
   mainwindow->aeeg_bp_max_hz = 15;
   mainwindow->aeeg_lp_hz = 0.5;
   mainwindow->aeeg_scale_max_amp = 100;
+  mainwindow->aeeg_plot_margins = 1;
 }
 
 
@@ -196,7 +211,8 @@ void UI_aeeg_window::start_button_clicked()
       medians_in_recording,
       ret_err=0,
       max_idx=0,
-      min_idx=0;
+      min_idx=0,
+      plot_margins=0;
 
 
   long long samples_in_file;
@@ -241,6 +257,14 @@ void UI_aeeg_window::start_button_clicked()
     bp_hz_max = bp_max_hz_spinbox->value();
     lp_hz = lp_hz_spinbox->value();
     scale_max_amp = scale_max_amp_spinbox->value();
+    if(plot_margins_checkbox->checkState() == Qt::Checked)
+    {
+      plot_margins = 1;
+    }
+    else
+    {
+      plot_margins = 0;
+    }
 
     if((bp_hz_max - bp_hz_min) <= 4.999)
     {
@@ -256,12 +280,14 @@ void UI_aeeg_window::start_button_clicked()
     bp_hz_max = no_dialog_params->bp_max_hz;
     lp_hz = no_dialog_params->lp_hz;
     scale_max_amp = no_dialog_params->scale_max_amp;
+    plot_margins = no_dialog_params->plot_margins;
   }
   mainwindow->aeeg_segmentlen = segmentlen;
   mainwindow->aeeg_bp_min_hz = bp_hz_min;
   mainwindow->aeeg_bp_max_hz = bp_hz_max;
   mainwindow->aeeg_lp_hz = lp_hz;
   mainwindow->aeeg_scale_max_amp = scale_max_amp;
+  mainwindow->aeeg_plot_margins = plot_margins;
 
   smpls_in_segment = sf * segmentlen;
 
@@ -514,6 +540,7 @@ void UI_aeeg_window::start_button_clicked()
   dock_param.scale_max_amp = scale_max_amp;
   strlcpy(dock_param.unit, signalcomp->edfhdr->edfparam[signalcomp->edfsignal[0]].physdimension, 32);
   remove_trailing_spaces(dock_param.unit);
+  dock_param.plot_margins = plot_margins;
 
   mainwindow->aeeg_dock[aeeg_instance_nr] = new UI_aeeg_dock(mainwindow, dock_param);
 

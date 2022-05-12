@@ -60,6 +60,7 @@ struct aeeg_dock_param_struct
   int instance_num;
   char unit[32];
   int no_dialog;
+  int plot_margins;
   double *max_seg_val;
   double *min_seg_val;
   double *max_median_val;
@@ -101,6 +102,8 @@ private:
 
   QSpinBox *height_spinbox;
 
+  QCheckBox *plot_margins_checkbox;
+
 private slots:
 
   void aeeg_dock_destroyed(QObject *);
@@ -109,6 +112,7 @@ private slots:
   void close_dock(bool);
   void show_context_menu(QPoint);
   void height_spinbox_changed(int);
+  void plot_margins_checkbox_changed(int);
 
 };
 

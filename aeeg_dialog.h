@@ -80,6 +80,8 @@ private:
                 *start_button,
                 *default_button;
 
+  QCheckBox     *plot_margins_checkbox;
+
   static int dbl_cmp(const void *, const void *);
 
 private slots:

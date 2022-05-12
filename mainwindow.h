@@ -231,6 +231,7 @@ public:
       aeeg_segmentlen,
       aeeg_max_nearby_pct,
       aeeg_min_nearby_pct,
+      aeeg_plot_margins,
       use_threads,
       check_for_updates,
       amplitude_doubler,

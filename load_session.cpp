@@ -2626,6 +2626,26 @@ int UI_Mainwindow::read_session_file(const char *path_session)
         xml_go_up(xml_hdl);
       }
 
+      if(xml_goto_nth_element_inside(xml_hdl, "plot_margins", 0))
+      {
+        aeeg_param.plot_margins = 1;
+      }
+      else
+      {
+        if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+        {
+          return session_format_error(__FILE__, __LINE__, NULL, xml_hdl);
+        }
+
+        aeeg_param.plot_margins = atoi(result);
+        if(aeeg_param.plot_margins != 0)
+        {
+          aeeg_param.plot_margins = 1;
+        }
+
+        xml_go_up(xml_hdl);
+      }
+
       if((!files_open) || (!signalcomps) || (live_stream_active))
       {
         xml_go_up(xml_hdl);

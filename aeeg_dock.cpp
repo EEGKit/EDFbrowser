@@ -204,6 +204,17 @@ void UI_aeeg_dock::show_settings(bool)
   height_spinbox->setSuffix(" px");
   height_spinbox->setValue(mainwindow->aeegdock_height);
 
+  plot_margins_checkbox = new QCheckBox;
+  plot_margins_checkbox->setTristate(false);
+  if(param.plot_margins)
+  {
+    plot_margins_checkbox->setCheckState(Qt::Checked);
+  }
+  else
+  {
+    plot_margins_checkbox->setCheckState(Qt::Unchecked);
+  }
+
   QPushButton *pushButton1 = new QPushButton;
   pushButton1->setText("Close");
 
@@ -230,8 +241,14 @@ void UI_aeeg_dock::show_settings(bool)
   hlayout2->addWidget(height_spinbox);
   hlayout2->addStretch(1000);
 
+  QHBoxLayout *hlayout3 = new QHBoxLayout;
+  hlayout3->addWidget(plot_margins_checkbox);
+  hlayout3->addStretch(1000);
+
   QFormLayout *flayout = new QFormLayout;
   flayout->addRow("Dock height: ", hlayout2);
+  flayout->addRow(" ", (QWidget *)NULL);
+  flayout->addRow("Plot margins: ", hlayout3);
 
   QVBoxLayout *vlayout1 = new QVBoxLayout;
   vlayout1->addWidget(label);
@@ -243,12 +260,32 @@ void UI_aeeg_dock::show_settings(bool)
 
   settings_dialog->setLayout(vlayout1);
 
-  QObject::connect(pushButton1,    SIGNAL(clicked()),         settings_dialog, SLOT(close()));
-  QObject::connect(height_spinbox, SIGNAL(valueChanged(int)), this,            SLOT(height_spinbox_changed(int)));
+  QObject::connect(pushButton1,           SIGNAL(clicked()),         settings_dialog, SLOT(close()));
+  QObject::connect(height_spinbox,        SIGNAL(valueChanged(int)), this,            SLOT(height_spinbox_changed(int)));
+  QObject::connect(plot_margins_checkbox, SIGNAL(stateChanged(int)), this,            SLOT(plot_margins_checkbox_changed(int)));
 
   settings_dialog->exec();
 }
 
+
+void UI_aeeg_dock::plot_margins_checkbox_changed(int)
+{
+  if(plot_margins_checkbox->checkState() == Qt::Checked)
+  {
+    param.plot_margins = 1;
+
+    mainwindow->aeeg_plot_margins = 1;
+  }
+  else
+  {
+    param.plot_margins = 0;
+
+    mainwindow->aeeg_plot_margins = 0;
+  }
+
+  aeeg_curve->set_params(&param);
+  aeeg_curve->update();
+}
 
 void UI_aeeg_dock::height_spinbox_changed(int val)
 {
@@ -672,15 +709,17 @@ void aeeg_curve_widget::paintEvent(QPaintEvent *)
     }
   }
 
-  /* draw the margins */
-  painter.setPen(Qt::green);
-  h_step_segment *= 20;
+  if(param.plot_margins)
+  {  /* draw the margins */
+    painter.setPen(Qt::green);
+    h_step_segment *= 20;
 
-  for(i=0; i<param.medians_in_recording; i++)
-  {
-    painter.drawLine(i * h_step_segment, h - (param.max_median_val[i] * v_sense), (i + 1) * h_step_segment, h - (param.max_median_val[i] * v_sense));
+    for(i=0; i<param.medians_in_recording; i++)
+    {
+      painter.drawLine(i * h_step_segment, h - (param.max_median_val[i] * v_sense), (i + 1) * h_step_segment, h - (param.max_median_val[i] * v_sense));
 
-    painter.drawLine(i * h_step_segment, h - (param.min_median_val[i] * v_sense), (i + 1) * h_step_segment, h - (param.min_median_val[i] * v_sense));
+      painter.drawLine(i * h_step_segment, h - (param.min_median_val[i] * v_sense), (i + 1) * h_step_segment, h - (param.min_median_val[i] * v_sense));
+    }
   }
 }
 

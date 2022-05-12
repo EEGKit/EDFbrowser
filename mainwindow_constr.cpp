@@ -373,6 +373,7 @@ UI_Mainwindow::UI_Mainwindow()
   aeeg_min_nearby_pct = 9;
   aeeg_scale_max_amp = 100;
   aeegdock_height = 150;
+  aeeg_plot_margins = 1;
 
   strlcpy(hypnogram_stage_name[0], "W", 32);
   strlcpy(hypnogram_stage_name[1], "R", 32);
