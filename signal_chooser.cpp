@@ -175,6 +175,8 @@ void UI_SignalChooser::call_sidemenu(QListWidgetItem *)
 {
   int i, signal_nr2;
 
+  char str[32]={""};
+
   if(task == 3) return;
 
   signalchooser_dialog->hide();
@@ -250,9 +252,18 @@ void UI_SignalChooser::call_sidemenu(QListWidgetItem *)
       return;
     }
 
-    if(mainwindow->signalcomp[signal_nr2]->edfhdr->edfparam[mainwindow->signalcomp[signal_nr2]->edfsignal[0]].sf_f < 99.999)
+    strlcpy(str, mainwindow->signalcomp[signal_nr2]->edfhdr->edfparam[mainwindow->signalcomp[signal_nr2]->edfsignal[0]].physdimension, 32);
+    trim_spaces(str);
+    if((strcmp(str, "uV")) && (strcmp(str, "mV")) && (strcmp(str, "V")))
     {
-      QMessageBox::critical(signalchooser_dialog, "Error", "Samplefrequency must be at least 100Hz.");
+      QMessageBox::critical(signalchooser_dialog, "Error", "Unknown physical dimension (unit), expected uV or mV or V");
+      signalchooser_dialog->close();
+      return;
+    }
+
+    if(mainwindow->signalcomp[signal_nr2]->edfhdr->edfparam[mainwindow->signalcomp[signal_nr2]->edfsignal[0]].sf_int < 100)
+    {
+      QMessageBox::critical(signalchooser_dialog, "Error", "Samplefrequency must be at least 100Hz and must be an integer value.");
       signalchooser_dialog->close();
       return;
     }

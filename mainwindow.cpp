@@ -2176,6 +2176,8 @@ void UI_Mainwindow::show_aeeg_dock()
 {
   int i;
 
+  char str[32]={""};
+
   if((!files_open) || (!signalcomps) || live_stream_active)  return;
 
   if(signalcomps == 1)
@@ -2188,6 +2190,14 @@ void UI_Mainwindow::show_aeeg_dock()
     if(signalcomp[0]->edfhdr->edfparam[signalcomp[0]->edfsignal[0]].sf_int < 100)
     {
       QMessageBox::critical(this, "Error", "Samplefrequency must be at least 100Hz and must be an integer value.");
+      return;
+    }
+
+    strlcpy(str, signalcomp[0]->edfhdr->edfparam[signalcomp[0]->edfsignal[0]].physdimension, 32);
+    trim_spaces(str);
+    if((strcmp(str, "uV")) && (strcmp(str, "mV")) && (strcmp(str, "V")))
+    {
+      QMessageBox::critical(this, "Error", "Unknown physical dimension (unit), expected uV or mV or V");
       return;
     }
 

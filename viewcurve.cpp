@@ -3150,11 +3150,9 @@ void ViewCurve::QRSdetectButton()
 
   strlcpy(str, mainwindow->signalcomp[signal_nr]->edfhdr->edfparam[mainwindow->signalcomp[signal_nr]->edfsignal[0]].physdimension, 32);
   trim_spaces(str);
-  if((strcmp(str, "uV")) && (strcmp(str, "ECG uV")) && (strcmp(str, "EEG uV")) &&
-     (strcmp(str, "mV")) && (strcmp(str, "ECG mV")) && (strcmp(str, "EEG mV")) &&
-     (strcmp(str, "V")) && (strcmp(str, "ECG V")) && (strcmp(str, "EEG V")))
+  if((strcmp(str, "uV")) && (strcmp(str, "mV")) && (strcmp(str, "V")))
   {
-    QMessageBox::critical(this, "Error", "Unknown unit (physical dimension), expected uV or mV or V");
+    QMessageBox::critical(this, "Error", "Unknown physical dimension (unit), expected uV or mV or V");
     return;
   }
 
@@ -3295,6 +3293,8 @@ void ViewCurve::aeeg_button()
 {
   int i;
 
+  char str[32]={""};
+
   sidemenu->close();
 
   if(signal_nr >= mainwindow->signalcomps)
@@ -3310,6 +3310,14 @@ void ViewCurve::aeeg_button()
   if(mainwindow->signalcomp[signal_nr]->edfhdr->edfparam[mainwindow->signalcomp[signal_nr]->edfsignal[0]].sf_int < 100)
   {
     QMessageBox::critical(this, "Error", "Samplefrequency must be at least 100Hz and must be an integer value.");
+    return;
+  }
+
+  strlcpy(str, mainwindow->signalcomp[signal_nr]->edfhdr->edfparam[mainwindow->signalcomp[signal_nr]->edfsignal[0]].physdimension, 32);
+  trim_spaces(str);
+  if((strcmp(str, "uV")) && (strcmp(str, "mV")) && (strcmp(str, "V")))
+  {
+    QMessageBox::critical(this, "Error", "Unknown physical dimension (unit), expected uV or mV or V");
     return;
   }
 

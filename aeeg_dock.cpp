@@ -430,11 +430,11 @@ void log_vruler_indicator::paintEvent(QPaintEvent *)
   /* draw the physical dimension (unit) */
   if(!mirrored)
   {
-    painter.drawText(2, h - 3, param.signalcomp->physdimension);
+    painter.drawText(2, h - 3, param.unit);
   }
   else
   {
-    painter.drawText(13 * w_scaling, h - 3, param.signalcomp->physdimension);
+    painter.drawText(13 * w_scaling, h - 3, param.unit);
   }
 }
 

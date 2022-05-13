@@ -107,12 +107,8 @@ UI_aeeg_window::UI_aeeg_window(QWidget *w_parent, struct signalcompblock *signal
   lp_hz_spinbox->setMaximum(5);
   lp_hz_spinbox->setValue(mainwindow->aeeg_lp_hz);
 
-  strlcpy(str, " ", 128);
-  strlcat(str, signalcomp->edfhdr->edfparam[signalcomp->edfsignal[0]].physdimension, 128);
-  remove_trailing_spaces(str);
-
   scale_max_amp_spinbox = new QDoubleSpinBox;
-  scale_max_amp_spinbox->setSuffix(str);
+  scale_max_amp_spinbox->setSuffix(" uV");
   scale_max_amp_spinbox->setDecimals(3);
   scale_max_amp_spinbox->setMinimum(10);
   scale_max_amp_spinbox->setMaximum(500);
@@ -212,7 +208,8 @@ void UI_aeeg_window::start_button_clicked()
       ret_err=0,
       max_idx=0,
       min_idx=0,
-      plot_margins=0;
+      plot_margins=0,
+      uv_scaling=1;
 
 
   long long samples_in_file;
@@ -242,13 +239,26 @@ void UI_aeeg_window::start_button_clicked()
   memset(&dock_param, 0, sizeof(struct aeeg_dock_param_struct));
 
   strlcpy(str, signalcomp->physdimension, 32);
-  ascii_toupper(str);
-  if(strncmp(str, "UV", 2))
+  trim_spaces(str);
+  if((strcmp(str, "uV")) && (strcmp(str, "mV")) && (strcmp(str, "V")))
   {
-    QMessageBox msgBox(QMessageBox::Critical, "Error", "Physical dimension (unit) must be uV.", QMessageBox::Close);
+    QMessageBox msgBox(QMessageBox::Critical, "Error", "Unknown physical dimension (unit), expected uV or mV or V", QMessageBox::Close);
     msgBox.exec();
     return;
   }
+
+  if(!strcmp(str, "uV"))
+  {
+    uv_scaling = 1;
+  }
+  else if(!strcmp(str, "mV"))
+    {
+      uv_scaling = 1000;
+    }
+    else if(!strcmp(str, "V"))
+      {
+        uv_scaling = 1000000;
+      }
 
   if(myobjectDialog != NULL)
   {
@@ -487,7 +497,7 @@ void UI_aeeg_window::start_button_clicked()
 
     for(j=0; j<smpls_in_segment; j++)
     {
-      smplbuf[j] = fidfuncp_bp(fidbuf_bp, smplbuf[j]);  // bandpass 2 - 15 Hz
+      smplbuf[j] = fidfuncp_bp(fidbuf_bp, smplbuf[j] * uv_scaling);  // bandpass 2 - 15 Hz, apply scaling in case of mV or V
 
       smplbuf[j] = fabs(smplbuf[j]);  // rectifier
 
@@ -538,7 +548,7 @@ void UI_aeeg_window::start_button_clicked()
   dock_param.max_median_val = max_median_val;
   dock_param.medians_in_recording = medians_in_recording;
   dock_param.scale_max_amp = scale_max_amp;
-  strlcpy(dock_param.unit, signalcomp->edfhdr->edfparam[signalcomp->edfsignal[0]].physdimension, 32);
+  strlcpy(dock_param.unit, "uV", 32);
   remove_trailing_spaces(dock_param.unit);
   dock_param.plot_margins = plot_margins;
 
