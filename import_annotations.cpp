@@ -164,22 +164,27 @@ UI_ImportAnnotationswindow::UI_ImportAnnotationswindow(QWidget *w_parent)
   DescriptionLineEdit = new QLineEdit;
   DescriptionLineEdit->setMaxLength(20);
   DescriptionLineEdit->setEnabled(false);
+  DescriptionLineEdit->setToolTip("Use this description for all events");
 
   OnsetColumnSpinBox = new QSpinBox;
   OnsetColumnSpinBox->setRange(1,256);
   OnsetColumnSpinBox->setValue(1);
+  OnsetColumnSpinBox->setToolTip("Column number for the start time of the event");
 
   DurationColumnSpinBox = new QSpinBox;
   DurationColumnSpinBox->setRange(1,256);
   DurationColumnSpinBox->setValue(3);
+  DurationColumnSpinBox->setToolTip("Column number for the duration of the event");
 
   StopColumnSpinBox = new QSpinBox;
   StopColumnSpinBox->setRange(1,256);
   StopColumnSpinBox->setValue(3);
+  StopColumnSpinBox->setToolTip("Column number for the stop time of the event");
 
   DescriptionColumnSpinBox = new QSpinBox;
   DescriptionColumnSpinBox->setRange(1,256);
   DescriptionColumnSpinBox->setValue(2);
+  DescriptionColumnSpinBox->setToolTip("Column number for the description of the event");
 
   DatastartSpinbox = new QSpinBox;
   DatastartSpinbox->setRange(1,100);
@@ -198,15 +203,19 @@ UI_ImportAnnotationswindow::UI_ImportAnnotationswindow(QWidget *w_parent)
 
   DescriptionColumnRadioButton = new QRadioButton();
   DescriptionColumnRadioButton->setChecked(true);
+  DescriptionColumnRadioButton->setToolTip("Use the column for the description of the event");
   UseManualDescriptionRadioButton = new QRadioButton();
+  UseManualDescriptionRadioButton->setToolTip("Use a custom description for all events");
 
   DurationCheckBox = new QCheckBox;
   DurationCheckBox->setTristate(false);
   DurationCheckBox->setCheckState(Qt::Unchecked);
+  DurationCheckBox->setToolTip("Use the column for the duration of the event");
 
   StopTimeCheckBox = new QCheckBox;
   StopTimeCheckBox->setTristate(false);
   StopTimeCheckBox->setCheckState(Qt::Unchecked);
+  StopTimeCheckBox->setToolTip("Use the column for the stop time of the event");
 
   QHBoxLayout *asciiSettingsHBoxLayout1 = new QHBoxLayout;
   asciiSettingsHBoxLayout1->addWidget(DescriptionColumnRadioButton);
@@ -227,10 +236,15 @@ UI_ImportAnnotationswindow::UI_ImportAnnotationswindow(QWidget *w_parent)
   QFormLayout *asciiSettingsflayout = new QFormLayout;
   asciiSettingsflayout->addRow("Column separator", SeparatorLineEdit);
   asciiSettingsflayout->addRow("Onset column", OnsetColumnSpinBox);
+  asciiSettingsflayout->labelForField(OnsetColumnSpinBox)->setToolTip("Start time of the event");
   asciiSettingsflayout->addRow("Duration column", asciiSettingsHBoxLayout3);
-  asciiSettingsflayout->addRow("Stoptime column", asciiSettingsHBoxLayout4);
+  asciiSettingsflayout->labelForField(asciiSettingsHBoxLayout3)->setToolTip("Duration of the event");
+  asciiSettingsflayout->addRow("End column", asciiSettingsHBoxLayout4);
+  asciiSettingsflayout->labelForField(asciiSettingsHBoxLayout4)->setToolTip("Stop time of the event");
   asciiSettingsflayout->addRow("Description column", asciiSettingsHBoxLayout1);
+  asciiSettingsflayout->labelForField(asciiSettingsHBoxLayout1)->setToolTip("Description of the event");
   asciiSettingsflayout->addRow("Manual description", asciiSettingsHBoxLayout2);
+  asciiSettingsflayout->labelForField(asciiSettingsHBoxLayout2)->setToolTip("Custom description for all events");
   asciiSettingsflayout->addRow("Data starts at line", DatastartSpinbox);
   asciiSettingsflayout->addRow("Onset time coding is", RelativeTimeComboBox);
   asciiSettingsflayout->addRow("Text encoding", text_encoding_combobox);
