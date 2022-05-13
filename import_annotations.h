@@ -64,7 +64,9 @@ struct import_annotations_var_block
   int descriptioncolumn;
   int manualdescription;
   int useduration;
+  int usestoptime;
   int durationcolumn;
+  int stopcolumn;
   char description[21];
   int datastartline;
   int dceventbittime;
@@ -108,6 +110,7 @@ QLineEdit      *SeparatorLineEdit,
 
 QSpinBox       *OnsetColumnSpinBox,
                *DurationColumnSpinBox,
+               *StopColumnSpinBox,
                *DescriptionColumnSpinBox,
                *DatastartSpinbox,
                *BitTimeSpinbox,
@@ -124,6 +127,7 @@ QRadioButton   *DescriptionColumnRadioButton,
 
 QCheckBox      *IgnoreConsecutiveCheckBox,
                *DurationCheckBox,
+               *StopTimeCheckBox,
                *importStandardCheckBox,
                *importAuxCheckBox;
 
@@ -148,6 +152,7 @@ void ImportButtonClicked();
 void descriptionRadioButtonClicked(bool);
 void DCEventSignalChanged(int);
 void DurationCheckBoxChanged(int);
+void StopTimeCheckBoxChanged(int);
 void TabChanged(int);
 void helpbuttonpressed();
 

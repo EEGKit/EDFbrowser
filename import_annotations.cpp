@@ -136,7 +136,7 @@ UI_ImportAnnotationswindow::UI_ImportAnnotationswindow(QWidget *w_parent)
   }
 
   ImportAnnotsDialog = new QDialog;
-  ImportAnnotsDialog->setMinimumSize(550 * mainwindow->w_scaling, 375 * mainwindow->h_scaling);
+  ImportAnnotsDialog->setMinimumSize(550 * mainwindow->w_scaling, 400 * mainwindow->h_scaling);
   ImportAnnotsDialog->setWindowTitle("Import annotations/events");
   ImportAnnotsDialog->setModal(true);
   ImportAnnotsDialog->setAttribute(Qt::WA_DeleteOnClose, true);
@@ -173,6 +173,10 @@ UI_ImportAnnotationswindow::UI_ImportAnnotationswindow(QWidget *w_parent)
   DurationColumnSpinBox->setRange(1,256);
   DurationColumnSpinBox->setValue(3);
 
+  StopColumnSpinBox = new QSpinBox;
+  StopColumnSpinBox->setRange(1,256);
+  StopColumnSpinBox->setValue(3);
+
   DescriptionColumnSpinBox = new QSpinBox;
   DescriptionColumnSpinBox->setRange(1,256);
   DescriptionColumnSpinBox->setValue(2);
@@ -200,6 +204,10 @@ UI_ImportAnnotationswindow::UI_ImportAnnotationswindow(QWidget *w_parent)
   DurationCheckBox->setTristate(false);
   DurationCheckBox->setCheckState(Qt::Unchecked);
 
+  StopTimeCheckBox = new QCheckBox;
+  StopTimeCheckBox->setTristate(false);
+  StopTimeCheckBox->setCheckState(Qt::Unchecked);
+
   QHBoxLayout *asciiSettingsHBoxLayout1 = new QHBoxLayout;
   asciiSettingsHBoxLayout1->addWidget(DescriptionColumnRadioButton);
   asciiSettingsHBoxLayout1->addWidget(DescriptionColumnSpinBox, 10);
@@ -212,10 +220,15 @@ UI_ImportAnnotationswindow::UI_ImportAnnotationswindow(QWidget *w_parent)
   asciiSettingsHBoxLayout3->addWidget(DurationCheckBox);
   asciiSettingsHBoxLayout3->addWidget(DurationColumnSpinBox, 10);
 
+  QHBoxLayout *asciiSettingsHBoxLayout4 = new QHBoxLayout;
+  asciiSettingsHBoxLayout4->addWidget(StopTimeCheckBox);
+  asciiSettingsHBoxLayout4->addWidget(StopColumnSpinBox, 10);
+
   QFormLayout *asciiSettingsflayout = new QFormLayout;
   asciiSettingsflayout->addRow("Column separator", SeparatorLineEdit);
   asciiSettingsflayout->addRow("Onset column", OnsetColumnSpinBox);
   asciiSettingsflayout->addRow("Duration column", asciiSettingsHBoxLayout3);
+  asciiSettingsflayout->addRow("Stoptime column", asciiSettingsHBoxLayout4);
   asciiSettingsflayout->addRow("Description column", asciiSettingsHBoxLayout1);
   asciiSettingsflayout->addRow("Manual description", asciiSettingsHBoxLayout2);
   asciiSettingsflayout->addRow("Data starts at line", DatastartSpinbox);
@@ -363,6 +376,7 @@ UI_ImportAnnotationswindow::UI_ImportAnnotationswindow(QWidget *w_parent)
   DescriptionColumnSpinBox->setValue(mainwindow->import_annotations_var->descriptioncolumn);
   DescriptionLineEdit->setText(mainwindow->import_annotations_var->description);
   DurationColumnSpinBox->setValue(mainwindow->import_annotations_var->durationcolumn);
+  StopColumnSpinBox->setValue(mainwindow->import_annotations_var->stopcolumn);
   DatastartSpinbox->setValue(mainwindow->import_annotations_var->datastartline);
   RelativeTimeComboBox->setCurrentIndex(mainwindow->import_annotations_var->onsettimeformat);
   BitTimeSpinbox->setValue(mainwindow->import_annotations_var->dceventbittime);
@@ -397,6 +411,17 @@ UI_ImportAnnotationswindow::UI_ImportAnnotationswindow(QWidget *w_parent)
     DurationColumnSpinBox->setEnabled(false);
   }
 
+  if((mainwindow->import_annotations_var->usestoptime == 1) && (mainwindow->import_annotations_var->useduration != 1))
+  {
+    StopTimeCheckBox->setCheckState(Qt::Checked);
+    StopColumnSpinBox->setEnabled(true);
+  }
+  else
+  {
+    StopTimeCheckBox->setCheckState(Qt::Unchecked);
+    StopColumnSpinBox->setEnabled(false);
+  }
+
   if(mainwindow->import_annotations_var->ignoreconsecutive == 1)
   {
     IgnoreConsecutiveCheckBox->setCheckState(Qt::Checked);
@@ -419,6 +444,7 @@ UI_ImportAnnotationswindow::UI_ImportAnnotationswindow(QWidget *w_parent)
   QObject::connect(DescriptionColumnRadioButton,    SIGNAL(toggled(bool)),            this,               SLOT(descriptionRadioButtonClicked(bool)));
   QObject::connect(UseManualDescriptionRadioButton, SIGNAL(toggled(bool)),            this,               SLOT(descriptionRadioButtonClicked(bool)));
   QObject::connect(DurationCheckBox,                SIGNAL(stateChanged(int)),        this,               SLOT(DurationCheckBoxChanged(int)));
+  QObject::connect(StopTimeCheckBox,                SIGNAL(stateChanged(int)),        this,               SLOT(StopTimeCheckBoxChanged(int)));
   QObject::connect(tabholder,                       SIGNAL(currentChanged(int)),      this,               SLOT(TabChanged(int)));
   QObject::connect(helpButton,                      SIGNAL(clicked()),                this,               SLOT(helpbuttonpressed()));
 
@@ -435,6 +461,27 @@ void UI_ImportAnnotationswindow::DurationCheckBoxChanged(int state)
   else
   {
     DurationColumnSpinBox->setEnabled(true);
+
+    StopColumnSpinBox->setEnabled(false);
+
+    StopTimeCheckBox->setCheckState(Qt::Unchecked);
+  }
+}
+
+
+void UI_ImportAnnotationswindow::StopTimeCheckBoxChanged(int state)
+{
+  if(state == Qt::Unchecked)
+  {
+    StopColumnSpinBox->setEnabled(false);
+  }
+  else
+  {
+    StopColumnSpinBox->setEnabled(true);
+
+    DurationColumnSpinBox->setEnabled(false);
+
+    DurationCheckBox->setCheckState(Qt::Unchecked);
   }
 }
 
@@ -1097,7 +1144,7 @@ int UI_ImportAnnotationswindow::import_from_ascii(void)
       startline=1,
       onset_column=1,
       descr_column=2,
-      duration_column=3,
+      duration_stop_column=3,
       onset_is_set,
       descr_is_set,
       duration_is_set,
@@ -1105,8 +1152,10 @@ int UI_ImportAnnotationswindow::import_from_ascii(void)
       onsettime_coding=0,
       ignore_consecutive=0,
       use_duration=0,
+      use_stoptime=0,
       manualdescription,
       len,
+      tmp_len,
       txt_encoding=0;
 
   char path[MAX_PATH_LENGTH]={""},
@@ -1192,17 +1241,37 @@ int UI_ImportAnnotationswindow::import_from_ascii(void)
 
   onset_column = OnsetColumnSpinBox->value() - 1;
 
-  duration_column = DurationColumnSpinBox->value() - 1;
-
   onsettime_coding = RelativeTimeComboBox->currentIndex();
 
   if(DurationCheckBox->checkState() == Qt::Checked)
   {
     use_duration = 1;
+
+    use_stoptime = 0;
   }
   else
   {
     use_duration = 0;
+  }
+
+  if(StopTimeCheckBox->checkState() == Qt::Checked)
+  {
+    use_stoptime = 1;
+
+    use_duration = 0;
+  }
+  else
+  {
+    use_stoptime = 0;
+  }
+
+  if(use_stoptime)
+  {
+    duration_stop_column = StopColumnSpinBox->value() - 1;
+  }
+  else
+  {
+    duration_stop_column = DurationColumnSpinBox->value() - 1;
   }
 
   if((descr_column == onset_column) && (!manualdescription))
@@ -1212,16 +1281,30 @@ int UI_ImportAnnotationswindow::import_from_ascii(void)
     return 1;
   }
 
-  if((duration_column == onset_column) && use_duration)
+  if((duration_stop_column == onset_column) && use_duration)
   {
     QMessageBox messagewindow(QMessageBox::Critical, "Invalid input", "Onset and Duration cannot be in the same column.");
     messagewindow.exec();
     return 1;
   }
 
-  if((descr_column == duration_column) && (!manualdescription) && use_duration)
+  if((descr_column == duration_stop_column) && (!manualdescription) && use_duration)
   {
     QMessageBox messagewindow(QMessageBox::Critical, "Invalid input", "Duration and Description cannot be in the same column.");
+    messagewindow.exec();
+    return 1;
+  }
+
+  if((duration_stop_column == onset_column) && use_stoptime)
+  {
+    QMessageBox messagewindow(QMessageBox::Critical, "Invalid input", "Onset and Stoptime cannot be in the same column.");
+    messagewindow.exec();
+    return 1;
+  }
+
+  if((descr_column == duration_stop_column) && (!manualdescription) && use_stoptime)
+  {
+    QMessageBox messagewindow(QMessageBox::Critical, "Invalid input", "Stoptime and Description cannot be in the same column.");
     messagewindow.exec();
     return 1;
   }
@@ -1229,8 +1312,16 @@ int UI_ImportAnnotationswindow::import_from_ascii(void)
   mainwindow->import_annotations_var->onsettimeformat = onsettime_coding;
   mainwindow->import_annotations_var->onsetcolumn = onset_column + 1;
   mainwindow->import_annotations_var->descriptioncolumn = descr_column + 1;
-  mainwindow->import_annotations_var->durationcolumn = duration_column + 1;
+  if(use_duration)
+  {
+    mainwindow->import_annotations_var->durationcolumn = duration_stop_column + 1;
+  }
+  if(use_stoptime)
+  {
+    mainwindow->import_annotations_var->stopcolumn = duration_stop_column + 1;
+  }
   mainwindow->import_annotations_var->useduration = use_duration;
+  mainwindow->import_annotations_var->usestoptime = use_stoptime;
   mainwindow->import_annotations_var->datastartline = startline;
   if(UseManualDescriptionRadioButton->isChecked() == true)
   {
@@ -1284,7 +1375,7 @@ int UI_ImportAnnotationswindow::import_from_ascii(void)
     mainwindow->annotationlist_backup = edfplus_annotation_create_list_copy(&mainwindow->edfheaderlist[0]->annot_list);
   }
 
-  if(use_duration == 0)  duration_column = -1;
+  if((use_duration == 0) && (use_stoptime == 0))  duration_stop_column = -1;
 
   mal_formatted_lines = 0;
 
@@ -1370,12 +1461,14 @@ int UI_ImportAnnotationswindow::import_from_ascii(void)
             trim_spaces(description);
             descr_is_set = 1;
           }
-          else if(column == duration_column)
+          else if(column == duration_stop_column)
             {
 #ifdef IMPORT_ANNOTS_DEBUG
               printf("  duration: ->%s<-", charpntr);
 #endif
-              strncpy(duration, charpntr, 15);
+              strncpy(duration, charpntr, 31);
+              duration[31] = 0;
+              trim_spaces(duration);
               duration[15] = 0;
               duration_is_set = 1;
             }
@@ -1392,21 +1485,46 @@ int UI_ImportAnnotationswindow::import_from_ascii(void)
         annotation.onset = onset;
         strncpy(annotation.description, description, MAX_ANNOTATION_LEN);
         annotation.description[MAX_ANNOTATION_LEN] = 0;
-        if(use_duration && duration_is_set)
+        if((use_duration || use_stoptime) && duration_is_set)
         {
           if((!(is_number(duration))) && (duration[0] != '-'))
           {
-            remove_trailing_zeros(duration);
-            if(duration[0] == '+')
-            {
-              strlcpy(annotation.duration, duration + 1, MAX_ANNOTATION_LEN_II + 1);
-            }
-            else
-            {
-              strlcpy(annotation.duration, duration, MAX_ANNOTATION_LEN_II + 1);
-            }
-
             annotation.long_duration = edfplus_annotation_get_long_from_number(duration);
+
+            if(use_stoptime)
+            {
+              if(annotation.onset >= annotation.long_duration)
+              {
+                annotation.long_duration = 0LL;
+              }
+              else
+              {
+                annotation.long_duration -= annotation.onset;
+
+                tmp_len = snprintf(annotation.duration, 16, "%i", (int)(annotation.long_duration / TIME_DIMENSION));
+
+                if(annotation.long_duration % TIME_DIMENSION)
+                {
+                  if(tmp_len < 14)
+                  {
+                    snprintf(annotation.duration + tmp_len, 16 - tmp_len, ".%07i", (int)(annotation.long_duration % TIME_DIMENSION));
+                    remove_trailing_zeros(duration);
+                  }
+                }
+              }
+            }
+            else  /* use duration */
+            {
+              remove_trailing_zeros(duration);
+              if(duration[0] == '+')
+              {
+                strlcpy(annotation.duration, duration + 1, 16);
+              }
+              else
+              {
+                strlcpy(annotation.duration, duration, 16);
+              }
+            }
           }
         }
         annotation.edfhdr = mainwindow->edfheaderlist[0];

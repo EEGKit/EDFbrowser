@@ -1259,6 +1259,24 @@ void UI_Mainwindow::read_general_settings()
       xml_go_up(xml_hdl);
     }
 
+    if(!(xml_goto_nth_element_inside(xml_hdl, "usestoptime", 0)))
+    {
+      if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+      {
+        xml_close(xml_hdl);
+        return;
+      }
+
+      import_annotations_var->usestoptime = atoi(result);
+
+      if(import_annotations_var->usestoptime != 1)
+      {
+        import_annotations_var->usestoptime = 0;
+      }
+
+      xml_go_up(xml_hdl);
+    }
+
     if(!(xml_goto_nth_element_inside(xml_hdl, "durationcolumn", 0)))
     {
       if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
@@ -1272,6 +1290,24 @@ void UI_Mainwindow::read_general_settings()
       if(import_annotations_var->durationcolumn < 0)
       {
         import_annotations_var->durationcolumn = 0;
+      }
+
+      xml_go_up(xml_hdl);
+    }
+
+    if(!(xml_goto_nth_element_inside(xml_hdl, "stopcolumn", 0)))
+    {
+      if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+      {
+        xml_close(xml_hdl);
+        return;
+      }
+
+      import_annotations_var->stopcolumn = atoi(result);
+
+      if(import_annotations_var->stopcolumn < 0)
+      {
+        import_annotations_var->stopcolumn = 0;
       }
 
       xml_go_up(xml_hdl);
@@ -3219,7 +3255,11 @@ void UI_Mainwindow::write_settings()
 
     fprintf(cfgfile, "      <useduration>%i</useduration>\n", import_annotations_var->useduration);
 
+    fprintf(cfgfile, "      <usestoptime>%i</usestoptime>\n", import_annotations_var->usestoptime);
+
     fprintf(cfgfile, "      <durationcolumn>%i</durationcolumn>\n", import_annotations_var->durationcolumn);
+
+    fprintf(cfgfile, "      <stopcolumn>%i</stopcolumn>\n", import_annotations_var->stopcolumn);
 
     fprintf(cfgfile, "      <datastartline>%i</datastartline>\n", import_annotations_var->datastartline);
 

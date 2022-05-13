@@ -262,6 +262,7 @@ UI_Mainwindow::UI_Mainwindow()
   import_annotations_var->onsetcolumn = 1;
   import_annotations_var->descriptioncolumn = 2;
   import_annotations_var->useduration = 0;
+  import_annotations_var->usestoptime = 0;
   import_annotations_var->durationcolumn = 3;
   import_annotations_var->datastartline = 1;
   import_annotations_var->dceventbittime = 10;
