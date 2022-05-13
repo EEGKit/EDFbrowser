@@ -1465,8 +1465,7 @@ int UI_ImportAnnotationswindow::import_from_ascii(void)
 #ifdef IMPORT_ANNOTS_DEBUG
             printf("  description: ->%s<-", charpntr);
 #endif
-            strncpy(description, charpntr, max_descr_length);
-            description[max_descr_length] = 0;
+            strlcpy(description, charpntr, max_descr_length);
             if(txt_encoding == 1)
             {
               latin1_to_utf8(description, max_descr_length);
@@ -1480,8 +1479,7 @@ int UI_ImportAnnotationswindow::import_from_ascii(void)
 #ifdef IMPORT_ANNOTS_DEBUG
               printf("  duration: ->%s<-", charpntr);
 #endif
-              strncpy(duration, charpntr, 31);
-              duration[31] = 0;
+              strlcpy(duration, charpntr, 32);
               trim_spaces(duration);
               duration[15] = 0;
               duration_is_set = 1;

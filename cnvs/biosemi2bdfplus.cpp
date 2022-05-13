@@ -609,7 +609,7 @@ void UI_BIOSEMI2BDFPLUSwindow::SelectFileButton()
                   {
                     snprintf(str, 2048, "%.4f", (double)((datarecords * EDFLIB_TIME_DIMENSION) + ((long long)i * status_sample_duration) - annot_ptr->onset) / (double)EDFLIB_TIME_DIMENSION);
                     str[15] = 0;
-                    strlcpy(annot_ptr->duration, str, MAX_ANNOTATION_LEN_II + 1);
+                    strlcpy(annot_ptr->duration, str, 16);
                     annot_ptr->long_duration = edfplus_annotation_get_long_from_number(str);
                     break;
                   }
@@ -657,7 +657,7 @@ void UI_BIOSEMI2BDFPLUSwindow::SelectFileButton()
                   {
                     snprintf(str, 2048, "%.4f", (double)((datarecords * EDFLIB_TIME_DIMENSION) + ((long long)i * status_sample_duration) - annot_ptr->onset) / (double)EDFLIB_TIME_DIMENSION);
                     str[15] = 0;
-                    strlcpy(annot_ptr->duration, str, MAX_ANNOTATION_LEN_II + 1);
+                    strlcpy(annot_ptr->duration, str, 16);
                     break;
                   }
                 }
