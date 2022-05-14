@@ -1,5 +1,5 @@
 
- version 1.93      to be defined
+ version 1.93      May 14, 2022
  --------------
 
  - Made the label type stripping optional, it can be enabled or disabled in Settings -> Options -> Other
