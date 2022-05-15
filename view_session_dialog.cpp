@@ -160,7 +160,7 @@ void UI_ViewSessionwindow::SelectButtonClicked()
          max_voltage=0,
          bp_min_hz=0,
          bp_max_hz=0,
-         ravg_len=0,
+         lp_hz=0,
          scale_max_amp=0;
 
   FILE *f_test=NULL;
@@ -2074,7 +2074,7 @@ void UI_ViewSessionwindow::SelectButtonClicked()
       xml_go_up(xml_hdl);
     }
 
-    if(xml_goto_nth_element_inside(xml_hdl, "ravg_len", 0))
+    if(xml_goto_nth_element_inside(xml_hdl, "lp_hz", 0))
     {
       view_session_format_error(__FILE__, __LINE__, xml_hdl);
       return;
@@ -2087,14 +2087,14 @@ void UI_ViewSessionwindow::SelectButtonClicked()
         return;
       }
 
-      ravg_len = atof(result);
-      if(ravg_len < 0.4999)
+      lp_hz = atof(result);
+      if((lp_hz < 0.009999) || (lp_hz > 5.00001))
       {
         view_session_format_error(__FILE__, __LINE__, xml_hdl);
         return;
       }
 
-      snprintf(str2, 2048, "Smoothing length: %.1f sec", ravg_len);
+      snprintf(str2, 2048, "Envelope lowpass filter: %.2f sec", lp_hz);
       aeegItem->appendRow(new QStandardItem(str2));
 
       xml_go_up(xml_hdl);
