@@ -9,6 +9,8 @@
 
  - Print to EDF/BDF: in case a signal is inverted, change polarity of physmax and physmin in outputfile.
 
+ - Export filtered signals: in case a signal is inverted, change polarity of physmax and physmin in outputfile.
+
 
  version 1.93      May 14, 2022
  --------------

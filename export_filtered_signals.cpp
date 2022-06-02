@@ -811,7 +811,7 @@ void UI_ExportFilteredSignalsWindow::StartExport()
   }
   for(i=0; i<new_edfsignals; i++)
   {
-    snprintf(scratchpad, 256, "%f", edfhdr->edfparam[signalslist[i]].phys_min);
+    snprintf(scratchpad, 256, "%f", edfhdr->edfparam[signalslist[i]].phys_min * signalcomp[i]->polarity);
     convert_trailing_zeros_to_spaces(scratchpad);
     if(scratchpad[7]=='.')
     {
@@ -826,7 +826,7 @@ void UI_ExportFilteredSignalsWindow::StartExport()
   }
   for(i=0; i<new_edfsignals; i++)
   {
-    snprintf(scratchpad, 256, "%f", edfhdr->edfparam[signalslist[i]].phys_max);
+    snprintf(scratchpad, 256, "%f", edfhdr->edfparam[signalslist[i]].phys_max * signalcomp[i]->polarity);
     convert_trailing_zeros_to_spaces(scratchpad);
     if(scratchpad[7]=='.')
     {
