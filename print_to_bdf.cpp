@@ -64,10 +64,10 @@ void print_screen_to_bdf(UI_Mainwindow *mainwindow)
             preamble=0LL,
             smpls_preamble[MAXSIGNALS];
 
-  char path[MAX_PATH_LENGTH],
-       scratchpad[4096],
-       datrecduration[32],
-       *viewbuf;
+  char path[MAX_PATH_LENGTH]={""},
+       scratchpad[4096]={""},
+       datrecduration[32]={""},
+       *viewbuf=NULL;
 
   double frequency,
          frequency2,
@@ -586,6 +586,25 @@ void print_screen_to_bdf(UI_Mainwindow *mainwindow)
         fclose(outputfile);
         return;
       }
+      if(signalcomp[i]->polarity == -1)
+      {
+        if(scratchpad[0] == '-')
+        {
+          for(j=0; j<7; j++)
+          {
+            scratchpad[j] = scratchpad[j+1];
+          }
+          scratchpad[7] = ' ';
+        }
+        else
+        {
+          for(j=7; j>0; j--)
+          {
+            scratchpad[j] = scratchpad[j-1];
+          }
+          scratchpad[0] = '-';
+        }
+      }
       if(fwrite(scratchpad, 8, 1, outputfile)!=1)
       {
         QMessageBox messagewindow(QMessageBox::Critical, "Error", "An error occurred while writing to outputfile.");
@@ -640,6 +659,25 @@ void print_screen_to_bdf(UI_Mainwindow *mainwindow)
         messagewindow.exec();
         fclose(outputfile);
         return;
+      }
+      if(signalcomp[i]->polarity == -1)
+      {
+        if(scratchpad[0] == '-')
+        {
+          for(j=0; j<7; j++)
+          {
+            scratchpad[j] = scratchpad[j+1];
+          }
+          scratchpad[7] = ' ';
+        }
+        else
+        {
+          for(j=7; j>0; j--)
+          {
+            scratchpad[j] = scratchpad[j-1];
+          }
+          scratchpad[0] = '-';
+        }
       }
       if(fwrite(scratchpad, 8, 1, outputfile)!=1)
       {
