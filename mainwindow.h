@@ -288,6 +288,7 @@ public:
 volatile int rc_cmd_in_progress;
 
 long long annot_editor_user_button_epoch_len,
+          annot_editor_user_button_page_len,
           hypnogram_epoch_len_threshold,
           session_video_starttime;
 
@@ -623,6 +624,7 @@ public slots:
   void shift_page_up();
   void shift_page_down();
   void next_page();
+  void next_epoch(long long);
   void dig_min_max_overflow_timer_func();
   void set_viewtime(long long);
   void fit_signals_to_pane(int n=-1);

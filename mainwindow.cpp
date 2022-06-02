@@ -1949,6 +1949,41 @@ void UI_Mainwindow::next_page()
 }
 
 
+void UI_Mainwindow::next_epoch(long long epoch_len)
+{
+  int i;
+
+  if((!files_open) || (epoch_len < 2))  return;
+
+  if(video_player->status == VIDEO_STATUS_PLAYING)
+  {
+    video_player_seek((int)((edfheaderlist[sel_viewtime]->viewtime + epoch_len + (epoch_len / 2LL)) / TIME_DIMENSION));
+
+    return;
+  }
+
+  if(video_player->status == VIDEO_STATUS_PAUSED)
+  {
+    video_player_seek((int)((edfheaderlist[sel_viewtime]->viewtime + epoch_len + (epoch_len / 2LL)) / TIME_DIMENSION));
+  }
+
+  if((viewtime_sync==VIEWTIME_SYNCED_OFFSET)||(viewtime_sync==VIEWTIME_SYNCED_ABSOLUT)||(viewtime_sync==VIEWTIME_USER_DEF_SYNCED))
+  {
+    for(i=0; i<files_open; i++)
+    {
+      edfheaderlist[i]->viewtime += epoch_len;
+    }
+  }
+
+  if(viewtime_sync==VIEWTIME_UNSYNCED)
+  {
+    edfheaderlist[sel_viewtime]->viewtime += epoch_len;
+  }
+
+  setup_viewbuf();
+}
+
+
 void UI_Mainwindow::shift_page_up()
 {
   int i;

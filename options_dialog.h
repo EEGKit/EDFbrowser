@@ -100,7 +100,8 @@ QSpinBox       *spinbox1_1,
                *spinbox4_5,
                *spinbox5_1,
                *spinbox5_2,
-               *spinbox7_1;
+               *spinbox7_1,
+               *spinbox7_2;
 
 QDoubleSpinBox *dspinbox3_2,
                *dspinbox4_4;
@@ -249,6 +250,7 @@ void spinBox5_2ValueChanged(int);
 void ApplyButton5Clicked();
 void DefaultButton5Clicked();
 void spinBox7_1ValueChanged(int);
+void spinBox7_2ValueChanged(int);
 void tab7_settings_changed();
 void tabholder_idx_changed(int);
 

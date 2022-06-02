@@ -651,7 +651,7 @@ void UI_AnnotationEditwindow::user_button_clicked(int button)
   {
     if(mainwindow->annot_editor_user_button_stay_on_epoch_boundary)
     {
-      mainwindow->pagetime = mainwindow->annot_editor_user_button_epoch_len;
+      mainwindow->pagetime = mainwindow->annot_editor_user_button_page_len;
 
       mainwindow->edfheaderlist[mainwindow->sel_viewtime]->viewtime /= mainwindow->annot_editor_user_button_epoch_len;
       mainwindow->edfheaderlist[mainwindow->sel_viewtime]->viewtime *= mainwindow->annot_editor_user_button_epoch_len;
@@ -670,14 +670,21 @@ void UI_AnnotationEditwindow::user_button_clicked(int button)
 
   if(mainwindow->annot_editor_user_button_update_annot_duration)
   {
-    annotEditSetDuration(mainwindow->pagetime);
+    if((mainwindow->annot_editor_user_button_jump_to_next_page) && (mainwindow->annot_editor_user_button_stay_on_epoch_boundary))
+    {
+      annotEditSetDuration(mainwindow->annot_editor_user_button_epoch_len);
+    }
+    else
+    {
+      annotEditSetDuration(mainwindow->pagetime);
+    }
   }
 
   createButtonClicked();
 
   if(mainwindow->annot_editor_user_button_jump_to_next_page)
   {
-    mainwindow->next_page();
+    mainwindow->next_epoch(mainwindow->annot_editor_user_button_epoch_len);
   }
 }
 

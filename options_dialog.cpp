@@ -697,7 +697,7 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
 
   checkbox7_6 = new QCheckBox;
   checkbox7_6->setTristate(false);
-  checkbox7_6->setToolTip("Enabling this option will automatically change the viewtime (file position) and jump to the next page / epoch.");
+  checkbox7_6->setToolTip("Enabling this option will automatically change the viewtime (file position) and jump to the next stage / epoch.");
   if(mainwindow->annot_editor_user_button_jump_to_next_page)
   {
     checkbox7_6->setCheckState(Qt::Checked);
@@ -712,13 +712,13 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   hlayout_tmp->addStretch(1000);
   flayout7_2->addRow("jump to next page", hlayout_tmp);
   QObject::connect(checkbox7_6, SIGNAL(stateChanged(int)), this, SLOT(checkbox7_6Clicked(int)));
-  flayout7_2->labelForField(hlayout_tmp)->setToolTip("Enabling this option will automatically change the viewtime (file position) and jump to the next page / epoch.");
+  flayout7_2->labelForField(hlayout_tmp)->setToolTip("Enabling this option will automatically change the viewtime (file position) and jump to the next stage / epoch.");
 
   flayout7_2->addRow("Keyboard shortcuts are Ctrl + 1, Ctrl + 2, Ctrl + 3, etc.", (QWidget *)NULL);
 
   checkbox7_7 = new QCheckBox;
   checkbox7_7->setTristate(false);
-  checkbox7_7->setToolTip("If enabled, the page will always start at an integer multiple of the page / epoch length.");
+  checkbox7_7->setToolTip("If enabled, the page will always start at an integer multiple of the stage / epoch length.");
   if(mainwindow->annot_editor_user_button_stay_on_epoch_boundary)
   {
     checkbox7_7->setCheckState(Qt::Checked);
@@ -735,9 +735,24 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   hlayout_tmp->setAlignment(Qt::AlignCenter);
   hlayout_tmp->addWidget(checkbox7_7);
   hlayout_tmp->addStretch(1000);
-  flayout7_2->addRow("Viewtime must stay on page / epoch boundary", hlayout_tmp);
+  flayout7_2->addRow("Viewtime must stay on stage / epoch boundary", hlayout_tmp);
   QObject::connect(checkbox7_7, SIGNAL(stateChanged(int)), this, SLOT(checkbox7_7Clicked(int)));
-  flayout7_2->labelForField(hlayout_tmp)->setToolTip("If enabled, the page will always start at an integer multiple of the page / epoch length.");
+  flayout7_2->labelForField(hlayout_tmp)->setToolTip("If enabled, the page will always start at an integer multiple of the stage / epoch length.");
+
+  spinbox7_2 = new QSpinBox;
+  spinbox7_2->setSuffix(" sec.");
+  spinbox7_2->setRange(1, 300);
+  spinbox7_2->setValue((int)(mainwindow->annot_editor_user_button_page_len / TIME_DIMENSION));
+  if(!mainwindow->annot_editor_user_button_jump_to_next_page)
+  {
+    spinbox7_2->setEnabled(false);
+  }
+  hlayout_tmp = new QHBoxLayout;
+  hlayout_tmp->setAlignment(Qt::AlignCenter);
+  hlayout_tmp->addWidget(spinbox7_2);
+  hlayout_tmp->addStretch(1000);
+  flayout7_2->addRow("Page length (timescale)", hlayout_tmp);
+  QObject::connect(spinbox7_2, SIGNAL(valueChanged(int)), this, SLOT(spinBox7_2ValueChanged(int)));
 
   spinbox7_1 = new QSpinBox;
   spinbox7_1->setSuffix(" sec.");
@@ -751,7 +766,7 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   hlayout_tmp->setAlignment(Qt::AlignCenter);
   hlayout_tmp->addWidget(spinbox7_1);
   hlayout_tmp->addStretch(1000);
-  flayout7_2->addRow("Page / epoch length", hlayout_tmp);
+  flayout7_2->addRow("Stage / epoch length", hlayout_tmp);
   QObject::connect(spinbox7_1, SIGNAL(valueChanged(int)), this, SLOT(spinBox7_1ValueChanged(int)));
 
   QFrame *hline7_2 = new QFrame;
@@ -1500,7 +1515,7 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   mainLayout->addSpacing(20);
   mainLayout->addLayout(horLayout);
 
-  optionsdialog->setMinimumSize(900 * mainwindow->w_scaling, 575 * mainwindow->h_scaling);
+  optionsdialog->setMinimumSize(900 * mainwindow->w_scaling, 600 * mainwindow->h_scaling);
 
   optionsdialog->setLayout(mainLayout);
 
@@ -2199,6 +2214,8 @@ void UI_OptionsDialog::checkbox7_6Clicked(int state)
     checkbox7_7->setEnabled(true);
 
     spinbox7_1->setEnabled(true);
+
+    spinbox7_2->setEnabled(true);
   }
   else
   {
@@ -2207,6 +2224,8 @@ void UI_OptionsDialog::checkbox7_6Clicked(int state)
     checkbox7_7->setEnabled(false);
 
     spinbox7_1->setEnabled(false);
+
+    spinbox7_2->setEnabled(false);
   }
 }
 
@@ -2227,6 +2246,12 @@ void UI_OptionsDialog::checkbox7_7Clicked(int state)
 void UI_OptionsDialog::spinBox7_1ValueChanged(int val)
 {
   mainwindow->annot_editor_user_button_epoch_len = val * TIME_DIMENSION;
+}
+
+
+void UI_OptionsDialog::spinBox7_2ValueChanged(int val)
+{
+  mainwindow->annot_editor_user_button_page_len = val * TIME_DIMENSION;
 }
 
 
