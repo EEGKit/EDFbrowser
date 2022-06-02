@@ -23,8 +23,8 @@ Qmake is part of your Qt installation.
 Compiling and installing on Ubuntu Linux and derivatives
 ========================================================
 
-sudo apt-get update
-sudo apt-get install g++ make git qtbase5-dev-tools qtbase5-dev qt5-default
+sudo apt update
+sudo apt install g++ make git qtbase5-dev-tools qtbase5-dev
 git clone https://gitlab.com/Teuniz/EDFbrowser.git
 cd EDFbrowser
 qmake
