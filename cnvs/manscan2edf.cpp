@@ -124,7 +124,7 @@ void UI_MANSCAN2EDFwindow::SelectFileButton()
 
   double d_tmp;
 
-  struct segment_prop_struct *segment_properties;
+  struct segment_prop_struct *segment_properties=NULL;
 
   union{
          int one;
@@ -169,7 +169,7 @@ void UI_MANSCAN2EDFwindow::SelectFileButton()
     return;
   }
 
-  segment_properties = (struct segment_prop_struct *)malloc(sizeof(struct segment_prop_struct));
+  segment_properties = (struct segment_prop_struct *)calloc(1, sizeof(struct segment_prop_struct));
   if(segment_properties == NULL)
   {
     textEdit1->append("Malloc error (struct segment_prop_struct)");

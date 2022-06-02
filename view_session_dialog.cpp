@@ -2152,7 +2152,7 @@ void UI_ViewSessionwindow::SelectButtonClicked()
         return;
       }
 
-      snprintf(video_path, 2048, "Video: %s", result);
+      snprintf(video_path, 2048, "Video: %.2000s", result);
 
       if(use_relative_path)
       {

@@ -733,7 +733,11 @@ void ViewCurve::mousePressEvent(QMouseEvent *press_event)
     }
   }
 
+#if QT_VERSION >= 0x050F00
+  if(press_event->button()==Qt::MiddleButton)
+#else
   if(press_event->button()==Qt::MidButton)
+#endif
   {
     for(i=0; i<mainwindow->files_open; i++)
     {
@@ -1001,7 +1005,11 @@ void ViewCurve::mouseReleaseEvent(QMouseEvent *release_event)
     }
   }
 
+#if QT_VERSION >= 0x050F00
+  if(release_event->button()==Qt::MiddleButton)
+#else
   if(release_event->button()==Qt::MidButton)
+#endif
   {
     use_move_events = 0;
     setMouseTracking(false);

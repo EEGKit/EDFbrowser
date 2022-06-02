@@ -107,7 +107,7 @@ UI_cdsa_dock::UI_cdsa_dock(QWidget *w_parent, struct cdsa_dock_param_struct par)
   grid_layout->addWidget(color_indic_label, 1, 2);
 
   cdsa_dock = new QDockWidget(str, mainwindow);
-  cdsa_dock->setFeatures(QDockWidget::AllDockWidgetFeatures);
+  cdsa_dock->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
   cdsa_dock->setAllowedAreas(Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
   cdsa_dock->setAttribute(Qt::WA_DeleteOnClose);
   cdsa_dock->setContextMenuPolicy(Qt::CustomContextMenu);
