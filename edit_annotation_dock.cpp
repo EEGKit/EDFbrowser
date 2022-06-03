@@ -372,6 +372,11 @@ void UI_AnnotationEditwindow::createButtonClicked()
     annotation.long_duration = 0LL;
   }
 
+  if(QApplication::keyboardModifiers() == Qt::ShiftModifier)
+  {
+    annotation.onset -= annotation.long_duration;
+  }
+
   strncpy(annotation.description, annot_descript_lineEdit->text().toUtf8().data(), MAX_ANNOTATION_LEN);
 
   annotation.description[MAX_ANNOTATION_LEN] = 0;
