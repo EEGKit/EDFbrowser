@@ -53,6 +53,10 @@ ViewCurve::ViewCurve(QWidget *w_parent) : QWidget(w_parent)
   average_annot_act = new QAction("Average", this);
   context_menu->addAction(average_annot_act);
 
+  annot_sidemenu_act = new QAction("Select annotation", this);
+  annot_sidemenu_act->setShortcut(QKeySequence("Ctrl+Shift+A"));
+  addAction(annot_sidemenu_act);
+
   active_markers = (struct active_markersblock *)calloc(1, sizeof(struct active_markersblock));
 
   annot_marker_moving = 0;
@@ -178,8 +182,9 @@ ViewCurve::ViewCurve(QWidget *w_parent) : QWidget(w_parent)
 
   arrowkeys_shortcuts_global_set_enabled(true);
 
-  QObject::connect(select_annot_act,  SIGNAL(triggered(bool)), this, SLOT(select_annot(bool)));
-  QObject::connect(average_annot_act, SIGNAL(triggered(bool)), this, SLOT(average_annot(bool)));
+  QObject::connect(select_annot_act,   SIGNAL(triggered(bool)), this, SLOT(select_annot(bool)));
+  QObject::connect(average_annot_act,  SIGNAL(triggered(bool)), this, SLOT(average_annot(bool)));
+  QObject::connect(annot_sidemenu_act, SIGNAL(triggered(bool)), this, SLOT(annot_sidemenu_act_by_crosshair(bool)));
 }
 
 
@@ -251,6 +256,37 @@ void ViewCurve::arrowkeys_shortcuts_global_set_enabled(bool enabled)
   QObject::connect(shift_page_right_shortcut, SIGNAL(activated()), mainwindow, SLOT(shift_page_right()));
   QObject::connect(shift_page_up_shortcut,    SIGNAL(activated()), mainwindow, SLOT(shift_page_up()));
   QObject::connect(shift_page_down_shortcut,  SIGNAL(activated()), mainwindow, SLOT(shift_page_down()));
+}
+
+
+void ViewCurve::annot_sidemenu_act_by_crosshair(bool)
+{
+  int i;
+
+  if((!mainwindow->annot_editor_active) ||
+     (mainwindow->annotationEditDock == NULL) ||
+     (!mainwindow->signalcomps) ||
+     (!crosshair_1.active) ||
+     (!crosshair_2.active))  return;
+
+  for(i=0; i<mainwindow->signalcomps; i++)
+  {
+    if((mainwindow->signalcomp[i]->hascursor1) && (mainwindow->signalcomp[i]->hascursor2))
+    {
+      break;
+    }
+  }
+  if(i == mainwindow->signalcomps)  return;
+
+  if(crosshair_1.time_relative >= crosshair_2.time_relative)  return;
+
+  mainwindow->signalcomp[i]->annot_created_by_rect_draw_onset = crosshair_1.time_relative;
+
+  mainwindow->signalcomp[i]->annot_created_by_rect_draw_duration = crosshair_2.time_relative - crosshair_1.time_relative;
+
+  mainwindow->signalcomp[i]->annot_created_by_rect_draw_active = 1;
+
+  emit annot_created_by_rect_draw();
 }
 
 
@@ -783,25 +819,19 @@ void ViewCurve::mouseReleaseEvent(QMouseEvent *release_event)
 
   if(release_event->button()==Qt::LeftButton)
   {
-    if(crosshair_1.moving)
+    if(mainwindow->annotationEditDock != NULL)
     {
-      if(mainwindow->annotationEditDock != NULL)
+      if(crosshair_1.moving)
       {
         mainwindow->annotationEditDock->annotEditSetOnset(crosshair_1.time_relative);
-      }
 
-      if(crosshair_2.active)
-      {
-        if(mainwindow->annotationEditDock != NULL)
+        if(crosshair_2.active)
         {
           mainwindow->annotationEditDock->annotEditSetDuration(crosshair_2.time_relative - mainwindow->annotationEditDock->annotEditGetOnset());
         }
       }
-    }
 
-    if(crosshair_2.moving)
-    {
-      if(mainwindow->annotationEditDock != NULL)
+      if(crosshair_2.moving)
       {
           // Don't update the onset time when changing file position
 //      mainwindow->annotationEditDock->annotEditSetDuration(crosshair_2.time_relative - crosshair_1.time_relative);
@@ -852,7 +882,7 @@ void ViewCurve::mouseReleaseEvent(QMouseEvent *release_event)
       {
         if(QApplication::keyboardModifiers() == Qt::ControlModifier)
         {
-          if(mainwindow->annot_editor_active)
+          if((mainwindow->annot_editor_active) && (mainwindow->annotationEditDock != NULL) && signalcomps)
           {
             n = 0;
 

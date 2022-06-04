@@ -6,6 +6,7 @@
    userbuttons when "jump to next page" is enabled. Go to Settings -> Options -> Annotation editor.
    Keeping the Shift key pressed while hitting the create button or a user button will cause the onset
    time of the annotation to be lowered with the annotation's duration.
+   Press Ctl+Shift+A when both crosshairs are enabled on the same signal in order to create a signal linked annotation.
 
  - View saved sessions: fixed a bug that caused the session viewer to report an error in case an aEEG is present in the session.
 
