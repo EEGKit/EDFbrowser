@@ -451,7 +451,8 @@ void UI_ExportFilteredSignalsWindow::StartExport()
       digmax,
       value;
 
-  char scratchpad[4096];
+  char scratchpad[4096]={""},
+       str[1024]={""};
 
   double *filtered_blockread_buf[MAXSIGNALS],
          bitvalue,
@@ -811,6 +812,14 @@ void UI_ExportFilteredSignalsWindow::StartExport()
   }
   for(i=0; i<new_edfsignals; i++)
   {
+    if((((int)(edfhdr->edfparam[signalslist[i]].phys_min * signalcomp[i]->polarity)) < -9999999) && (signalcomp[i]->polarity == -1))
+    {
+      snprintf(str, 1024,
+               "signal %i has been set to \"inverted\" but the physical minimum field has no free space left to write the minus sign",
+               i + 1);
+      showpopupmessage("Error", str);
+      goto END_4;
+    }
     snprintf(scratchpad, 256, "%f", edfhdr->edfparam[signalslist[i]].phys_min * signalcomp[i]->polarity);
     convert_trailing_zeros_to_spaces(scratchpad);
     if(scratchpad[7]=='.')
@@ -826,6 +835,14 @@ void UI_ExportFilteredSignalsWindow::StartExport()
   }
   for(i=0; i<new_edfsignals; i++)
   {
+    if((((int)(edfhdr->edfparam[signalslist[i]].phys_max * signalcomp[i]->polarity)) < -9999999) && (signalcomp[i]->polarity == -1))
+    {
+      snprintf(str, 1024,
+               "signal %i has been set to \"inverted\" but the physical maximum field has no free space left to write the minus sign",
+               i + 1);
+      showpopupmessage("Error", str);
+      goto END_4;
+    }
     snprintf(scratchpad, 256, "%f", edfhdr->edfparam[signalslist[i]].phys_max * signalcomp[i]->polarity);
     convert_trailing_zeros_to_spaces(scratchpad);
     if(scratchpad[7]=='.')

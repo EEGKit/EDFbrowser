@@ -67,6 +67,7 @@ void print_screen_to_edf(UI_Mainwindow *mainwindow)
   char path[MAX_PATH_LENGTH]={""},
        scratchpad[4096]={""},
        datrecduration[32]={""},
+       str[1024]={""},
        *viewbuf=NULL;
 
   double frequency,
@@ -594,6 +595,23 @@ void print_screen_to_edf(UI_Mainwindow *mainwindow)
           }
           else
           {
+            if(scratchpad[7] != ' ')
+            {
+              for(j=0; j<8; j++)
+              {
+                if(scratchpad[j] == '.')  break;
+              }
+              if(j == 8)
+              {
+                snprintf(str, 1024,
+                         "signal %i has been set to \"inverted\" but the physical minimum field has no free space left to write the minus sign",
+                         i + 1);
+                QMessageBox messagewindow(QMessageBox::Critical, "Error", str);
+                messagewindow.exec();
+                fclose(outputfile);
+                return;
+              }
+            }
             for(j=7; j>0; j--)
             {
               scratchpad[j] = scratchpad[j-1];
@@ -672,6 +690,23 @@ void print_screen_to_edf(UI_Mainwindow *mainwindow)
           }
           else
           {
+            if(scratchpad[7] != ' ')
+            {
+              for(j=0; j<8; j++)
+              {
+                if(scratchpad[j] == '.')  break;
+              }
+              if(j == 8)
+              {
+                snprintf(str, 1024,
+                         "signal %i has been set to \"inverted\" but the physical maximum field has no free space left to write the minus sign",
+                         i + 1);
+                QMessageBox messagewindow(QMessageBox::Critical, "Error", str);
+                messagewindow.exec();
+                fclose(outputfile);
+                return;
+              }
+            }
             for(j=7; j>0; j--)
             {
               scratchpad[j] = scratchpad[j-1];
