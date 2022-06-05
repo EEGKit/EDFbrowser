@@ -580,22 +580,26 @@ void print_screen_to_edf(UI_Mainwindow *mainwindow)
       }
       if(signalcomp[i]->polarity == -1)
       {
-        if(scratchpad[0] == '-')
+        if(scratchpad[0] == '+')
         {
-          for(j=0; j<7; j++)
-          {
-            scratchpad[j] = scratchpad[j+1];
-          }
-          scratchpad[7] = ' ';
-        }
-        else
-        {
-          for(j=7; j>0; j--)
-          {
-            scratchpad[j] = scratchpad[j-1];
-          }
           scratchpad[0] = '-';
         }
+        else if(scratchpad[0] == '-')
+          {
+            for(j=0; j<7; j++)
+            {
+              scratchpad[j] = scratchpad[j+1];
+            }
+            scratchpad[7] = ' ';
+          }
+          else
+          {
+            for(j=7; j>0; j--)
+            {
+              scratchpad[j] = scratchpad[j-1];
+            }
+            scratchpad[0] = '-';
+          }
       }
       if(fwrite(scratchpad, 8, 1, outputfile)!=1)
       {
@@ -654,22 +658,26 @@ void print_screen_to_edf(UI_Mainwindow *mainwindow)
       }
       if(signalcomp[i]->polarity == -1)
       {
-        if(scratchpad[0] == '-')
+        if(scratchpad[0] == '+')
         {
-          for(j=0; j<7; j++)
-          {
-            scratchpad[j] = scratchpad[j+1];
-          }
-          scratchpad[7] = ' ';
-        }
-        else
-        {
-          for(j=7; j>0; j--)
-          {
-            scratchpad[j] = scratchpad[j-1];
-          }
           scratchpad[0] = '-';
         }
+        else if(scratchpad[0] == '-')
+          {
+            for(j=0; j<7; j++)
+            {
+              scratchpad[j] = scratchpad[j+1];
+            }
+            scratchpad[7] = ' ';
+          }
+          else
+          {
+            for(j=7; j>0; j--)
+            {
+              scratchpad[j] = scratchpad[j-1];
+            }
+            scratchpad[0] = '-';
+          }
       }
       if(fwrite(scratchpad, 8, 1, outputfile)!=1)
       {
