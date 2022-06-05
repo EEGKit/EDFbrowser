@@ -980,7 +980,14 @@ int UI_MANSCAN2EDFwindow::get_recorder_version(struct segment_prop_struct *segpr
     return -1;
   }
 
+#if __GNUC__ > 7
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wstringop-truncation"
+#endif
   strncpy(segprop->recorder_version, linebuf + 25, 100);
+#if __GNUC__ > 7
+#pragma GCC diagnostic pop
+#endif
 
   return 0;
 }
@@ -1040,7 +1047,14 @@ int UI_MANSCAN2EDFwindow::get_filter_settings(struct segment_prop_struct *segpro
     return -1;
   }
 
+#if __GNUC__ > 7
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wstringop-truncation"
+#endif
   strncpy(segprop->recorder_brand, linebuf + 8, 13);
+#if __GNUC__ > 7
+#pragma GCC diagnostic pop
+#endif
 
   chrpntr = linebuf + 18;
 
