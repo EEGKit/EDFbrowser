@@ -1953,10 +1953,12 @@ void UI_Mainwindow::next_epoch(long long epoch_len)
 {
   int i;
 
-  if((!files_open) || (epoch_len < 2))  return;
+  if(!files_open)  return;
 
   if(video_player->status == VIDEO_STATUS_PLAYING)
   {
+    if(epoch_len < 2)  return;
+
     video_player_seek((int)((edfheaderlist[sel_viewtime]->viewtime + epoch_len + (epoch_len / 2LL)) / TIME_DIMENSION));
 
     return;
@@ -1964,6 +1966,8 @@ void UI_Mainwindow::next_epoch(long long epoch_len)
 
   if(video_player->status == VIDEO_STATUS_PAUSED)
   {
+    if(epoch_len < 2)  return;
+
     video_player_seek((int)((edfheaderlist[sel_viewtime]->viewtime + epoch_len + (epoch_len / 2LL)) / TIME_DIMENSION));
   }
 
