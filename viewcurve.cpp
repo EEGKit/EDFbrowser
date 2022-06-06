@@ -266,23 +266,28 @@ void ViewCurve::annot_sidemenu_act_by_crosshair(bool)
   if((!mainwindow->annot_editor_active) ||
      (mainwindow->annotationEditDock == NULL) ||
      (!mainwindow->signalcomps) ||
-     (!crosshair_1.active) ||
-     (!crosshair_2.active))  return;
+     (!crosshair_1.active))  return;
 
   for(i=0; i<mainwindow->signalcomps; i++)
   {
-    if((mainwindow->signalcomp[i]->hascursor1) && (mainwindow->signalcomp[i]->hascursor2))
+    if(mainwindow->signalcomp[i]->hascursor1)
     {
       break;
     }
   }
   if(i == mainwindow->signalcomps)  return;
 
-  if(crosshair_1.time_relative >= crosshair_2.time_relative)  return;
-
   mainwindow->signalcomp[i]->annot_created_by_rect_draw_onset = crosshair_1.time_relative;
 
-  mainwindow->signalcomp[i]->annot_created_by_rect_draw_duration = crosshair_2.time_relative - crosshair_1.time_relative;
+  mainwindow->signalcomp[i]->annot_created_by_rect_draw_duration = -TIME_DIMENSION;
+
+  if(mainwindow->signalcomp[i]->hascursor2)
+  {
+    if(crosshair_2.time_relative > crosshair_1.time_relative)
+    {
+      mainwindow->signalcomp[i]->annot_created_by_rect_draw_duration = crosshair_2.time_relative - crosshair_1.time_relative;
+    }
+  }
 
   mainwindow->signalcomp[i]->annot_created_by_rect_draw_active = 1;
 
