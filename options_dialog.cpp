@@ -714,7 +714,7 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   QObject::connect(checkbox7_6, SIGNAL(stateChanged(int)), this, SLOT(checkbox7_6Clicked(int)));
   flayout7_2->labelForField(hlayout_tmp)->setToolTip("Enabling this option will automatically change the viewtime (file position) and jump to the next stage / epoch.");
 
-  flayout7_2->addRow("Keyboard shortcuts are Ctrl + 1, Ctrl + 2, Ctrl + 3, etc.", (QWidget *)NULL);
+  flayout7_2->addRow("Keyboard shortcuts are '1', '2', '3', etc.", (QWidget *)NULL);
 
   checkbox7_7 = new QCheckBox;
   checkbox7_7->setTristate(false);
