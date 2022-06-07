@@ -670,14 +670,7 @@ void UI_AnnotationEditwindow::user_button_clicked(int button)
 
   if(mainwindow->annot_editor_user_button_update_annot_duration)
   {
-    if((mainwindow->annot_editor_user_button_jump_to_next_page) && (mainwindow->annot_editor_user_button_stay_on_epoch_boundary))
-    {
-      annotEditSetDuration(mainwindow->annot_editor_user_button_epoch_len);
-    }
-    else
-    {
-      annotEditSetDuration(mainwindow->pagetime);
-    }
+    annotEditSetDuration(mainwindow->annot_editor_user_button_epoch_len);
   }
 
   createButtonClicked();

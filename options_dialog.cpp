@@ -677,7 +677,7 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   checkbox7_4 = new QCheckBox;
   checkbox7_4->setTristate(false);
   checkbox7_4->setToolTip("Enabling this option will automatically update the duration field of the annotation-editor\n"
-                          "with the current pagetime when a user button is clicked.");
+                          "with the stage / epoch length when a user button is clicked.");
   if(mainwindow->annot_editor_user_button_update_annot_duration)
   {
     checkbox7_4->setCheckState(Qt::Checked);
@@ -693,7 +693,7 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   flayout7_2->addRow("set annotation editor duration", hlayout_tmp);
   QObject::connect(checkbox7_4, SIGNAL(stateChanged(int)), this, SLOT(checkbox7_4Clicked(int)));
   flayout7_2->labelForField(hlayout_tmp)->setToolTip("Enabling this option will automatically update the duration field of the annotation-editor\n"
-                                                     "with the current pagetime when a user button is clicked.");
+                                                     "with the stage / epoch length when a user button is clicked.");
 
   checkbox7_6 = new QCheckBox;
   checkbox7_6->setTristate(false);

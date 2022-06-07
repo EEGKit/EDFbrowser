@@ -54,7 +54,8 @@ ViewCurve::ViewCurve(QWidget *w_parent) : QWidget(w_parent)
   context_menu->addAction(average_annot_act);
 
   annot_sidemenu_act = new QAction("Select annotation", this);
-  annot_sidemenu_act->setShortcut(QKeySequence("Ctrl+Shift+A"));
+//  annot_sidemenu_act->setShortcut(QKeySequence("Ctrl+Shift+A"));
+  annot_sidemenu_act->setShortcut(QKeySequence("A"));
   addAction(annot_sidemenu_act);
 
   active_markers = (struct active_markersblock *)calloc(1, sizeof(struct active_markersblock));
