@@ -577,17 +577,46 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
 
     lineedit7_1[i] = new QLineEdit;
     lineedit7_1[i]->setMaxLength(16);
-    lineedit7_1[i]->setToolTip("Description of the new annotation");
     lineedit7_1[i]->setText(QString::fromUtf8(mainwindow->annot_edit_user_button_name[i]));
     if(checkbox7_1[i]->checkState() != Qt::Checked)
     {
       lineedit7_1[i]->setEnabled(false);
     }
+    lineedit7_1[i]->setToolTip("Description of the new annotation");
+
+    checkbox7_8[i] = new QCheckBox("Page middle");
+    checkbox7_8[i]->setTristate(false);
+    if(mainwindow->annot_editor_user_button_onset_on_page_middle[i])
+    {
+      checkbox7_8[i]->setCheckState(Qt::Checked);
+    }
+    else
+    {
+      checkbox7_8[i]->setCheckState(Qt::Unchecked);
+    }
+    if(checkbox7_1[i]->checkState() != Qt::Checked)
+    {
+      checkbox7_8[i]->setEnabled(false);
+    }
+    checkbox7_8[i]->setToolTip("If enabled, set the onset time at the middle of the page instead of at the start of the page.");
+
+//     hlayout_tmp = new QHBoxLayout;
+//     hlayout_tmp->setAlignment(Qt::AlignCenter);
+//     hlayout_tmp->addWidget(checkbox7_8[i]);
+//     hlayout_tmp->addStretch(1000);
+//     flayout7_2->addRow("Onset on page middle", hlayout_tmp);
+//     QObject::connect(checkbox7_8[i], SIGNAL(stateChanged(int)), this, SLOT(checkbox7_8[i]Clicked(int)));
+//     flayout7_2->labelForField(hlayout_tmp)->setToolTip("If enabled, set the onset time at the middle of the page instead of at the start of the page.");
+//     if(!mainwindow->annot_editor_user_button_update_annot_onset)
+//     {
+//       checkbox7_8[i]->setEnabled(false);
+//     }
 
     hlayout_tmp = new QHBoxLayout;
     hlayout_tmp->setAlignment(Qt::AlignCenter);
     hlayout_tmp->addWidget(checkbox7_1[i]);
     hlayout_tmp->addWidget(lineedit7_1[i]);
+    hlayout_tmp->addWidget(checkbox7_8[i]);
     hlayout_tmp->addStretch(1000);
     snprintf(str, 512, "Button %i", i + 1);
     flayout7_1->addRow(str, hlayout_tmp);
@@ -675,29 +704,6 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   QObject::connect(checkbox7_3, SIGNAL(stateChanged(int)), this, SLOT(checkbox7_3Clicked(int)));
   flayout7_2->labelForField(hlayout_tmp)->setToolTip("Enabling this option will automatically update the onset time field of the annotation-editor\n"
                                                      "with the current viewtime (file position) when a user button is clicked.");
-
-  checkbox7_8 = new QCheckBox;
-  checkbox7_8->setTristate(false);
-  checkbox7_8->setToolTip("If enabled, set the onset time at the middle of the page instead of at the start of the page.");
-  if(mainwindow->annot_editor_user_button_onset_on_page_middle)
-  {
-    checkbox7_8->setCheckState(Qt::Checked);
-  }
-  else
-  {
-    checkbox7_8->setCheckState(Qt::Unchecked);
-  }
-  hlayout_tmp = new QHBoxLayout;
-  hlayout_tmp->setAlignment(Qt::AlignCenter);
-  hlayout_tmp->addWidget(checkbox7_8);
-  hlayout_tmp->addStretch(1000);
-  flayout7_2->addRow("Onset on page middle", hlayout_tmp);
-  QObject::connect(checkbox7_8, SIGNAL(stateChanged(int)), this, SLOT(checkbox7_8Clicked(int)));
-  flayout7_2->labelForField(hlayout_tmp)->setToolTip("If enabled, set the onset time at the middle of the page instead of at the start of the page.");
-  if(!mainwindow->annot_editor_user_button_update_annot_onset)
-  {
-    checkbox7_8->setEnabled(false);
-  }
 
   checkbox7_4 = new QCheckBox;
   checkbox7_4->setTristate(false);
@@ -840,6 +846,7 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   {
     QObject::connect(checkbox7_1[i], SIGNAL(stateChanged(int)),   this, SLOT(tab7_settings_changed()));
     QObject::connect(lineedit7_1[i], SIGNAL(textEdited(QString)), this, SLOT(tab7_settings_changed()));
+    QObject::connect(checkbox7_8[i], SIGNAL(stateChanged(int)),   this, SLOT(tab7_settings_changed()));
   }
 
   for(i=0; i<MAX_ANNOTEDIT_SIDE_MENU_ANNOTS; i++)
@@ -2194,27 +2201,10 @@ void UI_OptionsDialog::checkbox7_3Clicked(int state)
   if(state==Qt::Checked)
   {
     mainwindow->annot_editor_user_button_update_annot_onset = 1;
-
-    checkbox7_8->setEnabled(true);
   }
   else
   {
     mainwindow->annot_editor_user_button_update_annot_onset = 0;
-
-    checkbox7_8->setEnabled(false);
-  }
-}
-
-
-void UI_OptionsDialog::checkbox7_8Clicked(int state)
-{
-  if(state==Qt::Checked)
-  {
-    mainwindow->annot_editor_user_button_onset_on_page_middle = 1;
-  }
-  else
-  {
-    mainwindow->annot_editor_user_button_onset_on_page_middle = 0;
   }
 }
 
@@ -3406,12 +3396,23 @@ void UI_OptionsDialog::tab7_settings_changed()
     if(checkbox7_1[i]->checkState() == Qt::Checked)
     {
       lineedit7_1[i]->setEnabled(true);
+      checkbox7_8[i]->setEnabled(true);
       mainwindow->annot_edit_user_button_enabled[i] = 1;
     }
     else
     {
       lineedit7_1[i]->setEnabled(false);
+      checkbox7_8[i]->setEnabled(false);
       mainwindow->annot_edit_user_button_enabled[i] = 0;
+    }
+
+    if(checkbox7_8[i]->checkState() == Qt::Checked)
+    {
+      mainwindow->annot_editor_user_button_onset_on_page_middle[i] = 1;
+    }
+    else
+    {
+      mainwindow->annot_editor_user_button_onset_on_page_middle[i] = 0;
     }
 
     strlcpy(mainwindow->annot_edit_user_button_name[i], lineedit7_1[i]->text().toUtf8().data(), 64);

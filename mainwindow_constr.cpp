@@ -144,8 +144,6 @@ UI_Mainwindow::UI_Mainwindow()
 
   annot_editor_user_button_stay_on_epoch_boundary = 0;
 
-  annot_editor_user_button_onset_on_page_middle = 0;
-
   annot_editor_user_button_epoch_len = 30LL * TIME_DIMENSION;
 
   annot_editor_user_button_page_len = 30LL * TIME_DIMENSION;
@@ -174,6 +172,7 @@ UI_Mainwindow::UI_Mainwindow()
   for(i=0; i<8; i++)
   {
     annot_edit_user_button_enabled[i] = 0;
+    annot_editor_user_button_onset_on_page_middle[i] = 0;
     annot_edit_user_button_name[i][0] = 0;
   }
   strlcpy(annot_edit_user_button_name[0], "W", 64);
