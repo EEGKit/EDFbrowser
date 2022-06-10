@@ -144,6 +144,8 @@ UI_Mainwindow::UI_Mainwindow()
 
   annot_editor_user_button_stay_on_epoch_boundary = 0;
 
+  annot_editor_user_button_onset_on_page_middle = 0;
+
   annot_editor_user_button_epoch_len = 30LL * TIME_DIMENSION;
 
   annot_editor_user_button_page_len = 30LL * TIME_DIMENSION;

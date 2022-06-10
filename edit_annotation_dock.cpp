@@ -666,7 +666,14 @@ void UI_AnnotationEditwindow::user_button_clicked(int button)
 
   if(mainwindow->annot_editor_user_button_update_annot_onset)
   {
-    annotEditSetOnset(mainwindow->edfheaderlist[mainwindow->sel_viewtime]->viewtime);
+    if(mainwindow->annot_editor_user_button_onset_on_page_middle)
+    {
+      annotEditSetOnset(mainwindow->edfheaderlist[mainwindow->sel_viewtime]->viewtime + (mainwindow->pagetime / 2));
+    }
+    else
+    {
+      annotEditSetOnset(mainwindow->edfheaderlist[mainwindow->sel_viewtime]->viewtime);
+    }
   }
 
   if(mainwindow->annot_editor_user_button_update_annot_duration)

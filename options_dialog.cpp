@@ -594,6 +594,8 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
     flayout7_1->labelForField(hlayout_tmp)->setToolTip("If enabled, it creates a button to quickly create a predefined annotation");
   }
 
+  flayout7_1->addRow("Keyboard shortcuts are '1', '2', '3', etc.", (QWidget *)NULL);
+
   flayout7_1->addRow(" ", (QWidget *)NULL);
 
   QFrame *hline7_1 = new QFrame;
@@ -648,7 +650,7 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   hlayout_tmp->setAlignment(Qt::AlignCenter);
   hlayout_tmp->addWidget(checkbox7_5);
   hlayout_tmp->addStretch(1000);
-  flayout7_2->addRow("set annotation editor description", hlayout_tmp);
+  flayout7_2->addRow("Set annotation editor description", hlayout_tmp);
   QObject::connect(checkbox7_5, SIGNAL(stateChanged(int)), this, SLOT(checkbox7_5Clicked(int)));
   flayout7_2->labelForField(hlayout_tmp)->setToolTip("Enabling this option will automatically update the description field of the annotation editor\n"
                                                      "with the name of the user button when that button is clicked.");
@@ -669,10 +671,33 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   hlayout_tmp->setAlignment(Qt::AlignCenter);
   hlayout_tmp->addWidget(checkbox7_3);
   hlayout_tmp->addStretch(1000);
-  flayout7_2->addRow("set annotation editor onsettime", hlayout_tmp);
+  flayout7_2->addRow("Set annotation editor onsettime", hlayout_tmp);
   QObject::connect(checkbox7_3, SIGNAL(stateChanged(int)), this, SLOT(checkbox7_3Clicked(int)));
   flayout7_2->labelForField(hlayout_tmp)->setToolTip("Enabling this option will automatically update the onset time field of the annotation-editor\n"
                                                      "with the current viewtime (file position) when a user button is clicked.");
+
+  checkbox7_8 = new QCheckBox;
+  checkbox7_8->setTristate(false);
+  checkbox7_8->setToolTip("If enabled, set the onset time at the middle of the page instead of at the start of the page.");
+  if(mainwindow->annot_editor_user_button_onset_on_page_middle)
+  {
+    checkbox7_8->setCheckState(Qt::Checked);
+  }
+  else
+  {
+    checkbox7_8->setCheckState(Qt::Unchecked);
+  }
+  hlayout_tmp = new QHBoxLayout;
+  hlayout_tmp->setAlignment(Qt::AlignCenter);
+  hlayout_tmp->addWidget(checkbox7_8);
+  hlayout_tmp->addStretch(1000);
+  flayout7_2->addRow("Onset on page middle", hlayout_tmp);
+  QObject::connect(checkbox7_8, SIGNAL(stateChanged(int)), this, SLOT(checkbox7_8Clicked(int)));
+  flayout7_2->labelForField(hlayout_tmp)->setToolTip("If enabled, set the onset time at the middle of the page instead of at the start of the page.");
+  if(!mainwindow->annot_editor_user_button_update_annot_onset)
+  {
+    checkbox7_8->setEnabled(false);
+  }
 
   checkbox7_4 = new QCheckBox;
   checkbox7_4->setTristate(false);
@@ -690,7 +715,7 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   hlayout_tmp->setAlignment(Qt::AlignCenter);
   hlayout_tmp->addWidget(checkbox7_4);
   hlayout_tmp->addStretch(1000);
-  flayout7_2->addRow("set annotation editor duration", hlayout_tmp);
+  flayout7_2->addRow("Set annotation editor duration", hlayout_tmp);
   QObject::connect(checkbox7_4, SIGNAL(stateChanged(int)), this, SLOT(checkbox7_4Clicked(int)));
   flayout7_2->labelForField(hlayout_tmp)->setToolTip("Enabling this option will automatically update the duration field of the annotation-editor\n"
                                                      "with the stage / epoch length when a user button is clicked.");
@@ -710,11 +735,9 @@ UI_OptionsDialog::UI_OptionsDialog(QWidget *w_parent)
   hlayout_tmp->setAlignment(Qt::AlignCenter);
   hlayout_tmp->addWidget(checkbox7_6);
   hlayout_tmp->addStretch(1000);
-  flayout7_2->addRow("jump to next page", hlayout_tmp);
+  flayout7_2->addRow("Jump to next page", hlayout_tmp);
   QObject::connect(checkbox7_6, SIGNAL(stateChanged(int)), this, SLOT(checkbox7_6Clicked(int)));
   flayout7_2->labelForField(hlayout_tmp)->setToolTip("Enabling this option will automatically change the viewtime (file position) and jump to the next stage / epoch.");
-
-  flayout7_2->addRow("Keyboard shortcuts are '1', '2', '3', etc.", (QWidget *)NULL);
 
   checkbox7_7 = new QCheckBox;
   checkbox7_7->setTristate(false);
@@ -2171,10 +2194,27 @@ void UI_OptionsDialog::checkbox7_3Clicked(int state)
   if(state==Qt::Checked)
   {
     mainwindow->annot_editor_user_button_update_annot_onset = 1;
+
+    checkbox7_8->setEnabled(true);
   }
   else
   {
     mainwindow->annot_editor_user_button_update_annot_onset = 0;
+
+    checkbox7_8->setEnabled(false);
+  }
+}
+
+
+void UI_OptionsDialog::checkbox7_8Clicked(int state)
+{
+  if(state==Qt::Checked)
+  {
+    mainwindow->annot_editor_user_button_onset_on_page_middle = 1;
+  }
+  else
+  {
+    mainwindow->annot_editor_user_button_onset_on_page_middle = 0;
   }
 }
 
