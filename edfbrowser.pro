@@ -281,7 +281,7 @@ win32 {
  RC_FILE = edfbrowser.rc
 }
 
-QMAKE_CXXFLAGS += -Wextra -Wshadow -Wformat -Wformat-nonliteral -Wformat-security -Wtype-limits -Wfatal-errors -Wdeprecated-declarations
+QMAKE_CXXFLAGS += -Wextra -Wshadow -Wformat -Wformat-nonliteral -Wformat-security -Wtype-limits -Wfatal-errors -Wdeprecated-declarations -Wformat-truncation=1
 
 unix {
 target.path = /usr/bin

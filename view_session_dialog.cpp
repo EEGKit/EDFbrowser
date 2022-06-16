@@ -328,11 +328,11 @@ void UI_ViewSessionwindow::SelectButtonClicked()
 
     if(i == ref_file)
     {
-      snprintf(edf_path, 2048, "File (reference): %s", result);
+      snprintf(edf_path, 2048, "File (reference): %.2000s", result);
     }
     else
     {
-      snprintf(edf_path, 2048, "File: %s", result);
+      snprintf(edf_path, 2048, "File: %.2000s", result);
     }
 
     if(use_relative_path)
