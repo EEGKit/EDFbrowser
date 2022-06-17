@@ -401,7 +401,13 @@ struct annot_filter_struct{
        int hide_in_list_only;
        };
 
+
+#pragma GCC diagnostic ignored "-Wformat-truncation"
+
 #endif
+
+
+
 
 
 
