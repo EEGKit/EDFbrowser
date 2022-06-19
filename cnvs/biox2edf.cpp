@@ -176,11 +176,7 @@ void UI_BIOX2EDFwindow::SelectFileButton()
     return;
   }
 
-#pragma GCC diagnostic ignored "-Wstrict-aliasing"
-
   sf = *((unsigned short *)str);
-
-#pragma GCC diagnostic warning "-Wstrict-aliasing"
 
   if((sf != 128) && (sf != 256))
   {

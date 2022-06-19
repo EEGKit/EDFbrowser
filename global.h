@@ -28,13 +28,23 @@
 #ifndef EDFBROWSER_GLOBAL_H
 #define EDFBROWSER_GLOBAL_H
 
-#if !defined(__GNUC__)
+#if defined(__GNUC__)
+
+#define GCC_VERSION ((__GNUC__ * 10000) + (__GNUC_MINOR__ * 100) + __GNUC_PATCHLEVEL__)
+
+#if (GCC_VERSION >= 70100)
+#pragma GCC diagnostic ignored "-Wformat-truncation"
+#endif
+
+#else
 #if defined(__APPLE__) || defined(__MACH__) || defined(__APPLE_CC__)
 /* nothing */
 #else
 #error "You need the GNU C compiler!"
 #endif
 #endif
+
+#pragma GCC diagnostic ignored "-Wstrict-aliasing"
 
 #if defined(__LP64__) || defined(__MINGW64__)
 #define THIS_APP_BITS_W   "64-bit"
@@ -400,18 +410,6 @@ struct annot_filter_struct{
        int hide_other;
        int hide_in_list_only;
        };
-
-
-#if defined(__GNUC__)
-
-#define GCC_VERSION ((__GNUC__ * 10000) + (__GNUC_MINOR__ * 100) + __GNUC_PATCHLEVEL__)
-
-#if (GCC_VERSION >= 70100)
-#pragma GCC diagnostic ignored "-Wformat-truncation"
-#endif
-
-#endif
-
 
 #endif
 

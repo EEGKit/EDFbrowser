@@ -790,8 +790,6 @@ int UI_ImportAnnotationswindow::import_from_mitwfdb(void)
       break;
     }
 
-#pragma GCC diagnostic ignored "-Wstrict-aliasing"
-
     if(*((unsigned short *)a_buf) == 0)  // end of file
     {
       break;
@@ -858,8 +856,6 @@ int UI_ImportAnnotationswindow::import_from_mitwfdb(void)
       else if((annot_code >= 0) && (annot_code <= ACMAX))
         {
           tc += *((unsigned short *)a_buf) & 0x3ff;
-
-#pragma GCC diagnostic warning "-Wstrict-aliasing"
 
           if(import_std_annots)
           {
