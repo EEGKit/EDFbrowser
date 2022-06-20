@@ -334,16 +334,30 @@ int UI_LoadMontagewindow::LoadButtonClicked()
 
       if(mainwindow->signalcomp[k]->plif_ecg_filter)
       {
-        plif_free_subtract_filter(mainwindow->signalcomp[k]->plif_ecg_filter);
+        plif_ecg_free_subtract_filter(mainwindow->signalcomp[k]->plif_ecg_filter);
 
         mainwindow->signalcomp[k]->plif_ecg_filter = NULL;
       }
 
       if(mainwindow->signalcomp[k]->plif_ecg_filter_sav)
       {
-        plif_free_subtract_filter(mainwindow->signalcomp[k]->plif_ecg_filter_sav);
+        plif_ecg_free_subtract_filter(mainwindow->signalcomp[k]->plif_ecg_filter_sav);
 
         mainwindow->signalcomp[k]->plif_ecg_filter_sav = NULL;
+      }
+
+      if(mainwindow->signalcomp[k]->plif_eeg_filter)
+      {
+        plif_eeg_free_subtract_filter(mainwindow->signalcomp[k]->plif_eeg_filter);
+
+        mainwindow->signalcomp[k]->plif_eeg_filter = NULL;
+      }
+
+      if(mainwindow->signalcomp[k]->plif_eeg_filter_sav)
+      {
+        plif_eeg_free_subtract_filter(mainwindow->signalcomp[k]->plif_eeg_filter_sav);
+
+        mainwindow->signalcomp[k]->plif_eeg_filter_sav = NULL;
       }
 
       if(mainwindow->signalcomp[k]->ecg_filter != NULL)
@@ -434,6 +448,8 @@ int UI_LoadMontagewindow::LoadButtonClicked()
     newsignalcomp->ravg_filter_cnt = 0;
     newsignalcomp->plif_ecg_filter = NULL;
     newsignalcomp->plif_ecg_filter_sav = NULL;
+    newsignalcomp->plif_eeg_filter = NULL;
+    newsignalcomp->plif_eeg_filter_sav = NULL;
     newsignalcomp->ecg_filter = NULL;
     newsignalcomp->fir_filter = NULL;
     newsignalcomp->fidfilter_cnt = 0;
@@ -1432,7 +1448,7 @@ int UI_LoadMontagewindow::LoadButtonClicked()
 
       if(!not_compatibel)
       {
-        newsignalcomp->plif_ecg_filter = plif_create_subtract_filter(sf, plif_powerlinefrequency, dthreshold);
+        newsignalcomp->plif_ecg_filter = plif_ecg_create_subtract_filter(sf, plif_powerlinefrequency, dthreshold);
         if(newsignalcomp->plif_ecg_filter == NULL)
         {
           if(mainwindow->rc_cmd_in_progress)
@@ -1455,8 +1471,92 @@ int UI_LoadMontagewindow::LoadButtonClicked()
           }
         }
 
-        newsignalcomp->plif_ecg_filter_sav = plif_create_subtract_filter(sf, plif_powerlinefrequency, dthreshold);
+        newsignalcomp->plif_ecg_filter_sav = plif_ecg_create_subtract_filter(sf, plif_powerlinefrequency, dthreshold);
         if(newsignalcomp->plif_ecg_filter_sav == NULL)
+        {
+          if(mainwindow->rc_cmd_in_progress)
+          {
+            free(newsignalcomp);
+            newsignalcomp = NULL;
+            xml_close(xml_hdl);
+            return 206;
+          }
+          else
+          {
+            snprintf(str2, 512, "A memory allocation error occurred when creating a powerline interference removal filter.\n"
+                          "File: %s line: %i", __FILE__, __LINE__);
+            QMessageBox messagewindow(QMessageBox::Critical, "Error", str2);
+            messagewindow.exec();
+            free(newsignalcomp);
+            newsignalcomp = NULL;
+            xml_close(xml_hdl);
+            return 0;
+          }
+        }
+
+        newsignalcomp->plif_ecg_subtract_filter_plf = plif_powerlinefrequency / 60;
+      }
+
+      xml_go_up(xml_hdl);
+    }
+
+    if(!xml_goto_nth_element_inside(xml_hdl, "plif_eeg_filter", 0))
+    {
+      not_compatibel = 0;
+
+      sf = newsignalcomp->edfhdr->edfparam[newsignalcomp->edfsignal[0]].sf_int;
+
+      if(!sf)
+      {
+        not_compatibel = 1;
+      }
+
+      if(xml_goto_nth_element_inside(xml_hdl, "plf", 0))
+      {
+        return format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+      }
+      if(xml_get_content_of_element(xml_hdl, result, XML_STRBUFLEN))
+      {
+        return format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+      }
+      plif_powerlinefrequency = atoi(result);
+      if((plif_powerlinefrequency != 0) && (plif_powerlinefrequency != 1))
+      {
+        return format_error(__FILE__, __LINE__, newsignalcomp, xml_hdl);
+      }
+      plif_powerlinefrequency *= 10;
+      plif_powerlinefrequency += 50;
+      xml_go_up(xml_hdl);
+
+      if(sf % plif_powerlinefrequency)  not_compatibel = 1;
+
+      if(!not_compatibel)
+      {
+        newsignalcomp->plif_eeg_filter = plif_eeg_create_subtract_filter(sf, plif_powerlinefrequency);
+        if(newsignalcomp->plif_eeg_filter == NULL)
+        {
+          if(mainwindow->rc_cmd_in_progress)
+          {
+            free(newsignalcomp);
+            newsignalcomp = NULL;
+            xml_close(xml_hdl);
+            return 206;
+          }
+          else
+          {
+            snprintf(str2, 512, "A memory allocation error occurred when creating a powerline interference removal filter.\n"
+                          "File: %s line: %i", __FILE__, __LINE__);
+            QMessageBox messagewindow(QMessageBox::Critical, "Error", str2);
+            messagewindow.exec();
+            free(newsignalcomp);
+            newsignalcomp = NULL;
+            xml_close(xml_hdl);
+            return 0;
+          }
+        }
+
+        newsignalcomp->plif_eeg_filter_sav = plif_eeg_create_subtract_filter(sf, plif_powerlinefrequency);
+        if(newsignalcomp->plif_eeg_filter_sav == NULL)
         {
           if(mainwindow->rc_cmd_in_progress)
           {

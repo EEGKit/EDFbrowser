@@ -408,8 +408,16 @@ UI_ShowActualMontagewindow::UI_ShowActualMontagewindow(QWidget *w_parent)
 
     if(mainwindow->signalcomp[i]->plif_ecg_filter != NULL)
     {
-      snprintf(txtbuf, 2048, "Powerline interference removal: %iHz",
+      snprintf(txtbuf, 2048, "ECG powerline interference subtraction: %iHz",
               (mainwindow->signalcomp[i]->plif_ecg_subtract_filter_plf * 10) + 50);
+
+      filterItem->appendRow(new QStandardItem(txtbuf));
+    }
+
+    if(mainwindow->signalcomp[i]->plif_eeg_filter != NULL)
+    {
+      snprintf(txtbuf, 2048, "EEG powerline interference subtraction: %iHz",
+              (mainwindow->signalcomp[i]->plif_eeg_subtract_filter_plf * 10) + 50);
 
       filterItem->appendRow(new QStandardItem(txtbuf));
     }

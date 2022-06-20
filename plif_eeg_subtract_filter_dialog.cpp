@@ -3,7 +3,7 @@
 *
 * Author: Teunis van Beelen
 *
-* Copyright (C) 2017 - 2022 Teunis van Beelen
+* Copyright (C) 2022 Teunis van Beelen
 *
 * Email: teuniz@protonmail.com
 *
@@ -26,29 +26,26 @@
 
 
 
-#include "plif_ecg_subtract_filter_dialog.h"
+#include "plif_eeg_subtract_filter_dialog.h"
 
 
 
-UI_PLIF_ECG_filter_dialog::UI_PLIF_ECG_filter_dialog(QWidget *w_parent)
+UI_PLIF_EEG_filter_dialog::UI_PLIF_EEG_filter_dialog(QWidget *w_parent)
 {
   int i, n, s, sf=0;
-
-  char str[256];
 
   QListWidgetItem *item;
 
   QList<QListWidgetItem *> selectedlist;
 
-
   mainwindow = (UI_Mainwindow *)w_parent;
 
-  plifecgfilterdialog = new QDialog;
-  plifecgfilterdialog->setMinimumSize(400 * mainwindow->w_scaling, 250 * mainwindow->h_scaling);
-  plifecgfilterdialog->setWindowTitle("Add a powerline interference filter");
-  plifecgfilterdialog->setModal(true);
-  plifecgfilterdialog->setAttribute(Qt::WA_DeleteOnClose, true);
-  plifecgfilterdialog->setSizeGripEnabled(true);
+  plifeegfilterdialog = new QDialog;
+  plifeegfilterdialog->setMinimumSize(400 * mainwindow->w_scaling, 250 * mainwindow->h_scaling);
+  plifeegfilterdialog->setWindowTitle("Add a powerline interference filter");
+  plifeegfilterdialog->setModal(true);
+  plifeegfilterdialog->setAttribute(Qt::WA_DeleteOnClose, true);
+  plifeegfilterdialog->setSizeGripEnabled(true);
 
   plfBox = new QComboBox;
   plfBox->addItem(" 50 Hz");
@@ -59,8 +56,7 @@ UI_PLIF_ECG_filter_dialog::UI_PLIF_ECG_filter_dialog(QWidget *w_parent)
   list = new QListWidget;
   list->setSelectionBehavior(QAbstractItemView::SelectRows);
   list->setSelectionMode(QAbstractItemView::ExtendedSelection);
-  list->setToolTip("Only signals with a physical dimension V, mV or uV and\n"
-                   "a samplerate of >= 240Hz and\n"
+  list->setToolTip("Only signals with a samplerate of >= 100Hz and\n"
                    "an integer ratio to 50 or 60 Hz will be listed here.");
 
   CancelButton = new QPushButton;
@@ -73,21 +69,12 @@ UI_PLIF_ECG_filter_dialog::UI_PLIF_ECG_filter_dialog(QWidget *w_parent)
   {
     sf = mainwindow->signalcomp[i]->edfhdr->edfparam[mainwindow->signalcomp[i]->edfsignal[0]].sf_int;
 
-    if(sf < 240)  /* don't list signals that have low samplerate */
+    if(sf < 100)  /* don't list signals that have low samplerate */
     {
       continue;
     }
 
     if((sf % 50) && (sf % 60))  /* don't list signals that cannot be filtered */
-    {
-      continue;
-    }
-
-    strlcpy(str, mainwindow->signalcomp[i]->edfhdr->edfparam[mainwindow->signalcomp[i]->edfsignal[0]].physdimension, 256);
-
-    remove_trailing_spaces(str);
-
-    if(strcmp(str, "uV") && strcmp(str, "mV") && strcmp(str, "V"))
     {
       continue;
     }
@@ -112,9 +99,9 @@ UI_PLIF_ECG_filter_dialog::UI_PLIF_ECG_filter_dialog(QWidget *w_parent)
     item = list->item(i);
     s = item->data(Qt::UserRole).toInt();
 
-    if(mainwindow->signalcomp[s]->plif_ecg_filter != NULL)
+    if(mainwindow->signalcomp[s]->plif_eeg_filter != NULL)
     {
-      plfBox->setCurrentIndex(mainwindow->signalcomp[s]->plif_ecg_subtract_filter_plf);
+      plfBox->setCurrentIndex(mainwindow->signalcomp[s]->plif_eeg_subtract_filter_plf);
 
       item->setSelected(true);
     }
@@ -152,24 +139,22 @@ UI_PLIF_ECG_filter_dialog::UI_PLIF_ECG_filter_dialog(QWidget *w_parent)
   hlayout1->addLayout(vlayout1);
   hlayout1->addLayout(vlayout2);
 
-  plifecgfilterdialog->setLayout(hlayout1);
+  plifeegfilterdialog->setLayout(hlayout1);
 
-  QObject::connect(CancelButton, SIGNAL(clicked()),                plifecgfilterdialog, SLOT(close()));
+  QObject::connect(CancelButton, SIGNAL(clicked()),                plifeegfilterdialog, SLOT(close()));
   QObject::connect(list,         SIGNAL(itemSelectionChanged()),   this,                SLOT(ApplyButtonClicked()));
   QObject::connect(plfBox,       SIGNAL(currentIndexChanged(int)), this,                SLOT(ApplyButtonClicked()));
   QObject::connect(helpButton,   SIGNAL(clicked()),                this,                SLOT(helpbuttonpressed()));
 
-  plifecgfilterdialog->exec();
+  plifeegfilterdialog->exec();
 }
 
 
-void UI_PLIF_ECG_filter_dialog::ApplyButtonClicked()
+void UI_PLIF_EEG_filter_dialog::ApplyButtonClicked()
 {
   int i, s, n, sf, plf, err=0;
 
-  char str[256];
-
-  double dthreshold=0;
+  char str[256]="";
 
   QListWidgetItem *item;
 
@@ -177,18 +162,18 @@ void UI_PLIF_ECG_filter_dialog::ApplyButtonClicked()
 
   for(i=0; i<mainwindow->signalcomps; i++)
   {
-    if(mainwindow->signalcomp[i]->plif_ecg_filter)
+    if(mainwindow->signalcomp[i]->plif_eeg_filter)
     {
-      plif_ecg_free_subtract_filter(mainwindow->signalcomp[i]->plif_ecg_filter);
+      plif_eeg_free_subtract_filter(mainwindow->signalcomp[i]->plif_eeg_filter);
 
-      mainwindow->signalcomp[i]->plif_ecg_filter = NULL;
+      mainwindow->signalcomp[i]->plif_eeg_filter = NULL;
     }
 
-    if(mainwindow->signalcomp[i]->plif_ecg_filter_sav)
+    if(mainwindow->signalcomp[i]->plif_eeg_filter_sav)
     {
-      plif_ecg_free_subtract_filter(mainwindow->signalcomp[i]->plif_ecg_filter_sav);
+      plif_eeg_free_subtract_filter(mainwindow->signalcomp[i]->plif_eeg_filter_sav);
 
-      mainwindow->signalcomp[i]->plif_ecg_filter_sav = NULL;
+      mainwindow->signalcomp[i]->plif_eeg_filter_sav = NULL;
     }
   }
 
@@ -221,25 +206,8 @@ void UI_PLIF_ECG_filter_dialog::ApplyButtonClicked()
       break;
     }
 
-    strlcpy(str, mainwindow->signalcomp[s]->edfhdr->edfparam[mainwindow->signalcomp[s]->edfsignal[0]].physdimension, 256);
-
-    remove_trailing_spaces(str);
-
-    if(!strcmp(str, "uV"))
-    {
-      dthreshold = 5.0 / mainwindow->signalcomp[s]->edfhdr->edfparam[mainwindow->signalcomp[s]->edfsignal[0]].bitvalue;
-    }
-    else if(!strcmp(str, "mV"))
-      {
-        dthreshold = 5e-3 / mainwindow->signalcomp[s]->edfhdr->edfparam[mainwindow->signalcomp[s]->edfsignal[0]].bitvalue;
-      }
-      else if(!strcmp(str, "V"))
-        {
-          dthreshold = 5e-6 / mainwindow->signalcomp[s]->edfhdr->edfparam[mainwindow->signalcomp[s]->edfsignal[0]].bitvalue;
-        }
-
-    mainwindow->signalcomp[s]->plif_ecg_filter = plif_ecg_create_subtract_filter(sf, plf, dthreshold);
-    if(mainwindow->signalcomp[s]->plif_ecg_filter == NULL)
+    mainwindow->signalcomp[s]->plif_eeg_filter = plif_eeg_create_subtract_filter(sf, plf);
+    if(mainwindow->signalcomp[s]->plif_eeg_filter == NULL)
     {
       err = 1;
       QMessageBox messagewindow(QMessageBox::Critical, "Error", "An error occurred while creating a powerline interference filter.");
@@ -247,8 +215,8 @@ void UI_PLIF_ECG_filter_dialog::ApplyButtonClicked()
       break;
     }
 
-    mainwindow->signalcomp[s]->plif_ecg_filter_sav = plif_ecg_create_subtract_filter(sf, plf, dthreshold);
-    if(mainwindow->signalcomp[s]->plif_ecg_filter_sav == NULL)
+    mainwindow->signalcomp[s]->plif_eeg_filter_sav = plif_eeg_create_subtract_filter(sf, plf);
+    if(mainwindow->signalcomp[s]->plif_eeg_filter_sav == NULL)
     {
       err = 1;
       QMessageBox messagewindow(QMessageBox::Critical, "Error", "An error occurred while creating a powerline interference filter.");
@@ -256,25 +224,25 @@ void UI_PLIF_ECG_filter_dialog::ApplyButtonClicked()
       break;
     }
 
-    mainwindow->signalcomp[s]->plif_ecg_subtract_filter_plf = plfBox->currentIndex();
+    mainwindow->signalcomp[s]->plif_eeg_subtract_filter_plf = plfBox->currentIndex();
   }
 
   if(err)
   {
     for(i=0; i<mainwindow->signalcomps; i++)
     {
-      if(mainwindow->signalcomp[i]->plif_ecg_filter)
+      if(mainwindow->signalcomp[i]->plif_eeg_filter)
       {
-        plif_ecg_free_subtract_filter(mainwindow->signalcomp[i]->plif_ecg_filter);
+        plif_eeg_free_subtract_filter(mainwindow->signalcomp[i]->plif_eeg_filter);
 
-        mainwindow->signalcomp[i]->plif_ecg_filter = NULL;
+        mainwindow->signalcomp[i]->plif_eeg_filter = NULL;
       }
 
-      if(mainwindow->signalcomp[i]->plif_ecg_filter_sav)
+      if(mainwindow->signalcomp[i]->plif_eeg_filter_sav)
       {
-        plif_ecg_free_subtract_filter(mainwindow->signalcomp[i]->plif_ecg_filter_sav);
+        plif_eeg_free_subtract_filter(mainwindow->signalcomp[i]->plif_eeg_filter_sav);
 
-        mainwindow->signalcomp[i]->plif_ecg_filter_sav = NULL;
+        mainwindow->signalcomp[i]->plif_eeg_filter_sav = NULL;
       }
     }
   }
@@ -283,10 +251,10 @@ void UI_PLIF_ECG_filter_dialog::ApplyButtonClicked()
 }
 
 
-void UI_PLIF_ECG_filter_dialog::helpbuttonpressed()
+void UI_PLIF_EEG_filter_dialog::helpbuttonpressed()
 {
 #ifdef Q_OS_LINUX
-  QDesktopServices::openUrl(QUrl("file:///usr/share/doc/edfbrowser/manual.html#ECG_PLIF_filter"));
+  QDesktopServices::openUrl(QUrl("file:///usr/share/doc/edfbrowser/manual.html#EEG_PLIF_filter"));
 #endif
 
 #ifdef Q_OS_WIN32
@@ -294,7 +262,7 @@ void UI_PLIF_ECG_filter_dialog::helpbuttonpressed()
 
   strlcpy(p_path, "file:///", MAX_PATH_LENGTH);
   strlcat(p_path, mainwindow->specialFolder(CSIDL_PROGRAM_FILES).toLocal8Bit().data(), MAX_PATH_LENGTH);
-  strlcat(p_path, "\\EDFbrowser\\manual.html#ECG_PLIF_filter", MAX_PATH_LENGTH);
+  strlcat(p_path, "\\EDFbrowser\\manual.html#EEG_PLIF_filter", MAX_PATH_LENGTH);
   QDesktopServices::openUrl(QUrl(p_path));
 #endif
 }

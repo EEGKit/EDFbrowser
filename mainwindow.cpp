@@ -663,6 +663,15 @@ void UI_Mainwindow::save_session()
       fprintf(pro_file, "    </plif_ecg_filter>\n");
     }
 
+    if(signalcomp[i]->plif_eeg_filter != NULL)
+    {
+      fprintf(pro_file, "    <plif_eeg_filter>\n");
+
+      fprintf(pro_file, "      <plf>%i</plf>\n", signalcomp[i]->plif_eeg_subtract_filter_plf);
+
+      fprintf(pro_file, "    </plif_eeg_filter>\n");
+    }
+
     if(signalcomp[i]->ecg_filter != NULL)
     {
       fprintf(pro_file, "    <ecg_filter>\n");
@@ -1586,6 +1595,14 @@ void UI_Mainwindow::add_plif_ecg_filter()
   if(!signalcomps)  return;
 
   UI_PLIF_ECG_filter_dialog plifecgfilterdialog(this);
+}
+
+
+void UI_Mainwindow::add_plif_eeg_filter()
+{
+  if(!signalcomps)  return;
+
+  UI_PLIF_EEG_filter_dialog plifeegfilterdialog(this);
 }
 
 
@@ -2962,7 +2979,7 @@ void UI_Mainwindow::remove_all_plif_ecg_filters()
   {
     if(signalcomp[i]->plif_ecg_filter)
     {
-      plif_free_subtract_filter(signalcomp[i]->plif_ecg_filter);
+      plif_ecg_free_subtract_filter(signalcomp[i]->plif_ecg_filter);
 
       signalcomp[i]->plif_ecg_filter = NULL;
 
@@ -2971,9 +2988,44 @@ void UI_Mainwindow::remove_all_plif_ecg_filters()
 
     if(signalcomp[i]->plif_ecg_filter_sav)
     {
-      plif_free_subtract_filter(signalcomp[i]->plif_ecg_filter_sav);
+      plif_ecg_free_subtract_filter(signalcomp[i]->plif_ecg_filter_sav);
 
       signalcomp[i]->plif_ecg_filter_sav = NULL;
+
+      update_scr = 1;
+    }
+  }
+
+  if(update_scr)
+  {
+    setup_viewbuf();
+  }
+}
+
+
+void UI_Mainwindow::remove_all_plif_eeg_filters()
+{
+  int i,
+      update_scr=0;
+
+  if(!files_open)  return;
+
+  for(i=0; i<signalcomps; i++)
+  {
+    if(signalcomp[i]->plif_eeg_filter)
+    {
+      plif_eeg_free_subtract_filter(signalcomp[i]->plif_eeg_filter);
+
+      signalcomp[i]->plif_eeg_filter = NULL;
+
+      update_scr = 1;
+    }
+
+    if(signalcomp[i]->plif_eeg_filter_sav)
+    {
+      plif_eeg_free_subtract_filter(signalcomp[i]->plif_eeg_filter_sav);
+
+      signalcomp[i]->plif_eeg_filter_sav = NULL;
 
       update_scr = 1;
     }
@@ -3116,6 +3168,8 @@ void UI_Mainwindow::remove_all_signals()
   remove_all_spike_filters();
 
   remove_all_plif_ecg_filters();
+
+  remove_all_plif_eeg_filters();
 
   for(i=0; i<signalcomps; i++)
   {
@@ -3314,16 +3368,30 @@ void UI_Mainwindow::close_file_action_func(QAction *action)
 
       if(signalcomp[j]->plif_ecg_filter)
       {
-        plif_free_subtract_filter(signalcomp[j]->plif_ecg_filter);
+        plif_ecg_free_subtract_filter(signalcomp[j]->plif_ecg_filter);
 
         signalcomp[j]->plif_ecg_filter = NULL;
       }
 
       if(signalcomp[j]->plif_ecg_filter_sav)
       {
-        plif_free_subtract_filter(signalcomp[j]->plif_ecg_filter_sav);
+        plif_ecg_free_subtract_filter(signalcomp[j]->plif_ecg_filter_sav);
 
         signalcomp[j]->plif_ecg_filter_sav = NULL;
+      }
+
+      if(signalcomp[j]->plif_eeg_filter)
+      {
+        plif_eeg_free_subtract_filter(signalcomp[j]->plif_eeg_filter);
+
+        signalcomp[j]->plif_eeg_filter = NULL;
+      }
+
+      if(signalcomp[j]->plif_eeg_filter_sav)
+      {
+        plif_eeg_free_subtract_filter(signalcomp[j]->plif_eeg_filter_sav);
+
+        signalcomp[j]->plif_eeg_filter_sav = NULL;
       }
 
       if(signalcomp[j]->spike_filter)
@@ -5075,7 +5143,7 @@ struct signalcompblock * UI_Mainwindow::create_signalcomp_copy(struct signalcomp
 
   if(newsignalcomp->plif_ecg_filter)
   {
-    newsignalcomp->plif_ecg_filter = plif_subtract_filter_create_copy(original_signalcomp->plif_ecg_filter);
+    newsignalcomp->plif_ecg_filter = plif_ecg_subtract_filter_create_copy(original_signalcomp->plif_ecg_filter);
     if(newsignalcomp->plif_ecg_filter == NULL)
     {
       QMessageBox::critical(this, "Error", "malloc() error");
@@ -5085,6 +5153,19 @@ struct signalcompblock * UI_Mainwindow::create_signalcomp_copy(struct signalcomp
   }
 
   newsignalcomp->plif_ecg_filter_sav = NULL;
+
+  if(newsignalcomp->plif_eeg_filter)
+  {
+    newsignalcomp->plif_eeg_filter = plif_eeg_subtract_filter_create_copy(original_signalcomp->plif_eeg_filter);
+    if(newsignalcomp->plif_eeg_filter == NULL)
+    {
+      QMessageBox::critical(this, "Error", "malloc() error");
+      free(newsignalcomp);
+      return NULL;
+    }
+  }
+
+  newsignalcomp->plif_eeg_filter_sav = NULL;
 
   for(i=0; i<newsignalcomp->filter_cnt; i++)
   {
@@ -5490,16 +5571,30 @@ void UI_Mainwindow::remove_signalcomp(int signal_nr)
 
   if(signalcomp[signal_nr]->plif_ecg_filter)
   {
-    plif_free_subtract_filter(signalcomp[signal_nr]->plif_ecg_filter);
+    plif_ecg_free_subtract_filter(signalcomp[signal_nr]->plif_ecg_filter);
 
     signalcomp[signal_nr]->plif_ecg_filter = NULL;
   }
 
   if(signalcomp[signal_nr]->plif_ecg_filter_sav)
   {
-    plif_free_subtract_filter(signalcomp[signal_nr]->plif_ecg_filter_sav);
+    plif_ecg_free_subtract_filter(signalcomp[signal_nr]->plif_ecg_filter_sav);
 
     signalcomp[signal_nr]->plif_ecg_filter_sav = NULL;
+  }
+
+  if(signalcomp[signal_nr]->plif_eeg_filter)
+  {
+    plif_eeg_free_subtract_filter(signalcomp[signal_nr]->plif_eeg_filter);
+
+    signalcomp[signal_nr]->plif_eeg_filter = NULL;
+  }
+
+  if(signalcomp[signal_nr]->plif_eeg_filter_sav)
+  {
+    plif_eeg_free_subtract_filter(signalcomp[signal_nr]->plif_eeg_filter_sav);
+
+    signalcomp[signal_nr]->plif_eeg_filter_sav = NULL;
   }
 
   if(signalcomp[signal_nr]->spike_filter)

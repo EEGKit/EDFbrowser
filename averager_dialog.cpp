@@ -686,15 +686,32 @@ void UI_AveragerWindow::process_avg(struct signalcompblock *signalcomp)
       {
         if(signalcomp->edfhdr->viewtime<=0)
         {
-          plif_reset_subtract_filter(signalcomp->plif_ecg_filter, 0);
+          plif_ecg_reset_subtract_filter(signalcomp->plif_ecg_filter, 0);
         }
         else
         {
-          plif_subtract_filter_state_copy(signalcomp->plif_ecg_filter, signalcomp->plif_ecg_filter_sav);
+          plif_ecg_subtract_filter_state_copy(signalcomp->plif_ecg_filter, signalcomp->plif_ecg_filter_sav);
         }
       }
 
-      dig_value = plif_run_subtract_filter(dig_value, signalcomp->plif_ecg_filter);
+      dig_value = plif_ecg_run_subtract_filter(dig_value, signalcomp->plif_ecg_filter);
+    }
+
+    if(signalcomp->plif_eeg_filter)
+    {
+      if(s==signalcomp->sample_start)
+      {
+        if(signalcomp->edfhdr->viewtime<=0)
+        {
+          plif_eeg_reset_subtract_filter(signalcomp->plif_eeg_filter);
+        }
+        else
+        {
+          plif_eeg_subtract_filter_state_copy(signalcomp->plif_eeg_filter, signalcomp->plif_eeg_filter_sav);
+        }
+      }
+
+      dig_value = plif_eeg_run_subtract_filter(dig_value, signalcomp->plif_eeg_filter);
     }
 
     if(signalcomp->ecg_filter != NULL)

@@ -114,7 +114,6 @@ void UI_ViewMontagewindow::SelectButtonClicked()
       polarity=1,
       holdoff=100,
       plif_powerlinefrequency,
-      plif_linear_threshold,
       n_taps,
       idx_used=0;
 
@@ -959,7 +958,16 @@ void UI_ViewMontagewindow::SelectButtonClicked()
       plif_powerlinefrequency += 50;
       xml_go_up(xml_hdl);
 
-      if(xml_goto_nth_element_inside(xml_hdl, "linear_threshold", 0))
+      snprintf(composition_txt, 2048, "ECG powerline interference subtraction: %iHz", plif_powerlinefrequency);
+
+      filterItem->appendRow(new QStandardItem(composition_txt));
+
+      xml_go_up(xml_hdl);
+    }
+
+    if(!xml_goto_nth_element_inside(xml_hdl, "plif_eeg_filter", 0))
+    {
+      if(xml_goto_nth_element_inside(xml_hdl, "plf", 0))
       {
         format_error(__FILE__, __LINE__, xml_hdl);
         return;
@@ -969,15 +977,17 @@ void UI_ViewMontagewindow::SelectButtonClicked()
         format_error(__FILE__, __LINE__, xml_hdl);
         return;
       }
-      plif_linear_threshold = atoi(result);
-      if((plif_linear_threshold < 10) || (plif_linear_threshold > 200))
+      plif_powerlinefrequency = atoi(result);
+      if((plif_powerlinefrequency != 0) && (plif_powerlinefrequency != 1))
       {
         format_error(__FILE__, __LINE__, xml_hdl);
         return;
       }
+      plif_powerlinefrequency *= 10;
+      plif_powerlinefrequency += 50;
       xml_go_up(xml_hdl);
 
-      snprintf(composition_txt, 2048, "Powerline interference removal: %iHz  threshold: %iuV", plif_powerlinefrequency, plif_linear_threshold);
+      snprintf(composition_txt, 2048, "EEG powerline interference subtraction: %iHz", plif_powerlinefrequency);
 
       filterItem->appendRow(new QStandardItem(composition_txt));
 

@@ -63,7 +63,6 @@ private:
 QDialog        *plifecgfilterdialog;
 
 QPushButton    *CancelButton,
-               *ApplyButton,
                *helpButton;
 
 QListWidget    *list;

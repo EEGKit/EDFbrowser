@@ -100,6 +100,7 @@
 #include "date_time_stamp_parser.h"
 #include "spike_filter_dialog.h"
 #include "plif_ecg_subtract_filter_dialog.h"
+#include "plif_eeg_subtract_filter_dialog.h"
 #include "export_filtered_signals.h"
 #include "fir_filter_dialog.h"
 #include "cdsa_dialog.h"
@@ -137,6 +138,7 @@
 #include "filt/ecg_filter.h"
 #include "filt/filter.h"
 #include "filt/plif_ecg_subtract_filter.h"
+#include "filt/plif_eeg_subtract_filter.h"
 #include "filt/ravg_filter.h"
 #include "filt/spike_filter.h"
 #include "filt/z_ratio_filter.h"
@@ -662,10 +664,12 @@ private slots:
   void check_edf_compatibility();
   void add_new_filter();
   void add_plif_ecg_filter();
+  void add_plif_eeg_filter();
   void add_fir_filter();
   void add_spike_filter();
   void remove_all_filters();
   void remove_all_plif_ecg_filters();
+  void remove_all_plif_eeg_filters();
   void remove_all_fir_filters();
   void remove_all_spike_filters();
   void add_new_math_func();

@@ -94,6 +94,16 @@ void UI_Mainwindow::setup_viewbuf()
       }
     }
 
+    if(signalcomp[i]->plif_eeg_filter)
+    {
+      hasprefilter = 1;
+
+      if(pre_time < 1.0)
+      {
+        pre_time = 1.0;
+      }
+    }
+
     if(signalcomp[i]->ravg_filter_cnt)
     {
       hasprefilter = 1;
@@ -157,7 +167,9 @@ void UI_Mainwindow::setup_viewbuf()
   {
     for(i=0; i<signalcomps; i++)
     {
-      if((signalcomp[i]->filter_cnt) || (signalcomp[i]->spike_filter) || (signalcomp[i]->ravg_filter_cnt) || (signalcomp[i]->fidfilter_cnt) || (signalcomp[i]->fir_filter != NULL) || (signalcomp[i]->plif_ecg_filter != NULL) || (signalcomp[i]->ecg_filter != NULL) || (signalcomp[i]->zratio_filter != NULL))
+      if((signalcomp[i]->filter_cnt) || (signalcomp[i]->spike_filter) || (signalcomp[i]->ravg_filter_cnt) ||
+         (signalcomp[i]->fidfilter_cnt) || (signalcomp[i]->fir_filter != NULL) || (signalcomp[i]->plif_ecg_filter != NULL) ||
+         (signalcomp[i]->plif_eeg_filter != NULL) || (signalcomp[i]->ecg_filter != NULL) || (signalcomp[i]->zratio_filter != NULL))
       {
         signalcomp[i]->edfhdr->prefiltertime = (long long)(pre_time * ((double)TIME_DIMENSION));
         if(signalcomp[i]->edfhdr->prefiltertime>signalcomp[i]->edfhdr->viewtime)
@@ -360,7 +372,9 @@ void UI_Mainwindow::setup_viewbuf()
 
     for(i=0; i<signalcomps; i++)
     {
-      if((!signalcomp[i]->filter_cnt) && (!signalcomp[i]->spike_filter) && (!signalcomp[i]->ravg_filter_cnt) && (!signalcomp[i]->fidfilter_cnt) && (!signalcomp[i]->fir_filter) && (!signalcomp[i]->plif_ecg_filter) && (signalcomp[i]->ecg_filter == NULL) && (signalcomp[i]->zratio_filter == NULL)) continue;
+      if((!signalcomp[i]->filter_cnt) && (!signalcomp[i]->spike_filter) && (!signalcomp[i]->ravg_filter_cnt) &&
+         (!signalcomp[i]->fidfilter_cnt) && (!signalcomp[i]->fir_filter) && (!signalcomp[i]->plif_ecg_filter) &&
+         (!signalcomp[i]->plif_eeg_filter) && (signalcomp[i]->ecg_filter == NULL) && (signalcomp[i]->zratio_filter == NULL)) continue;
 
       for(s=0; s<signalcomp[i]->samples_in_prefilterbuf; s++)
       {
@@ -440,7 +454,12 @@ void UI_Mainwindow::setup_viewbuf()
 
         if(signalcomp[i]->plif_ecg_filter)
         {
-          dig_value = plif_run_subtract_filter(dig_value, signalcomp[i]->plif_ecg_filter);
+          dig_value = plif_ecg_run_subtract_filter(dig_value, signalcomp[i]->plif_ecg_filter);
+        }
+
+        if(signalcomp[i]->plif_eeg_filter)
+        {
+          dig_value = plif_eeg_run_subtract_filter(dig_value, signalcomp[i]->plif_eeg_filter);
         }
 
         if(signalcomp[i]->ecg_filter != NULL)
@@ -497,7 +516,12 @@ void UI_Mainwindow::setup_viewbuf()
 
         if(signalcomp[i]->plif_ecg_filter)
         {
-          plif_subtract_filter_state_copy(signalcomp[i]->plif_ecg_filter_sav, signalcomp[i]->plif_ecg_filter);
+          plif_ecg_subtract_filter_state_copy(signalcomp[i]->plif_ecg_filter_sav, signalcomp[i]->plif_ecg_filter);
+        }
+
+        if(signalcomp[i]->plif_eeg_filter)
+        {
+          plif_eeg_subtract_filter_state_copy(signalcomp[i]->plif_eeg_filter_sav, signalcomp[i]->plif_eeg_filter);
         }
 
         if(signalcomp[i]->ecg_filter != NULL)

@@ -1241,15 +1241,32 @@ void print_screen_to_bdf(UI_Mainwindow *mainwindow)
             {
               if(signalcomp[i]->edfhdr->viewtime<=0)
               {
-                plif_reset_subtract_filter(signalcomp[i]->plif_ecg_filter, 0);
+                plif_ecg_reset_subtract_filter(signalcomp[i]->plif_ecg_filter, 0);
               }
               else
               {
-                plif_subtract_filter_state_copy(signalcomp[i]->plif_ecg_filter, signalcomp[i]->plif_ecg_filter_sav);
+                plif_ecg_subtract_filter_state_copy(signalcomp[i]->plif_ecg_filter, signalcomp[i]->plif_ecg_filter_sav);
               }
             }
 
-            dig_value = plif_run_subtract_filter(dig_value, signalcomp[i]->plif_ecg_filter);
+            dig_value = plif_ecg_run_subtract_filter(dig_value, signalcomp[i]->plif_ecg_filter);
+          }
+
+          if(signalcomp[i]->plif_eeg_filter)
+          {
+            if(smpls_written[i]==signalcomp[i]->sample_start)
+            {
+              if(signalcomp[i]->edfhdr->viewtime<=0)
+              {
+                plif_eeg_reset_subtract_filter(signalcomp[i]->plif_eeg_filter);
+              }
+              else
+              {
+                plif_eeg_subtract_filter_state_copy(signalcomp[i]->plif_eeg_filter, signalcomp[i]->plif_eeg_filter_sav);
+              }
+            }
+
+            dig_value = plif_eeg_run_subtract_filter(dig_value, signalcomp[i]->plif_eeg_filter);
           }
 
           if(signalcomp[i]->ecg_filter != NULL)

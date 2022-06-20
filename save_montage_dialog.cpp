@@ -312,6 +312,15 @@ void UI_SaveMontagewindow::SaveButtonClicked()
         fprintf(mtgfile, "    </plif_ecg_filter>\n");
       }
 
+      if(mainwindow->signalcomp[i]->plif_eeg_filter != NULL)
+      {
+        fprintf(mtgfile, "    <plif_eeg_filter>\n");
+
+        fprintf(mtgfile, "      <plf>%i</plf>\n", mainwindow->signalcomp[i]->plif_eeg_subtract_filter_plf);
+
+        fprintf(mtgfile, "    </plif_eeg_filter>\n");
+      }
+
       if(mainwindow->signalcomp[i]->ecg_filter != NULL)
       {
         fprintf(mtgfile, "    <ecg_filter>\n");

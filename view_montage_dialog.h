@@ -45,6 +45,7 @@
 
 #include "filt/filter.h"
 #include "filt/plif_ecg_subtract_filter.h"
+#include "filt/plif_eeg_subtract_filter.h"
 #include "filt/spike_filter.h"
 
 #include "third_party/fidlib/fidlib.h"

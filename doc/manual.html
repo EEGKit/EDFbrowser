@@ -51,7 +51,8 @@
   <li><a href="#Hypnogram">Hypnogram</a></li>
   <li><a href="#aEEG">aEEG</a></li>
   <li><a href="#Averaging_EP">Averaging (evoked potentials, heart beats or other triggers)</a></li>
-  <li><a href="#ECG_PLIF_filter">ECG powerline interference filter</a></li>
+  <li><a href="#ECG_PLIF_filter">ECG powerline interference subtraction filter</a></li>
+  <li><a href="#EEG_PLIF_filter">EEG powerline interference subtraction filter</a></li>
   <li><a href="#ECG_detection">ECG QRS detector</a></li>
   <li><a href="#HR_statistics">Heart Rate statistics</a></li>
   <li><a href="#Export_Import_ECG_RR_interval">Export/Import ECG RR-interval</a></li>
@@ -677,10 +678,11 @@
 
 <p><br><br></p>
 
-<h3><a name="ECG_PLIF_filter">ECG powerline interference filter</a></h3>
+<h3><a name="ECG_PLIF_filter">ECG powerline interference subtraction filter</a></h3>
 
 <p>
-  The ECG powerline interference filter is inspired by the subtraction method described by:<br>
+  The ECG powerline interference subtraction filter is inspired by the subtraction method described by:<br>
+<br>
  - Subtraction Method For Powerline Interference Removing From ECG<br>
    Chavdar Levkov, Georgy Mihov, Ratcho Ivanov, Ivan K. Daskalov Ivaylo Christov, Ivan Dotsinsky<br>
 <br>
@@ -711,7 +713,40 @@
   Note: Acceptable results will be achieved when the accuracy of the recording sampleclock is &lt=100ppm<br>
   and the powerlinefrequency is within +/-400ppm (+/-0.02Hz).<br>
   A perfect result will be achieved when the recording sampleclock is synchronized with the<br>
-  powerlinefrequency in hardware (e.g. using a Phase Locked Loop).
+  powerlinefrequency in hardware (e.g. using a Phase Locked Loop in the acquisition hardware).
+</p>
+
+<p><br></p>
+
+<p><a href="#Table_of_Contents">Table of Contents</a></p>
+
+<p><br><br></p>
+
+<h3><a name="EEG_PLIF_filter">EEG powerline interference subtraction filter</a></h3>
+
+<p>
+  The EEG powerline interference subtraction filter is inspired by the subtraction method described by:<br>
+<br>
+ - A simple method for the removal of mains interference from pre-recorded electrophysiological data (W.J. Heitler)<br>
+<br>
+  The subtraction method extracts the powerline interference noise (50/60Hz and harmonics) from the last 0.5 second<br>
+  and stores it in a buffer.<br>
+  The reference noise from the buffer is used to subtract it from the signal.<br>
+  This method only works correctly when the samplefrequency of the EEG recording is an<br>
+  integer multiple of the powerline frequency.<br>
+  In case they are synchronized, this method will remove also the harmonics of the<br>
+  powerline frequency. In that case extra notch-filters for the harmonics are<br>
+  not necessary. The advantage of this method is that it will not cause ringing/distortion<br>
+  (like notch-filters do).<br>
+<br>
+  The following rules apply:<br>
+  - The samplefrequency of the EEG recording must be at least 100 Hz<br>
+  - The samplefrequency of the EEG recording must be an integer multiple of the powerline frequency<br>
+<br>
+  Note: Acceptable results will be achieved when the accuracy of the recording sampleclock is &lt=100ppm<br>
+  and the powerlinefrequency is within +/-400ppm (+/-0.02Hz).<br>
+  A perfect result will be achieved when the recording sampleclock is synchronized with the<br>
+  powerlinefrequency in hardware (e.g. using a Phase Locked Loop in the acquisition hardware).
 </p>
 
 <p><br></p>

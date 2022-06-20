@@ -34,7 +34,7 @@
 #include <stdio.h>
 
 
-#define PLIF_NBUFS   (40)
+#define PLIF_ECG_NBUFS   (40)
 
 
 #ifdef __cplusplus
@@ -42,27 +42,27 @@ extern "C" {
 #endif
 
 
-struct plif_subtract_filter_settings{
-                       int sf;
-                       int tpl;
-                       double *ravg_buf;
-                       double *ravg_noise_buf[PLIF_NBUFS];
-                       double *input_buf[PLIF_NBUFS];
-                       double *ref_buf;
-                       double linear_threshold;
-                       double linear_diff[PLIF_NBUFS];
-                       int ravg_idx;
-                       int buf_idx;
-                      };
+struct plif_ecg_subtract_filter_settings{
+  int sf;
+  int tpl;
+  double *ravg_buf;
+  double *ravg_noise_buf[PLIF_ECG_NBUFS];
+  double *input_buf[PLIF_ECG_NBUFS];
+  double *ref_buf;
+  double linear_threshold;
+  double linear_diff[PLIF_ECG_NBUFS];
+  int ravg_idx;
+  int buf_idx;
+};
 
 
 
-struct plif_subtract_filter_settings * plif_create_subtract_filter(int, int, double);
-double plif_run_subtract_filter(double, struct plif_subtract_filter_settings *);
-void plif_reset_subtract_filter(struct plif_subtract_filter_settings *, double);
-void plif_free_subtract_filter(struct plif_subtract_filter_settings *);
-void plif_subtract_filter_state_copy(struct plif_subtract_filter_settings *, struct plif_subtract_filter_settings *);
-struct plif_subtract_filter_settings * plif_subtract_filter_create_copy(struct plif_subtract_filter_settings *);
+struct plif_ecg_subtract_filter_settings * plif_ecg_create_subtract_filter(int, int, double);
+double plif_ecg_run_subtract_filter(double, struct plif_ecg_subtract_filter_settings *);
+void plif_ecg_reset_subtract_filter(struct plif_ecg_subtract_filter_settings *, double);
+void plif_ecg_free_subtract_filter(struct plif_ecg_subtract_filter_settings *);
+void plif_ecg_subtract_filter_state_copy(struct plif_ecg_subtract_filter_settings *, struct plif_ecg_subtract_filter_settings *);
+struct plif_ecg_subtract_filter_settings * plif_ecg_subtract_filter_create_copy(struct plif_ecg_subtract_filter_settings *);
 
 
 #ifdef __cplusplus

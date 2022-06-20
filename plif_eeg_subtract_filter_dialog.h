@@ -3,7 +3,7 @@
 *
 * Author: Teunis van Beelen
 *
-* Copyright (C) 2007 - 2022 Teunis van Beelen
+* Copyright (C) 2022 Teunis van Beelen
 *
 * Email: teuniz@protonmail.com
 *
@@ -26,86 +26,65 @@
 
 
 
-
-#ifndef SIGNAL_CHOOSERFORM1_H
-#define SIGNAL_CHOOSERFORM1_H
+#ifndef ADD_PLIF_EEG_FILTERFORM1_H
+#define ADD_PLIF_EEG_FILTERFORM1_H
 
 
 
 #include "qt_headers.h"
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "global.h"
 #include "mainwindow.h"
-#include "viewcurve.h"
-#include "adjustfiltersettings.h"
 #include "utils.h"
-#include "edf_helper.h"
-#include "cdsa_dialog.h"
-#include "aeeg_dialog.h"
-#include "cdsa_dock.h"
-#include "aeeg_dock.h"
-#include "hypnogram_dialog.h"
-#include "hypnogram_dock.h"
 
-#include "filt/ecg_filter.h"
-#include "filt/plif_ecg_subtract_filter.h"
 #include "filt/plif_eeg_subtract_filter.h"
 
 
 
 class UI_Mainwindow;
-class ViewCurve;
 
 
 
-class UI_SignalChooser : public QObject
+class UI_PLIF_EEG_filter_dialog : public QObject
 {
   Q_OBJECT
 
 public:
-  UI_SignalChooser(QWidget *, int, int *sgnl_nr = NULL);
+  UI_PLIF_EEG_filter_dialog(QWidget *parent=0);
 
   UI_Mainwindow *mainwindow;
 
 
 private:
 
-QDialog      *signalchooser_dialog;
+QDialog        *plifeegfilterdialog;
 
-QPushButton  *CloseButton,
-             *UpButton,
-             *DownButton,
-             *DeleteButton,
-             *InvertButton,
-             *EditButton;
+QPushButton    *CancelButton,
+               *helpButton;
 
-QListWidget  *list;
+QListWidget    *list;
 
-int task,
-    *signal_nr;
+QComboBox      *plfBox;
 
-void load_signalcomps(void);
-
-int get_selectionlist(int *);
 
 private slots:
 
-void call_sidemenu(QListWidgetItem *);
-void signalUp();
-void signalDown();
-void signalDelete();
-void signalInvert();
-void signalEdit();
-void item_activated(QListWidgetItem *);
+void ApplyButtonClicked();
+void helpbuttonpressed();
 
 };
 
 
 
-#endif // SIGNAL_CHOOSERFORM1_H
+#endif // ADD_PLIF_EEG_FILTERFORM1_H
+
+
+
+
+
+
 
 

@@ -164,6 +164,7 @@
 #include "filt/filter.h"
 #include "filt/fir_filter.h"
 #include "filt/plif_ecg_subtract_filter.h"
+#include "filt/plif_eeg_subtract_filter.h"
 #include "filt/ravg_filter.h"
 #include "filt/spike_filter.h"
 #include "filt/z_ratio_filter.h"
@@ -331,8 +332,11 @@ struct signalcompblock{
         int spike_filter_holdoff;
         struct spike_filter_settings *spike_filter;
         int plif_ecg_subtract_filter_plf;
-        struct plif_subtract_filter_settings *plif_ecg_filter;
-        struct plif_subtract_filter_settings *plif_ecg_filter_sav;
+        struct plif_ecg_subtract_filter_settings *plif_ecg_filter;
+        struct plif_ecg_subtract_filter_settings *plif_ecg_filter_sav;
+        int plif_eeg_subtract_filter_plf;
+        struct plif_eeg_subtract_filter_settings *plif_eeg_filter;
+        struct plif_eeg_subtract_filter_settings *plif_eeg_filter_sav;
         struct zratio_filter_settings *zratio_filter;
         double zratio_crossoverfreq;
         int spectr_dialog[MAXSPECTRUMDIALOGS];

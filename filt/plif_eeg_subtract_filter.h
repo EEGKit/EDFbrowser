@@ -25,75 +25,58 @@
 */
 
 
+#ifndef PLIF_EEG_subtract_filter_INCLUDED
+#define PLIF_EEG_subtract_filter_INCLUDED
 
 
-#ifndef VIEWSESSIONFORM1_H
-#define VIEWSESSIONFORM1_H
-
-
-
-#include "qt_headers.h"
-
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-#include "global.h"
-#include "mainwindow.h"
-#include "xml.h"
-#include "utils.h"
-
-#include "filt/filter.h"
-#include "filt/plif_ecg_subtract_filter.h"
-#include "filt/plif_eeg_subtract_filter.h"
-#include "filt/spike_filter.h"
-
-#include "third_party/fidlib/fidlib.h"
+#include <stdio.h>
 
 
 
-class UI_Mainwindow;
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
-
-class UI_ViewSessionwindow : public QObject
-{
-  Q_OBJECT
-
-public:
-  UI_ViewSessionwindow(QWidget *parent);
-
-  UI_Mainwindow *mainwindow;
-
-
-private:
-
-  QDialog      *ViewSessionDialog;
-
-  QPushButton  *CloseButton,
-               *SelectButton;
-
-  QBoxLayout   *box;
-
-  QHBoxLayout  *hbox;
-
-  QTreeView    *tree;
-
-  QStandardItemModel *t_model;
-
-  char session_path[MAX_PATH_LENGTH],
-       session_dir[MAX_PATH_LENGTH];
-
-int view_session_format_error(const char *, int, struct xml_handle *);
-
-private slots:
-
-  void SelectButtonClicked();
-
+struct plif_eeg_subtract_filter_settings{
+  int sf;
+  int pwrcycles;
+  int pwrcyclesmpls;
+  double *buf;
+  int sz;
+  int idx;
 };
 
 
 
-#endif // VIEWSESSIONFORM1_H
+struct plif_eeg_subtract_filter_settings * plif_eeg_create_subtract_filter(int, int);
+double plif_eeg_run_subtract_filter(double, struct plif_eeg_subtract_filter_settings *);
+void plif_eeg_reset_subtract_filter(struct plif_eeg_subtract_filter_settings *);
+void plif_eeg_free_subtract_filter(struct plif_eeg_subtract_filter_settings *);
+void plif_eeg_subtract_filter_state_copy(struct plif_eeg_subtract_filter_settings *, struct plif_eeg_subtract_filter_settings *);
+struct plif_eeg_subtract_filter_settings * plif_eeg_subtract_filter_create_copy(struct plif_eeg_subtract_filter_settings *);
+
+
+#ifdef __cplusplus
+} /* extern "C" */
+#endif
+
+
+#endif
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
