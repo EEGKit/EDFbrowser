@@ -1178,6 +1178,11 @@ void print_screen_to_bdf(UI_Mainwindow *mainwindow)
             dig_value = run_spike_filter(dig_value, signalcomp[i]->spike_filter);
           }
 
+          for(p=0; p<signalcomp[i]->math_func_cnt_before; p++)
+          {
+            dig_value = run_math_func(dig_value, signalcomp[i]->math_func_before[p]);
+          }
+
           for(p=0; p<signalcomp[i]->filter_cnt; p++)
           {
             if(smpls_written[i]==signalcomp[i]->sample_start)
@@ -1233,6 +1238,11 @@ void print_screen_to_bdf(UI_Mainwindow *mainwindow)
             }
 
             dig_value = run_fir_filter(dig_value, signalcomp[i]->fir_filter);
+          }
+
+          for(p=0; p<signalcomp[i]->math_func_cnt_after; p++)
+          {
+            dig_value = run_math_func(dig_value, signalcomp[i]->math_func_after[p]);
           }
 
           if(signalcomp[i]->plif_ecg_filter)
